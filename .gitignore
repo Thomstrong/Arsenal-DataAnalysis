@@ -1,0 +1,14 @@
+# MacOS
+.DS_Store
+
+#PyCharm
+.idea/*
+TianchiServer/.idea/*
+.idea/*
+TianchiServer/env/*
+TianchiServer/TianchiServer/__pycache__/*
+TianchiServer/.idea/*
+
+# python
+*.pyc
+TianchiServer/.idea/vcs.xml
