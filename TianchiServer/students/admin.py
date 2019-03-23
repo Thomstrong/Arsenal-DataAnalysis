@@ -12,5 +12,5 @@ class StudentAdmin(admin.ModelAdmin):
 @admin.register(StudentRecord)
 class StudentRecordAdmin(admin.ModelAdmin):
     list_display = ('id', 'student', 'stu_class', 'term',)
-    search_fields = ('student',)
+    search_fields = ('id', 'student__id',)
     list_filter = ('term',)

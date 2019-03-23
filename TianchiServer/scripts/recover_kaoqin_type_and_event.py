@@ -19,7 +19,7 @@ def run():
         for line in lines:
             bar.next()
             split_line = line.replace('"', '').split(',')
-            kaoqin_type_id = split_line[0]
+            kaoqin_type_id = str(int(split_line[0]))
             kaoqin_type_name = split_line[1]
             kaoqin_event_id = split_line[2]
             kaoqin_event_name = split_line[3]

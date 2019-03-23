@@ -1,10 +1,12 @@
+from datetime import datetime
+
 from django.db import models
 
 from students.models.student import Student
 
 
 class Consumption(models.Model):
-    created_at = models.DateTimeField(auto_now=True, null=False)
+    created_at = models.DateTimeField(default=datetime.now, blank=True)
     cost = models.FloatField()
     student = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True)
 
