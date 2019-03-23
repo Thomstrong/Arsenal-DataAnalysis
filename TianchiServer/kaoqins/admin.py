@@ -7,17 +7,17 @@ from kaoqins.models.kaoqin_type import KaoqinType
 
 @admin.register(KaoqinEvent)
 class KaoqinEventAdmin(admin.ModelAdmin):
-    list_display = ('id', 'type', 'event_name',)
+    list_display = ('id', 'type', 'name',)
 
 
 @admin.register(KaoqinRecord)
 class KaoqinRecordRecordAdmin(admin.ModelAdmin):
     list_display = ('id', 'student', 'event', 'created_at',)
     search_fields = ('student',)
-    list_filter = ('event__event_name',)
+    list_filter = ('event__name',)
 
 
 @admin.register(KaoqinType)
 class KaoqinTypeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title',)
-    search_fields = ('title',)
+    list_display = ('id', 'name',)
+    search_fields = ('name',)

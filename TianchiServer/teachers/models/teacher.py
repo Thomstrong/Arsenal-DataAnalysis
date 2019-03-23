@@ -10,3 +10,6 @@ class Teacher(models.Model):
             self.id,
             self.name,
         )
+
+    def __str__(self):
+        return self.__unicode__()

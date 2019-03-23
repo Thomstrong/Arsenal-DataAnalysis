@@ -10,3 +10,6 @@ class Consumption(models.Model):
 
     def __unicode__(self):
         return '{} cost {}'.format(self.student.name, self.cost)
+
+    def __str__(self):
+        return self.__unicode__()

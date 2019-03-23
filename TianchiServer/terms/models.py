@@ -14,3 +14,6 @@ class Term(models.Model):
             self.end_year,
             self.order
         )
+
+    def __str__(self):
+        return self.__unicode__()

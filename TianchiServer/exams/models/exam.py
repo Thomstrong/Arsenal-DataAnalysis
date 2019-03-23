@@ -19,3 +19,6 @@ class Exam(models.Model):
             self.type.__unicode__(),
             self.course.__unicode__(),
         )
+
+    def __str__(self):
+        return self.__unicode__()
