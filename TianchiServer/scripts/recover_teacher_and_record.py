@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from progress.bar import Bar
 
-# python manage.py runscript recover_teacher_and_record
+from classes.constants import Grade
 from classes.models import Class
 from courses.models import Course
 from teachers.models.teach_record import TeachRecord
@@ -11,12 +11,13 @@ from teachers.models.teacher import Teacher
 from terms.models import Term
 
 
+# python manage.py runscript recover_teacher_and_record
 def run():
     grade_name_to_int = {
-        '初三': 0,
-        '高一': 1,
-        '高二': 2,
-        '高三': 3,
+        '初三': Grade.Zero,
+        '高一': Grade.One,
+        '高二': Grade.Two,
+        '高三': Grade.Three,
     }
     root = settings.BASE_DIR
     file_name = '1_teacher'

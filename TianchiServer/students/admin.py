@@ -6,7 +6,7 @@ from students.models.student_record import StudentRecord
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'sex','is_left')
+    list_display = ('id', 'name', 'sex','is_left', 'is_stay_school')
 
 
 @admin.register(StudentRecord)

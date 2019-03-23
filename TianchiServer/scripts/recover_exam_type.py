@@ -3,10 +3,10 @@ import os
 from django.conf import settings
 from progress.bar import Bar
 
-# python manage.py runscript recover_exam_type
 from exams.models.exam_type import ExamType
 
 
+# python manage.py runscript recover_exam_type
 def run():
     root = settings.BASE_DIR
     file_path = os.path.join(root, 'scripts', 'data', '6_exam_type.csv')
