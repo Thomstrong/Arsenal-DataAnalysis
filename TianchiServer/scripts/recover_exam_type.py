@@ -9,7 +9,11 @@ from exams.models.exam_type import ExamType
 # python manage.py runscript recover_exam_type
 def run():
     root = settings.BASE_DIR
-    file_path = os.path.join(root, 'scripts', 'data', '6_exam_type.csv')
+    file_name = '6_exam_type'
+    file_path = os.path.join(root, 'scripts', 'data', file_name + '.csv')
+    err_file_path = os.path.join(root, 'scripts', 'data', file_name + '_err.csv')
+    err_record_file = open(err_file_path, 'w')
+    err_record_file.write('\n')
     with open(file_path) as data_file:
         data_file.readline()
 
@@ -26,6 +30,7 @@ def run():
                     name=type_name
                 )
             except Exception as e:
-                print('Exeption:{}\nRecord:{}'.format(e, line))
+                print(repr(e))
+                err_record_file.write('{},{}\n'.format(line, repr(e)))
                 continue
         bar.finish()

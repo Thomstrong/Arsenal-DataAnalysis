@@ -107,7 +107,7 @@ def run():
                 )
             except Exception as e:
                 print(repr(e))
-                err_record_file.write('{}\n'.format(line))
+                err_record_file.write('{},{}\n'.format(line, repr(e)))
                 continue
         bar.finish()
     err_record_file.close()
