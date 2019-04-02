@@ -42,27 +42,11 @@ def run():
                     name=student_name,
                     sex=sex,
                 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 Consumption.objects.get_or_create(
                     created_at = time,
                     cost = money_deal,
                     student = student
                 )
-
-
             except Exception as e:
                 print(e)
                 err_record_file.write('{}\n'.format(line))
