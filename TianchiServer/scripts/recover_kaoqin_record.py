@@ -13,7 +13,7 @@ from students.models.student_record import StudentRecord
 from terms.models import Term
 
 
-# python manage.py runscript recover_kaoqin_record
+# python -W ignore manage.py runscript recover_kaoqin_record
 def run():
     root = settings.BASE_DIR
     file_name = '3_kaoqin'

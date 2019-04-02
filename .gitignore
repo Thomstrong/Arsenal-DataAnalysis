@@ -13,3 +13,4 @@ TianchiServer/.idea/*
 *.pyc
 TianchiServer/.idea/vcs.xml
 TianchiServer/evn/*
+TianchiServer/scripts/data/*_err.csv

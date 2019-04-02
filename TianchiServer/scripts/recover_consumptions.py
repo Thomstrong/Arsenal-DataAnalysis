@@ -10,7 +10,7 @@ from students.constants import SexType
 from students.models.student import Student
 
 
-# python manage.py runscript recover_consumptions
+# python -W ignore manage.py runscript recover_consumptions
 def run():
     sex_to_int = {
         '男': SexType.boy,
