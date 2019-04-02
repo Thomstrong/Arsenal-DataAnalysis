@@ -28,7 +28,7 @@ def run():
         '高三': Grade.Three,
     }
 
-    with open(file_path) as data_file:
+    with open(file_path, encoding='utf-8') as data_file:
         data_file.readline()  # read header
 
         lines = data_file.read().splitlines()
