@@ -4,7 +4,6 @@ from django.conf import settings
 from progress.bar import Bar
 
 from classes.constants import Grade
-from classes.constants import Campus
 from classes.models import Class
 from students.constants import SexType, ResidenceType, PolicyType
 from students.models.student import Student

@@ -4,7 +4,7 @@ from dateutil.parser import parse as parse_date
 from django.conf import settings
 from progress.bar import Bar
 
-from classes.constants import Grade, Campus
+from classes.constants import Grade
 from classes.models import Class
 from kaoqins.models.kaoqin_event import KaoqinEvent
 from kaoqins.models.kaoqin_record import KaoqinRecord
