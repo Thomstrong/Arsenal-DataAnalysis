@@ -12,3 +12,4 @@ TianchiServer/.idea/*
 # python
 *.pyc
 TianchiServer/.idea/vcs.xml
+TianchiServer/evn/*

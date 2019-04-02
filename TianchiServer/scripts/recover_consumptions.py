@@ -32,7 +32,7 @@ def run():
                 split_line = line.replace('"', '').split(',')
                 deal_time = split_line[0]
                 time = dateutil.parser.parse(deal_time)
-                money_deal = split_line[1]
+                money_deal = float(split_line[1])
                 student_id = split_line[2]
                 student_name = split_line[3]
                 sex = sex_to_int[split_line[4]]
@@ -42,6 +42,19 @@ def run():
                     name=student_name,
                     sex=sex,
                 )
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 Consumption.objects.get_or_create(
                     created_at = time,
