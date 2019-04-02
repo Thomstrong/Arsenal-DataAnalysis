@@ -1,22 +1,35 @@
 from django.contrib import admin
 
 from exams.models.exam import Exam
-from exams.models.exam_record import ExamRecord
+from exams.models.exam_record import StudentExamRecord, ClassExamRecord
 from exams.models.exam_type import ExamType
+from exams.models.sub_exam import SubExam
 
 
 @admin.register(Exam)
 class ExamAdmin(admin.ModelAdmin):
-    list_display = ('id', 'type', 'course', 'term', 'total_score', 'attend_num')
-    search_fields = ('course__name',)
-    list_filter = ('course__name', 'type__name', 'term')
+    list_display = ('id', '__unicode__')
+    search_fields = ('name',)
 
 
-@admin.register(ExamRecord)
+@admin.register(StudentExamRecord)
 class ExamRecordAdmin(admin.ModelAdmin):
-    list_display = ('id', 'student', 'exam', 'score',)
-    search_fields = ('student',)
-    list_filter = ('exam__course__name', 'student',)
+    list_display = ('id', 'student', 'sub_exam', 'score')
+    search_fields = ('student', 'sub_exam__exam__name', 'sub_exam__course__name')
+    list_filter = ('student', 'sub_exam__exam__name', 'sub_exam__course__name')
+
+
+@admin.register(SubExam)
+class SubExamRecordAdmin(admin.ModelAdmin):
+    list_display = ('id', 'started_at', '__unicode__', 'total_score', 'attend_num',)
+    search_fields = ('exam__name', 'course__name')
+    list_filter = ('exam__name', 'course__name')
+
+
+@admin.register(ClassExamRecord)
+class ClassExamRecordAdmin(admin.ModelAdmin):
+    list_display = ('stu_class', 'sub_exam', 'total_score', 'attend_count')
+    search_fields = ('stu_class__id', 'sub_exam')
 
 
 @admin.register(ExamType)
