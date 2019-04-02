@@ -11,7 +11,7 @@ from progress.bar import Bar
 def run():
     root = settings.BASE_DIR
     file_path = os.path.join(root, 'scripts', 'data', '4_kaoqintype.csv')
-    with open(file_path) as data_file:
+    with open(file_path,encoding='utf-8') as data_file:
         data_file.readline()
 
         lines = data_file.read().splitlines()
