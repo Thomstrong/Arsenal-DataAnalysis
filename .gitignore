@@ -14,3 +14,4 @@ TianchiServer/.idea/*
 TianchiServer/.idea/vcs.xml
 TianchiServer/evn/*
 TianchiServer/scripts/data/*_err.csv
+TianchiServer/TianchiServer/local_settings.py
