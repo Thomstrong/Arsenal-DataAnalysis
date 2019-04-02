@@ -19,12 +19,13 @@ def run():
         '高二': Grade.Two,
         '高三': Grade.Three,
     }
+
     root = settings.BASE_DIR
     file_name = '1_teacher'
     file_path = os.path.join(root, 'scripts', 'data', file_name + '.csv')
     err_file_path = os.path.join(root, 'scripts', 'data', file_name + '_err.csv')
     err_record_file = open(err_file_path, 'w')
-    with open(file_path) as data_file:
+    with open(file_path, encoding='utf_8') as data_file:
         data_file.readline()
 
         lines = data_file.read().splitlines()

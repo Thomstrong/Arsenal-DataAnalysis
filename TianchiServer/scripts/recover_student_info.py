@@ -41,7 +41,7 @@ def run():
     err_file_path = os.path.join(root, 'scripts', 'data', file_name + '_err.csv')
     err_record_file = open(err_file_path, 'w')
     err_record_file.write('\n')
-    with open(file_path) as data_file:
+    with open(file_path, encoding='utf-8') as data_file:
         data_file.readline()  # read header
 
         lines = data_file.read().splitlines()
@@ -77,7 +77,7 @@ def run():
                     class_in_db = Class.objects.create(
                         id=class_id,
                         class_name=class_name,
-                        grade_name=grade_name_to_int[grade_name]
+                        grade_name=grade_name_to_int[grade_name],
                     )
 
                 term_in_db, _ = Term.objects.get_or_create(

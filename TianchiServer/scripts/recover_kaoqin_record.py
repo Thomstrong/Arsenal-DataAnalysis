@@ -13,7 +13,7 @@ from students.models.student_record import StudentRecord
 from terms.models import Term
 
 
-# python manage.py runscript recover_kaoqin_record
+# python -W ignore manage.py runscript recover_kaoqin_record
 def run():
     root = settings.BASE_DIR
     file_name = '3_kaoqin'
@@ -28,7 +28,7 @@ def run():
         '高三': Grade.Three,
     }
 
-    with open(file_path) as data_file:
+    with open(file_path, encoding='utf-8') as data_file:
         data_file.readline()  # read header
 
         lines = data_file.read().splitlines()
@@ -58,15 +58,15 @@ def run():
                     class_in_db = Class.objects.create(
                         id=class_id,
                         grade_name=grade_name_to_int[grade_name],
-                        class_name=class_name
+                        class_name=class_name,
                     )
                 created_at = parse_date(split_line[2])
                 term = split_line[1].split('-')
                 if not term[0]:
                     if created_at.month < 3:
-                        term = [created_at.year - 1,created_at.year,1]
-                    if 3<= created_at.month < 9:
-                        term = [created_at.year - 1,created_at.year,2]
+                        term = [created_at.year - 1, created_at.year, 1]
+                    if 3 <= created_at.month < 9:
+                        term = [created_at.year - 1, created_at.year, 2]
                     if created_at.month >= 9:
                         term = [created_at.year, created_at.year + 1, 1]
 
@@ -88,7 +88,6 @@ def run():
                 )
 
                 record_id = int(split_line[0])
-
 
                 KaoqinRecord.objects.get_or_create(
                     id=record_id,
