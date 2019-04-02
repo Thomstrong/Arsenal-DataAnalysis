@@ -79,7 +79,6 @@ def run():
                         id=class_id,
                         class_name=class_name,
                         grade_name=grade_name_to_int[grade_name],
-                        campus_name=Campus.New if "东" in class_name else Campus.Old,
                     )
 
                 term_in_db, _ = Term.objects.get_or_create(

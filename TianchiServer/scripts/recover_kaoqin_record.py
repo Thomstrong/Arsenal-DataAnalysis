@@ -59,7 +59,6 @@ def run():
                         id=class_id,
                         grade_name=grade_name_to_int[grade_name],
                         class_name=class_name,
-                        campus_name=Campus.New if "东" in class_name else Campus.Old,
                     )
                 created_at = parse_date(split_line[2])
                 term = split_line[1].split('-')

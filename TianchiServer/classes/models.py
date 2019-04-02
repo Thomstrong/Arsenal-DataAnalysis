@@ -1,7 +1,9 @@
 from django.db import models
+from django.db.models.signals import pre_save
 
 from classes.constants import CLASS_CAMPUS_CHOICE
 from classes.constants import CLASS_GRADE_CHOICE, Campus
+from classes.listeners import check_campus
 
 
 class Class(models.Model):
@@ -14,3 +16,6 @@ class Class(models.Model):
 
     def __str__(self):
         return self.__unicode__()
+
+
+pre_save.connect(check_campus, sender=Class)

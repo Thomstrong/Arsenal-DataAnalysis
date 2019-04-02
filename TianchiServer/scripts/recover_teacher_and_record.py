@@ -59,7 +59,6 @@ def run():
                     id=class_id,
                     class_name=class_name,
                     grade_name=grade_name_to_int[grade_name],
-                    campus_name = campus_name
                 )
 
                 course_in_db, _ = Course.objects.get_or_create(
