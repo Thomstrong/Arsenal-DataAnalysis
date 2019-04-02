@@ -13,6 +13,13 @@ class SubExam(models.Model):
     total_score = models.FloatField(default=0.0)
     attend_num = models.IntegerField(default=0)
 
+    def update_score(self, score, is_add=True):
+        if score < 0:
+            return 
+        self.total_score += score if is_add else -score
+        self.attend_num += 1 if is_add else -1
+        self.save()
+
     def __unicode__(self):
         return '{}-{}'.format(
             self.exam.__unicode__(),
