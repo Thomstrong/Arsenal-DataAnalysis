@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from progress.bar import Bar
 
-from classes.constants import Grade,Campus
+from classes.constants import Grade
 from classes.models import Class
 from courses.models import Course
 from teachers.models.teach_record import TeachRecord
@@ -25,7 +25,7 @@ def run():
     file_path = os.path.join(root, 'scripts', 'data', file_name + '.csv')
     err_file_path = os.path.join(root, 'scripts', 'data', file_name + '_err.csv')
     err_record_file = open(err_file_path, 'w')
-    with open(file_path,encoding='utf_8') as data_file:
+    with open(file_path, encoding='utf_8') as data_file:
         data_file.readline()
 
         lines = data_file.read().splitlines()
@@ -38,10 +38,6 @@ def run():
                 class_id = int(split_line[1])
                 class_name = split_line[2]
                 grade_name = split_line[3]
-                campus_name = Campus.New if "东" in class_name else Campus.Old
-                print(grade_name,campus_name)
-
-
 
                 course_id = int(split_line[4])
                 course_name = split_line[5]
