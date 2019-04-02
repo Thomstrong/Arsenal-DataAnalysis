@@ -1,0 +1,16 @@
+# MacOS
+.DS_Store
+
+#PyCharm
+.idea/*
+.idea/*
+env/*
+__pycache__/*
+.idea/*
+
+# python
+*.pyc
+.idea/vcs.xml
+evn/*
+scripts/data/*_err.csv
+local_settings.py
