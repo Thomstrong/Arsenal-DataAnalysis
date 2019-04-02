@@ -1,14 +1,14 @@
 import os
 
+import dateutil.parser
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from progress.bar import Bar
-
-
 
 from consumptions.models import Consumption
 from students.constants import SexType
 from students.models.student import Student
-import dateutil.parser
+
 
 # python manage.py runscript recover_consumptions
 def run():
@@ -21,7 +21,7 @@ def run():
     file_path = os.path.join(root, 'scripts', 'data', file_name + '.csv')
     err_file_path = os.path.join(root, 'scripts', 'data', file_name + '_err.csv')
     err_record_file = open(err_file_path, 'w')
-    with open(file_path,encoding='utf_8') as data_file:
+    with open(file_path, encoding='utf-8') as data_file:
         data_file.readline()
 
         lines = data_file.read().splitlines()
@@ -37,16 +37,18 @@ def run():
                 student_name = split_line[3]
                 sex = sex_to_int[split_line[4]]
 
-                student, _ = Student.objects.get_or_create(
+                student = Student.objects.get(
                     id=student_id,
                     name=student_name,
                     sex=sex,
                 )
                 Consumption.objects.get_or_create(
-                    created_at = time,
-                    cost = money_deal,
-                    student = student
+                    created_at=time,
+                    cost=money_deal,
+                    student=student
                 )
+            except ObjectDoesNotExist:
+                continue
             except Exception as e:
                 print(e)
                 err_record_file.write('{}\n'.format(line))

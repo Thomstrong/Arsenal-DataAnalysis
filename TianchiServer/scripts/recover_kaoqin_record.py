@@ -4,7 +4,7 @@ from dateutil.parser import parse as parse_date
 from django.conf import settings
 from progress.bar import Bar
 
-from classes.constants import Grade
+from classes.constants import Grade, Campus
 from classes.models import Class
 from kaoqins.models.kaoqin_event import KaoqinEvent
 from kaoqins.models.kaoqin_record import KaoqinRecord
@@ -58,15 +58,16 @@ def run():
                     class_in_db = Class.objects.create(
                         id=class_id,
                         grade_name=grade_name_to_int[grade_name],
-                        class_name=class_name
+                        class_name=class_name,
+                        campus_name=Campus.New if "东" in class_name else Campus.Old,
                     )
                 created_at = parse_date(split_line[2])
                 term = split_line[1].split('-')
                 if not term[0]:
                     if created_at.month < 3:
-                        term = [created_at.year - 1,created_at.year,1]
-                    if 3<= created_at.month < 9:
-                        term = [created_at.year - 1,created_at.year,2]
+                        term = [created_at.year - 1, created_at.year, 1]
+                    if 3 <= created_at.month < 9:
+                        term = [created_at.year - 1, created_at.year, 2]
                     if created_at.month >= 9:
                         term = [created_at.year, created_at.year + 1, 1]
 
@@ -88,7 +89,6 @@ def run():
                 )
 
                 record_id = int(split_line[0])
-
 
                 KaoqinRecord.objects.get_or_create(
                     id=record_id,
