@@ -4,25 +4,24 @@ from django.db import migrations, models
 import math
 import django.db.models.deletion
 
+
 # get each subexam's standard
-def get_standard(apps,schema_editor):
-    sub_exams = apps.get_model('exams','SubExam')
+def get_standard(apps, schema_editor):
+    sub_exams = apps.get_model('exams', 'SubExam')
     for sub_exam in sub_exams.objects.all():
-        average_score = sub_exam.total_score/sub_exam.attend_num
+        average_score = sub_exam.total_score / sub_exam.attend_num
         standard = 0.0
         for student_record in sub_exam.studentexamrecord_set.all():
             if student_record.score >= 0:
                 standard += math.pow(student_record.score - average_score, 2)
-        sub_exam.standard = math.pow(standard /sub_exam.attend_num,1/2)
-        # print(sub_exam)
+        sub_exam.standard = math.pow(standard / sub_exam.attend_num, 1 / 2)
         sub_exam.save()
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
         ('exams', '0003_auto_20190401_2359'),
     ]
-
 
     operations = [
         migrations.AddField(
