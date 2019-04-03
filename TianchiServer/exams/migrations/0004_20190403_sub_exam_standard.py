@@ -20,7 +20,7 @@ def get_standard(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('exams', '0003_auto_20190401_2359'),
+        ('exams', '0004_auto_20190403_2156'),
     ]
 
     operations = [
