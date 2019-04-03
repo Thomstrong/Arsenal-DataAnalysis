@@ -6,14 +6,16 @@ from progress.bar import Bar
 
 # from student's t_score get their's deng_di
 def get_deng_di(apps, schema_editor):
-    students = apps.get_model('exams', 'StudentExamRecord')
-    bar = Bar('Processing', max=len(students.objects.all()))
-    i = 1
-    for student in students.objects.all().order_by('-t_score'):
-        bar.next()
-        student.deng_di = i / student.sub_exam.attend_num
-        i += 1
-        student.save()
+    SubExam = apps.get_model('exams', 'SubExam')
+    bar = Bar('Processing', max=SubExam.objects.all().count())
+
+    for sub_exam in SubExam.objects.all():
+        i = 1
+        for student_exam_record in sub_exam.studentexamrecord_set.all().order_by('-t_score'):
+            bar.next()
+            student_exam_record.deng_di = i / sub_exam.attend_num
+            i += 1
+            student_exam_record.save()
     bar.finish()
 
 
