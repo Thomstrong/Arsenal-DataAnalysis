@@ -8,7 +8,7 @@ from students.models.student import Student
 
 
 class StudentExamRecord(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True)
     sub_exam = models.ForeignKey(SubExam, on_delete=models.CASCADE)
     score = models.FloatField(null=True, default=None)
 

@@ -13,7 +13,7 @@ def after_update_record(sender, instance, created, **kwargs):
 
 
 def delete_exam_record(sender, instance, **kwargs):
-    if instance.score < 0:
+    if instance.score < 0 or not instance.student:
         return
 
     instance.sub_exam.update_score(instance.score, is_add=False)

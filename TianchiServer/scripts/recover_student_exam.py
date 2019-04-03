@@ -111,13 +111,15 @@ def run():
                         class_exam.save()
                         continue
 
-                    sub_exam.update_score(score)
+                    StudentExamRecord.objects.create(
+                        sub_exam=sub_exam,
+                        score=score
+                    )
                     class_exam, _ = ClassExamRecord.objects.get_or_create(
                         id=int(class_exam_record_id),
                         sub_exam=sub_exam
                     )
                     class_exam.update_score(score)
-                    raise Exception('Student not in db')
                 except Exception as e:
                     # useless student record
                     raise Exception(e)
