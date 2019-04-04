@@ -14,8 +14,7 @@ def get_zt_score(apps, schema_editor):
             if not student.sub_exam.standard:
                 student.z_score = 0.0
             else:
-                student.z_score = (
-                                              student.score - student.sub_exam.total_score / student.sub_exam.attend_num) / student.sub_exam.standard
+                student.z_score = (student.score - student.sub_exam.total_score / student.sub_exam.attend_num) / student.sub_exam.standard
             student.t_score = student.z_score * 8 + 80
         student.save()
     bar.finish()
