@@ -5,7 +5,7 @@ from progress.bar import Bar
 
 from classes.constants import Grade
 from classes.models import Class
-from courses.models import Course
+from courses.models.course import Course
 from teachers.models.teach_record import TeachRecord
 from teachers.models.teacher import Teacher
 from terms.models import Term

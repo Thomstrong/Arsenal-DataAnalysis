@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.db import models
 
-from courses.models import Course
+from courses.models.course import Course
 from exams.models.exam import Exam
 
 
