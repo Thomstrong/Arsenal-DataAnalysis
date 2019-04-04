@@ -8,7 +8,7 @@ import django.db.models.deletion
 # get each subexam's standard
 def get_standard(apps, schema_editor):
     SubExam = apps.get_model('exams', 'SubExam')
-    for sub_exam in SubExam.objects.all():
+    for sub_exam in SubExam.objects.filter(attend_num__gt=1):
         average_score = sub_exam.total_score / sub_exam.attend_num
         standard = 0.0
         for student_record in sub_exam.studentexamrecord_set.filter(score__gte=0.0):
