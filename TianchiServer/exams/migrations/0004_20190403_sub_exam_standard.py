@@ -11,10 +11,9 @@ def get_standard(apps, schema_editor):
     for sub_exam in sub_exams.objects.all():
         average_score = sub_exam.total_score / sub_exam.attend_num
         standard = 0.0
-        for student_record in sub_exam.studentexamrecord_set.all():
-            if student_record.score >= 0:
-                standard += math.pow(student_record.score - average_score, 2)
-        sub_exam.standard = math.pow(standard / sub_exam.attend_num, 1 / 2)
+        for student_record in sub_exam.studentexamrecord_set.filter(score_gte = 0.0):
+            standard += math.pow(student_record.score - average_score, 2)
+        sub_exam.standard = math.pow(standard / (sub_exam.attend_num-1), 1 / 2)
         sub_exam.save()
 
 
