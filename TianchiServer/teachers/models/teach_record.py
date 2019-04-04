@@ -1,7 +1,7 @@
 from django.db import models
 
 from classes.models import Class
-from courses.models import Course
+from courses.models.course import Course
 from teachers.models.teacher import Teacher
 from terms.models import Term
 

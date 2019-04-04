@@ -5,7 +5,7 @@ from django.conf import settings
 from progress.bar import Bar
 
 # python manage.py runscript recover_student_exam
-from courses.models import Course
+from courses.models.course import Course
 from exams.models.exam import Exam
 from exams.models.exam_record import StudentExamRecord, ClassExamRecord
 from exams.models.exam_type import ExamType
