@@ -12,6 +12,7 @@ class SubExam(models.Model):
     started_at = models.DateField(null=False, default=datetime.now)
     total_score = models.FloatField(default=0.0)
     attend_num = models.IntegerField(default=0)
+    standard = models.FloatField(default=0.0)
 
     def update_score(self, score, is_add=True):
         if score < 0:

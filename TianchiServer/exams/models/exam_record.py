@@ -11,18 +11,9 @@ class StudentExamRecord(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True)
     sub_exam = models.ForeignKey(SubExam, on_delete=models.CASCADE)
     score = models.FloatField(null=True, default=None)
-
-    @property
-    def z_score(self):
-        raise NotImplementedError
-
-    @property
-    def t_score(self):
-        raise NotImplementedError
-
-    @property
-    def dengdi(self):
-        raise NotImplementedError
+    z_score = models.FloatField(default=0.0)
+    t_score = models.FloatField(default=0.0)
+    deng_di = models.FloatField(default=0.0)
 
 
 class ClassExamRecord(models.Model):
