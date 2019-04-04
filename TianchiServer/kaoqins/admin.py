@@ -13,7 +13,7 @@ class KaoqinEventAdmin(admin.ModelAdmin):
 @admin.register(KaoqinRecord)
 class KaoqinRecordRecordAdmin(admin.ModelAdmin):
     list_display = ('id', 'student', 'event', 'created_at',)
-    search_fields = ('student',)
+    search_fields = ('student__id',)
     list_filter = ('event__name',)
 
 

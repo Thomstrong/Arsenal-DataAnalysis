@@ -13,10 +13,10 @@ class ExamAdmin(admin.ModelAdmin):
 
 
 @admin.register(StudentExamRecord)
-class ExamRecordAdmin(admin.ModelAdmin):
-    list_display = ('id', 'student', 'sub_exam', 'score')
-    search_fields = ('student', 'sub_exam__exam__name', 'sub_exam__course__name')
-    list_filter = ('student', 'sub_exam__exam__name', 'sub_exam__course__name')
+class StudentExamRecordAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'sub_exam', 'score', 't_score', 'z_score', 'deng_di')
+    search_fields = ('student__id', 'sub_exam__exam__name', 'sub_exam__course__name')
+    list_filter = ('sub_exam__exam__name', 'sub_exam__course__name')
 
 
 @admin.register(SubExam)

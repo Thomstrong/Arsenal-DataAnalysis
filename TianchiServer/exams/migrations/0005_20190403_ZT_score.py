@@ -6,17 +6,22 @@ from progress.bar import Bar
 
 # from subexam's standard get each student's z_score
 def get_zt_score(apps, schema_editor):
-    students = apps.get_model('exams', 'StudentExamRecord')
-    bar = Bar('Processing', max=len(students.objects.all()))
-    for student in students.objects.all():
+    StudentExamRecord = apps.get_model('exams', 'StudentExamRecord')
+    bar = Bar('Processing', max=StudentExamRecord.objects.all().count())
+    for student_exam_record in StudentExamRecord.objects.filter(score__gte=0):
         bar.next()
-        if student.score >= 0:
-            if not student.sub_exam.standard:
-                student.z_score = 0.0
-            else:
-                student.z_score = (student.score - student.sub_exam.total_score / student.sub_exam.attend_num) / student.sub_exam.standard
-            student.t_score = student.z_score * 8 + 80
-        student.save()
+        sub_exam = student_exam_record.sub_exam
+        if not sub_exam.standard:
+            student_exam_record.z_score = 0.0
+            student_exam_record.t_score = 80
+            student_exam_record.save()
+            continue
+
+        score = student_exam_record.score
+        average = sub_exam.total_score / sub_exam.attend_num
+        student_exam_record.z_score = (score - average) / sub_exam.standard
+        student_exam_record.t_score = student_exam_record.z_score * 8 + 80
+        student_exam_record.save()
     bar.finish()
 
 

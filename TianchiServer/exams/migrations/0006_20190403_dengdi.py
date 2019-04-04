@@ -8,14 +8,17 @@ from progress.bar import Bar
 def get_deng_di(apps, schema_editor):
     SubExam = apps.get_model('exams', 'SubExam')
     bar = Bar('Processing', max=SubExam.objects.all().count())
-
     for sub_exam in SubExam.objects.all():
         i = 1
-        for student_exam_record in sub_exam.studentexamrecord_set.all().order_by('-t_score'):
-            bar.next()
+        bar.next()
+        student_exam_records = sub_exam.studentexamrecord_set.all().order_by('-t_score')
+        sub_bar = Bar('Processing student exam record', max=student_exam_records.count())
+        for student_exam_record in student_exam_records:
+            sub_bar.next()
             student_exam_record.deng_di = i / sub_exam.attend_num
-            i += 1
             student_exam_record.save()
+            i += 1
+        sub_bar.finish()
     bar.finish()
 
 
