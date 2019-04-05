@@ -21,12 +21,17 @@ class ClassExamRecord(models.Model):
     sub_exam = models.ForeignKey(SubExam, on_delete=models.CASCADE, null=True, default=None)
     total_score = models.FloatField(default=0.0)
     attend_count = models.IntegerField(default=0)
+    highest_score = models.FloatField(default=0.0)
+    lowest_score = models.FloatField(default=200.0)
 
     def update_score(self, score, is_add=True):
         if score < 0:
             return
+        self.highest_score = max(self.highest_score, score)
+        self.lowest_score = min(self.lowest_score, score)
         self.total_score += score if is_add else -score
         self.attend_count += 1 if is_add else -1
+        self.save()
 
 
 pre_save.connect(before_update_record, sender=StudentExamRecord)

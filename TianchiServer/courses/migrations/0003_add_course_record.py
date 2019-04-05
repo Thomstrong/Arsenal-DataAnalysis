@@ -11,10 +11,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CourseRecord',
             fields=[
-                ('student',
-                 models.ForeignKey(null=False, on_delete=django.db.models.deletion.CASCADE, to='students.Student')),
-                ('course',
-                 models.ForeignKey(null=False, on_delete=django.db.models.deletion.CASCADE, to='courses.Course'))
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('student', models.ForeignKey(null=False, on_delete=django.db.models.deletion.CASCADE, to='students.Student')),
+                ('course', models.ForeignKey(null=False, on_delete=django.db.models.deletion.CASCADE, to='courses.Course'))
             ],
         ),
     ]
