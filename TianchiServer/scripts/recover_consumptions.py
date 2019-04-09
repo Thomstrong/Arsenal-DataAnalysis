@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from progress.bar import Bar
 
-from consumptions.models import Consumption
+from consumptions.models import Consumption, DailyConsumption, HourlyConsumption
 from students.constants import SexType
 from students.models.student import Student
 
@@ -13,6 +13,8 @@ from students.models.student import Student
 # python -W ignore manage.py runscript recover_consumptions
 def run():
     Consumption.objects.all().delete()
+    DailyConsumption.objects.all().delete()
+    HourlyConsumption.objects.all().delete()
     sex_to_int = {
         '男': SexType.boy,
         '女': SexType.girl,
