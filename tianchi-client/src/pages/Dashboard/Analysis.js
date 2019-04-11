@@ -8,6 +8,7 @@ import PageLoading from '@/components/PageLoading';
 
 const IntroduceRow = React.lazy(() => import('./IntroduceRow'));
 const SalesCard = React.lazy(() => import('./SalesCard'));
+const DailyConsumptionCard = React.lazy(() => import('./DailyConsumptionCard'));
 const TopSearch = React.lazy(() => import('./TopSearch'));
 const ProportionSales = React.lazy(() => import('./ProportionSales'));
 const OfflineData = React.lazy(() => import('./OfflineData'));
@@ -27,7 +28,7 @@ class Analysis extends Component {
     const { dispatch } = this.props;
     this.reqRef = requestAnimationFrame(() => {
       dispatch({
-        type: 'chart/fetch',
+        type: 'chart/fetchDailyConsumptionData',
       });
     });
   }
@@ -60,6 +61,16 @@ class Analysis extends Component {
 
     dispatch({
       type: 'chart/fetchSalesData',
+    });
+  };
+
+  handleStudentChange = (value) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'chart/fetchDailyConsumptionData',
+      payload: {
+        studentId: value
+      }
     });
   };
 
@@ -102,6 +113,8 @@ class Analysis extends Component {
       salesTypeData,
       salesTypeDataOnline,
       salesTypeDataOffline,
+      dailyConsumptionData,
+      student,
     } = chart;
     let salesPieData;
     if (salesType === 'all') {
@@ -119,7 +132,7 @@ class Analysis extends Component {
     const dropdownGroup = (
       <span className={styles.iconGroup}>
         <Dropdown overlay={menu} placement="bottomRight">
-          <Icon type="ellipsis" />
+          <Icon type="ellipsis"/>
         </Dropdown>
       </span>
     );
@@ -128,8 +141,16 @@ class Analysis extends Component {
 
     return (
       <GridContent>
-        <Suspense fallback={<PageLoading />}>
-          <IntroduceRow loading={loading} visitData={visitData} />
+        <Suspense fallback={<PageLoading/>}>
+          <IntroduceRow loading={loading} visitData={visitData}/>
+        </Suspense>
+        <Suspense fallback={null}>
+          <DailyConsumptionCard
+            handleStudentChange={this.handleStudentChange}
+            student={student}
+            dailyConsumptionData={dailyConsumptionData}
+            loading={loading}
+          />
         </Suspense>
         <Suspense fallback={null}>
           <SalesCard

@@ -50,8 +50,8 @@ export async function fakeSubmitForm(params) {
   });
 }
 
-export async function fakeChartData() {
-  return request('/api/fake_chart_data');
+export async function fakeChartData(studentId) {
+  return request(`/api/consumption/daily_sum/?student_id=${studentId}`);
 }
 
 export async function queryTags() {
