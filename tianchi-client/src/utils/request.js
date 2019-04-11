@@ -44,21 +44,21 @@ const errorHandler = error => {
     return;
   }
   notification.error({
-    message: `请求错误 ${status}: ${url}`,
+    message: `请求错误 ${status}`,
     description: errortext,
   });
   // environment should not be used
-  if (status === 403) {
-    router.push('/exception/403');
-    return;
-  }
+  // if (status === 403) {
+  //   router.push('/exception/403');
+  //   return;
+  // }
   if (status <= 504 && status >= 500) {
     router.push('/exception/500');
-    return;
+    // return;
   }
-  if (status >= 404 && status < 422) {
-    router.push('/exception/404');
-  }
+  // if (status >= 404 && status < 422) {
+  //   router.push('/exception/404');
+  // }
 };
 
 /**

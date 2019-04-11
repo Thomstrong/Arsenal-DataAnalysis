@@ -14,18 +14,30 @@ export default {
     salesTypeDataOnline: [],
     salesTypeDataOffline: [],
     radarData: [],
+    dailyConsumptionData: null,
+    student: null,
     loading: false,
   },
 
   effects: {
-    *fetch(_, { call, put }) {
+    * fetch(_, { call, put }) {
       const response = yield call(fakeChartData);
       yield put({
         type: 'save',
         payload: response,
       });
     },
-    *fetchSalesData(_, { call, put }) {
+    * fetchDailyConsumptionData({ payload }, { call, put }) {
+      const response = yield call(fakeChartData, payload.studentId);
+      yield put({
+        type: 'save',
+        payload: {
+          dailyConsumptionData: response.consumption_data,
+          student: response.student
+        },
+      });
+    },
+    * fetchSalesData(_, { call, put }) {
       const response = yield call(fakeChartData);
       yield put({
         type: 'save',
