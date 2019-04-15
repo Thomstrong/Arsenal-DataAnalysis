@@ -1,36 +1,23 @@
-import React, { PureComponent,Suspense } from 'react';
+import React, { PureComponent, Suspense } from 'react';
 import { connect } from 'dva';
-import Link from 'umi/link';
+import { POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
 import router from 'umi/router';
-import { Card, Row, Col, Icon, Avatar, Tag, Divider, Spin, Input,Tabs,Select  } from 'antd';
+import { Avatar, Card, Col, Divider, Icon, Input, Row, Select, Tabs } from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './Center.less';
-import {
-  G2,
-  Chart,
-  Geom,
-  Axis,
-  Tooltip,
-  Coord,
-  Label,
-  Legend,
-  View,
-  Guide,
-  Shape,
-  Facet,
-  Util
-} from "bizcharts";
+import { Axis, Chart, Coord, Geom, Legend, Shape, Tooltip } from "bizcharts";
 import DataSet from "@antv/data-set";
+
 const ScoreLineChart = React.lazy(() => import('./ScoreLineChart'));
 const WordCloud = React.lazy(() => import('./WordCloud'));
-const ConsumptionLineChart = React.lazy(()=> import('./ConsumptionLineChart'));
-const AttendanceChart = React.lazy(()=> import('./AttendanceChart'));
-const StuComparedChart = React.lazy(()=> import('./StuComparedChart'));
+const ConsumptionLineChart = React.lazy(() => import('./ConsumptionLineChart'));
+const AttendanceChart = React.lazy(() => import('./AttendanceChart'));
+const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
 
 
-@connect(({ loading,student }) => ({
-  studentInfo:student.studentInfo,
-  wordCloudData:student.wordCloudData,
+@connect(({ loading, student }) => ({
+  studentInfo: student.studentInfo,
+  wordCloudData: student.wordCloudData,
   loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchGrade'],
 }))
 class Center extends PureComponent {
@@ -41,7 +28,8 @@ class Center extends PureComponent {
   };
 
   onTabChange = key => {
-    {/* todo */}
+    {/* todo */
+    }
     const { match } = this.props;
     switch (key) {
       case 'score':
@@ -59,7 +47,7 @@ class Center extends PureComponent {
   };
 
   initStudentInfo = (studentId) => {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'student/fetchBasic',
       payload: {
@@ -78,9 +66,9 @@ class Center extends PureComponent {
         studentId: studentId,
       }
     });
-  }
+  };
 
-  handleComparedStuChange = (value)=>{
+  handleComparedStuChange = (value) => {
     //todo
   };
 
@@ -104,7 +92,7 @@ class Center extends PureComponent {
     const radarViewData = new DataView().source(studentInfo.grade);
     radarViewData.transform({
       type: "fold",
-      fields: ["最高分", "最低分","平均分"],
+      fields: ["最高分", "最低分", "平均分"],
       // 展开字段集
       key: "user",
       // key字段
@@ -117,6 +105,7 @@ class Center extends PureComponent {
         max: 100
       }
     };
+
     //词云的处理
     function getTextAttrs(cfg) {
       return _.assign(
@@ -231,278 +220,280 @@ class Center extends PureComponent {
         min: 0
       }
     };
-    const subData=[
-    {
-        title:"数学成绩变化趋势",
-        lineData:[
-{
-  year: "1991",
-  value: 3
-},
-{
-  year: "1992",
-  value: 4
-},
-{
-  year: "1993",
-  value: 3.5
-},
-{
-  year: "1994",
-  value: 5
-},
-{
-  year: "1995",
-  value: 4.9
-},
-{
-  year: "1996",
-  value: 6
-},
-{
-  year: "1997",
-  value: 7
-},
-{
-  year: "1998",
-  value: 9
-},
-{
-  year: "1999",
-  value: 13
-}
-]
-    },
-    {
-        title:"语文成绩变化趋势",
-        lineData:[
-{
-  year: "1991",
-  value: 3
-},
-{
-  year: "1992",
-  value: 4
-},
-{
-  year: "1993",
-  value: 3.5
-},
-{
-  year: "1994",
-  value: 5
-},
-{
-  year: "1995",
-  value: 4.9
-},
-{
-  year: "1996",
-  value: 6
-},
-{
-  year: "1997",
-  value: 7
-},
-{
-  year: "1998",
-  value: 9
-},
-{
-  year: "1999",
-  value: 13
-}
-]
-    },
-    {
-        title:"英语成绩变化趋势",
-        lineData:[
-{
-  year: "1991",
-  value: 3
-},
-{
-  year: "1992",
-  value: 4
-},
-{
-  year: "1993",
-  value: 3.5
-},
-{
-  year: "1994",
-  value: 5
-},
-{
-  year: "1995",
-  value: 4.9
-},
-{
-  year: "1996",
-  value: 6
-},
-{
-  year: "1997",
-  value: 7
-},
-{
-  year: "1998",
-  value: 9
-},
-{
-  year: "1999",
-  value: 13
-}
-]
-    },
-    {
-        title:"历史成绩变化趋势",
-        lineData:[
-{
-  year: "1991",
-  value: 3
-},
-{
-  year: "1992",
-  value: 4
-},
-{
-  year: "1993",
-  value: 3.5
-},
-{
-  year: "1994",
-  value: 5
-},
-{
-  year: "1995",
-  value: 4.9
-},
-{
-  year: "1996",
-  value: 6
-},
-{
-  year: "1997",
-  value: 7
-},
-{
-  year: "1998",
-  value: 9
-},
-{
-  year: "1999",
-  value: 13
-}
-]
-    },
-    {
-        title:"地理成绩变化趋势",
-        lineData:[
-{
-  year: "1991",
-  value: 3
-},
-{
-  year: "1992",
-  value: 4
-},
-{
-  year: "1993",
-  value: 3.5
-},
-{
-  year: "1994",
-  value: 5
-},
-{
-  year: "1995",
-  value: 4.9
-},
-{
-  year: "1996",
-  value: 6
-},
-{
-  year: "1997",
-  value: 7
-},
-{
-  year: "1998",
-  value: 9
-},
-{
-  year: "1999",
-  value: 13
-}
-]
-    }
-];
+    const subData = [
+      {
+        title: "数学成绩变化趋势",
+        lineData: [
+          {
+            year: "1991",
+            value: 3
+          },
+          {
+            year: "1992",
+            value: 4
+          },
+          {
+            year: "1993",
+            value: 3.5
+          },
+          {
+            year: "1994",
+            value: 5
+          },
+          {
+            year: "1995",
+            value: 4.9
+          },
+          {
+            year: "1996",
+            value: 6
+          },
+          {
+            year: "1997",
+            value: 7
+          },
+          {
+            year: "1998",
+            value: 9
+          },
+          {
+            year: "1999",
+            value: 13
+          }
+        ]
+      },
+      {
+        title: "语文成绩变化趋势",
+        lineData: [
+          {
+            year: "1991",
+            value: 3
+          },
+          {
+            year: "1992",
+            value: 4
+          },
+          {
+            year: "1993",
+            value: 3.5
+          },
+          {
+            year: "1994",
+            value: 5
+          },
+          {
+            year: "1995",
+            value: 4.9
+          },
+          {
+            year: "1996",
+            value: 6
+          },
+          {
+            year: "1997",
+            value: 7
+          },
+          {
+            year: "1998",
+            value: 9
+          },
+          {
+            year: "1999",
+            value: 13
+          }
+        ]
+      },
+      {
+        title: "英语成绩变化趋势",
+        lineData: [
+          {
+            year: "1991",
+            value: 3
+          },
+          {
+            year: "1992",
+            value: 4
+          },
+          {
+            year: "1993",
+            value: 3.5
+          },
+          {
+            year: "1994",
+            value: 5
+          },
+          {
+            year: "1995",
+            value: 4.9
+          },
+          {
+            year: "1996",
+            value: 6
+          },
+          {
+            year: "1997",
+            value: 7
+          },
+          {
+            year: "1998",
+            value: 9
+          },
+          {
+            year: "1999",
+            value: 13
+          }
+        ]
+      },
+      {
+        title: "历史成绩变化趋势",
+        lineData: [
+          {
+            year: "1991",
+            value: 3
+          },
+          {
+            year: "1992",
+            value: 4
+          },
+          {
+            year: "1993",
+            value: 3.5
+          },
+          {
+            year: "1994",
+            value: 5
+          },
+          {
+            year: "1995",
+            value: 4.9
+          },
+          {
+            year: "1996",
+            value: 6
+          },
+          {
+            year: "1997",
+            value: 7
+          },
+          {
+            year: "1998",
+            value: 9
+          },
+          {
+            year: "1999",
+            value: 13
+          }
+        ]
+      },
+      {
+        title: "地理成绩变化趋势",
+        lineData: [
+          {
+            year: "1991",
+            value: 3
+          },
+          {
+            year: "1992",
+            value: 4
+          },
+          {
+            year: "1993",
+            value: 3.5
+          },
+          {
+            year: "1994",
+            value: 5
+          },
+          {
+            year: "1995",
+            value: 4.9
+          },
+          {
+            year: "1996",
+            value: 6
+          },
+          {
+            year: "1997",
+            value: 7
+          },
+          {
+            year: "1998",
+            value: 9
+          },
+          {
+            year: "1999",
+            value: 13
+          }
+        ]
+      }
+    ];
     //呈现成绩信息的筛选
     const Option = Select.Option;
+
     function handleChange(value) {
       //todo 重新rander改变linedata的值
       console.log(`selected ${value}`);
     }
+
     //timelyconsumption数据
     const timelyConsumptionData = [
       {
-        time:'0时',
-        cost:0
+        time: '0时',
+        cost: 0
       },
-        {
-        time:'2时',
-        cost:0
+      {
+        time: '2时',
+        cost: 0
       },
-        {
-        time:'3时',
-        cost:30
+      {
+        time: '3时',
+        cost: 30
       },
-        {
-        time:'4时',
-        cost:50
+      {
+        time: '4时',
+        cost: 50
       },
-        {
-        time:'5时',
-        cost:70
+      {
+        time: '5时',
+        cost: 70
       }
     ];
     const dailyConsumptionData = [
       {
-        time:'星期一',
-        本周:0,
-        上周:20,
-        预测值:10
+        time: '星期一',
+        本周: 0,
+        上周: 20,
+        预测值: 10
       },
-        {
-        time:'星期二',
-        本周:70,
-        上周:30,
-        预测值:80
+      {
+        time: '星期二',
+        本周: 70,
+        上周: 30,
+        预测值: 80
       },
-        {
-        time:'星期三',
-        本周:30,
-        上周:30,
-        预测值:30
+      {
+        time: '星期三',
+        本周: 30,
+        上周: 30,
+        预测值: 30
       },
-        {
-        time:'星期四',
-        本周:10,
-        上周:5,
-        预测值:15
+      {
+        time: '星期四',
+        本周: 10,
+        上周: 5,
+        预测值: 15
       },
-        {
-        time:'星期五',
-        本周:20,
-        上周:30,
-        预测值:10
+      {
+        time: '星期五',
+        本周: 20,
+        上周: 30,
+        预测值: 10
       }
     ];
     const dConCost = new DataSet.View().source(dailyConsumptionData);
     dConCost.transform({
       type: "fold",
-      fields: ["本周", "上周","预测值"],
+      fields: ["本周", "上周", "预测值"],
       // 展开字段集
       key: "diftime",
       // key字段
@@ -522,12 +513,12 @@ class Center extends PureComponent {
         "2018年": 8,
         "2019年": 3,
       },
-    {
+      {
         name: "没穿校服",
         "2017年": 9,
         "2018年": 2,
         "2019年": 3,
-    }
+      }
     ];
     const attendChartData = new DataSet.View().source(attendanceChartData);
     attendChartData.transform({
@@ -538,113 +529,113 @@ class Center extends PureComponent {
       // key字段
       value: "违纪次数" // value字段
     });
-    const attendanceSumData={
-      lateNum:20,
-      leaveNum:5,
-      uniformNum:10,
-      inTime:'7点23分',
-      outTime:'12点10分'
+    const attendanceSumData = {
+      lateNum: 20,
+      leaveNum: 5,
+      uniformNum: 10,
+      inTime: '7点23分',
+      outTime: '12点10分'
     };
     //成绩对比数据
     const comparedScoreData = [
-  {
-    label: "数学",
-    series1: 80,
-    series2: 60
-  },
-  {
-    label: "语文",
-    series1: 110,
-    series2: 150
-  },
-  {
-    label: "历史",
-    series1: 95,
-    series2: 90
-  },
-  {
-    label: "物理",
-    series1: 50,
-    series2: 0
-  },
-  {
-    label: "地理",
-    series1: 70,
-    series2: 0
-  }
-];
+      {
+        label: "数学",
+        series1: 80,
+        series2: 60
+      },
+      {
+        label: "语文",
+        series1: 110,
+        series2: 150
+      },
+      {
+        label: "历史",
+        series1: 95,
+        series2: 90
+      },
+      {
+        label: "物理",
+        series1: 50,
+        series2: 0
+      },
+      {
+        label: "地理",
+        series1: 70,
+        series2: 0
+      }
+    ];
     const compScoreData = new DataSet.View().source(comparedScoreData).transform({
-  type: "fold",
-  fields: ["series1", "series2"],
-  // 展开字段集
-  key: "type",
-  // key字段
-  value: "value" // value字段
-});
+      type: "fold",
+      fields: ["series1", "series2"],
+      // 展开字段集
+      key: "type",
+      // key字段
+      value: "value" // value字段
+    });
     // 一卡通对比数据1 0-23小时的平均消费
     const timelyCompConsumptionData = [
       {
-        time:'0时',
-        cost1:0,
-        cost2:0,
+        time: '0时',
+        cost1: 0,
+        cost2: 0,
       },
-        {
-        time:'2时',
-        cost1:6,
-        cost2:3,
+      {
+        time: '2时',
+        cost1: 6,
+        cost2: 3,
 
       },
-        {
-        time:'3时',
-        cost1:7,
-        cost2:3,
+      {
+        time: '3时',
+        cost1: 7,
+        cost2: 3,
       },
-        {
-        time:'4时',
-        cost1:9,
-        cost2:10,
+      {
+        time: '4时',
+        cost1: 9,
+        cost2: 10,
       },
-        {
-        time:'5时',
-        cost1:20,
-        cost2:30,
+      {
+        time: '5时',
+        cost1: 20,
+        cost2: 30,
       }
     ];
     const timelyCompConsumpData = new DataSet.View().source(timelyCompConsumptionData).transform({
-  type: "fold",
-  fields: ["cost1", "cost2"],
-  // 展开字段集
-  key: "type",
-  // key字段
-  value: "value" // value字段
-});
+      type: "fold",
+      fields: ["cost1", "cost2"],
+      // 展开字段集
+      key: "type",
+      // key字段
+      value: "value" // value字段
+    });
 
     //  一卡通对比数据2 每天开销数据的对比
     const dailyCompConsumptionData = [
       {
-        time:'星期一',
-        该同学:0,
-        对比同学:20,
+        time: '星期一',
+        该同学: 0,
+        对比同学: 20,
       },
-        {
-        time:'星期二',
-        该同学:70,
-        对比同学:30,
+      {
+        time: '星期二',
+        该同学: 70,
+        对比同学: 30,
       },
-        {
-        time:'星期三',
-        该同学:30,
-        对比同学:30,
+      {
+        time: '星期三',
+        该同学: 30,
+        对比同学: 30,
       },
-        {
-        time:'星期四',
-        该同学:10,
-        对比同学:5,
+      {
+        time: '星期四',
+        该同学: 10,
+        对比同学: 5,
       },
-        {
-        time:'星期五',
-        该同学:20,
-        对比同学:30,
+      {
+        time: '星期五',
+        该同学: 20,
+        对比同学: 30,
       }
     ];
     const offlineChartData = [];
@@ -654,44 +645,43 @@ class Center extends PureComponent {
         A: Math.floor(Math.random() * 100) + 10,
         B: Math.floor(Math.random() * 100) + 10,
       });
-    };
+    }
+    ;
     //考勤对比数据
     const AttendData = [
-  {
-      name: "李晓明",
-      '迟到':3,
-      '早退':6,
-      '校服违纪':12,
-      '作弊':2
-  },
-  {
-      name: "黎莉莉",
-      '迟到':12,
-      '早退':0,
-      '校服违纪':6,
-      '作弊':0
-  }
-];
+      {
+        name: "李晓明",
+        '迟到': 3,
+        '早退': 6,
+        '校服违纪': 12,
+        '作弊': 2
+      },
+      {
+        name: "黎莉莉",
+        '迟到': 12,
+        '早退': 0,
+        '校服违纪': 6,
+        '作弊': 0
+      }
+    ];
     const compAdata = new DataSet.View().source(AttendData);
     compAdata.transform({
       type: "fold",
-      fields: ["迟到","早退","校服违纪","作弊"],
+      fields: ["迟到", "早退", "校服违纪", "作弊"],
       // 展开字段集
       key: "考勤类型",
       // key字段
       value: "次数" // value字段
     });
     //待对比学生的基本信息
-    const comparedStu={
-      id:12354,
-      Name:"李明明",
-      Nation:"汉族",
-      ClassName:"高一6班",
-      BornDate:"2003-12-9",
-      NativePlace:"山西省太原市"
+    const comparedStu = {
+      id: 12354,
+      Name: "李明明",
+      Nation: "汉族",
+      ClassName: "高一6班",
+      BornDate: "2003-12-9",
+      NativePlace: "山西省太原市"
     };
-
-
 
 
     return (
@@ -711,13 +701,13 @@ class Center extends PureComponent {
                       onSearch={(value) => this.initStudentInfo(value)}
                     />
                   </div>
-                  <Divider style={{ marginTop: 16 }} dashed />
+                  <Divider style={{ marginTop: 16 }} dashed/>
                   <div className={styles.avatarHolder}>
                     {/*词云*/}
                     <Suspense fallback={null}>
                       <WordCloud
-                      wordData={dv}
-                      scale={scale}
+                        wordData={dv}
+                        scale={scale}
                       />
                     </Suspense>
                     <div className={styles.name}>{studentInfo.name}</div>
@@ -726,19 +716,27 @@ class Center extends PureComponent {
                   {/*学生详细信息*/}
                   <div className={styles.detail}>
                     <p>
-                      <i className={`fa fa-group ${styles.iconStyle}`} />
+                      <i className={`fa fa-group ${styles.iconStyle}`}/>
                       {studentInfo.nation}
                     </p>
                     <p>
-                      <i className={`fa fa-birthday-cake ${styles.iconStyle}`} />
-                      {studentInfo.born_year}
+                      <i className={`fa fa fa-archive ${styles.iconStyle}`}/>
+                      {POLICY_TYPE_ALIAS[studentInfo.policy]}
                     </p>
                     <p>
-                      <i className={`fa fa-home ${styles.iconStyle}`} />
+                      <i className={`fa fa-birthday-cake ${styles.iconStyle}`}/>
+                      {studentInfo.born_year} 年
+                    </p>
+                    <p>
+                      <i className={`fa fa-home ${styles.iconStyle}`}/>
                       {studentInfo.native_place}
                     </p>
+                    <p>
+                      <i className={`fa ${studentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
+                      {SEX_MAP[studentInfo.sex]}
+                    </p>
                   </div>
-                  <Divider dashed />
+                  <Divider dashed/>
                   {/*todo 是否删除 雷达图*/}
                   <div>
                     <Chart
@@ -748,7 +746,7 @@ class Center extends PureComponent {
                       scale={cols}
                       forceFit
                     >
-                      <Coord type="polar" radius={0.8} />
+                      <Coord type="polar" radius={0.8}/>
                       <Axis
                         name="item"
                         line={null}
@@ -760,7 +758,7 @@ class Center extends PureComponent {
                           hideFirstLine: false
                         }}
                       />
-                      <Tooltip />
+                      <Tooltip/>
                       <Axis
                         name="score"
                         line={null}
@@ -773,8 +771,8 @@ class Center extends PureComponent {
                           alternateColor: "rgba(0, 0, 0, 0.04)"
                         }}
                       />
-                      <Legend name="user" marker="circle" offset={30} />
-                      <Geom type="line" position="item*score" color="user" size={2} />
+                      <Legend name="user" marker="circle" offset={30}/>
+                      <Geom type="line" position="item*score" color="user" size={2}/>
                       <Geom
                         type="point"
                         position="item*score"
@@ -789,18 +787,18 @@ class Center extends PureComponent {
                       />
                     </Chart>
                   </div>
-                  <Divider style={{ marginTop: 16 }} dashed />
+                  <Divider style={{ marginTop: 16 }} dashed/>
                   {/*老师信息*/}
                   <div className={styles.team}>
                     <div className={styles.teamTitle}>班级信息</div>
-                      <Row gutter={36}>
-                        {teacherInfo.map(item => (
-                          <Col key={item.id} lg={24} xl={12}>
-                            <Avatar size={32}><b>{item.courseName}</b></Avatar>
-                              {item.name}
-                          </Col>
-                        ))}
-                      </Row>
+                    <Row gutter={36}>
+                      {teacherInfo.map(item => (
+                        <Col key={item.id} lg={24} xl={12}>
+                          <Avatar size={32}><b>{item.courseName}</b></Avatar>
+                          {item.name}
+                        </Col>
+                      ))}
+                    </Row>
                   </div>
                 </div>
               ) : (
@@ -814,13 +812,13 @@ class Center extends PureComponent {
               bordered={false}
             >
               <Tabs defaultActiveKey="1">
-                <TabPane tab={<span><Icon type="apple" />成绩</span>} key="1">
+                <TabPane tab={<span><Icon type="apple"/>成绩</span>} key="1">
                   <Row type='flex' justify='end'>
                     <Col span={4}>
                       <Select defaultValue="lucy" style={{ width: 120 }} onChange={handleChange}>
                         <Option value="jack">绝对分</Option>
                         <Option value="lucy">离均值(Z分)</Option>
-                        <Option value="disabled" >标准分(T分)</Option>
+                        <Option value="disabled">标准分(T分)</Option>
                         <Option value="Yiminghe">等第</Option>
                         <Option value="range">排名</Option>
                       </Select>
@@ -828,31 +826,31 @@ class Center extends PureComponent {
                   </Row>
                   <Suspense fallback={<div>Loading...</div>}>
                     <ScoreLineChart
-                    lineData = {linedata}
-                    scale = {datascale}
-                    radarViewData ={radarViewData}
-                    cols = {cols}
-                    subData={subData}
-                  />
+                      lineData={linedata}
+                      scale={datascale}
+                      radarViewData={radarViewData}
+                      cols={cols}
+                      subData={subData}
+                    />
                   </Suspense>
                 </TabPane>
-                <TabPane tab={<span><Icon type="android" />一卡通</span>} key="2">
+                <TabPane tab={<span><Icon type="android"/>一卡通</span>} key="2">
                   <Suspense fallback={<div>Loading...</div>}>
                     <ConsumptionLineChart
-                    timelyConsumptionData = {timelyConsumptionData}
-                    dailyConsumptionData = {dConCost}
-                  />
+                      timelyConsumptionData={timelyConsumptionData}
+                      dailyConsumptionData={dConCost}
+                    />
                   </Suspense>
                 </TabPane>
-                <TabPane tab={<span><Icon type="android" />考勤</span>} key="3">
+                <TabPane tab={<span><Icon type="android"/>考勤</span>} key="3">
                   <Suspense fallback={<div>Loading...</div>}>
                     <AttendanceChart
-                    attendanceChartData = {attendChartData}
-                    attendanceSumData = {attendanceSumData}
-                  />
+                      attendanceChartData={attendChartData}
+                      attendanceSumData={attendanceSumData}
+                    />
                   </Suspense>
                 </TabPane>
-                <TabPane tab={<span><Icon type="android" />对比分析</span>} key="4">
+                <TabPane tab={<span><Icon type="android"/>对比分析</span>} key="4">
                   <div style={{ textAlign: 'center' }}>
                     <Input.Search
                       placeholder="请输入待对比学生ID"
@@ -861,36 +859,36 @@ class Center extends PureComponent {
                       onSearch={this.handleComparedStuChange}
                     />
                   </div>
-                    {/*基本信息对比*/}
-                  <Card title="基本信息对比" bordered={false} style={{ width: '100%'}}>
+                  {/*基本信息对比*/}
+                  <Card title="基本信息对比" bordered={false} style={{ width: '100%' }}>
                     <Row>
-                        <Col span={8}>
-                            <Suspense fallback={null}>
-                      <WordCloud
-                      wordData={dv}
-                      scale={scale}
-                      />
-                    </Suspense>
-                        </Col>
-                        <Col span={16}push={2}>
-                            {/*todo 待对比学生基本信息个人名片之类*/}
-                            <Card title={comparedStu.Name} bordered={false} hoverable={true}>
-                              <p>学生ID: {comparedStu.id}</p>
-                              <p>民族: {comparedStu.Nation}</p>
-                              <p>出生年月: {comparedStu.BornDate}</p>
-                              <p>家庭住址: {comparedStu.NativePlace}</p>
-                              <p>所在班级: {comparedStu.ClassName}</p>
-                            </Card>
-                        </Col>
+                      <Col span={8}>
+                        <Suspense fallback={null}>
+                          <WordCloud
+                            wordData={dv}
+                            scale={scale}
+                          />
+                        </Suspense>
+                      </Col>
+                      <Col span={16} push={2}>
+                        {/*todo 待对比学生基本信息个人名片之类*/}
+                        <Card title={comparedStu.Name} bordered={false} hoverable={true}>
+                          <p>学生ID: {comparedStu.id}</p>
+                          <p>民族: {comparedStu.Nation}</p>
+                          <p>出生年月: {comparedStu.BornDate}</p>
+                          <p>家庭住址: {comparedStu.NativePlace}</p>
+                          <p>所在班级: {comparedStu.ClassName}</p>
+                        </Card>
+                      </Col>
                     </Row>
                   </Card>
                   <Suspense fallback={<div>Loading...</div>}>
                     <StuComparedChart
-                        comparedScoreData = {compScoreData}
-                        timelyComparedConsumptionData = {timelyCompConsumpData}
-                        dailyComparedConsumptionData = {offlineChartData}
-                        comparedAttendData = {compAdata}
-                  />
+                      comparedScoreData={compScoreData}
+                      timelyComparedConsumptionData={timelyCompConsumpData}
+                      dailyComparedConsumptionData={offlineChartData}
+                      comparedAttendData={compAdata}
+                    />
                   </Suspense>
                 </TabPane>
               </Tabs>

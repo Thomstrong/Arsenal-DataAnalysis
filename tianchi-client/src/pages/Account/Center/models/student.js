@@ -3,7 +3,7 @@
  */
 
 import { fakeChartData, getStudentBasic, getStudentGrade, getStudentTeachers } from '@/services/api';
-import { COURSE_ALIAS } from "../constants";
+import { COURSE_ALIAS } from "@/constants";
 
 let data =
   [
@@ -483,7 +483,7 @@ export default {
             return {
               id: data.teacher_id,
               name: data.teacher__name,
-              courseName: data.course__name,
+              courseName: COURSE_ALIAS[data.course_id],
             };
           })
         } : state.studentInfo,

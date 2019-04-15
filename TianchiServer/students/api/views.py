@@ -49,5 +49,5 @@ class StudentViewSet(viewsets.ModelViewSet):
 
         teachers = TeachRecord.objects.filter(
             teach_class_id=last_study_record.stu_class.id
-        ).values('teacher_id', 'teacher__name', 'course__name')
+        ).values('teacher_id', 'teacher__name', 'course_id')
         return Response(teachers)
