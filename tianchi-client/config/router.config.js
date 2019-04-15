@@ -60,19 +60,19 @@ export default [
             routes: [
               {
                 path: '/account/center',
-                redirect: '/account/center/articles',
+                redirect: '/account/center/Score',
               },
               {
-                path: '/account/center/articles',
-                component: './Account/Center/Articles',
+                path: '/account/center/ECard',
+                component: './Account/center/ECard',
               },
               {
-                path: '/account/center/applications',
-                component: './Account/Center/Applications',
+                path: '/account/center/Attendance',
+                component: './Account/center/Attendance',
               },
               {
-                path: '/account/center/projects',
-                component: './Account/Center/Projects',
+                path: '/account/center/Compare',
+                component: './Account/center/Compare',
               },
             ],
           },

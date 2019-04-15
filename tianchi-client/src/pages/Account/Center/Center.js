@@ -41,16 +41,17 @@ class Center extends PureComponent {
   };
 
   onTabChange = key => {
+    {/* todo */}
     const { match } = this.props;
     switch (key) {
       case 'score':
-        router.push(`${match.url}/score`);
+        router.push(`${match.url}/Score`);
         break;
       case 'oneCard':
-        router.push(`${match.url}/oneCard`);
+        router.push(`${match.url}/ECard`);
         break;
       case 'attendance':
-        router.push(`${match.url}/attendance`);
+        router.push(`${match.url}/Attendance`);
         break;
       default:
         break;
