@@ -30,6 +30,9 @@ class Analysis extends Component {
       dispatch({
         type: 'chart/fetchDailyConsumptionData',
       });
+      dispatch({
+        type: 'chart/fetch',
+      });
     });
   }
 
