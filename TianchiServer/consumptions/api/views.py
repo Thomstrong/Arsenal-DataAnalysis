@@ -21,7 +21,6 @@ class ConsumptionViewSet(viewsets.ModelViewSet):
         consumptions = DailyConsumption.objects.filter(
             student__id=request.query_params.get('student_id')
         ).select_related('student')
-
         if not consumptions:
             return Response(status=status.HTTP_404_NOT_FOUND)
 

@@ -9,7 +9,7 @@ class Student(models.Model):
     sex = models.IntegerField(choices=SEX_TYPE_CHOICE, null=True)
     nation = models.CharField('民族', max_length=20, null=True)
     born_year = models.IntegerField('出生年份', null=True)
-    native_place = models.CharField('民族', max_length=255, null=True)
+    native_place = models.CharField('出生地', max_length=255, null=True)
     residence_type = models.IntegerField('家庭类型', choices=RESIDENCE_TYPE_CHOICE, null=True)
     policy = models.IntegerField('政治面貌', choices=POLICY_TYPE_CHOICE, null=True)
     is_stay_school = models.BooleanField('是否住校', default=False)

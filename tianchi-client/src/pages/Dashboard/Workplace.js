@@ -42,6 +42,7 @@ const links = [
   activities,
   chart,
   currentUserLoading: loading.effects['user/fetchCurrent'],
+  studentLoading: loading.effects['student/fetch'],
   projectLoading: loading.effects['project/fetchNotice'],
   activitiesLoading: loading.effects['activities/fetchList'],
 }))

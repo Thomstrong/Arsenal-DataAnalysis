@@ -77,6 +77,144 @@ models: () => [
         ]
       },
       {
+        "name": "studentInfo",
+        "icon": "user",
+        "path": "/account",
+        "routes": [
+          {
+            "path": "/account/center",
+            "name": "center",
+            "component": _dvaDynamic({
+  app: window.g_app,
+models: () => [
+  import(/* webpackChunkName: 'p__Account__Center__models__student.js' */'/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/pages/Account/Center/models/student.js').then(m => { return { namespace: 'student',...m.default}})
+],
+  component: () => import(/* webpackChunkName: "p__Account__Center__Center" */'../Account/Center/Center'),
+  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
+}),
+            "routes": [
+              {
+                "path": "/account/center",
+                "redirect": "/account/center/articles",
+                "exact": true
+              },
+              {
+                "path": "/account/center/articles",
+                "component": _dvaDynamic({
+  app: window.g_app,
+models: () => [
+  import(/* webpackChunkName: 'p__Account__Center__models__student.js' */'/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/pages/Account/Center/models/student.js').then(m => { return { namespace: 'student',...m.default}})
+],
+  component: () => import(/* webpackChunkName: "p__Account__Center__Center" */'../Account/Center/Articles'),
+  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
+}),
+                "exact": true
+              },
+              {
+                "path": "/account/center/applications",
+                "component": _dvaDynamic({
+  app: window.g_app,
+models: () => [
+  import(/* webpackChunkName: 'p__Account__Center__models__student.js' */'/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/pages/Account/Center/models/student.js').then(m => { return { namespace: 'student',...m.default}})
+],
+  component: () => import(/* webpackChunkName: "p__Account__Center__Center" */'../Account/Center/Applications'),
+  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
+}),
+                "exact": true
+              },
+              {
+                "path": "/account/center/projects",
+                "component": _dvaDynamic({
+  app: window.g_app,
+models: () => [
+  import(/* webpackChunkName: 'p__Account__Center__models__student.js' */'/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/pages/Account/Center/models/student.js').then(m => { return { namespace: 'student',...m.default}})
+],
+  component: () => import(/* webpackChunkName: "p__Account__Center__Center" */'../Account/Center/Projects'),
+  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
+}),
+                "exact": true
+              },
+              {
+                "component": () => React.createElement(require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
+              }
+            ]
+          },
+          {
+            "path": "/account/settings",
+            "name": "settings",
+            "component": _dvaDynamic({
+  app: window.g_app,
+models: () => [
+  import(/* webpackChunkName: 'p__Account__Settings__models__geographic.js' */'/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/pages/Account/Settings/models/geographic.js').then(m => { return { namespace: 'geographic',...m.default}})
+],
+  component: () => import(/* webpackChunkName: "p__Account__Settings__Info" */'../Account/Settings/Info'),
+  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
+}),
+            "routes": [
+              {
+                "path": "/account/settings",
+                "redirect": "/account/settings/base",
+                "exact": true
+              },
+              {
+                "path": "/account/settings/base",
+                "component": _dvaDynamic({
+  app: window.g_app,
+models: () => [
+  import(/* webpackChunkName: 'p__Account__Settings__models__geographic.js' */'/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/pages/Account/Settings/models/geographic.js').then(m => { return { namespace: 'geographic',...m.default}})
+],
+  component: () => import(/* webpackChunkName: "p__Account__Settings__Info" */'../Account/Settings/BaseView'),
+  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
+}),
+                "exact": true
+              },
+              {
+                "path": "/account/settings/security",
+                "component": _dvaDynamic({
+  app: window.g_app,
+models: () => [
+  import(/* webpackChunkName: 'p__Account__Settings__models__geographic.js' */'/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/pages/Account/Settings/models/geographic.js').then(m => { return { namespace: 'geographic',...m.default}})
+],
+  component: () => import(/* webpackChunkName: "p__Account__Settings__Info" */'../Account/Settings/SecurityView'),
+  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
+}),
+                "exact": true
+              },
+              {
+                "path": "/account/settings/binding",
+                "component": _dvaDynamic({
+  app: window.g_app,
+models: () => [
+  import(/* webpackChunkName: 'p__Account__Settings__models__geographic.js' */'/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/pages/Account/Settings/models/geographic.js').then(m => { return { namespace: 'geographic',...m.default}})
+],
+  component: () => import(/* webpackChunkName: "p__Account__Settings__Info" */'../Account/Settings/BindingView'),
+  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
+}),
+                "exact": true
+              },
+              {
+                "path": "/account/settings/notification",
+                "component": _dvaDynamic({
+  app: window.g_app,
+models: () => [
+  import(/* webpackChunkName: 'p__Account__Settings__models__geographic.js' */'/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/pages/Account/Settings/models/geographic.js').then(m => { return { namespace: 'geographic',...m.default}})
+],
+  component: () => import(/* webpackChunkName: "p__Account__Settings__Info" */'../Account/Settings/NotificationView'),
+  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
+}),
+                "exact": true
+              },
+              {
+                "component": () => React.createElement(require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
+              }
+            ]
+          },
+          {
+            "component": () => React.createElement(require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
+          }
+        ]
+      },
+      {
         "path": "/form",
         "icon": "form",
         "name": "form",
@@ -427,132 +565,6 @@ models: () => [
   LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
 }),
             "exact": true
-          },
-          {
-            "component": () => React.createElement(require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
-          }
-        ]
-      },
-      {
-        "name": "account",
-        "icon": "user",
-        "path": "/account",
-        "routes": [
-          {
-            "path": "/account/center",
-            "name": "center",
-            "component": _dvaDynamic({
-  
-  component: () => import(/* webpackChunkName: "p__Account__Center__Center" */'../Account/Center/Center'),
-  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
-}),
-            "routes": [
-              {
-                "path": "/account/center",
-                "redirect": "/account/center/articles",
-                "exact": true
-              },
-              {
-                "path": "/account/center/articles",
-                "component": _dvaDynamic({
-  
-  component: () => import(/* webpackChunkName: "p__Account__Center__Center" */'../Account/Center/Articles'),
-  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
-}),
-                "exact": true
-              },
-              {
-                "path": "/account/center/applications",
-                "component": _dvaDynamic({
-  
-  component: () => import(/* webpackChunkName: "p__Account__Center__Center" */'../Account/Center/Applications'),
-  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
-}),
-                "exact": true
-              },
-              {
-                "path": "/account/center/projects",
-                "component": _dvaDynamic({
-  
-  component: () => import(/* webpackChunkName: "p__Account__Center__Center" */'../Account/Center/Projects'),
-  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
-}),
-                "exact": true
-              },
-              {
-                "component": () => React.createElement(require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
-              }
-            ]
-          },
-          {
-            "path": "/account/settings",
-            "name": "settings",
-            "component": _dvaDynamic({
-  app: window.g_app,
-models: () => [
-  import(/* webpackChunkName: 'p__Account__Settings__models__geographic.js' */'/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/pages/Account/Settings/models/geographic.js').then(m => { return { namespace: 'geographic',...m.default}})
-],
-  component: () => import(/* webpackChunkName: "p__Account__Settings__Info" */'../Account/Settings/Info'),
-  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
-}),
-            "routes": [
-              {
-                "path": "/account/settings",
-                "redirect": "/account/settings/base",
-                "exact": true
-              },
-              {
-                "path": "/account/settings/base",
-                "component": _dvaDynamic({
-  app: window.g_app,
-models: () => [
-  import(/* webpackChunkName: 'p__Account__Settings__models__geographic.js' */'/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/pages/Account/Settings/models/geographic.js').then(m => { return { namespace: 'geographic',...m.default}})
-],
-  component: () => import(/* webpackChunkName: "p__Account__Settings__Info" */'../Account/Settings/BaseView'),
-  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
-}),
-                "exact": true
-              },
-              {
-                "path": "/account/settings/security",
-                "component": _dvaDynamic({
-  app: window.g_app,
-models: () => [
-  import(/* webpackChunkName: 'p__Account__Settings__models__geographic.js' */'/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/pages/Account/Settings/models/geographic.js').then(m => { return { namespace: 'geographic',...m.default}})
-],
-  component: () => import(/* webpackChunkName: "p__Account__Settings__Info" */'../Account/Settings/SecurityView'),
-  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
-}),
-                "exact": true
-              },
-              {
-                "path": "/account/settings/binding",
-                "component": _dvaDynamic({
-  app: window.g_app,
-models: () => [
-  import(/* webpackChunkName: 'p__Account__Settings__models__geographic.js' */'/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/pages/Account/Settings/models/geographic.js').then(m => { return { namespace: 'geographic',...m.default}})
-],
-  component: () => import(/* webpackChunkName: "p__Account__Settings__Info" */'../Account/Settings/BindingView'),
-  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
-}),
-                "exact": true
-              },
-              {
-                "path": "/account/settings/notification",
-                "component": _dvaDynamic({
-  app: window.g_app,
-models: () => [
-  import(/* webpackChunkName: 'p__Account__Settings__models__geographic.js' */'/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/pages/Account/Settings/models/geographic.js').then(m => { return { namespace: 'geographic',...m.default}})
-],
-  component: () => import(/* webpackChunkName: "p__Account__Settings__Info" */'../Account/Settings/NotificationView'),
-  LoadingComponent: require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/src/components/PageLoading/index').default,
-}),
-                "exact": true
-              },
-              {
-                "component": () => React.createElement(require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
-              }
-            ]
           },
           {
             "component": () => React.createElement(require('/Users/caiwenqiang/Documents/Tianchi-DataView/Arsenal-DataAnalysis/tianchi-client/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
