@@ -215,6 +215,57 @@ const getNotice = [
     memberLink: '',
   },
 ];
+const studentInfo= {
+    name: "黎莉莉",
+    className :"高一(3)班",
+    nation:'苗族',
+    BornDate:'2011-10-12',
+    NativePlace:'大西北',
+    teacherInfo: {
+      english:'李老师',
+      math:'彭老师',
+      chinese:'蔡老师',
+      history:'黄老师',
+      physics:'朴老师',
+      chemistry:'陈老师'
+    },
+    grade:[{
+        item: "数学",
+        最高分: 70,
+        平均分: 60,
+        最低分: 30
+      },
+      {
+        item: "语文",
+        最高分: 90,
+        平均分: 80,
+        最低分: 70
+      },
+      {
+        item: "英语",
+        最高分: 90,
+        平均分: 85,
+        最低分: 60
+      },
+      {
+        item: "历史",
+        最高分: 70,
+        平均分: 60,
+        最低分: 20
+      },
+      {
+        item: "政治",
+        最高分: 90,
+        平均分: 80,
+        最低分: 70
+      },
+      {
+        item: "物理",
+        最高分: 70,
+        平均分: 60,
+        最低分: 50
+    }]
+  };
 
 const getActivities = [
   {
@@ -319,6 +370,70 @@ const getActivities = [
 
 function getFakeCaptcha(req, res) {
   return res.json('captcha-xxx');
+};
+
+function getStudentInfo(req,res) {
+  const params = req.query;
+  const studentInfo= {
+    name: "黎莉莉",
+    className :"高一(3)班",
+    nation:'苗族',
+    BornDate:'2011-10-12',
+    NativePlace:'大西北',
+    teacherInfo: [
+        {
+          id: 'xxx1',logo:avatars[0],herf:'',
+          teacherName: '李老师'},
+        {id: 'xxx2',logo:avatars[1],herf:'',
+          teacherName: '李老师'},
+        {id: 'xxx3',logo:avatars[2],herf:'',
+          teacherName: '李老师'},
+        {id: 'xxx4',logo:avatars[3],herf:'',
+          teacherName: '李老师'},
+        {id: 'xxx5',logo:avatars[4],herf:'',
+          teacherName: '李老师'},
+        {id: 'xxx6',logo:avatars[5],herf:'',
+          teacherName: '李老师'},
+    ],
+    grade:[{
+        item: "数学",
+        最高分: 70,
+        平均分: 60,
+        最低分: 30
+      },
+      {
+        item: "语文",
+        最高分: 90,
+        平均分: 80,
+        最低分: 70
+      },
+      {
+        item: "英语",
+        最高分: 90,
+        平均分: 85,
+        最低分: 60
+      },
+      {
+        item: "历史",
+        最高分: 70,
+        平均分: 60,
+        最低分: 20
+      },
+      {
+        item: "政治",
+        最高分: 90,
+        平均分: 80,
+        最低分: 70
+      },
+      {
+        item: "物理",
+        最高分: 70,
+        平均分: 60,
+        最低分: 50
+    }]
+  };
+  // console.log(json(studentInfo));
+  return res.json(studentInfo);
 }
 
 export default {
@@ -333,4 +448,5 @@ export default {
   'GET /api/fake_list': getFakeList,
   'POST /api/fake_list': postFakeList,
   'GET /api/captcha': getFakeCaptcha,
+  'GET /api/students/student_info': getStudentInfo
 };

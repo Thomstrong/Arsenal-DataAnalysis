@@ -1,6 +1,19 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
 
+export async function getStudentBasic(studentId) {
+  return request(`/api/students/${studentId}/`);
+}
+
+export async function getStudentGrade(studentId) {
+  return request(`/api/students/${studentId}/grade/`);
+}
+
+export async function getStudentTeachers(studentId) {
+  return request(`/api/students/${studentId}/teachers/`);
+}
+
+
 export async function queryProjectNotice() {
   return request('/api/project/notice');
 }
@@ -50,8 +63,12 @@ export async function fakeSubmitForm(params) {
   });
 }
 
-export async function fakeChartData(studentId) {
+export async function fetchDailySumData(studentId) {
   return request(`/api/consumption/daily_sum/?student_id=${studentId}`);
+}
+
+export async function fakeChartData() {
+  return request(`/api/fake_chart_data`);
 }
 
 export async function queryTags() {

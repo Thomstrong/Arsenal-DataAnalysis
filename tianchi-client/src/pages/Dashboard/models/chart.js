@@ -1,4 +1,4 @@
-import { fakeChartData } from '@/services/api';
+import { fakeChartData, fetchDailySumData } from '@/services/api';
 
 export default {
   namespace: 'chart',
@@ -28,7 +28,7 @@ export default {
       });
     },
     * fetchDailyConsumptionData({ payload }, { call, put }) {
-      const response = yield call(fakeChartData, payload.studentId);
+      const response = yield call(fetchDailySumData, payload.studentId);
       yield put({
         type: 'save',
         payload: {
