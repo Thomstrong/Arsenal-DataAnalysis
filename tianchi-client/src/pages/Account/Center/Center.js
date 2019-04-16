@@ -721,7 +721,7 @@ class Center extends PureComponent {
                       showSearch
                       enterButton="搜索"
                       notFoundContent={studentListLoading ? <Spin size="small"/> :
-                        <Empty description={this.state.studentId? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
+                        <Empty description={this.state.studentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
                       }
                       size="large"
                       value={this.state.studentId}
