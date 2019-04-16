@@ -25,7 +25,7 @@ export default [
     routes: [
       // dashboard
       // { path: '/', redirect: '/dashboard/analysis', authority: ['admin', 'user'] },
-      { path: '/', redirect: '/dashboard/analysis'},
+      { path: '/', redirect: '/dashboard/analysis' },
       {
         path: '/dashboard',
         name: 'dashboard',
@@ -57,24 +57,24 @@ export default [
             path: '/account/center',
             name: 'center',
             component: './Account/Center/Center',
-            // routes: [
-            //   {
-            //     path: '/account/center',
-            //     redirect: '/account/center/Score',
-            //   },
-            //   {
-            //     path: '/account/center/ECard',
-            //     component: './Account/center/ECard',
-            //   },
-            //   {
-            //     path: '/account/center/Attendance',
-            //     component: './Account/center/Attendance',
-            //   },
-            //   {
-            //     path: '/account/center/Compare',
-            //     component: './Account/center/Compare',
-            //   },
-            // ],
+            routes: [
+              {
+                path: '/account/center',
+                redirect: '/account/center/Score',
+              },
+              {
+                path: '/account/center/Score',
+              },
+              {
+                path: '/account/center/ECard',
+              },
+              {
+                path: '/account/center/Attendance',
+              },
+              {
+                path: '/account/center/Compare',
+              },
+            ],
           },
           {
             path: '/account/settings',

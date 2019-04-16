@@ -41,14 +41,17 @@ class Center extends PureComponent {
     }
     const { match } = this.props;
     switch (key) {
-      case 'score':
+      case 'Score':
         router.push(`${match.url}/Score`);
         break;
-      case 'oneCard':
+      case 'ECard':
         router.push(`${match.url}/ECard`);
         break;
-      case 'attendance':
+      case 'Attendance':
         router.push(`${match.url}/Attendance`);
+        break;
+      case 'Compare':
+        router.push(`${match.url}/Compare`);
         break;
       default:
         break;
@@ -110,7 +113,6 @@ class Center extends PureComponent {
       children,
     } = this.props;
     // const {studentInfo} = student;
-
     //雷达图的处理
     const { DataView } = DataSet;
     const radarViewData = new DataView().source(studentInfo.grade);
@@ -707,6 +709,7 @@ class Center extends PureComponent {
       NativePlace: "山西省太原市"
     };
 
+    const defaultTab = _.difference(location.pathname.split('/'), match.path.split('/'))[0] || 'Score';
     return (
       <GridContent className={styles.userCenter}>
         <Row gutter={24}>
@@ -849,8 +852,8 @@ class Center extends PureComponent {
               className={styles.tabsCard}
               bordered={false}
             >
-              <Tabs defaultActiveKey="1">
-                <TabPane tab={<span><Icon type="apple"/>成绩</span>} key="1">
+              <Tabs defaultActiveKey={defaultTab} onChange={this.onTabChange}>
+                <TabPane tab={<span><Icon type="apple"/>成绩</span>} key="Score">
                   <Row type='flex' justify='end'>
                     <Col span={4}>
                       <Select defaultValue="lucy" style={{ width: 120 }} onChange={handleChange}>
@@ -872,7 +875,7 @@ class Center extends PureComponent {
                     />
                   </Suspense>
                 </TabPane>
-                <TabPane tab={<span><Icon type="android"/>一卡通</span>} key="2">
+                <TabPane tab={<span><Icon type="android"/>一卡通</span>} key="ECard">
                   <Suspense fallback={<div>Loading...</div>}>
                     <ConsumptionLineChart
                       timelyConsumptionData={timelyConsumptionData}
@@ -880,7 +883,7 @@ class Center extends PureComponent {
                     />
                   </Suspense>
                 </TabPane>
-                <TabPane tab={<span><Icon type="android"/>考勤</span>} key="3">
+                <TabPane tab={<span><Icon type="android"/>考勤</span>} key="Attendance">
                   <Suspense fallback={<div>Loading...</div>}>
                     <AttendanceChart
                       attendanceChartData={attendChartData}
@@ -888,7 +891,7 @@ class Center extends PureComponent {
                     />
                   </Suspense>
                 </TabPane>
-                <TabPane tab={<span><Icon type="android"/>对比分析</span>} key="4">
+                <TabPane tab={<span><Icon type="android"/>对比分析</span>} key="Compare">
                   <div style={{ textAlign: 'center' }}>
                     <Input.Search
                       placeholder="请输入待对比学生ID"
