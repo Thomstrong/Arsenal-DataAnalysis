@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
 import router from 'umi/router';
 import _ from 'lodash';
-import { Avatar, Card, Col, Divider, Icon, Input, Row, Select, Spin, Tabs } from 'antd';
+import { Avatar, Card, Col, Divider, Empty, Icon, Input, Row, Select, Spin, Tabs } from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './Center.less';
 import { Axis, Chart, Coord, Geom, Legend, Shape, Tooltip } from "bizcharts";
@@ -56,7 +56,6 @@ class Center extends PureComponent {
   };
 
   getStudentInfo = (studentId) => {
-    this.setState({ studentId });
     const { dispatch } = this.props;
     dispatch({
       type: 'student/fetchBasic',
@@ -79,6 +78,9 @@ class Center extends PureComponent {
   };
 
   getStudentList = (input) => {
+    if (!input) {
+      return;
+    }
     const { dispatch } = this.props;
     dispatch({
       type: 'student/fetchStudentList',
@@ -717,11 +719,13 @@ class Center extends PureComponent {
                     <Select
                       style={{ width: '100%' }}
                       showSearch
-                      placeholder="请输入学生ID"
                       enterButton="搜索"
-                      notFoundContent={studentListLoading ? <Spin size="small"/> : null}
+                      notFoundContent={studentListLoading ? <Spin size="small"/> :
+                        <Empty description={this.state.studentId? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
+                      }
                       size="large"
                       value={this.state.studentId}
+                      filterOption={false}
                       onSearch={(value) => this.getStudentList(value)}
                       onChange={(studentId) => this.setState({ studentId })}
                     >
@@ -759,7 +763,7 @@ class Center extends PureComponent {
                     </p>
                     <p>
                       <i className={`fa fa-birthday-cake ${styles.iconStyle}`}/>
-                      {studentInfo.born_year} 年
+                      {studentInfo.born_year > 0 ? studentInfo.born_year : '未知'} 年
                     </p>
                     <p>
                       <i className={`fa fa-home ${styles.iconStyle}`}/>
