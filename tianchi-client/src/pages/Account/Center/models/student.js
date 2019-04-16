@@ -2,7 +2,7 @@
  * Created by 胡晓慧 on 2019/4/12.
  */
 
-import { fakeChartData, getStudentBasic, getStudentGrade, getStudentTeachers } from '@/services/api';
+import { fakeChartData, getStudentBasic, getStudentGrade, getStudentTeachers, getStudentList } from '@/services/api';
 import { COURSE_ALIAS } from "@/constants";
 
 let data =
@@ -418,6 +418,7 @@ export default {
       grade: [],
       teacherInfo: [],
     },
+    studentList: [],
     wordCloudData: data,
     visitData: [],
     visitData2: [],
@@ -456,6 +457,13 @@ export default {
         payload: response
       });
     },
+    * fetchStudentList({ payload }, { call, put }) {
+      const response = yield call(getStudentList, payload.query);
+      yield put({
+        type: 'saveStudentList',
+        payload: response
+      });
+    },
   },
 
   reducers: {
@@ -472,6 +480,12 @@ export default {
           ...state.studentInfo,
           ...action.payload
         } : state.studentInfo,
+      };
+    },
+    saveStudentList(state, action) {
+      return {
+        ...state,
+        studentList: action.payload ? action.payload : state.studentInfo,
       };
     },
     saveStudentTeachers(state, action) {

@@ -2,7 +2,8 @@ import React, { PureComponent, Suspense } from 'react';
 import { connect } from 'dva';
 import { POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
 import router from 'umi/router';
-import { Avatar, Card, Col, Divider, Icon, Input, Row, Select, Tabs } from 'antd';
+import _ from 'lodash';
+import { Avatar, Card, Col, Divider, Empty, Icon, Input, Row, Select, Spin, Tabs } from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './Center.less';
 import { Axis, Chart, Coord, Geom, Legend, Shape, Tooltip } from "bizcharts";
@@ -16,16 +17,24 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
 
 
 @connect(({ loading, student }) => ({
+  studentList: student.studentList,
   studentInfo: student.studentInfo,
   wordCloudData: student.wordCloudData,
   loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchGrade'],
+  studentListLoading: loading.effects['student/fetchStudentList'],
 }))
 class Center extends PureComponent {
-  state = {
-    newTags: [],
-    inputVisible: false,
-    inputValue: '',
-  };
+  constructor() {
+    super();
+    this.state = {
+      newTags: [],
+      inputVisible: false,
+      inputValue: '',
+      studentId: '',
+    };
+    this.getStudentList = _.debounce(this.getStudentList, 800);
+  }
+
 
   onTabChange = key => {
     {/* todo */
@@ -46,7 +55,7 @@ class Center extends PureComponent {
     }
   };
 
-  initStudentInfo = (studentId) => {
+  getStudentInfo = (studentId) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'student/fetchBasic',
@@ -68,6 +77,19 @@ class Center extends PureComponent {
     });
   };
 
+  getStudentList = (input) => {
+    if (!input) {
+      return;
+    }
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'student/fetchStudentList',
+      payload: {
+        query: input
+      }
+    });
+  };
+
   handleComparedStuChange = (value) => {
     //todo
   };
@@ -77,6 +99,8 @@ class Center extends PureComponent {
     const {
       studentInfo,
       wordCloudData,
+      studentList,
+      studentListLoading,
       listLoading,
       // currentUser,
       studentLoading,
@@ -683,7 +707,6 @@ class Center extends PureComponent {
       NativePlace: "山西省太原市"
     };
 
-
     return (
       <GridContent className={styles.userCenter}>
         <Row gutter={24}>
@@ -693,13 +716,28 @@ class Center extends PureComponent {
                 <div>
                   {/*搜索栏*/}
                   <div style={{ textAlign: 'center' }}>
-                    <Input.Search
-                      placeholder="请输入学生ID"
+                    <Select
+                      style={{ width: '100%' }}
+                      showSearch
                       enterButton="搜索"
+                      notFoundContent={studentListLoading ? <Spin size="small"/> :
+                        <Empty description={this.state.studentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
+                      }
                       size="large"
-                      defaultValue={14375}
-                      onSearch={(value) => this.initStudentInfo(value)}
-                    />
+                      value={this.state.studentId}
+                      filterOption={false}
+                      onSearch={(value) => this.getStudentList(value)}
+                      onChange={(studentId) => this.setState({ studentId })}
+                    >
+                      {studentList.map((student) => (
+                        <Option
+                          onClick={(value) => this.getStudentInfo(value.key)}
+                          value={student.id}
+                        >
+                          {`${student.id}-${student.name}`}
+                        </Option>
+                      ))}
+                    </Select>
                   </div>
                   <Divider style={{ marginTop: 16 }} dashed/>
                   <div className={styles.avatarHolder}>
@@ -725,7 +763,7 @@ class Center extends PureComponent {
                     </p>
                     <p>
                       <i className={`fa fa-birthday-cake ${styles.iconStyle}`}/>
-                      {studentInfo.born_year} 年
+                      {studentInfo.born_year > 0 ? studentInfo.born_year : '未知'} 年
                     </p>
                     <p>
                       <i className={`fa fa-home ${styles.iconStyle}`}/>
