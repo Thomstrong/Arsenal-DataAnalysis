@@ -13,6 +13,10 @@ export async function getStudentTeachers(studentId) {
   return request(`/api/students/${studentId}/teachers/`);
 }
 
+export async function getStudentList(query) {
+  return request(`/api/students/?query=${query}`);
+}
+
 
 export async function queryProjectNotice() {
   return request('/api/project/notice');

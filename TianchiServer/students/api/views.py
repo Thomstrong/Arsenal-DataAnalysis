@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from courses.models.course_record import CourseRecord
 from exams.models.exam_record import StudentExamRecord
-from students.api.serializers import StudentBasicInfoSerializer
+from students.api.serializers import StudentBasicInfoSerializer, StudentMiniSerializer
 from students.models.student import Student
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
@@ -14,7 +14,21 @@ from teachers.models.teach_record import TeachRecord
 
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
-    serializer_class = StudentBasicInfoSerializer
+
+    def get_serializer_class(self, *args, **kwargs):
+        if self.request.query_params.get('query', ''):
+            return StudentMiniSerializer
+        return StudentBasicInfoSerializer
+
+    def list(self, request, *args, **kwargs):
+        query = request.query_params.get('query', '')
+        if query:
+            q_filter = Q(id__startswith=query) | Q(name__contains=query)
+            students = self.queryset.filter(
+                q_filter,
+            )
+            return Response(self.get_serializer_class()(students, many=True).data)
+        return Response(status=400, data={'reason': '不可以获取全部列表哦'})
 
     @detail_route(
         methods=['GET'],
