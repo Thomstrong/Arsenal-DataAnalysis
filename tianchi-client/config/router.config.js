@@ -105,6 +105,23 @@ export default [
           },
         ],
       },
+      {
+        name: 'courseAnalysis',
+        icon: 'book',
+        path: '/course',
+        routes: [
+          {
+            path: '/course/elective',
+            name: 'elective',
+            component: './Course/Elective/Elective',
+          },
+          {
+            path: '/course/subject',
+            name: 'subject',
+            component: './Course/Subject/Subject',
+          },
+        ],
+      },
       // forms
       {
         path: '/form',
