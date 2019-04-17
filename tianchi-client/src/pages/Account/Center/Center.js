@@ -34,7 +34,7 @@ class Center extends PureComponent {
       inputValue: '',
       studentId: '',
     };
-    this.getStudentList = _.debounce(this.getStudentList, 1000);
+    this.getStudentList = _.debounce(this.getStudentList, 800);
   }
 
   onTabChange = key => {

@@ -11,7 +11,6 @@ from students.api.serializers import StudentBasicInfoSerializer, StudentMiniSeri
 from students.models.student import Student
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
-from utils.decorators import performance_analysis
 
 
 class StudentViewSet(viewsets.ModelViewSet):
@@ -68,7 +67,6 @@ class StudentViewSet(viewsets.ModelViewSet):
         ).values('teacher_id', 'teacher__name', 'course_id')
         return Response(teachers)
 
-    @performance_analysis(False)
     @detail_route(
         methods=['GET'],
     )
