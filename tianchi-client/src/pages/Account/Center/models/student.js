@@ -2,8 +2,15 @@
  * Created by 胡晓慧 on 2019/4/12.
  */
 
-import { fakeChartData, getStudentBasic, getStudentGrade, getStudentTeachers, getStudentList } from '@/services/api';
-import { COURSE_ALIAS } from "@/constants";
+import {
+  fakeChartData,
+  getKaoqinData,
+  getStudentBasic,
+  getStudentGrade,
+  getStudentList,
+  getStudentTeachers
+} from '@/services/api';
+import { COURSE_ALIAS, EVENT_TYPE_ALIAS } from "@/constants";
 
 let data =
   [
@@ -417,7 +424,10 @@ export default {
       name: '',
       grade: [],
       teacherInfo: [],
+      kaoqinData: [],
+      kaoqinSummary: [],
     },
+    termList: [],
     studentList: [],
     wordCloudData: data,
     visitData: [],
@@ -462,6 +472,14 @@ export default {
       yield put({
         type: 'saveStudentList',
         payload: response
+      });
+    },
+    * fetchKaoqinData({ payload }, { call, put }) {
+      const response = yield call(getKaoqinData, payload.studentId);
+      yield put({
+        type: 'saveKaoqinData',
+        payload: response,
+        termMap: payload.termMap
       });
     },
   },
@@ -518,6 +536,29 @@ export default {
           })
         } : state.studentInfo,
       };
+    },
+    saveKaoqinData(state, action) {
+      if (!action.payload) {
+        return state;
+      }
+      const termList = {};
+      const { termMap } = action;
+      const { summary, records } = action.payload;
+      state.studentInfo.kaoqinSummary = summary.map((data) => {
+        return {
+          'name': EVENT_TYPE_ALIAS[data.event__type_id],
+          'count': data.count
+        };
+      });
+      state.studentInfo.kaoqinData = records.map((data) => {
+        termList[termMap[data.term]] = 1;
+        return {
+          'name': EVENT_TYPE_ALIAS[data.event__type_id],
+          [termMap[data.term]]: data.count,
+        };
+      });
+      state.termList = Object.keys(termList);
+      return state;
     },
     clear() {
       return {

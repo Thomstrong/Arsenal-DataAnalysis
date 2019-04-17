@@ -1,15 +1,17 @@
 # Create your views here.
-from django.db.models import Max, Min, Avg, Q
+from django.db.models import Max, Min, Avg, Q, Count
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
 from courses.models.course_record import CourseRecord
 from exams.models.exam_record import StudentExamRecord
+from kaoqins.models.kaoqin_record import KaoqinRecord
 from students.api.serializers import StudentBasicInfoSerializer, StudentMiniSerializer
 from students.models.student import Student
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
+from utils.decorators import performance_analysis
 
 
 class StudentViewSet(viewsets.ModelViewSet):
@@ -26,7 +28,7 @@ class StudentViewSet(viewsets.ModelViewSet):
             q_filter = Q(id__startswith=query) | Q(name__contains=query)
             students = self.queryset.filter(
                 q_filter,
-            )
+            )[:50]
             return Response(self.get_serializer_class()(students, many=True).data)
         return Response(status=400, data={'reason': '不可以获取全部列表哦'})
 
@@ -59,9 +61,33 @@ class StudentViewSet(viewsets.ModelViewSet):
             term_id=9,
         ).select_related('stu_class').last()
         if not last_study_record:
-            return Response(status=404)
+            return Response([])
 
         teachers = TeachRecord.objects.filter(
             teach_class_id=last_study_record.stu_class.id
         ).values('teacher_id', 'teacher__name', 'course_id')
         return Response(teachers)
+
+    @performance_analysis(False)
+    @detail_route(
+        methods=['GET'],
+    )
+    def kaoqin(self, request, pk):
+        records = KaoqinRecord.objects.filter(
+            student_id=pk,
+            event_id__gte=9900100
+        ).values('event__type_id', 'term').annotate(
+            count=Count('id'),
+        ).order_by('term__start_year').order_by('term__order')
+
+        sumary = KaoqinRecord.objects.filter(
+            student_id=pk,
+            event_id__gte=9900100
+        ).values('event__type_id').annotate(
+            count=Count('event__type_id'),
+        )
+
+        return Response({
+            'records': records,
+            'summary': sumary,
+        })

@@ -16,11 +16,13 @@ const AttendanceChart = React.lazy(() => import('./AttendanceChart'));
 const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
 
 
-@connect(({ loading, student }) => ({
+@connect(({ loading, student, global }) => ({
   studentList: student.studentList,
   studentInfo: student.studentInfo,
+  termList: student.termList,
+  termMap: global.termMap,
   wordCloudData: student.wordCloudData,
-  loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchGrade'],
+  loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchGrade'] && loading.effects['student/fetchKaoqinData'],
   studentListLoading: loading.effects['student/fetchStudentList'],
 }))
 class Center extends PureComponent {
@@ -32,9 +34,8 @@ class Center extends PureComponent {
       inputValue: '',
       studentId: '',
     };
-    this.getStudentList = _.debounce(this.getStudentList, 800);
+    this.getStudentList = _.debounce(this.getStudentList, 1000);
   }
-
 
   onTabChange = key => {
     {/* todo */
@@ -78,6 +79,13 @@ class Center extends PureComponent {
         studentId: studentId,
       }
     });
+    dispatch({
+      type: 'student/fetchKaoqinData',
+      payload: {
+        studentId: studentId,
+        termMap: this.props.termMap
+      }
+    });
   };
 
   getStudentList = (input) => {
@@ -93,6 +101,26 @@ class Center extends PureComponent {
     });
   };
 
+  formatKaoqinData = (kaoqinData, termList) => {
+    if (!kaoqinData.length) {
+      return [];
+    }
+    const data = new DataSet.View().source(kaoqinData).transform({
+      type: "fold",
+      fields: termList,
+      key: "term",
+      value: "count"
+    }).transform({
+      type: 'filter',
+      callback(row) {
+        return row.count;
+      }
+    });
+    data.rows.sort((a, b) => {
+      return (b.term > a.term) ? -1 : 1;
+    });
+    return data;
+  };
   handleComparedStuChange = (value) => {
     //todo
   };
@@ -104,24 +132,17 @@ class Center extends PureComponent {
       wordCloudData,
       studentList,
       studentListLoading,
-      listLoading,
-      // currentUser,
-      studentLoading,
-      projectLoading,
+      termList,
+      loading,
       match,
       location,
-      children,
     } = this.props;
     // const {studentInfo} = student;
     //雷达图的处理
-    const { DataView } = DataSet;
-    const radarViewData = new DataView().source(studentInfo.grade);
-    radarViewData.transform({
+    const radarViewData = new DataSet.View().source(studentInfo.grade).transform({
       type: "fold",
       fields: ["最高分", "最低分", "平均分"],
-      // 展开字段集
       key: "user",
-      // key字段
       value: "score" // value字段
     });
     const teacherInfo = studentInfo.teacherInfo;
@@ -176,7 +197,7 @@ class Center extends PureComponent {
       rotate() {
         let random = ~~(Math.random() * 4) % 4;
 
-        if (random == 2) {
+        if (random === 2) {
           random = 0;
         }
 
@@ -526,42 +547,8 @@ class Center extends PureComponent {
       value: "cost" // value字段
     });
     //考勤的相关数据
-    const attendanceChartData = [
-      {
-        name: "早退",
-        "2017年": 18.9,
-        "2018年": 28.8,
-        "2019年": 39.3,
-      },
-      {
-        name: "迟到",
-        "2017年": 1,
-        "2018年": 8,
-        "2019年": 3,
-      },
-      {
-        name: "没穿校服",
-        "2017年": 9,
-        "2018年": 2,
-        "2019年": 3,
-      }
-    ];
-    const attendChartData = new DataSet.View().source(attendanceChartData);
-    attendChartData.transform({
-      type: "fold",
-      fields: ["2017年", "2018年", "2019年"],
-      // 展开字段集
-      key: "时间",
-      // key字段
-      value: "违纪次数" // value字段
-    });
-    const attendanceSumData = {
-      lateNum: 20,
-      leaveNum: 5,
-      uniformNum: 10,
-      inTime: '7点23分',
-      outTime: '12点10分'
-    };
+    const kaoqinData = this.formatKaoqinData(studentInfo.kaoqinData, termList);
+    const kaoqinSummary = studentInfo.kaoqinSummary;
     //成绩对比数据
     const comparedScoreData = [
       {
@@ -714,34 +701,32 @@ class Center extends PureComponent {
       <GridContent className={styles.userCenter}>
         <Row gutter={24}>
           <Col lg={7} md={24}>
-            <Card bordered={false} style={{ marginBottom: 24 }} loading={studentLoading}>
-              {studentInfo && Object.keys(studentInfo).length ? (
-                <div>
+            <Card bordered={false} style={{ marginBottom: 24 }} loading={loading}>
+              <Select
+                style={{ width: '100%', display: 'block' }}
+                showSearch
+                notFoundContent={studentListLoading ? <Spin size="small"/> :
+                  <Empty description={this.state.studentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
+                }
+                size="large"
+                value={this.state.studentId}
+                filterOption={false}
+                onSearch={(value) => this.getStudentList(value)}
+                onChange={(studentId) => this.setState({ studentId })}
+              >
+                {studentList.map((student) => (
+                  <Option
+                    onClick={(value) => this.getStudentInfo(value.key)}
+                    value={student.id}
+                    key={`student-${student.id}`}
+                  >
+                    {`${student.id}-${student.name}`}
+                  </Option>
+                ))}
+              </Select>
+              {studentInfo && studentInfo.name ? (
+                <React.Fragment>
                   {/*搜索栏*/}
-                  <div style={{ textAlign: 'center' }}>
-                    <Select
-                      style={{ width: '100%' }}
-                      showSearch
-                      enterButton="搜索"
-                      notFoundContent={studentListLoading ? <Spin size="small"/> :
-                        <Empty description={this.state.studentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
-                      }
-                      size="large"
-                      value={this.state.studentId}
-                      filterOption={false}
-                      onSearch={(value) => this.getStudentList(value)}
-                      onChange={(studentId) => this.setState({ studentId })}
-                    >
-                      {studentList.map((student) => (
-                        <Option
-                          onClick={(value) => this.getStudentInfo(value.key)}
-                          value={student.id}
-                        >
-                          {`${student.id}-${student.name}`}
-                        </Option>
-                      ))}
-                    </Select>
-                  </div>
                   <Divider style={{ marginTop: 16 }} dashed/>
                   <div className={styles.avatarHolder}>
                     {/*词云*/}
@@ -752,40 +737,35 @@ class Center extends PureComponent {
                       />
                     </Suspense>
                     <div className={styles.name}>{studentInfo.name}</div>
-                    <div>{studentInfo.className}</div>
                   </div>
                   {/*学生详细信息*/}
                   <div className={styles.detail}>
-                    <p>
-                      <i className={`fa fa-group ${styles.iconStyle}`}/>
+                    <p><i className={`fa fa-group ${styles.iconStyle}`}/>
                       {studentInfo.nation}
                     </p>
-                    <p>
-                      <i className={`fa fa fa-archive ${styles.iconStyle}`}/>
+                    <p><i className={`fa fa fa-archive ${styles.iconStyle}`}/>
                       {POLICY_TYPE_ALIAS[studentInfo.policy]}
                     </p>
-                    <p>
-                      <i className={`fa fa-birthday-cake ${styles.iconStyle}`}/>
+                    <p><i className={`fa fa-birthday-cake ${styles.iconStyle}`}/>
                       {studentInfo.born_year > 0 ? studentInfo.born_year : '未知'} 年
                     </p>
-                    <p>
-                      <i className={`fa fa-home ${styles.iconStyle}`}/>
+                    <p><i className={`fa fa-home ${styles.iconStyle}`}/>
                       {studentInfo.native_place}
                     </p>
-                    <p>
-                      <i className={`fa ${studentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
+                    <p><i className={`fa ${studentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
                       {SEX_MAP[studentInfo.sex]}
                     </p>
                   </div>
-                  <Divider dashed/>
-                  {/*todo 是否删除 雷达图*/}
-                  <div>
+
+                  {defaultTab !== 'Score' && <React.Fragment>
+                    <Divider dashed/>
                     <Chart
                       height={400}
                       data={radarViewData}
                       padding={[20, 20, 95, 20]}
                       scale={cols}
                       forceFit
+                      loading={loading}
                     >
                       <Coord type="polar" radius={0.8}/>
                       <Axis
@@ -827,7 +807,7 @@ class Center extends PureComponent {
                         }}
                       />
                     </Chart>
-                  </div>
+                  </React.Fragment>}
                   <Divider style={{ marginTop: 16 }} dashed/>
                   {/*老师信息*/}
                   <div className={styles.team}>
@@ -841,10 +821,8 @@ class Center extends PureComponent {
                       ))}
                     </Row>
                   </div>
-                </div>
-              ) : (
-                'loading...'
-              )}
+                </React.Fragment>
+              ) : <Empty description='请在上面👆搜索框中搜索学生信息！'/>}
             </Card>
           </Col>
           <Col lg={17} md={24}>
@@ -884,11 +862,13 @@ class Center extends PureComponent {
                   </Suspense>
                 </TabPane>
                 <TabPane tab={<span><Icon type="android"/>考勤</span>} key="Attendance">
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <AttendanceChart
-                      attendanceChartData={attendChartData}
-                      attendanceSumData={attendanceSumData}
-                    />
+                  <Suspense fallback={<Spin className='center'/>}>
+                    {termList.length ? <AttendanceChart
+                      loading={loading}
+                      kaoqinData={kaoqinData}
+                      termList={termList}
+                      kaoqinSummary={kaoqinSummary}
+                    /> : <Empty description='该同学暂无不良考勤数据'/>}
                   </Suspense>
                 </TabPane>
                 <TabPane tab={<span><Icon type="android"/>对比分析</span>} key="Compare">

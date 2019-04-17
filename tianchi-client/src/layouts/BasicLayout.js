@@ -59,6 +59,9 @@ class BasicLayout extends React.Component {
       type: 'menu/getMenuData',
       payload: { routes, path, authority },
     });
+    dispatch({
+      type: 'global/fetchTermMap',
+    });
   }
 
   getContext() {
