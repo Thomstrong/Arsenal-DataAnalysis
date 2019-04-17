@@ -25,7 +25,7 @@ export default [
     routes: [
       // dashboard
       // { path: '/', redirect: '/dashboard/analysis', authority: ['admin', 'user'] },
-      { path: '/', redirect: '/dashboard/analysis'},
+      { path: '/', redirect: '/dashboard/analysis' },
       {
         path: '/dashboard',
         name: 'dashboard',
@@ -111,9 +111,9 @@ export default [
         path: '/course',
         routes: [
           {
-            path: '/course/elective',
+            path: '/course/selection',
             name: 'elective',
-            component: './Course/Elective/Elective',
+            component: './Course/Selection/Selection',
           },
           {
             path: '/course/subject',
