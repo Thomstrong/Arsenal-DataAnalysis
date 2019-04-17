@@ -22,7 +22,8 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   termList: student.termList,
   termMap: global.termMap,
   wordCloudData: student.wordCloudData,
-  loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchGrade'] && loading.effects['student/fetchKaoqinData'],
+  loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchGrade'],
+  kaoqinLoading: loading.effects['student/fetchKaoqinData'],
   studentListLoading: loading.effects['student/fetchStudentList'],
 }))
 class Center extends PureComponent {
@@ -136,6 +137,7 @@ class Center extends PureComponent {
       loading,
       match,
       location,
+      kaoqinLoading
     } = this.props;
     // const {studentInfo} = student;
     //雷达图的处理
@@ -863,12 +865,12 @@ class Center extends PureComponent {
                 </TabPane>
                 <TabPane tab={<span><Icon type="android"/>考勤</span>} key="Attendance">
                   <Suspense fallback={<Spin className='center'/>}>
-                    {termList.length ? <AttendanceChart
-                      loading={loading}
+                    <AttendanceChart
+                      loading={kaoqinLoading}
                       kaoqinData={kaoqinData}
                       termList={termList}
                       kaoqinSummary={kaoqinSummary}
-                    /> : <Empty description='该同学暂无不良考勤数据'/>}
+                    />
                   </Suspense>
                 </TabPane>
                 <TabPane tab={<span><Icon type="android"/>对比分析</span>} key="Compare">
