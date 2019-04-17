@@ -17,6 +17,14 @@ export async function getStudentList(query) {
   return request(`/api/students/?query=${query}`);
 }
 
+export async function getKaoqinData(studentId) {
+  return request(`/api/students/${studentId}/kaoqin/`);
+}
+
+export async function getTermMap() {
+  return request(`/api/terms/`);
+}
+
 
 export async function queryProjectNotice() {
   return request('/api/project/notice');

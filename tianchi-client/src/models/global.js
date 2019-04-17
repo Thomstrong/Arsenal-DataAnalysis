@@ -1,4 +1,4 @@
-import { queryNotices } from '@/services/api';
+import { queryNotices, getTermMap } from '@/services/api';
 
 export default {
   namespace: 'global',
@@ -6,10 +6,11 @@ export default {
   state: {
     collapsed: false,
     notices: [],
+    termMap: {},
   },
 
   effects: {
-    *fetchNotices(_, { call, put, select }) {
+    * fetchNotices(_, { call, put, select }) {
       const data = yield call(queryNotices);
       yield put({
         type: 'saveNotices',
@@ -26,7 +27,7 @@ export default {
         },
       });
     },
-    *clearNotices({ payload }, { put, select }) {
+    * clearNotices({ payload }, { put, select }) {
       yield put({
         type: 'saveClearedNotices',
         payload,
@@ -43,7 +44,7 @@ export default {
         },
       });
     },
-    *changeNoticeReadState({ payload }, { put, select }) {
+    * changeNoticeReadState({ payload }, { put, select }) {
       const notices = yield select(state =>
         state.global.notices.map(item => {
           const notice = { ...item };
@@ -65,6 +66,13 @@ export default {
         },
       });
     },
+    * fetchTermMap({ payload }, { call, put }) {
+      const response = yield call(getTermMap);
+      yield put({
+        type: 'saveTermMap',
+        payload: response
+      });
+    }
   },
 
   reducers: {
@@ -78,6 +86,16 @@ export default {
       return {
         ...state,
         notices: payload,
+      };
+    },
+    saveTermMap(state, { payload }) {
+      let termMap = {};
+      payload.map((data) => {
+        termMap[data.id] = data.name;
+      });
+      return {
+        ...state,
+        termMap,
       };
     },
     saveClearedNotices(state, { payload }) {
