@@ -2,8 +2,6 @@
 
 from django.db import migrations, models
 
-# get each subexam's standard
-from django.db.models import Max
 from progress.bar import Bar
 
 

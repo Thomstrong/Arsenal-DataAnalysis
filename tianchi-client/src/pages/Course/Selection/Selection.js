@@ -298,6 +298,7 @@ class Selection extends PureComponent {
             <Col span={9} offset={1}>
               <Row>
                 <Select
+                  id='yujue-year'
                   defaultValue="2019"
                   style={{ width: 120, float: "right" }}
                   onChange={(year) => this.onYearChanged(year, 'fetchCoursePercents')}
@@ -375,7 +376,7 @@ class Selection extends PureComponent {
           {/*饼图柱状图显示分布比例*/}
           <Row>
             <Col span={16} offset={1}>
-              <Select defaultValue="2019" style={{ width: 120, float: "center" }} onChange={handleChangeCombin}>
+              <Select id='3in7-year' defaultValue="2019" style={{ width: 120, float: "center" }} onChange={handleChangeCombin}>
                 <Option key="bing20171" value="2017">2017年</Option>
                 <Option key="bing20181" value="2018">2018年</Option>
                 <Option key="bing20191" value="2019">2019年</Option>
