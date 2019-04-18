@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from consumptions.models import Consumption, DailyConsumption
+from consumptions.models import Consumption, DailyConsumption, HourlyConsumption
 from students.api.serializers import StudentMiniSerializer
 
 
@@ -16,6 +16,12 @@ class DailyConsumptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyConsumption
         fields = ('date', 'total_cost')
+
+
+class HourlyConsumptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HourlyConsumption
+        fields = ('date', 'hour', 'total_cost')
 
 
 class ConsumptionDailyDataSerializer(serializers.Serializer):

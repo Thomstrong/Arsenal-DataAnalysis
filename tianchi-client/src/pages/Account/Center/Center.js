@@ -1,4 +1,4 @@
-import React, { PureComponent, Suspense } from 'react';
+import React, { PureComponent, Suspense, Fragment } from 'react';
 import { connect } from 'dva';
 import { POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
 import router from 'umi/router';
@@ -721,7 +721,7 @@ class Center extends PureComponent {
                 ))}
               </Select>
               {studentInfo && studentInfo.name ? (
-                <React.Fragment>
+                <Fragment>
                   {/*搜索栏*/}
                   <Divider style={{ marginTop: 16 }} dashed/>
                   <div className={styles.avatarHolder}>
@@ -753,7 +753,7 @@ class Center extends PureComponent {
                     </p>
                   </div>
 
-                  {defaultTab !== 'Score' && <React.Fragment>
+                  {defaultTab !== 'Score' && <Fragment>
                     <Divider dashed/>
                     <Chart
                       height={400}
@@ -803,7 +803,7 @@ class Center extends PureComponent {
                         }}
                       />
                     </Chart>
-                  </React.Fragment>}
+                  </Fragment>}
                   <Divider style={{ marginTop: 16 }} dashed/>
                   {/*老师信息*/}
                   <div className={styles.team}>
@@ -817,7 +817,7 @@ class Center extends PureComponent {
                       ))}
                     </Row>
                   </div>
-                </React.Fragment>
+                </Fragment>
               ) : <Empty description='请在上面👆搜索框中搜索学生信息！'/>}
             </Card>
           </Col>

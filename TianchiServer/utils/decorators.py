@@ -39,7 +39,7 @@ def required_params(check='query_params', params=[]):
 
             for param in params:
                 if param not in data_set:
-                    return Response({'detail': u'请填写{0}'.format(param)}, status=400)
+                    return Response({'detail': u'需要参数{0}'.format(param)}, status=400)
 
             return view_func(instance, request, *args, **kwargs)
 
