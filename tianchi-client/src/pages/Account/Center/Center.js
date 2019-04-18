@@ -30,17 +30,12 @@ class Center extends PureComponent {
   constructor() {
     super();
     this.state = {
-      newTags: [],
-      inputVisible: false,
-      inputValue: '',
       studentId: '',
     };
     this.getStudentList = _.debounce(this.getStudentList, 800);
   }
 
   onTabChange = key => {
-    {/* todo */
-    }
     const { match } = this.props;
     switch (key) {
       case 'Score':
@@ -122,12 +117,12 @@ class Center extends PureComponent {
     });
     return data;
   };
+
   handleComparedStuChange = (value) => {
     //todo
   };
 
   render() {
-    const { newTags, inputVisible, inputValue } = this.state;
     const {
       studentInfo,
       wordCloudData,
@@ -139,7 +134,6 @@ class Center extends PureComponent {
       location,
       kaoqinLoading
     } = this.props;
-    // const {studentInfo} = student;
     //雷达图的处理
     const radarViewData = new DataSet.View().source(studentInfo.grade).transform({
       type: "fold",
@@ -833,29 +827,31 @@ class Center extends PureComponent {
               bordered={false}
             >
               <Tabs defaultActiveKey={defaultTab} onChange={this.onTabChange}>
-                <TabPane tab={<span><Icon type="apple"/>成绩</span>} key="Score">
-                  <Row type='flex' justify='end'>
-                    <Col span={4}>
-                      <Select defaultValue="lucy" style={{ width: 120 }} onChange={handleChange}>
-                        <Option value="jack">绝对分</Option>
-                        <Option value="lucy">离均值(Z分)</Option>
-                        <Option value="disabled">标准分(T分)</Option>
-                        <Option value="Yiminghe">等第</Option>
-                        <Option value="range">排名</Option>
-                      </Select>
-                    </Col>
-                  </Row>
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <ScoreLineChart
-                      lineData={linedata}
-                      scale={datascale}
-                      radarViewData={radarViewData}
-                      cols={cols}
-                      subData={subData}
-                    />
-                  </Suspense>
+                <TabPane tab={<span><Icon type="line-chart"/>成绩</span>} key="Score">
+                  {studentInfo && studentInfo.name ?
+                    <Suspense fallback={<div>Loading...</div>}>
+                      <Row type='flex' justify='end'>
+                        <Col span={4}>
+                          <Select defaultValue="lucy" style={{ width: 120 }} onChange={handleChange}>
+                            <Option value="jack">绝对分</Option>
+                            <Option value="lucy">离均值(Z分)</Option>
+                            <Option value="disabled">标准分(T分)</Option>
+                            <Option value="Yiminghe">等第</Option>
+                            <Option value="range">排名</Option>
+                          </Select>
+                        </Col>
+                      </Row>
+                      <ScoreLineChart
+                        lineData={linedata}
+                        scale={datascale}
+                        radarViewData={radarViewData}
+                        cols={cols}
+                        subData={subData}
+                      />
+                    </Suspense> : <Empty description='请在左侧搜索框中搜索学生数据'/>
+                  }
                 </TabPane>
-                <TabPane tab={<span><Icon type="android"/>一卡通</span>} key="ECard">
+                <TabPane tab={<span><Icon type="credit-card"/>一卡通</span>} key="ECard">
                   <Suspense fallback={<div>Loading...</div>}>
                     <ConsumptionLineChart
                       timelyConsumptionData={timelyConsumptionData}
@@ -863,7 +859,7 @@ class Center extends PureComponent {
                     />
                   </Suspense>
                 </TabPane>
-                <TabPane tab={<span><Icon type="android"/>考勤</span>} key="Attendance">
+                <TabPane tab={<span><i className={`fa fa-calendar-check-o`}/> 考勤</span>} key="Attendance">
                   <Suspense fallback={<Spin className='center'/>}>
                     <AttendanceChart
                       loading={kaoqinLoading}
@@ -873,7 +869,7 @@ class Center extends PureComponent {
                     />
                   </Suspense>
                 </TabPane>
-                <TabPane tab={<span><Icon type="android"/>对比分析</span>} key="Compare">
+                <TabPane tab={<span><i className="fa fa-window-restore"/> 对比分析</span>} key="Compare">
                   <div style={{ textAlign: 'center' }}>
                     <Input.Search
                       placeholder="请输入待对比学生ID"
