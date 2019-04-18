@@ -34,6 +34,7 @@ export const EVENT_TYPE_ALIAS = {
 export const SEX_MAP = {
   1: '男',
   2: '女',
+  null: '未知',
 };
 
 export const POLICY_TYPE = {

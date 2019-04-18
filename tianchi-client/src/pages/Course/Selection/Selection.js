@@ -3,137 +3,62 @@
  */
 //展示选课情况,包括各科目选课人数分布,及不同7选3的分布情况
 
-import React, { PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
 import { Card, Col, Row, Select } from 'antd';
 import DataSet from "@antv/data-set";
 import { Axis, Chart, Coord, Geom, Guide, Label, Legend, Tooltip, View } from "bizcharts";
+import { connect } from "dva";
 
+const { Option } = Select;
 
+@connect(({ loading, course }) => ({
+  distributions: course.distributions,
+  coursePercents: course.coursePercents,
+  totalStudents: course.totalStudents,
+  loading: loading.models.rule,
+}))
 class Selection extends PureComponent {
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'course/fetchSelectionDistribution',
+    });
+
+    dispatch({
+      type: `course/fetchCoursePercents`,
+      payload: {
+        year: 2019
+      }
+    });
+  }
+
+  onYearChanged = (year, type) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: `course/${type}`,
+      payload: {
+        year
+      }
+    });
+  };
+
   render() {
-    function handleChangeSubject(value) {
-      console.log(`selected ${value}`);
-    }
+    const { distributions, coursePercents, totalStudents } = this.props;
 
     function handleChangeCombin(value) {
       console.log(`selected ${value}`);
     }
 
-    const { DataView } = DataSet;
     const { Text } = Guide;
     //分组层叠图数据
-    const electiveColData = [
-      {
-        State: "物理",
-        "2017_男生": 310,
-        "2017_女生": 559,
-        "2018_男生": 259,
-        "2018_女生": 450,
-        "2019_男生": 123,
-        "2019_女生": 121,
-      },
-      {
-        State: "化学",
-        "2017_男生": 504,
-        "2017_女生": 339,
-        "2018_男生": 234,
-        "2018_女生": 219,
-        "2019_男生": 123,
-        "2019_女生": 159,
-      },
-      {
-        State: "生物",
-        "2017_男生": 323,
-        "2017_女生": 233,
-        "2018_男生": 234,
-        "2018_女生": 118,
-        "2019_男生": 272,
-        "2019_女生": 266,
-      },
-      {
-        State: "历史",
-        "2017_男生": 304,
-        "2017_女生": 239,
-        "2018_男生": 334,
-        "2018_女生": 318,
-        "2019_男生": 272,
-        "2019_女生": 266,
-      },
-      {
-        State: "政治",
-        "2017_男生": 304,
-        "2017_女生": 339,
-        "2018_男生": 234,
-        "2018_女生": 318,
-        "2019_男生": 372,
-        "2019_女生": 266,
-      },
-      {
-        State: "地理",
-        "2017_男生": 218,
-        "2017_女生": 55,
-        "2018_男生": 259,
-        "2018_女生": 450,
-        "2019_男生": 123,
-        "2019_女生": 121,
-      },
-      {
-        State: "技术",
-        "2017_男生": 323,
-        "2017_女生": 512,
-        "2018_男生": 263,
-        "2018_女生": 236,
-        "2019_男生": 123,
-        "2019_女生": 236,
-      }
-    ];
-    const category = [
-      "2017_男生",
-      "2017_女生",
-      "2018_男生",
-      "2018_女生",
-      "2019_男生",
-      "2019_女生"
-    ];
-    const eleColData = new DataSet.View().source(electiveColData)
-      .transform({
-        type: "fold",
-        fields: category,
-        key: "category",
-        value: "population",
-        retains: ["State"]
-      })
-      .transform({
-        type: "map",
-        callback: obj => {
-          const key = obj.category;
-          let type;
-
-          if (
-            key === "2017_男生" ||
-            key === "2017_女生"
-          ) {
-            type = "a";
-          } else if (
-            key === "2018_男生" ||
-            key === "2018_女生"
-          ) {
-            type = "b";
-          } else {
-            type = "c";
-          }
-          obj.type = type;
-          return obj;
-        }
-      });
     const colorMap = {
-      "2017_男生": "#E3F4BF",
-      "2017_女生": "#BEF7C8",
-      "2018_男生": "#86E6C8",
-      "2018_女生": "#36CFC9",
-      "2019_男生": "#209BDD",
-      "2019_女生": "#1581E6",
+      "2017_未知": "#E3F4BF",
+      "2017_女": "#BEF7C8",
+      "2018_未知": "#86E6C8",
+      "2018_女": "#36CFC9",
+      "2019_男": "#60ccf9",
+      "2019_女": "#f5aeae",
     };
     //玉珏图数据
     const radialData = [
@@ -170,6 +95,9 @@ class Selection extends PureComponent {
       percent: {
         min: 0,
         max: 1
+      },
+      count: {
+        max: totalStudents || 1000
       }
     };
     //7选3 人数数据,分组柱状图
@@ -294,7 +222,6 @@ class Selection extends PureComponent {
           ["M", parsePoints[2].x, parsePoints[2].y],
           ["L", chartWidth * 0.4, chartHeight - 70]
         ];
-        console.log(linePath); // 绘制线
 
         container.addShape("path", {
           attrs: {
@@ -314,31 +241,31 @@ class Selection extends PureComponent {
 
 
     return (
-      <div>
+      <Fragment>
         <Card title="各科目选课情况分布" bordered={true} style={{ width: '100%' }}>
           {/*分组堆叠*/}
           <Chart
             height={400}
-            data={eleColData}
+            data={distributions}
             padding={[20, 160, 80, 60]}
             forceFit
           >
             <Axis
-              name="population"
+              name="count"
             />
             <Legend position="right"/>
             <Tooltip/>
             <Geom
               type="interval"
-              position="State*population"
+              position="course*count"
               color={[
-                "category",
-                function (category) {
-                  return colorMap[category];
+                "sex",
+                function (sex) {
+                  return colorMap[sex];
                 }
               ]}
               tooltip={[
-                "category*population",
+                "sex*count",
                 (category, population) => {
                   return {
                     name: category,
@@ -349,7 +276,7 @@ class Selection extends PureComponent {
               adjust={[
                 {
                   type: "dodge",
-                  dodgeBy: "type",
+                  dodgeBy: "year",
                   // 按照 type 字段进行分组
                   marginRatio: 0.1 // 分组中各个柱子之间不留空隙
                 },
@@ -370,26 +297,31 @@ class Selection extends PureComponent {
             {/*玉珏图*/}
             <Col span={9} offset={1}>
               <Row>
-                <Select defaultValue="2019" style={{ width: 120, float: "right" }} onChange={handleChangeSubject}>
-                  <Option value="2017">2017年</Option>
-                  <Option value="2018">2018年</Option>
-                  <Option value="2019">2019年</Option>
+                <Select
+                  id='yujue-year'
+                  defaultValue="2019"
+                  style={{ width: 120, float: "right" }}
+                  onChange={(year) => this.onYearChanged(year, 'fetchCoursePercents')}
+                >
+                  <Option key={`course-percents-2017`} value="2017">2017年</Option>
+                  <Option key={`course-percents-2018`} value="2018">2018年</Option>
+                  <Option key={`course-percents-2019`} value="2019">2019年</Option>
                 </Select>
               </Row>
               <Row>
-                <Chart height={400} data={radialData} scale={radialcols} forceFit>
+                <Chart height={400} data={coursePercents} scale={radialcols} forceFit>
                   <Coord type="polar" innerRadius={0.1} transpose/>
-                  <Tooltip title="subject"/>
+                  <Tooltip title="course"/>
                   <Geom
                     type="interval"
-                    position="subject*percent"
+                    position="course*count"
                     color={["percent", "#BAE7FF-#1890FF-#0050B3"]}
                     tooltip={[
                       "percent",
                       val => {
                         return {
                           name: "占比",
-                          value: val * 100 + "%"
+                          value: `${val}%`
                         };
                       }
                     ]}
@@ -398,14 +330,14 @@ class Selection extends PureComponent {
                       stroke: "#fff"
                     }}
                   >
-                    <Label content="percent" offset={-5}/>
+                    <Label content="count" offset={-5}/>
                   </Geom>
                   <Guide>
-                    {radialData.map(obj => {
+                    {coursePercents.map(obj => {
                       return (
                         <Text
-                          position={[obj.subject, 0]}
-                          content={obj.subject + " "}
+                          position={[obj.course, 0]}
+                          content={obj.course + " "}
                           style={{
                             textAlign: "right"
                           }}
@@ -444,10 +376,10 @@ class Selection extends PureComponent {
           {/*饼图柱状图显示分布比例*/}
           <Row>
             <Col span={16} offset={1}>
-              <Select defaultValue="2019" style={{ width: 120, float: "center" }} onChange={handleChangeCombin}>
-                <Option value="2017">2017年</Option>
-                <Option value="2018">2018年</Option>
-                <Option value="2019">2019年</Option>
+              <Select id='3in7-year' defaultValue="2019" style={{ width: 120, float: "center" }} onChange={handleChangeCombin}>
+                <Option key="bing20171" value="2017">2017年</Option>
+                <Option key="bing20181" value="2018">2018年</Option>
+                <Option key="bing20191" value="2019">2019年</Option>
               </Select>
               <Chart
                 height={chartHeight}
@@ -560,7 +492,7 @@ class Selection extends PureComponent {
             </Col>
           </Row>
         </Card>
-      </div>
+      </Fragment>
     );
   }
 }

@@ -16,7 +16,7 @@ class ExamAdmin(admin.ModelAdmin):
 class StudentExamRecordAdmin(admin.ModelAdmin):
     list_display = ('id', 'student', 'sub_exam', 'score', 't_score', 'z_score', 'deng_di')
     search_fields = ('student__id', 'sub_exam__exam__name', 'sub_exam__course__name')
-    list_filter = ('sub_exam__exam__type__name','sub_exam__exam__name', 'sub_exam__course__name')
+    list_filter = ('sub_exam__exam__type__name', 'sub_exam__exam__name', 'sub_exam__course__name')
 
 
 @admin.register(SubExam)
@@ -29,8 +29,9 @@ class SubExamRecordAdmin(admin.ModelAdmin):
 @admin.register(ClassExamRecord)
 class ClassExamRecordAdmin(admin.ModelAdmin):
     list_display = ('stu_class', 'sub_exam', 'total_score', 'attend_count', 'highest_score', 'lowest_score')
-    search_fields = ('stu_class__id', 'sub_exam')
+    search_fields = ('stu_class__id',)
     list_filter = ('sub_exam',)
+
 
 @admin.register(ExamType)
 class ExamTypeAdmin(admin.ModelAdmin):

@@ -25,6 +25,14 @@ export async function getTermMap() {
   return request(`/api/terms/`);
 }
 
+export async function getCourseSelectionDistribution() {
+  return request(`/api/course_record/distribution/?type=selection`);
+}
+
+export async function getCoursePercent(year) {
+  return request(`/api/course_record/distribution/?type=course_percent&year=${year}`);
+}
+
 
 export async function queryProjectNotice() {
   return request('/api/project/notice');
