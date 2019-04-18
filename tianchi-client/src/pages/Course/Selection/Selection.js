@@ -127,6 +127,7 @@ class Selection extends PureComponent {
           return obj;
         }
       });
+    console.log(eleColData);
     const colorMap = {
       "2017_男生": "#E3F4BF",
       "2017_女生": "#BEF7C8",
@@ -294,7 +295,6 @@ class Selection extends PureComponent {
           ["M", parsePoints[2].x, parsePoints[2].y],
           ["L", chartWidth * 0.4, chartHeight - 70]
         ];
-        console.log(linePath); // 绘制线
 
         container.addShape("path", {
           attrs: {
@@ -371,9 +371,9 @@ class Selection extends PureComponent {
             <Col span={9} offset={1}>
               <Row>
                 <Select defaultValue="2019" style={{ width: 120, float: "right" }} onChange={handleChangeSubject}>
-                  <Option value="2017">2017年</Option>
-                  <Option value="2018">2018年</Option>
-                  <Option value="2019">2019年</Option>
+                  <Option key="yujue2017" value="2017">2017年</Option>
+                  <Option key="yujue2018" value="2018">2018年</Option>
+                  <Option key="yujue2019" value="2019">2019年</Option>
                 </Select>
               </Row>
               <Row>
@@ -445,9 +445,9 @@ class Selection extends PureComponent {
           <Row>
             <Col span={16} offset={1}>
               <Select defaultValue="2019" style={{ width: 120, float: "center" }} onChange={handleChangeCombin}>
-                <Option value="2017">2017年</Option>
-                <Option value="2018">2018年</Option>
-                <Option value="2019">2019年</Option>
+                <Option key="bing20171" value="2017">2017年</Option>
+                <Option key="bing20181" value="2018">2018年</Option>
+                <Option key="bing20191" value="2019">2019年</Option>
               </Select>
               <Chart
                 height={chartHeight}

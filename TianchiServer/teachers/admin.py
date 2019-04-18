@@ -13,4 +13,4 @@ class TeacherAdmin(admin.ModelAdmin):
 @admin.register(TeachRecord)
 class TeachRecordAdmin(admin.ModelAdmin):
     list_display = ('teacher', 'term', 'teach_class', 'course',)
-    search_fields = ('teacher__name', 'teacher__id')
+    search_fields = ('teacher__name', 'teacher__id', 'teach_class__id')
