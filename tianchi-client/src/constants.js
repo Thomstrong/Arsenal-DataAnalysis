@@ -20,6 +20,16 @@ export const COURSE_ALIAS = {
   1: '语',
 };
 
+export const WEEKDAY_ALIAS = {
+  7: '星期日',
+  6: '星期六',
+  5: '星期五',
+  4: '星期四',
+  3: '星期三',
+  2: '星期二',
+  1: '星期一',
+};
+
 export const EVENT_TYPE_ALIAS = {
   99005: '进校',
   99004: '离校',

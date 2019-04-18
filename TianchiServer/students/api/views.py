@@ -123,7 +123,8 @@ class StudentViewSet(viewsets.ModelViewSet):
         )
 
         return Response({
+            'date': date,
             'this_week_data': DailyConsumptionSerializer(this_week_data, many=True).data,
             'last_week_data': DailyConsumptionSerializer(last_week_data, many=True).data,
-            'hourly': HourlyConsumptionSerializer(hourly_data, many=True).data,
+            'hourly_data': HourlyConsumptionSerializer(hourly_data, many=True).data,
         })
