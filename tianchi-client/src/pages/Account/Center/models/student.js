@@ -11,7 +11,7 @@ import {
   getStudentList,
   getStudentTeachers,
 } from '@/services/api';
-import { COURSE_ALIAS, EVENT_TYPE_ALIAS, WEEKDAY_ALIAS } from "@/constants";
+import { COURSE_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, WEEKDAY_ALIAS } from "@/constants";
 
 let data =
   [
@@ -542,9 +542,9 @@ export default {
           grade: action.payload.map((data) => {
             return {
               'item': COURSE_ALIAS[data.sub_exam__course_id],
-              '最高分': data.highest,
-              '最低分': data.lowest,
-              '平均分': data.average,
+              [SCORE_LEVEL_ALIAS.highest]: Number(data.highest.toFixed(0)),
+              [SCORE_LEVEL_ALIAS.lowest]: Number(data.lowest.toFixed(0)),
+              [SCORE_LEVEL_ALIAS.average]: Number(data.average.toFixed(0)),
             };
           })
         } : state.studentInfo,

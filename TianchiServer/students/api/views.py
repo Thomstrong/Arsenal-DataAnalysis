@@ -37,25 +37,31 @@ class StudentViewSet(viewsets.ModelViewSet):
             return Response(self.get_serializer_class()(students, many=True).data)
         return Response(status=400, data={'reason': '不可以获取全部列表哦'})
 
+    @required_params(params=['type'])
     @detail_route(
         methods=['GET'],
     )
     def grade(self, request, pk):
-        selected_courses = CourseRecord.objects.filter(
-            student_id=pk
-        ).values_list('course_id', flat=True)
-        grade_filter = Q(sub_exam__course_id__in=selected_courses) | Q(sub_exam__course_id__in=[1, 2, 3])
-        exam_records = StudentExamRecord.objects.filter(
-            Q(student_id=pk),
-            grade_filter,
-            Q(score__gte=0)
-        ).order_by('sub_exam__course_id').values('sub_exam__course_id').annotate(
-            highest=Max('t_score'),
-            lowest=Min('t_score'),
-            average=Avg('t_score'),
-        )
+        type = request.query_params.get('type', '')
+        if not type:
+            return Response('type 输入有误', status=400)
 
-        return Response(exam_records)
+        if type == 'radar':
+            selected_courses = CourseRecord.objects.filter(
+                student_id=pk
+            ).values_list('course_id', flat=True)
+            grade_filter = Q(sub_exam__course_id__in=selected_courses) | Q(sub_exam__course_id__in=[1, 2, 3])
+            exam_records = StudentExamRecord.objects.filter(
+                Q(student_id=pk),
+                grade_filter,
+                Q(score__gte=0)
+            ).order_by('sub_exam__course_id').values('sub_exam__course_id').annotate(
+                highest=Max('t_score'),
+                lowest=Min('t_score'),
+                average=Avg('t_score'),
+            )
+
+            return Response(exam_records)
 
     @detail_route(
         methods=['GET'],

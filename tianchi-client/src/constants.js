@@ -63,3 +63,9 @@ export const POLICY_TYPE_ALIAS = {
   [POLICY_TYPE.other]: '民主党派',
 };
 
+export const SCORE_LEVEL_ALIAS = {
+  highest: '最高分',
+  lowest: '最低分',
+  average: '平均分',
+};
+

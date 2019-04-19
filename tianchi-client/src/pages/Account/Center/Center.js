@@ -1,6 +1,6 @@
 import React, { Fragment, PureComponent, Suspense } from 'react';
 import { connect } from 'dva';
-import { POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
+import { POLICY_TYPE_ALIAS, SCORE_LEVEL_ALIAS, SEX_MAP } from "@/constants";
 import router from 'umi/router';
 import _ from 'lodash';
 import { Affix, Avatar, Card, Col, DatePicker, Divider, Empty, Icon, Input, Row, Select, Spin, Tabs } from 'antd';
@@ -153,7 +153,7 @@ class Center extends PureComponent {
     //雷达图的处理
     const radarViewData = new DataSet.View().source(studentInfo.grade).transform({
       type: "fold",
-      fields: ["最高分", "最低分", "平均分"],
+      fields: Object.values(SCORE_LEVEL_ALIAS),
       key: "user",
       value: "score" // value字段
     });
@@ -274,11 +274,6 @@ class Center extends PureComponent {
         value: 13
       }
     ];
-    const datascale = {
-      value: {
-        min: 0
-      }
-    };
     const subData = [
       {
         title: "数学成绩变化趋势",
@@ -807,9 +802,7 @@ class Center extends PureComponent {
                       </Row>
                       <ScoreLineChart
                         lineData={linedata}
-                        scale={datascale}
                         radarViewData={radarViewData}
-                        cols={cols}
                         subData={subData}
                       />
                     </Suspense> : <Empty description='请在左侧搜索框中搜索学生数据'/>

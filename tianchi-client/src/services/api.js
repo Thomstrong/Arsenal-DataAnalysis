@@ -6,7 +6,7 @@ export async function getStudentBasic(studentId) {
 }
 
 export async function getStudentGrade(studentId) {
-  return request(`/api/students/${studentId}/grade/`);
+  return request(`/api/students/${studentId}/grade/?type=radar`);
 }
 
 export async function getStudentTeachers(studentId) {
