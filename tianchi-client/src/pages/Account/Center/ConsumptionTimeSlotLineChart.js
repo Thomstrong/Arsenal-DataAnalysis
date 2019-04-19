@@ -64,13 +64,19 @@ dv.transform({
 
 const scale = {
   now: {
-    min: 0
+    min: 0,max:20,
+    alias: '本周',
+    tickInterval: 2
   },
   last: {
-    min: 0
+    min: 0,max:20,
+    alias: '上周',
+    tickInterval: 2
   },
   future: {
-    min: 0
+    min: 0,max:20,
+    alias: '下周预测',
+    tickInterval: 2
   },
 };
 let chartIns = null;
@@ -146,44 +152,36 @@ const ConsumptionTimeSlotLineChart = memo(
                   }}
                 />
                 <Axis name="now"/>
-                <Axis name="last"  />
                 <Tooltip />
-                <Geom type={['difTime', (difTime)=>{
-                      if(difTime == 'now'){
-                        return 'interval';
-                      }
-                      return 'line';
-                    }]}
-                      position="time*cost" color={'difTime'}/>
-                {/*<Geom type="interval" position="time*now" color="#F182bd"/>*/}
-                {/*<Geom*/}
-                  {/*type="line"*/}
-                  {/*position="time*last"*/}
-                  {/*color="#3182bd"*/}
-                  {/*size={2}*/}
-                  {/*shape="smooth"*/}
-                {/*/>*/}
-                {/*<Geom*/}
-                  {/*type="point"*/}
-                  {/*position="time*last"*/}
-                  {/*color="#3182bd"*/}
-                  {/*size={2}*/}
-                  {/*shape="circle"*/}
-                {/*/>*/}
-                {/*<Geom*/}
-                  {/*type="line"*/}
-                  {/*position="time*future"*/}
-                  {/*color="#fdae6b"*/}
-                  {/*size={2}*/}
-                  {/*shape="smooth"*/}
-                {/*/>*/}
-                {/*<Geom*/}
-                  {/*type="point"*/}
-                  {/*position="time*future"*/}
-                  {/*color="#fdae6b"*/}
-                  {/*size={2}*/}
-                  {/*shape="circle"*/}
-                {/*/>*/}
+                <Geom type="interval" position="time*now" color="#F182bd"/>
+                <Geom
+                  type="line"
+                  position="time*last"
+                  color="#3182bd"
+                  size={2}
+                  shape="smooth"
+                />
+                <Geom
+                  type="point"
+                  position="time*last"
+                  color="#3182bd"
+                  size={2}
+                  shape="circle"
+                />
+                <Geom
+                  type="line"
+                  position="time*future"
+                  color="#fdae6b"
+                  size={2}
+                  shape="smooth"
+                />
+                <Geom
+                  type="point"
+                  position="time*future"
+                  color="#fdae6b"
+                  size={2}
+                  shape="circle"
+                />
               </Chart>
             </Col>
           </Row>
