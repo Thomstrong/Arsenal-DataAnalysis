@@ -7,7 +7,7 @@ import {
   getConsumption,
   getKaoqinData,
   getStudentBasic,
-  getStudentGrade,
+  getGrade,
   getStudentList,
   getStudentTeachers,
 } from '@/services/api';
@@ -424,10 +424,11 @@ export default {
     studentInfo: {
       id: '',
       name: '',
-      grade: [],
+      radarData: [],
       teacherInfo: [],
       kaoqinData: [],
       kaoqinSummary: [],
+      totalTrend: [],
     },
     termList: [],
     studentList: [],
@@ -459,10 +460,13 @@ export default {
         payload: response
       });
     },
-    * fetchGrade({ payload }, { call, put }) {
-      const response = yield call(getStudentGrade, payload.studentId);
+    * fetchRadarData({ payload }, { call, put }) {
+      const response = yield call(getGrade, {
+        ...payload,
+        type: 'radar'
+      });
       yield put({
-        type: 'saveStudentGrade',
+        type: 'saveRadarData',
         payload: response
       });
     },
@@ -495,6 +499,17 @@ export default {
         payload: response,
       });
     },
+    * fetchTotalTrend({ payload }, { call, put }) {
+      const response = yield call(getGrade, {
+        ...payload,
+        type: 'total_trend'
+      });
+      yield put({
+        type: 'saveTotalTrend',
+        payload: response,
+        termMap: payload.termMap
+      });
+    }
   },
 
   reducers: {
@@ -502,6 +517,23 @@ export default {
       return {
         ...state,
         ...payload,
+      };
+    },
+    saveTotalTrend(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        studentInfo: {
+          ...state.studentInfo,
+          totalTrend: payload.map(data => {
+            return {
+              exam: data.sub_exam__exam__name,
+              score: data.total_score
+            }
+          })
+        },
       };
     },
     saveStudentBasic(state, action) {
@@ -534,12 +566,12 @@ export default {
         } : state.studentInfo,
       };
     },
-    saveStudentGrade(state, action) {
+    saveRadarData(state, action) {
       return {
         ...state,
         studentInfo: action.payload ? {
           ...state.studentInfo,
-          grade: action.payload.map((data) => {
+          radarData: action.payload.map((data) => {
             return {
               'item': COURSE_ALIAS[data.sub_exam__course_id],
               [SCORE_LEVEL_ALIAS.highest]: Number(data.highest.toFixed(0)),

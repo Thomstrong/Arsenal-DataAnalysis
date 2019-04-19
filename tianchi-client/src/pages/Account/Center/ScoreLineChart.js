@@ -74,17 +74,29 @@ const ScoreLineChart = memo(
               <p style={{ textAlign: 'center' }}>
                 总分变化趋势
               </p>
-              <Axis name="year"/>
-              <Axis name="value"/>
+              <Axis
+                name="exam"
+                label={{
+                  offset: 30,
+                  formatter(text, item, index) {
+                    if(index % 2){
+                      return ''
+                    }
+                    const pos = text.length / 3;
+                    return `${text.slice(0, pos)}\n${text.slice(pos, 2 * pos)}\n${text.slice(2 * pos)}`;
+                  },
+                }}
+              />
+              <Axis name="score"/>
               <Tooltip
                 crosshairs={{
                   type: "y"
                 }}
               />
-              <Geom type="line" position="year*value" size={2}/>
+              <Geom type="line" position="exam*score" size={2}/>
               <Geom
                 type="point"
-                position="year*value"
+                position="exam*score"
                 size={4}
                 shape={"circle"}
                 style={{

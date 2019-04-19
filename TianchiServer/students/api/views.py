@@ -2,7 +2,7 @@
 from datetime import timedelta
 
 from dateutil.parser import parse as parse_date
-from django.db.models import Max, Min, Avg, Q, Count
+from django.db.models import Max, Min, Avg, Q, Count, Sum
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
@@ -16,7 +16,7 @@ from students.api.serializers import StudentBasicInfoSerializer, StudentMiniSeri
 from students.models.student import Student
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
-from utils.decorators import required_params
+from utils.decorators import required_params, performance_analysis
 
 
 class StudentViewSet(viewsets.ModelViewSet):
@@ -41,6 +41,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     @detail_route(
         methods=['GET'],
     )
+    @performance_analysis(True)
     def grade(self, request, pk):
         type = request.query_params.get('type', '')
         if not type:
@@ -62,6 +63,26 @@ class StudentViewSet(viewsets.ModelViewSet):
             )
 
             return Response(exam_records)
+
+        score_type = request.query_params.get('score_type', '')
+        score_types = ['t_score', 'z_score', 'score', 'deng_di']
+        if score_type not in score_types:
+            return Response('score_type must in {}'.format(','.join(score_types)), status=400)
+
+        if type == 'total_trend':
+            records = StudentExamRecord.objects.filter(
+                student_id=pk,
+                score__gt=0
+            ).order_by('sub_exam__started_at').values(
+                'sub_exam__exam__name'
+            ).annotate(
+                total_score=Sum(score_type) if not score_type == 'deng_di' else Avg(score_type)
+            ).values(
+                'sub_exam__exam__name',
+                'total_score'
+            )
+            print(records)
+            return Response(records)
 
     @detail_route(
         methods=['GET'],
