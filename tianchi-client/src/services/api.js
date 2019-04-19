@@ -21,8 +21,20 @@ export async function getKaoqinData(studentId) {
   return request(`/api/students/${studentId}/kaoqin/`);
 }
 
+export async function getConsumption({ studentId, date }) {
+  return request(`/api/students/${studentId}/consumptions/?date=${date}`);
+}
+
 export async function getTermMap() {
   return request(`/api/terms/`);
+}
+
+export async function getCourseSelectionDistribution() {
+  return request(`/api/course_record/distribution/?type=selection`);
+}
+
+export async function getCoursePercent(year) {
+  return request(`/api/course_record/distribution/?type=course_percent&year=${year}`);
 }
 
 

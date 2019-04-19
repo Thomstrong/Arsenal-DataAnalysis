@@ -1,9 +1,14 @@
 # Create your views here.
+from datetime import timedelta
+
+from dateutil.parser import parse as parse_date
 from django.db.models import Max, Min, Avg, Q, Count
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
+from consumptions.api.serializers import DailyConsumptionSerializer, HourlyConsumptionSerializer
+from consumptions.models import DailyConsumption, HourlyConsumption
 from courses.models.course_record import CourseRecord
 from exams.models.exam_record import StudentExamRecord
 from kaoqins.models.kaoqin_record import KaoqinRecord
@@ -11,6 +16,7 @@ from students.api.serializers import StudentBasicInfoSerializer, StudentMiniSeri
 from students.models.student import Student
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
+from utils.decorators import required_params
 
 
 class StudentViewSet(viewsets.ModelViewSet):
@@ -88,4 +94,37 @@ class StudentViewSet(viewsets.ModelViewSet):
         return Response({
             'records': records,
             'summary': sumary,
+        })
+
+    @required_params(params=['date'])
+    @detail_route(
+        methods=['GET'],
+    )
+    def consumptions(self, request, pk):
+        date = parse_date(request.query_params['date']).date()
+        daily_data = DailyConsumption.objects.filter(
+            student_id=pk,
+            date__range=[date - timedelta(days=7), date + timedelta(days=6)]
+        ).order_by('date')
+
+        last_week_data = []
+        i = 0
+        for data in daily_data:
+            if data.date < date:
+                last_week_data.append(data)
+                i += 1
+                continue
+            break
+        this_week_data = daily_data[i:]
+
+        hourly_data = HourlyConsumption.objects.filter(
+            date=date,
+            student_id=pk
+        )
+
+        return Response({
+            'date': date,
+            'this_week_data': DailyConsumptionSerializer(this_week_data, many=True).data,
+            'last_week_data': DailyConsumptionSerializer(last_week_data, many=True).data,
+            'hourly_data': HourlyConsumptionSerializer(hourly_data, many=True).data,
         })

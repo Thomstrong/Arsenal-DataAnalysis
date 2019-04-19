@@ -10,6 +10,7 @@ import { default as Pie } from './Pie';
 import { default as Radar } from './Radar';
 import { default as TagCloud } from './TagCloud';
 import { default as TimelineChart } from './TimelineChart';
+import { default as OneTimelineChart } from './OneTimelineChart';
 import { default as WaterWave } from './WaterWave';
 
 declare const yuan: (value: number | string) => string;
@@ -28,6 +29,7 @@ declare const Charts: {
   WaterWave: WaterWave;
   TagCloud: TagCloud;
   TimelineChart: TimelineChart;
+  OneTimelineChart: OneTimelineChart;
 };
 
 export {
@@ -45,4 +47,5 @@ export {
   WaterWave,
   TagCloud,
   TimelineChart,
+  OneTimelineChart,
 };

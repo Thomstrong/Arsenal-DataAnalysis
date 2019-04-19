@@ -4,13 +4,14 @@
 
 import {
   fakeChartData,
+  getConsumption,
   getKaoqinData,
   getStudentBasic,
   getStudentGrade,
   getStudentList,
-  getStudentTeachers
+  getStudentTeachers,
 } from '@/services/api';
-import { COURSE_ALIAS, EVENT_TYPE_ALIAS } from "@/constants";
+import { COURSE_ALIAS, EVENT_TYPE_ALIAS, WEEKDAY_ALIAS } from "@/constants";
 
 let data =
   [
@@ -421,6 +422,7 @@ export default {
 
   state: {
     studentInfo: {
+      id: '',
       name: '',
       grade: [],
       teacherInfo: [],
@@ -440,7 +442,11 @@ export default {
     salesTypeDataOnline: [],
     salesTypeDataOffline: [],
     radarData: [],
-    dailyConsumptionData: null,
+    consumptionData: {
+      hourly: [],
+      daily: [],
+      date: ''
+    },
     student: [],
     loading: false,
   },
@@ -480,6 +486,13 @@ export default {
         type: 'saveKaoqinData',
         payload: response,
         termMap: payload.termMap
+      });
+    },
+    * fetchConsumptionData({ payload }, { call, put }) {
+      const response = yield call(getConsumption, payload);
+      yield put({
+        type: 'saveConsumptionData',
+        payload: response,
       });
     },
   },
@@ -559,6 +572,43 @@ export default {
       });
       state.termList = Object.keys(termList);
       return state;
+    },
+    saveConsumptionData(state, action) {
+      if (!action.payload) {
+        return state;
+      }
+      const lastWeekData = action.payload.last_week_data;
+      const thisWeekData = action.payload.this_week_data;
+      const dailyData = [];
+      for (let data of lastWeekData) {
+        dailyData.push({
+          time: WEEKDAY_ALIAS[data.weekday],
+          diftime: "上周",
+          cost: -data.total_cost
+        });
+      }
+
+      for (let data of thisWeekData) {
+        dailyData.push({
+          time: WEEKDAY_ALIAS[data.weekday],
+          diftime: "本周",
+          cost: -data.total_cost
+        });
+      }
+
+      return {
+        ...state,
+        consumptionData: {
+          date: action.payload.date,
+          daily: dailyData,
+          hourly: action.payload.hourly_data.map(data => {
+            return {
+              hour: data.hour,
+              total_cost: -data.total_cost
+            };
+          })
+        }
+      };
     },
     clear() {
       return {
