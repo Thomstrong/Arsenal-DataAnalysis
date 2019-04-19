@@ -59,76 +59,142 @@ const DaySumConsumptionData = [
 const TimelyConsumptionData = [
   {
     time: '0时',
-    cost: 5
+    one: 5,
+    all:10
   },
   {
     time: '1时',
-    cost: 22
+    one: 22,
+    all:10
   },
   {
     time: '2时',
-    cost: 23
+    one: 23,
+    all:10
   },
   {
     time: '3时',
-    cost: 12
+    one: 12,
+    all:10
   },
   {
     time: '4时',
-    cost: 3
+    one: 3,
+    all: 3
   },
   {
     time: '5时',
-    cost: 2
+    one: 2,
+    all: 2
   },
   {
     time: '6时',
-    cost: 23
+    one: 23,
+    all: 23
   },
   {
     time: '7时',
-    cost: 33
+    one: 33,
+    all: 33
   },
 ]
+const scale = {
+  one: {
+    min: 0,
+    alias: '该同学',
+    tickInterval: 2
+  },
+  all: {
+    min: 0,
+    alias: '全校平均消费',
+    tickInterval: 2
+  }
+};
 
 const ConsumptionOverallLineChart = memo(
   ({timelyConsumptionData, dailyConsumptionData, date}) => (
     <React.Fragment>
       {/*两个有标题的card用来表示某时刻消费和对比消费*/}
       <Card title="总体消费情况一览" bordered={false} style={{width: '100%'}}>
-        <Card title="总体消费趋势" bordered={false} style={{width: '100%'}} hoverable={true}>
+        <Row>
+          <Col span={20}>
+            <Card title="总体消费趋势" bordered={false} style={{width: '100%'}} hoverable={true}>
           <OneTimelineChart
             height={300}
             data={DaySumConsumptionData}
           />
         </Card>
-        <Card title="不同时间点平均消费对比" bordered={false} style={{width: '100%'}} hoverable={true}>
+          </Col>
+          <Col span={3} offset={1}>
+            <Card title="总结" bordered={false} style={{width: '100%'}} hoverable={true}>
+              <p>该同学消费趋势比较稳定</p>
+            </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={3}>
+            <Card title="总结" bordered={false} style={{width: '100%'}} hoverable={true}>
+              <p>该同学消费水平属于本校消费的平均水平</p>
+            </Card>
+          </Col>
+          <Col span={20} offset={1}>
+            <Card title="不同时间点平均消费对比" bordered={false} style={{width: '100%'}} hoverable={true}>
           <Chart
             height={400}
             data={TimelyConsumptionData}
-            scale={{
-              cost: {
-                min: 0
-              },
-              year: {
-                tickInterval: 5
-              }
-            }}
+            scale={scale}
             forceFit
           >
-            <Legend/>
+             <Legend
+                  custom={true}
+                  allowAllCanceled={true}
+                  items={[
+                    {
+                      value: "该同学",
+                      marker: {
+                        symbol: "square",
+                        fill: "#0099CC",
+                        radius: 5
+                      }
+                    },
+                    {
+                      value: "全校平均消费",
+                      marker: {
+                        symbol: "hyphen",
+                        stroke: "#FF9900",
+                        radius: 5,
+                        lineWidth: 3
+                      }
+                    }
+                  ]}
+                  onClick={ev => {
+                    const item = ev.item;
+                    const value = item.value;
+                    const checked = ev.checked;
+                    const geoms = chartIns.getAllGeoms();
+
+                    for (let i = 0; i < geoms.length; i++) {
+                      const geom = geoms[i];
+
+                      if (geom.getYScale().field === value) {
+                        if (checked) {
+                          geom.show();
+                        } else {
+                          geom.hide();
+                        }
+                      }
+                    }
+                  }}
+                />
             <Axis name="time"/>
-            <Axis
-              name="cost"
-            />
-            <Tooltip
-              crosshairs={{
-                type: "y"
-              }}
-            />
-            <Geom type="interval" position="time*cost"/>
+            <Tooltip/>
+            <Geom type="interval" position="time*one" color="#0099CC"/>
+            <Geom type="line" position="time*all" color="#FF9900" size={2} shape="smooth"/>
+            <Geom type="point" position="time*all" color="#FF9900" size={3} shape="circle"/>
           </Chart>
         </Card>
+          </Col>
+        </Row>
       </Card>
     </React.Fragment>
   )

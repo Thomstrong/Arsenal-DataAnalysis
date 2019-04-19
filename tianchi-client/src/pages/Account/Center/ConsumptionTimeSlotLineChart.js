@@ -5,7 +5,7 @@ import React, {memo} from "react";
 import {Card, Col, Row} from 'antd';
 import {Axis, Chart, Geom, Legend, Tooltip} from "bizcharts";
 import DataSet from "@antv/data-set";
-
+//单天消费总额对比数据
 const data = [
   {
     time: "10:10",
@@ -50,18 +50,6 @@ const data = [
     future: 2
   }
 ];
-const ds = new DataSet();
-const dv = ds.createView().source(data);
-dv.transform({
-  type: "fold",
-  fields: ["now", "last","future"],
-  // 展开字段集
-  key: "difTime",
-  // key字段
-  value: "cost" // value字段
-});
-
-
 const scale = {
   now: {
     min: 0,max:20,
@@ -80,12 +68,145 @@ const scale = {
   },
 };
 let chartIns = null;
+//不同时间消费的对比数据
+const hourlyCompConsumptionData = [
+      {
+        hour: '0时',
+        全校同学: 0,
+        该同学: 0,
+      },
+      {
+        hour: '2时',
+        全校同学: 6,
+        该同学: 3,
+
+      },
+      {
+        hour: '3时',
+        全校同学: 7,
+        该同学: 3,
+      },
+      {
+        hour: '4时',
+        全校同学: 9,
+        该同学: 10,
+      },
+      {
+        hour: '5时',
+        全校同学: 20,
+        该同学: 30,
+      },
+  {
+        hour: '6时',
+        全校同学: 0,
+        该同学: 0,
+      },
+      {
+        hour: '7时',
+        全校同学: 6,
+        该同学: 3,
+
+      },
+      {
+        hour: '8时',
+        全校同学: 7,
+        该同学: 3,
+      },
+      {
+        hour: '9时',
+        全校同学: 9,
+        该同学: 10,
+      },
+      {
+        hour: '10时',
+        全校同学: 20,
+        该同学: 30,
+      },
+  {
+        hour: '11时',
+        全校同学: 0,
+        该同学: 0,
+      },
+      {
+        hour: '12时',
+        全校同学: 6,
+        该同学: 3,
+
+      },
+      {
+        hour: '13时',
+        全校同学: 7,
+        该同学: 3,
+      },
+      {
+        hour: '14时',
+        全校同学: 9,
+        该同学: 10,
+      },
+      {
+        hour: '15时',
+        全校同学: 20,
+        该同学: 30,
+      },
+  {
+        hour: '6时',
+        全校同学: 0,
+        该同学: 0,
+      },
+      {
+        hour: '17时',
+        全校同学: 6,
+        该同学: 3,
+
+      },
+      {
+        hour: '18时',
+        全校同学: 7,
+        该同学: 3,
+      },
+      {
+        hour: '19时',
+        全校同学: 9,
+        该同学: 10,
+      },
+      {
+        hour: '20时',
+        全校同学: 20,
+        该同学: 30,
+      },
+  {
+        hour: '21时',
+        全校同学: 0,
+        该同学: 0,
+      },
+      {
+        hour: '22时',
+        全校同学: 6,
+        该同学: 3,
+
+      },
+      {
+        hour: '23时',
+        全校同学: 7,
+        该同学: 3,
+      }
+    ];
+const hourlyCompConsumpData = new DataSet.View().source(hourlyCompConsumptionData).transform({
+      type: "fold",
+      fields: ["全校同学", "该同学"],
+      // 展开字段集
+      key: "user",
+      // key字段
+      value: "cost" // value字段
+    });
+
+
 
 const ConsumptionTimeSlotLineChart = memo(
   ({timelyConsumptionData, dailyConsumptionData, date}) => (
     <React.Fragment>
-      <Card title="各时期消费情况一览" bordered={false} style={{width: '100%'}} hoverable={true}>
-        <Card title="单天消费总额对比" bordered={false} style={{width: '100%'}}>
+      <Card title="各时期消费情况一览" bordered={false} style={{width: '100%'}}>
+        <Card title="单天消费总额对比" bordered={false} style={{width: '100%'}} hoverable={true}>
           <Row>
             <Col span={4}>
               {/*todo 文字分析,告警的触犯*/}
@@ -186,15 +307,14 @@ const ConsumptionTimeSlotLineChart = memo(
             </Col>
           </Row>
         </Card>
-        <Card title={`${date} 各时段的平均消费`} bordered={false} style={{width: '100%'}}>
+        <Card title={`${date} 各时段的平均消费`} bordered={false} style={{width: '100%'}} hoverable={true}>
           <Row>
             <Col span={20}>
-              {/*todo 可以加上datamarker*/}
               <Chart
                 height={400}
-                data={timelyConsumptionData}
+                data={hourlyCompConsumpData}
                 scale={{
-                  total_cost: {
+                  cost: {
                     min: 0
                   },
                   hour: {
@@ -205,29 +325,29 @@ const ConsumptionTimeSlotLineChart = memo(
 
                 }}
                 forceFit>
-                <Axis name="时间"/>
-                <Axis name="花费"/>
+                <Axis name="hour"/>
+                <Legend/>
                 <Tooltip
                   crosshairs={{
                     type: "y"
                   }}
                 />
-                <Geom type="line" position="hour*total_cost" size={2}/>
+                <Geom type="line" position="hour*cost" size={2} color={"user"}/>
                 <Geom
                   type="point"
-                  position="hour*total_cost"
+                  position="hour*cost"
                   size={4}
                   shape={"circle"}
                   style={{
-                    stroke: "#fff",
                     lineWidth: 1
                   }}
+                  color={"user"}
                 />
               </Chart>
             </Col>
             <Col span={4}>
               {/*todo 应该有一些实际总结,但我还不知道要总结什么*/}
-              <p>该同学情况还是很稳定的呀</p>
+              <p>该同学此段时刻的消费水平属于本校消费的平均水平</p>
               {/*文字分析*/}
             </Col>
           </Row>
