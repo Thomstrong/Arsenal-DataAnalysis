@@ -1,6 +1,6 @@
 import React, { Fragment, PureComponent, Suspense } from 'react';
 import { connect } from 'dva';
-import { POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
+import { POLICY_TYPE_ALIAS, SCORE_LEVEL_ALIAS, SEX_MAP } from "@/constants";
 import router from 'umi/router';
 import _ from 'lodash';
 import { Affix, Avatar, Card, Col, DatePicker, Divider, Empty, Icon, Input, Row, Select, Spin, Tabs } from 'antd';
@@ -24,7 +24,7 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   termList: student.termList,
   termMap: global.termMap,
   wordCloudData: student.wordCloudData,
-  loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchGrade'],
+  loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchRadarData'],
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
   consumptionData: student.consumptionData,
   studentListLoading: loading.effects['student/fetchStudentList'],
@@ -35,6 +35,7 @@ class Center extends PureComponent {
     super();
     this.state = {
       studentId: '',
+      scoreType: 'score',
     };
     this.getStudentList = _.debounce(this.getStudentList, 800);
   }
@@ -68,11 +69,27 @@ class Center extends PureComponent {
       }
     });
     dispatch({
-      type: 'student/fetchGrade',
+      type: 'student/fetchRadarData',
       payload: {
         studentId: studentId,
       }
     });
+    dispatch({
+      type: 'student/fetchTotalTrend',
+      payload: {
+        studentId: studentId,
+        scoreType: this.state.scoreType
+      }
+    });
+
+    dispatch({
+      type: 'student/fetchSubTrends',
+      payload: {
+        studentId: studentId,
+        scoreType: this.state.scoreType
+      }
+    });
+
     dispatch({
       type: 'student/fetchTeacher',
       payload: {
@@ -136,6 +153,29 @@ class Center extends PureComponent {
       }
     });
   };
+  onScoreTypeChange = (scoreType) => {
+    const { dispatch, studentInfo } = this.props;
+    const studentId = studentInfo.id;
+    dispatch({
+      type: 'student/fetchTotalTrend',
+      payload: {
+        studentId: studentId,
+        scoreType: scoreType
+      }
+    });
+    dispatch({
+      type: 'student/fetchSubTrends',
+      payload: {
+        studentId: studentId,
+        scoreType: scoreType
+      }
+    });
+    this.setState({ scoreType });
+  };
+
+  handleChangeTime = (value) => {
+    console.log(`selected ${value}`);
+  };
 
   render() {
     const {
@@ -151,9 +191,9 @@ class Center extends PureComponent {
       kaoqinLoading
     } = this.props;
     //雷达图的处理
-    const radarViewData = new DataSet.View().source(studentInfo.grade).transform({
+    const radarViewData = new DataSet.View().source(studentInfo.radarData).transform({
       type: "fold",
-      fields: ["最高分", "最低分", "平均分"],
+      fields: Object.values(SCORE_LEVEL_ALIAS),
       key: "user",
       value: "score" // value字段
     });
@@ -236,269 +276,20 @@ class Center extends PureComponent {
     //tab相关
     const TabPane = Tabs.TabPane;
     //成绩相关,linedata表示总成绩,subData表示每个学科的成绩列表
-    const linedata = [
-      {
-        year: "1991",
-        value: 3
-      },
-      {
-        year: "1992",
-        value: 4
-      },
-      {
-        year: "1993",
-        value: 3.5
-      },
-      {
-        year: "1994",
-        value: 5
-      },
-      {
-        year: "1995",
-        value: 4.9
-      },
-      {
-        year: "1996",
-        value: 6
-      },
-      {
-        year: "1997",
-        value: 7
-      },
-      {
-        year: "1998",
-        value: 9
-      },
-      {
-        year: "1999",
-        value: 13
-      }
-    ];
-    const datascale = {
-      value: {
-        min: 0
-      }
-    };
-    const subData = [
-      {
-        title: "数学成绩变化趋势",
-        lineData: [
-          {
-            year: "1991",
-            value: 3
-          },
-          {
-            year: "1992",
-            value: 4
-          },
-          {
-            year: "1993",
-            value: 3.5
-          },
-          {
-            year: "1994",
-            value: 5
-          },
-          {
-            year: "1995",
-            value: 4.9
-          },
-          {
-            year: "1996",
-            value: 6
-          },
-          {
-            year: "1997",
-            value: 7
-          },
-          {
-            year: "1998",
-            value: 9
-          },
-          {
-            year: "1999",
-            value: 13
-          }
-        ]
-      },
-      {
-        title: "语文成绩变化趋势",
-        lineData: [
-          {
-            year: "1991",
-            value: 3
-          },
-          {
-            year: "1992",
-            value: 4
-          },
-          {
-            year: "1993",
-            value: 3.5
-          },
-          {
-            year: "1994",
-            value: 5
-          },
-          {
-            year: "1995",
-            value: 4.9
-          },
-          {
-            year: "1996",
-            value: 6
-          },
-          {
-            year: "1997",
-            value: 7
-          },
-          {
-            year: "1998",
-            value: 9
-          },
-          {
-            year: "1999",
-            value: 13
-          }
-        ]
-      },
-      {
-        title: "英语成绩变化趋势",
-        lineData: [
-          {
-            year: "1991",
-            value: 3
-          },
-          {
-            year: "1992",
-            value: 4
-          },
-          {
-            year: "1993",
-            value: 3.5
-          },
-          {
-            year: "1994",
-            value: 5
-          },
-          {
-            year: "1995",
-            value: 4.9
-          },
-          {
-            year: "1996",
-            value: 6
-          },
-          {
-            year: "1997",
-            value: 7
-          },
-          {
-            year: "1998",
-            value: 9
-          },
-          {
-            year: "1999",
-            value: 13
-          }
-        ]
-      },
-      {
-        title: "历史成绩变化趋势",
-        lineData: [
-          {
-            year: "1991",
-            value: 3
-          },
-          {
-            year: "1992",
-            value: 4
-          },
-          {
-            year: "1993",
-            value: 3.5
-          },
-          {
-            year: "1994",
-            value: 5
-          },
-          {
-            year: "1995",
-            value: 4.9
-          },
-          {
-            year: "1996",
-            value: 6
-          },
-          {
-            year: "1997",
-            value: 7
-          },
-          {
-            year: "1998",
-            value: 9
-          },
-          {
-            year: "1999",
-            value: 13
-          }
-        ]
-      },
-      {
-        title: "地理成绩变化趋势",
-        lineData: [
-          {
-            year: "1991",
-            value: 3
-          },
-          {
-            year: "1992",
-            value: 4
-          },
-          {
-            year: "1993",
-            value: 3.5
-          },
-          {
-            year: "1994",
-            value: 5
-          },
-          {
-            year: "1995",
-            value: 4.9
-          },
-          {
-            year: "1996",
-            value: 6
-          },
-          {
-            year: "1997",
-            value: 7
-          },
-          {
-            year: "1998",
-            value: 9
-          },
-          {
-            year: "1999",
-            value: 13
-          }
-        ]
-      }
-    ];
+    const linedata = studentInfo ? studentInfo.totalTrend : [];
+    const subData = studentInfo ? new DataSet.View().source([studentInfo.subTrends]).transform({
+      type: "fold",
+      fields: Object.keys(studentInfo.subTrends),
+      // 展开字段集
+      key: "title",
+      // key字段
+      value: "lineData" // value字段
+    }).rows : [];
     //呈现成绩信息的筛选
     const Option = Select.Option;
 
-    function handleChange(value) {
-      //todo 重新rander改变linedata的值
-      console.log(`selected ${value}`);
-    }
-     function handleChangeTime(value) {
-      console.log(`selected ${value}`);
-    }
-
     //timelyconsumption数据
-    const timelyConsumptionData = consumptionData.hourly || []
+    const timelyConsumptionData = consumptionData.hourly || [];
     const dConCost = consumptionData.daily ? new DataSet.View().source(consumptionData.daily).transform({
       type: 'impute',
       field: 'cost',
@@ -669,7 +460,7 @@ class Center extends PureComponent {
                   <Empty description={this.state.studentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
                 }
                 size="large"
-                value={this.state.studentId}
+                value={studentInfo.id || this.state.studentId}
                 filterOption={false}
                 onSearch={(value) => this.getStudentList(value)}
                 onChange={(studentId) => this.setState({ studentId })}
@@ -686,7 +477,6 @@ class Center extends PureComponent {
               </Select>
               {studentInfo && studentInfo.name ? (
                 <Fragment>
-                  {/*搜索栏*/}
                   <Divider style={{ marginTop: 16 }} dashed/>
                   <div className={styles.avatarHolder}>
                     {/*词云*/}
@@ -794,22 +584,22 @@ class Center extends PureComponent {
                 <TabPane tab={<span><Icon type="line-chart"/>成绩</span>} key="Score">
                   {studentInfo && studentInfo.name ?
                     <Suspense fallback={<div>Loading...</div>}>
-                      <Row type='flex' justify='end'>
-                        <Col span={4}>
-                          <Select defaultValue="lucy" style={{ width: 120 }} onChange={handleChange}>
-                            <Option value="jack">绝对分</Option>
-                            <Option value="lucy">离均值(Z分)</Option>
-                            <Option value="disabled">标准分(T分)</Option>
-                            <Option value="Yiminghe">等第</Option>
-                            <Option value="range">排名</Option>
+                      <Row type='flex' justify='start'>
+                        <Affix offsetTop={10} style={{ 'z-index': 1 }}>
+                          <Select
+                            value={this.state.scoreType} style={{ width: 120 }}
+                            onChange={this.onScoreTypeChange}
+                          >
+                            <Option key="score" value="score">绝对分</Option>
+                            <Option key="z_score" value="z_score">离均值(Z分)</Option>
+                            <Option key="t_score" value="t_score">标准分(T分)</Option>
+                            <Option key="deng_di" value="deng_di">等第</Option>
                           </Select>
-                        </Col>
+                        </Affix>
                       </Row>
                       <ScoreLineChart
                         lineData={linedata}
-                        scale={datascale}
                         radarViewData={radarViewData}
-                        cols={cols}
                         subData={subData}
                       />
                     </Suspense> : <Empty description='请在左侧搜索框中搜索学生数据'/>
@@ -822,20 +612,19 @@ class Center extends PureComponent {
                       dailyConsumptionData={dConCost}
                       date={consumptionData.date}
                     />
-                    <Affix offsetTop={10}>
-                      <span>选择查看的时间： </span>
-                      <DatePicker
-                        defaultValue={moment(moment(), 'YYYY-MM-DD')}
-                        onChange={(_, date) => this.onDateChange(date)}
-                      />
-                      <Select defaultValue="week" style={{ width: 120 }} onChange={handleChangeTime}>
-                            <Option value="week">1周</Option>
-                            <Option value="1month">1个月</Option>
-                            <Option value="3month">3个月</Option>
-                            <Option value="6month">6个月</Option>
-                            <Option value="year">1年</Option>
-                          </Select>
-                    </Affix>
+
+                    <span>选择查看的时间： </span>
+                    <DatePicker
+                      defaultValue={moment(moment(), 'YYYY-MM-DD')}
+                      onChange={(_, date) => this.onDateChange(date)}
+                    />
+                    <Select defaultValue="week" style={{ width: 120 }} onChange={this.handleChangeTime}>
+                      <Option value="week">1周</Option>
+                      <Option value="1month">1个月</Option>
+                      <Option value="3month">3个月</Option>
+                      <Option value="6month">6个月</Option>
+                      <Option value="year">1年</Option>
+                    </Select>
                     <ConsumptionTimeSlotLineChart
                       timelyConsumptionData={timelyConsumptionData}
                       dailyConsumptionData={dConCost}

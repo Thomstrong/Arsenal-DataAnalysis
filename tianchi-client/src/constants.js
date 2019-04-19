@@ -20,6 +20,28 @@ export const COURSE_ALIAS = {
   1: '语',
 };
 
+export const COURSE_FULLNAME_ALIAS = {
+  59: '技术',
+  58: '英语2',
+  57: '1B模块总分',
+  53: '英语选修9',
+  38: '通用技术',
+  31: '科学',
+  17: '政治',
+  13: '信息技术',
+  12: '美术',
+  11: '音乐',
+  9: '体育',
+  8: '地理',
+  7: '历史',
+  6: '生物',
+  5: '化学',
+  4: '物理',
+  3: '英语',
+  2: '数学',
+  1: '语文',
+};
+
 export const WEEKDAY_ALIAS = {
   7: '星期日',
   6: '星期六',
@@ -61,5 +83,11 @@ export const POLICY_TYPE_ALIAS = {
   [POLICY_TYPE.gcd]: '共产党员',
   [POLICY_TYPE.normal]: '一般',
   [POLICY_TYPE.other]: '民主党派',
+};
+
+export const SCORE_LEVEL_ALIAS = {
+  highest: '最高分',
+  lowest: '最低分',
+  average: '平均分',
 };
 

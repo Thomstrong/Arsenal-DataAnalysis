@@ -7,11 +7,11 @@ import {
   getConsumption,
   getKaoqinData,
   getStudentBasic,
-  getStudentGrade,
+  getGrade,
   getStudentList,
   getStudentTeachers,
 } from '@/services/api';
-import { COURSE_ALIAS, EVENT_TYPE_ALIAS, WEEKDAY_ALIAS } from "@/constants";
+import { COURSE_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, WEEKDAY_ALIAS } from "@/constants";
 
 let data =
   [
@@ -415,7 +415,8 @@ let data =
     "x": "Papua New Guinea",
     "value": 8151300,
     "category": "australia"
-  }];
+  }
+  ];
 
 export default {
   namespace: 'student',
@@ -424,30 +425,22 @@ export default {
     studentInfo: {
       id: '',
       name: '',
-      grade: [],
+      radarData: [],
       teacherInfo: [],
       kaoqinData: [],
       kaoqinSummary: [],
+      totalTrend: [],
+      subTrends: [],
     },
     termList: [],
     studentList: [],
     wordCloudData: data,
-    visitData: [],
-    visitData2: [],
-    salesData: [],
-    searchData: [],
-    offlineData: [],
-    offlineChartData: [],
-    salesTypeData: [],
-    salesTypeDataOnline: [],
-    salesTypeDataOffline: [],
     radarData: [],
     consumptionData: {
       hourly: [],
       daily: [],
       date: ''
     },
-    student: [],
     loading: false,
   },
 
@@ -459,10 +452,13 @@ export default {
         payload: response
       });
     },
-    * fetchGrade({ payload }, { call, put }) {
-      const response = yield call(getStudentGrade, payload.studentId);
+    * fetchRadarData({ payload }, { call, put }) {
+      const response = yield call(getGrade, {
+        ...payload,
+        type: 'radar'
+      });
       yield put({
-        type: 'saveStudentGrade',
+        type: 'saveRadarData',
         payload: response
       });
     },
@@ -495,6 +491,26 @@ export default {
         payload: response,
       });
     },
+    * fetchTotalTrend({ payload }, { call, put }) {
+      const response = yield call(getGrade, {
+        ...payload,
+        type: 'total_trend'
+      });
+      yield put({
+        type: 'saveTotalTrend',
+        payload: response,
+      });
+    },
+    * fetchSubTrends({ payload }, { call, put }) {
+      const response = yield call(getGrade, {
+        ...payload,
+        type: 'subject_trend'
+      });
+      yield put({
+        type: 'saveSubTrends',
+        payload: response,
+      });
+    }
   },
 
   reducers: {
@@ -502,6 +518,36 @@ export default {
       return {
         ...state,
         ...payload,
+      };
+    },
+    saveTotalTrend(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        studentInfo: {
+          ...state.studentInfo,
+          totalTrend: payload.map(data => {
+            return {
+              exam: data.sub_exam__exam__name,
+              score: data.total_score
+            }
+          })
+        },
+      };
+    },
+    saveSubTrends(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+
+      return {
+        ...state,
+        studentInfo: {
+          ...state.studentInfo,
+          subTrends: payload
+        },
       };
     },
     saveStudentBasic(state, action) {
@@ -534,17 +580,17 @@ export default {
         } : state.studentInfo,
       };
     },
-    saveStudentGrade(state, action) {
+    saveRadarData(state, action) {
       return {
         ...state,
         studentInfo: action.payload ? {
           ...state.studentInfo,
-          grade: action.payload.map((data) => {
+          radarData: action.payload.map((data) => {
             return {
               'item': COURSE_ALIAS[data.sub_exam__course_id],
-              '最高分': data.highest,
-              '最低分': data.lowest,
-              '平均分': data.average,
+              [SCORE_LEVEL_ALIAS.highest]: Number(data.highest.toFixed(0)),
+              [SCORE_LEVEL_ALIAS.lowest]: Number(data.lowest.toFixed(0)),
+              [SCORE_LEVEL_ALIAS.average]: Number(data.average.toFixed(0)),
             };
           })
         } : state.studentInfo,
@@ -612,15 +658,6 @@ export default {
     },
     clear() {
       return {
-        visitData: [],
-        visitData2: [],
-        salesData: [],
-        searchData: [],
-        offlineData: [],
-        offlineChartData: [],
-        salesTypeData: [],
-        salesTypeDataOnline: [],
-        salesTypeDataOffline: [],
         radarData: [],
       };
     },

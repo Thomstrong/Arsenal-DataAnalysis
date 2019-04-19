@@ -2,7 +2,7 @@
 from datetime import timedelta
 
 from dateutil.parser import parse as parse_date
-from django.db.models import Max, Min, Avg, Q, Count
+from django.db.models import Max, Min, Avg, Q, Count, Sum
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
@@ -17,6 +17,8 @@ from students.models.student import Student
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
 from utils.decorators import required_params
+
+gaokao_courses = [1, 2, 3, 4, 5, 6, 7, 8, 17, 59]
 
 
 class StudentViewSet(viewsets.ModelViewSet):
@@ -37,25 +39,76 @@ class StudentViewSet(viewsets.ModelViewSet):
             return Response(self.get_serializer_class()(students, many=True).data)
         return Response(status=400, data={'reason': '不可以获取全部列表哦'})
 
+    @required_params(params=['type'])
     @detail_route(
         methods=['GET'],
     )
     def grade(self, request, pk):
-        selected_courses = CourseRecord.objects.filter(
-            student_id=pk
-        ).values_list('course_id', flat=True)
-        grade_filter = Q(sub_exam__course_id__in=selected_courses) | Q(sub_exam__course_id__in=[1, 2, 3])
-        exam_records = StudentExamRecord.objects.filter(
-            Q(student_id=pk),
-            grade_filter,
-            Q(score__gte=0)
-        ).order_by('sub_exam__course_id').values('sub_exam__course_id').annotate(
-            highest=Max('t_score'),
-            lowest=Min('t_score'),
-            average=Avg('t_score'),
-        )
+        type = request.query_params.get('type', '')
+        if not type:
+            return Response('type 输入有误', status=400)
 
-        return Response(exam_records)
+        if type == 'radar':
+            selected_courses = CourseRecord.objects.filter(
+                student_id=pk
+            ).values_list('course_id', flat=True)
+            grade_filter = Q(sub_exam__course_id__in=selected_courses) | Q(sub_exam__course_id__in=[1, 2, 3])
+            exam_records = StudentExamRecord.objects.filter(
+                Q(student_id=pk),
+                grade_filter,
+                Q(score__gte=0)
+            ).order_by('sub_exam__course_id').values('sub_exam__course_id').annotate(
+                highest=Max('t_score'),
+                lowest=Min('t_score'),
+                average=Avg('t_score'),
+            )
+
+            return Response(exam_records)
+
+        score_type = request.query_params.get('score_type', '')
+        score_types = ['t_score', 'z_score', 'score', 'deng_di']
+        if score_type not in score_types:
+            return Response('score_type must in {}'.format(','.join(score_types)), status=400)
+
+        if type == 'total_trend':
+            records = StudentExamRecord.objects.filter(
+                student_id=pk,
+                sub_exam__course_id__in=gaokao_courses,
+                score__gt=0
+            ).order_by('sub_exam__started_at').values(
+                'sub_exam__exam__name'
+            ).annotate(
+                total_score=Sum(score_type) if not score_type == 'deng_di' else Avg(score_type)
+            ).values(
+                'sub_exam__exam__name',
+                'total_score'
+            )
+            return Response(records)
+
+        if type == 'subject_trend':
+            records = StudentExamRecord.objects.filter(
+                student_id=pk,
+                sub_exam__course_id__in=gaokao_courses,
+                score__gt=0
+            ).order_by('sub_exam__started_at').values(
+                'sub_exam__exam__name'
+            ).values(
+                'sub_exam__exam__name',
+                'sub_exam__course_id',
+                score_type
+            )
+
+            formated_records = {}
+            for record in records:
+                if record['sub_exam__course_id'] not in formated_records:
+                    formated_records[record['sub_exam__course_id']] = []
+                formated_records[record['sub_exam__course_id']].append({
+                    'exam': record['sub_exam__exam__name'],
+                    'score': record.get(score_type)
+                })
+            return Response(formated_records)
+
+        return Response('请求错误', status=400)
 
     @detail_route(
         methods=['GET'],

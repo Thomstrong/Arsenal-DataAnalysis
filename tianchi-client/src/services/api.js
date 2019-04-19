@@ -5,8 +5,8 @@ export async function getStudentBasic(studentId) {
   return request(`/api/students/${studentId}/`);
 }
 
-export async function getStudentGrade(studentId) {
-  return request(`/api/students/${studentId}/grade/`);
+export async function getGrade({studentId, type, scoreType}) {
+  return request(`/api/students/${studentId}/grade/?type=${type}&score_type=${scoreType}`);
 }
 
 export async function getStudentTeachers(studentId) {
