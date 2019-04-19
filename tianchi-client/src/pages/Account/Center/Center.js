@@ -28,6 +28,7 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchRadarData'],
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
   hourlyAvgCost: student.hourlyAvgCost,
+  dailySumCost: student.dailySumCost,
   studentListLoading: loading.effects['student/fetchStudentList'],
   costLoading: loading.effects['student/fetchHourlyAvgCost'],
 }))
@@ -118,6 +119,12 @@ class Center extends PureComponent {
         studentId: studentId,
       }
     });
+    dispatch({
+      type: 'student/fetchDailySumCost',
+      payload: {
+        studentId: studentId,
+      }
+    });
   };
 
   getStudentList = (input) => {
@@ -195,6 +202,7 @@ class Center extends PureComponent {
       termList,
       totalHourlyAvgCost,
       hourlyAvgCost,
+      dailySumCost,
       loading,
       match,
       location,
@@ -621,7 +629,7 @@ class Center extends PureComponent {
                   <Suspense fallback={<div>Loading...</div>}>
                     <ConsumptionOverallLineChart
                       hourlyAvgCost={hourlyAvgCost.concat(totalHourlyAvgCost)}
-                      dailyConsumptionData={dConCost}
+                      dailySumCost={dailySumCost}
                     />
                   </Suspense>
                   <Suspense fallback={<div>Loading...</div>}>

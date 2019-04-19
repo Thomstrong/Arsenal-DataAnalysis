@@ -7,7 +7,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
-from consumptions.api.serializers import DailyConsumptionSerializer, HourlyConsumptionSerializer
+from consumptions.api.serializers import DailyConsumptionSerializer
 from consumptions.models import DailyConsumption, HourlyConsumption
 from courses.models.course_record import CourseRecord
 from exams.models.exam_record import StudentExamRecord
@@ -149,7 +149,7 @@ class StudentViewSet(viewsets.ModelViewSet):
             'summary': sumary,
         })
 
-    @required_params(params=['type','date'])
+    @required_params(params=['type', 'date'])
     @detail_route(
         methods=['GET'],
     )
@@ -165,6 +165,16 @@ class StudentViewSet(viewsets.ModelViewSet):
                 avg_cost=-Avg('total_cost')
             )
             return Response(records)
+        if type == 'daily_sum':
+            records = DailyConsumption.objects.filter(
+                student_id=pk,
+            ).order_by('date').values('date').annotate(
+                total=-Sum('total_cost')
+            )
+
+            return Response(records)
+
+        # todo
         date = parse_date(request.query_params['date']).date()
         daily_data = DailyConsumption.objects.filter(
             student_id=pk,
@@ -180,11 +190,6 @@ class StudentViewSet(viewsets.ModelViewSet):
                 continue
             break
         this_week_data = daily_data[i:]
-
-        hourly_data = HourlyConsumption.objects.filter(
-            date=date,
-            student_id=pk
-        )
 
         return Response({
             'date': date,

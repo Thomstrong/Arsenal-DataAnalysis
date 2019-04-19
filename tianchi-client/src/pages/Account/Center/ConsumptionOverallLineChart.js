@@ -2,60 +2,10 @@
  * Created by 胡晓慧 on 2019/4/13.
  */
 import React, { memo } from "react";
-import { Card, Col, Row } from 'antd';
+import { Card, Col, Empty, Row } from 'antd';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
 import { OneTimelineChart } from '@/components/Charts';
 
-const DaySumConsumptionData = [
-  {
-    x: Date.parse('2019-01-01'),
-    y: 20
-  },
-  {
-    x: Date.parse('2019-01-02'),
-    y: 33
-  },
-  {
-    x: Date.parse('2019-01-03'),
-    y: 2
-  },
-  {
-    x: Date.parse('2019-01-04'),
-    y: 3
-  },
-  {
-    x: Date.parse('2019-01-05'),
-    y: 20
-  },
-  {
-    x: Date.parse('2019-01-06'),
-    y: 30
-  },
-  {
-    x: Date.parse('2019-01-07'),
-    y: 2
-  },
-  {
-    x: Date.parse('2019-01-08'),
-    y: 30
-  },
-  {
-    x: Date.parse('2019-01-09'),
-    y: 20
-  },
-  {
-    x: Date.parse('2019-01-10'),
-    y: 30
-  },
-  {
-    x: Date.parse('2019-01-11'),
-    y: 2
-  },
-  {
-    x: Date.parse('2019-01-12'),
-    y: 30
-  }
-];
 const scale = {
   hour: {
     min: 0,
@@ -78,7 +28,7 @@ const scale = {
 let chartIns = null;
 
 const ConsumptionOverallLineChart = memo(
-  ({ hourlyAvgCost, dailyConsumptionData }) => {
+  ({ hourlyAvgCost, dailySumCost }) => {
     if (chartIns) {
       const geoms = chartIns.getAllGeoms();
       for (let geom of geoms) {
@@ -90,10 +40,15 @@ const ConsumptionOverallLineChart = memo(
         <Row>
           <Col span={20}>
             <Card title="总体消费趋势" bordered={false} style={{ width: '100%' }} hoverable={true}>
-              <OneTimelineChart
+              {dailySumCost.length ? <OneTimelineChart
                 height={300}
-                data={DaySumConsumptionData}
-              />
+                data={dailySumCost.map((data) => {
+                  return {
+                    x: Date.parse(data.date),
+                    y: data.total
+                  };
+                })}
+              /> : <Empty/>}
             </Card>
           </Col>
           <Col span={3} offset={1}>
@@ -110,7 +65,7 @@ const ConsumptionOverallLineChart = memo(
           </Col>
           <Col span={20} offset={1}>
             <Card title="不同时间点平均消费对比" bordered={false} style={{ width: '100%' }} hoverable={true}>
-              <Chart
+              {dailySumCost.length ? <Chart
                 height={400}
                 data={hourlyAvgCost}
                 scale={scale}
@@ -161,7 +116,7 @@ const ConsumptionOverallLineChart = memo(
                 <Geom type="interval" position="hour*avg_cost" color="#0099CC"/>
                 <Geom type="line" position="hour*total_avg" color="#FF9900" size={2} shape="smooth"/>
                 <Geom type="point" position="hour*total_avg" color="#FF9900" size={3} shape="circle"/>
-              </Chart>
+              </Chart> : <Empty/>}
             </Card>
           </Col>
         </Row>

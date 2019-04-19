@@ -437,6 +437,7 @@ export default {
     wordCloudData: data,
     radarData: [],
     hourlyAvgCost: [],
+    dailySumCost: [],
     consumptionData: {
 
       daily: [],
@@ -492,6 +493,16 @@ export default {
       });
       yield put({
         type: 'saveHourlyAvgCost',
+        payload: response,
+      });
+    },
+    * fetchDailySumCost({ payload }, { call, put }) {
+      const response = yield call(getConsumption, {
+        ...payload,
+        type: 'daily_sum'
+      });
+      yield put({
+        type: 'saveDailySumCost',
         payload: response,
       });
     },
@@ -630,6 +641,15 @@ export default {
       return {
         ...state,
         hourlyAvgCost: payload
+      };
+    },
+    saveDailySumCost(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        dailySumCost: payload
       };
     },
     clear() {
