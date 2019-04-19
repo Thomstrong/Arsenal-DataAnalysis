@@ -460,7 +460,7 @@ class Center extends PureComponent {
                   <Empty description={this.state.studentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
                 }
                 size="large"
-                value={this.state.studentId}
+                value={studentInfo.id || this.state.studentId}
                 filterOption={false}
                 onSearch={(value) => this.getStudentList(value)}
                 onChange={(studentId) => this.setState({ studentId })}
@@ -477,7 +477,6 @@ class Center extends PureComponent {
               </Select>
               {studentInfo && studentInfo.name ? (
                 <Fragment>
-                  {/*搜索栏*/}
                   <Divider style={{ marginTop: 16 }} dashed/>
                   <div className={styles.avatarHolder}>
                     {/*词云*/}

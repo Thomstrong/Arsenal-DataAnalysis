@@ -16,7 +16,7 @@ from students.api.serializers import StudentBasicInfoSerializer, StudentMiniSeri
 from students.models.student import Student
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
-from utils.decorators import required_params, performance_analysis
+from utils.decorators import required_params
 
 gaokao_courses = [1, 2, 3, 4, 5, 6, 7, 8, 17, 59]
 
@@ -43,7 +43,6 @@ class StudentViewSet(viewsets.ModelViewSet):
     @detail_route(
         methods=['GET'],
     )
-    @performance_analysis(True)
     def grade(self, request, pk):
         type = request.query_params.get('type', '')
         if not type:
@@ -85,6 +84,7 @@ class StudentViewSet(viewsets.ModelViewSet):
                 'total_score'
             )
             return Response(records)
+
         if type == 'subject_trend':
             records = StudentExamRecord.objects.filter(
                 student_id=pk,
@@ -107,6 +107,8 @@ class StudentViewSet(viewsets.ModelViewSet):
                     'score': record.get(score_type)
                 })
             return Response(formated_records)
+
+        return Response('请求错误', status=400)
 
     @detail_route(
         methods=['GET'],
