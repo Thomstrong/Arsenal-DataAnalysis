@@ -23,12 +23,13 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   studentInfo: student.studentInfo,
   termList: student.termList,
   termMap: global.termMap,
+  totalHourlyAvgCost: global.totalHourlyAvgCost,
   wordCloudData: student.wordCloudData,
   loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchRadarData'],
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
-  consumptionData: student.consumptionData,
+  hourlyAvgCost: student.hourlyAvgCost,
   studentListLoading: loading.effects['student/fetchStudentList'],
-  costLoading: loading.effects['student/fetchConsumptionData'],
+  costLoading: loading.effects['student/fetchHourlyAvgCost'],
 }))
 class Center extends PureComponent {
   constructor() {
@@ -61,7 +62,7 @@ class Center extends PureComponent {
   };
 
   getStudentInfo = (studentId) => {
-    const { dispatch } = this.props;
+    const { dispatch, totalHourlyAvgCost } = this.props;
     dispatch({
       type: 'student/fetchBasic',
       payload: {
@@ -96,11 +97,25 @@ class Center extends PureComponent {
         studentId: studentId,
       }
     });
+
     dispatch({
       type: 'student/fetchKaoqinData',
       payload: {
         studentId: studentId,
         termMap: this.props.termMap
+      }
+    });
+
+    if (!totalHourlyAvgCost.length) {
+      dispatch({
+        type: 'global/fetchTotalHourlyAvgCost',
+      });
+    }
+
+    dispatch({
+      type: 'student/fetchHourlyAvgCost',
+      payload: {
+        studentId: studentId,
       }
     });
   };
@@ -145,14 +160,8 @@ class Center extends PureComponent {
 
   onDateChange = (dateString) => {
     const { dispatch, studentInfo } = this.props;
-    dispatch({
-      type: 'student/fetchConsumptionData',
-      payload: {
-        studentId: studentInfo.id,
-        date: dateString
-      }
-    });
   };
+
   onScoreTypeChange = (scoreType) => {
     const { dispatch, studentInfo } = this.props;
     const studentId = studentInfo.id;
@@ -184,7 +193,8 @@ class Center extends PureComponent {
       studentList,
       studentListLoading,
       termList,
-      consumptionData,
+      totalHourlyAvgCost,
+      hourlyAvgCost,
       loading,
       match,
       location,
@@ -289,8 +299,8 @@ class Center extends PureComponent {
     const Option = Select.Option;
 
     //timelyconsumption数据
-    const timelyConsumptionData = consumptionData.hourly || [];
-    const dConCost = consumptionData.daily ? new DataSet.View().source(consumptionData.daily).transform({
+    const timelyConsumptionData = hourlyAvgCost || [];
+    const dConCost = null ? new DataSet.View().source([]).transform({
       type: 'impute',
       field: 'cost',
       groupBy: ['time', 'diftime'],
@@ -453,28 +463,30 @@ class Center extends PureComponent {
         <Row gutter={24}>
           <Col lg={7} md={24}>
             <Card bordered={false} style={{ marginBottom: 24 }} loading={loading}>
-              <Select
-                style={{ width: '100%', display: 'block' }}
-                showSearch
-                notFoundContent={studentListLoading ? <Spin size="small"/> :
-                  <Empty description={this.state.studentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
-                }
-                size="large"
-                value={studentInfo.id || this.state.studentId}
-                filterOption={false}
-                onSearch={(value) => this.getStudentList(value)}
-                onChange={(studentId) => this.setState({ studentId })}
-              >
-                {studentList.map((student) => (
-                  <Option
-                    onClick={(value) => this.getStudentInfo(value.key)}
-                    value={student.id}
-                    key={`student-${student.id}`}
-                  >
-                    {`${student.id}-${student.name}`}
-                  </Option>
-                ))}
-              </Select>
+              <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+                <Select
+                  style={{ width: '100%', display: 'block' }}
+                  showSearch
+                  notFoundContent={studentListLoading ? <Spin size="small"/> :
+                    <Empty description={this.state.studentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
+                  }
+                  size="large"
+                  value={studentInfo.id || this.state.studentId}
+                  filterOption={false}
+                  onSearch={(value) => this.getStudentList(value)}
+                  onChange={(studentId) => this.setState({ studentId })}
+                >
+                  {studentList.map((student) => (
+                    <Option
+                      onClick={(value) => this.getStudentInfo(value.key)}
+                      value={student.id}
+                      key={`student-${student.id}`}
+                    >
+                      {`${student.id}-${student.name}`}
+                    </Option>
+                  ))}
+                </Select>
+              </Affix>
               {studentInfo && studentInfo.name ? (
                 <Fragment>
                   <Divider style={{ marginTop: 16 }} dashed/>
@@ -585,7 +597,7 @@ class Center extends PureComponent {
                   {studentInfo && studentInfo.name ?
                     <Suspense fallback={<div>Loading...</div>}>
                       <Row type='flex' justify='start'>
-                        <Affix offsetTop={10} style={{ 'z-index': 1 }}>
+                        <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
                           <Select
                             value={this.state.scoreType} style={{ width: 120 }}
                             onChange={this.onScoreTypeChange}
@@ -608,11 +620,11 @@ class Center extends PureComponent {
                 <TabPane tab={<span><Icon type="credit-card"/>一卡通</span>} key="ECard">
                   <Suspense fallback={<div>Loading...</div>}>
                     <ConsumptionOverallLineChart
-                      timelyConsumptionData={timelyConsumptionData}
+                      hourlyAvgCost={hourlyAvgCost.concat(totalHourlyAvgCost)}
                       dailyConsumptionData={dConCost}
-                      date={consumptionData.date}
                     />
-
+                  </Suspense>
+                  <Suspense fallback={<div>Loading...</div>}>
                     <span>选择查看的时间： </span>
                     <DatePicker
                       defaultValue={moment(moment(), 'YYYY-MM-DD')}
@@ -628,7 +640,6 @@ class Center extends PureComponent {
                     <ConsumptionTimeSlotLineChart
                       timelyConsumptionData={timelyConsumptionData}
                       dailyConsumptionData={dConCost}
-                      date={consumptionData.date}
                     />
                   </Suspense>
                 </TabPane>

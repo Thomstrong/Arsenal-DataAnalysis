@@ -1,11 +1,11 @@
 # Create your views here.
-
+from django.db.models import Avg
 from rest_framework import viewsets, status
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 
 from consumptions.api.serializers import ConsumptionSerializer, ConsumptionDailyDataSerializer
-from consumptions.models import Consumption, DailyConsumption
+from consumptions.models import Consumption, DailyConsumption, HourlyConsumption
 from utils.decorators import required_params
 
 
@@ -29,3 +29,16 @@ class ConsumptionViewSet(viewsets.ModelViewSet):
         })
 
         return Response(serializer.data)
+
+    @list_route(
+        methods=['GET'],
+    )
+    def hourly_avg(self, request):
+        records = HourlyConsumption.objects.order_by(
+            'hour'
+        ).values('hour').annotate(
+            total_avg=-Avg('total_cost')
+        )
+        return Response(records)
+
+

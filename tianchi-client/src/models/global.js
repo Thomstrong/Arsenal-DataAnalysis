@@ -1,4 +1,4 @@
-import { queryNotices, getTermMap } from '@/services/api';
+import { getTermMap, getTotalHourlyAvgCost, queryNotices } from '@/services/api';
 
 export default {
   namespace: 'global',
@@ -6,7 +6,8 @@ export default {
   state: {
     collapsed: false,
     notices: [],
-    termMap: {},
+    termMap: null,
+    totalHourlyAvgCost:[],
   },
 
   effects: {
@@ -72,7 +73,14 @@ export default {
         type: 'saveTermMap',
         payload: response
       });
-    }
+    },
+    * fetchTotalHourlyAvgCost({ payload }, { call, put }) {
+      const response = yield call(getTotalHourlyAvgCost);
+      yield put({
+        type: 'saveTotalHourlyAvgCost',
+        payload: response
+      });
+    },
   },
 
   reducers: {
@@ -86,6 +94,12 @@ export default {
       return {
         ...state,
         notices: payload,
+      };
+    },
+    saveTotalHourlyAvgCost(state, { payload }) {
+      return {
+        ...state,
+        totalHourlyAvgCost: payload,
       };
     },
     saveTermMap(state, { payload }) {

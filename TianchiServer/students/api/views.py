@@ -149,11 +149,22 @@ class StudentViewSet(viewsets.ModelViewSet):
             'summary': sumary,
         })
 
-    @required_params(params=['date'])
+    @required_params(params=['type','date'])
     @detail_route(
         methods=['GET'],
     )
     def consumptions(self, request, pk):
+        type = request.query_params.get('type', '')
+        if not type:
+            return Response(status=400)
+
+        if type == 'hourly_avg':
+            records = HourlyConsumption.objects.filter(
+                student_id=pk,
+            ).order_by('hour').values('hour').annotate(
+                avg_cost=-Avg('total_cost')
+            )
+            return Response(records)
         date = parse_date(request.query_params['date']).date()
         daily_data = DailyConsumption.objects.filter(
             student_id=pk,
@@ -179,5 +190,4 @@ class StudentViewSet(viewsets.ModelViewSet):
             'date': date,
             'this_week_data': DailyConsumptionSerializer(this_week_data, many=True).data,
             'last_week_data': DailyConsumptionSerializer(last_week_data, many=True).data,
-            'hourly_data': HourlyConsumptionSerializer(hourly_data, many=True).data,
         })

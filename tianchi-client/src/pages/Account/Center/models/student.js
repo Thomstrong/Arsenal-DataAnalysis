@@ -436,8 +436,9 @@ export default {
     studentList: [],
     wordCloudData: data,
     radarData: [],
+    hourlyAvgCost: [],
     consumptionData: {
-      hourly: [],
+
       daily: [],
       date: ''
     },
@@ -484,10 +485,13 @@ export default {
         termMap: payload.termMap
       });
     },
-    * fetchConsumptionData({ payload }, { call, put }) {
-      const response = yield call(getConsumption, payload);
+    * fetchHourlyAvgCost({ payload }, { call, put }) {
+      const response = yield call(getConsumption, {
+        ...payload,
+        type: 'hourly_avg'
+      });
       yield put({
-        type: 'saveConsumptionData',
+        type: 'saveHourlyAvgCost',
         payload: response,
       });
     },
@@ -532,7 +536,7 @@ export default {
             return {
               exam: data.sub_exam__exam__name,
               score: data.total_score
-            }
+            };
           })
         },
       };
@@ -619,41 +623,13 @@ export default {
       state.termList = Object.keys(termList);
       return state;
     },
-    saveConsumptionData(state, action) {
-      if (!action.payload) {
+    saveHourlyAvgCost(state, { payload }) {
+      if (!payload) {
         return state;
       }
-      const lastWeekData = action.payload.last_week_data;
-      const thisWeekData = action.payload.this_week_data;
-      const dailyData = [];
-      for (let data of lastWeekData) {
-        dailyData.push({
-          time: WEEKDAY_ALIAS[data.weekday],
-          diftime: "上周",
-          cost: -data.total_cost
-        });
-      }
-
-      for (let data of thisWeekData) {
-        dailyData.push({
-          time: WEEKDAY_ALIAS[data.weekday],
-          diftime: "本周",
-          cost: -data.total_cost
-        });
-      }
-
       return {
         ...state,
-        consumptionData: {
-          date: action.payload.date,
-          daily: dailyData,
-          hourly: action.payload.hourly_data.map(data => {
-            return {
-              hour: data.hour,
-              total_cost: -data.total_cost
-            };
-          })
-        }
+        hourlyAvgCost: payload
       };
     },
     clear() {
