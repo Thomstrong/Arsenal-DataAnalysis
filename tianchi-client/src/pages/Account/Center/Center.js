@@ -12,7 +12,8 @@ import moment from "moment";
 
 const ScoreLineChart = React.lazy(() => import('./ScoreLineChart'));
 const WordCloud = React.lazy(() => import('./WordCloud'));
-const ConsumptionLineChart = React.lazy(() => import('./ConsumptionLineChart'));
+const ConsumptionOverallLineChart = React.lazy(() => import('./ConsumptionOverallLineChart'));
+const ConsumptionTimeSlotLineChart = React.lazy(() => import('./ConsumptionTimeSlotLineChart'));
 const AttendanceChart = React.lazy(() => import('./AttendanceChart'));
 const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
 
@@ -492,6 +493,9 @@ class Center extends PureComponent {
       //todo 重新rander改变linedata的值
       console.log(`selected ${value}`);
     }
+     function handleChangeTime(value) {
+      console.log(`selected ${value}`);
+    }
 
     //timelyconsumption数据
     const timelyConsumptionData = consumptionData.hourly || []
@@ -813,14 +817,26 @@ class Center extends PureComponent {
                 </TabPane>
                 <TabPane tab={<span><Icon type="credit-card"/>一卡通</span>} key="ECard">
                   <Suspense fallback={<div>Loading...</div>}>
+                    <ConsumptionOverallLineChart
+                      timelyConsumptionData={timelyConsumptionData}
+                      dailyConsumptionData={dConCost}
+                      date={consumptionData.date}
+                    />
                     <Affix offsetTop={10}>
                       <span>选择查看的时间： </span>
                       <DatePicker
                         defaultValue={moment(moment(), 'YYYY-MM-DD')}
                         onChange={(_, date) => this.onDateChange(date)}
                       />
+                      <Select defaultValue="week" style={{ width: 120 }} onChange={handleChangeTime}>
+                            <Option value="week">1周</Option>
+                            <Option value="1month">1个月</Option>
+                            <Option value="3month">3个月</Option>
+                            <Option value="6month">6个月</Option>
+                            <Option value="year">1年</Option>
+                          </Select>
                     </Affix>
-                    <ConsumptionLineChart
+                    <ConsumptionTimeSlotLineChart
                       timelyConsumptionData={timelyConsumptionData}
                       dailyConsumptionData={dConCost}
                       date={consumptionData.date}
