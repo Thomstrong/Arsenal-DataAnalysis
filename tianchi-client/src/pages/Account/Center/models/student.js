@@ -415,7 +415,8 @@ let data =
     "x": "Papua New Guinea",
     "value": 8151300,
     "category": "australia"
-  }];
+  }
+  ];
 
 export default {
   namespace: 'student',
@@ -429,26 +430,17 @@ export default {
       kaoqinData: [],
       kaoqinSummary: [],
       totalTrend: [],
+      subTrends: [],
     },
     termList: [],
     studentList: [],
     wordCloudData: data,
-    visitData: [],
-    visitData2: [],
-    salesData: [],
-    searchData: [],
-    offlineData: [],
-    offlineChartData: [],
-    salesTypeData: [],
-    salesTypeDataOnline: [],
-    salesTypeDataOffline: [],
     radarData: [],
     consumptionData: {
       hourly: [],
       daily: [],
       date: ''
     },
-    student: [],
     loading: false,
   },
 
@@ -507,7 +499,16 @@ export default {
       yield put({
         type: 'saveTotalTrend',
         payload: response,
-        termMap: payload.termMap
+      });
+    },
+    * fetchSubTrends({ payload }, { call, put }) {
+      const response = yield call(getGrade, {
+        ...payload,
+        type: 'subject_trend'
+      });
+      yield put({
+        type: 'saveSubTrends',
+        payload: response,
       });
     }
   },
@@ -533,6 +534,19 @@ export default {
               score: data.total_score
             }
           })
+        },
+      };
+    },
+    saveSubTrends(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+
+      return {
+        ...state,
+        studentInfo: {
+          ...state.studentInfo,
+          subTrends: payload
         },
       };
     },
@@ -644,15 +658,6 @@ export default {
     },
     clear() {
       return {
-        visitData: [],
-        visitData2: [],
-        salesData: [],
-        searchData: [],
-        offlineData: [],
-        offlineChartData: [],
-        salesTypeData: [],
-        salesTypeDataOnline: [],
-        salesTypeDataOffline: [],
         radarData: [],
       };
     },

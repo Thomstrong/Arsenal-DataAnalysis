@@ -4,6 +4,7 @@
 import React, { memo } from "react";
 import { Col, List, Row } from 'antd';
 import { Axis, Chart, Coord, Geom, Legend, Tooltip } from "bizcharts";
+import { COURSE_FULLNAME_ALIAS } from "@/constants";
 
 
 // const SingleLineChart  =  React.lazy(()=> import ('@/components/Charts'));
@@ -70,7 +71,14 @@ const ScoreLineChart = memo(
             </Chart>
           </Col>
           <Col span={16}>
-            <Chart height={300} data={lineData} forceFit>
+            <Chart
+              height={300} data={lineData} forceFit
+              scale={{
+                exam: {
+                  tickCount: 10
+                }
+              }}
+            >
               <p style={{ textAlign: 'center' }}>
                 总分变化趋势
               </p>
@@ -79,9 +87,6 @@ const ScoreLineChart = memo(
                 label={{
                   offset: 30,
                   formatter(text, item, index) {
-                    if(index % 2){
-                      return ''
-                    }
                     const pos = text.length / 3;
                     return `${text.slice(0, pos)}\n${text.slice(pos, 2 * pos)}\n${text.slice(2 * pos)}`;
                   },
@@ -117,21 +122,38 @@ const ScoreLineChart = memo(
           dataSource={subData}
           renderItem={item => (
             <List.Item>
-              <Chart height={300} data={item.lineData} forceFit>
+              <Chart
+                height={300} data={item.lineData}
+                scale={{
+                  exam: {
+                    tickCount: 8
+                  }
+                }}
+                forceFit
+              >
                 <p style={{ textAlign: 'center' }}>
-                  {item.title}
+                  {`${COURSE_FULLNAME_ALIAS[item.title]} 考试趋势分析`}
                 </p>
-                <Axis name="year"/>
-                <Axis name="value"/>
+                <Axis
+                  name="exam"
+                  label={{
+                    offset: 30,
+                    formatter(text, item, index) {
+                      const pos = text.length / 3;
+                      return `${text.slice(0, pos)}\n${text.slice(pos, 2 * pos)}\n${text.slice(2 * pos)}`;
+                    },
+                  }}
+                />
+                <Axis name="score"/>
                 <Tooltip
                   crosshairs={{
                     type: "y"
                   }}
                 />
-                <Geom type="line" position="year*value" size={2}/>
+                <Geom type="line" position="exam*score" size={2}/>
                 <Geom
                   type="point"
-                  position="year*value"
+                  position="exam*score"
                   size={4}
                   shape={"circle"}
                   style={{

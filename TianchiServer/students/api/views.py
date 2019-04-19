@@ -18,6 +18,8 @@ from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
 from utils.decorators import required_params, performance_analysis
 
+gaokao_courses = [1, 2, 3, 4, 5, 6, 7, 8, 17, 59]
+
 
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
@@ -72,6 +74,7 @@ class StudentViewSet(viewsets.ModelViewSet):
         if type == 'total_trend':
             records = StudentExamRecord.objects.filter(
                 student_id=pk,
+                sub_exam__course_id__in=gaokao_courses,
                 score__gt=0
             ).order_by('sub_exam__started_at').values(
                 'sub_exam__exam__name'
@@ -81,8 +84,29 @@ class StudentViewSet(viewsets.ModelViewSet):
                 'sub_exam__exam__name',
                 'total_score'
             )
-            print(records)
             return Response(records)
+        if type == 'subject_trend':
+            records = StudentExamRecord.objects.filter(
+                student_id=pk,
+                sub_exam__course_id__in=gaokao_courses,
+                score__gt=0
+            ).order_by('sub_exam__started_at').values(
+                'sub_exam__exam__name'
+            ).values(
+                'sub_exam__exam__name',
+                'sub_exam__course_id',
+                score_type
+            )
+
+            formated_records = {}
+            for record in records:
+                if record['sub_exam__course_id'] not in formated_records:
+                    formated_records[record['sub_exam__course_id']] = []
+                formated_records[record['sub_exam__course_id']].append({
+                    'exam': record['sub_exam__exam__name'],
+                    'score': record.get(score_type)
+                })
+            return Response(formated_records)
 
     @detail_route(
         methods=['GET'],
