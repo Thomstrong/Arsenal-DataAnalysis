@@ -1,17 +1,19 @@
-import React, { PureComponent, Suspense } from 'react';
+import React, { Fragment, PureComponent, Suspense } from 'react';
 import { connect } from 'dva';
 import { POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
 import router from 'umi/router';
 import _ from 'lodash';
-import { Avatar, Card, Col, Divider, Empty, Icon, Input, Row, Select, Spin, Tabs } from 'antd';
+import { Affix, Avatar, Card, Col, DatePicker, Divider, Empty, Icon, Input, Row, Select, Spin, Tabs } from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './Center.less';
 import { Axis, Chart, Coord, Geom, Legend, Shape, Tooltip } from "bizcharts";
 import DataSet from "@antv/data-set";
+import moment from "moment";
 
 const ScoreLineChart = React.lazy(() => import('./ScoreLineChart'));
 const WordCloud = React.lazy(() => import('./WordCloud'));
-const ConsumptionLineChart = React.lazy(() => import('./ConsumptionLineChart'));
+const ConsumptionOverallLineChart = React.lazy(() => import('./ConsumptionOverallLineChart'));
+const ConsumptionTimeSlotLineChart = React.lazy(() => import('./ConsumptionTimeSlotLineChart'));
 const AttendanceChart = React.lazy(() => import('./AttendanceChart'));
 const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
 
@@ -24,7 +26,9 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   wordCloudData: student.wordCloudData,
   loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchGrade'],
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
+  consumptionData: student.consumptionData,
   studentListLoading: loading.effects['student/fetchStudentList'],
+  costLoading: loading.effects['student/fetchConsumptionData'],
 }))
 class Center extends PureComponent {
   constructor() {
@@ -122,6 +126,17 @@ class Center extends PureComponent {
     //todo
   };
 
+  onDateChange = (dateString) => {
+    const { dispatch, studentInfo } = this.props;
+    dispatch({
+      type: 'student/fetchConsumptionData',
+      payload: {
+        studentId: studentInfo.id,
+        date: dateString
+      }
+    });
+  };
+
   render() {
     const {
       studentInfo,
@@ -129,6 +144,7 @@ class Center extends PureComponent {
       studentList,
       studentListLoading,
       termList,
+      consumptionData,
       loading,
       match,
       location,
@@ -477,71 +493,19 @@ class Center extends PureComponent {
       //todo 重新rander改变linedata的值
       console.log(`selected ${value}`);
     }
+     function handleChangeTime(value) {
+      console.log(`selected ${value}`);
+    }
 
     //timelyconsumption数据
-    const timelyConsumptionData = [
-      {
-        time: '0时',
-        cost: 0
-      },
-      {
-        time: '2时',
-        cost: 0
-      },
-      {
-        time: '3时',
-        cost: 30
-      },
-      {
-        time: '4时',
-        cost: 50
-      },
-      {
-        time: '5时',
-        cost: 70
-      }
-    ];
-    const dailyConsumptionData = [
-      {
-        time: '星期一',
-        本周: 0,
-        上周: 20,
-        预测值: 10
-      },
-      {
-        time: '星期二',
-        本周: 70,
-        上周: 30,
-        预测值: 80
-      },
-      {
-        time: '星期三',
-        本周: 30,
-        上周: 30,
-        预测值: 30
-      },
-      {
-        time: '星期四',
-        本周: 10,
-        上周: 5,
-        预测值: 15
-      },
-      {
-        time: '星期五',
-        本周: 20,
-        上周: 30,
-        预测值: 10
-      }
-    ];
-    const dConCost = new DataSet.View().source(dailyConsumptionData);
-    dConCost.transform({
-      type: "fold",
-      fields: ["本周", "上周", "预测值"],
-      // 展开字段集
-      key: "diftime",
-      // key字段
-      value: "cost" // value字段
-    });
+    const timelyConsumptionData = consumptionData.hourly || []
+    const dConCost = consumptionData.daily ? new DataSet.View().source(consumptionData.daily).transform({
+      type: 'impute',
+      field: 'cost',
+      groupBy: ['time', 'diftime'],
+      method: 'value',
+      value: 0
+    }) : [];
     //考勤的相关数据
     const kaoqinData = this.formatKaoqinData(studentInfo.kaoqinData, termList);
     const kaoqinSummary = studentInfo.kaoqinSummary;
@@ -721,7 +685,7 @@ class Center extends PureComponent {
                 ))}
               </Select>
               {studentInfo && studentInfo.name ? (
-                <React.Fragment>
+                <Fragment>
                   {/*搜索栏*/}
                   <Divider style={{ marginTop: 16 }} dashed/>
                   <div className={styles.avatarHolder}>
@@ -753,7 +717,7 @@ class Center extends PureComponent {
                     </p>
                   </div>
 
-                  {defaultTab !== 'Score' && <React.Fragment>
+                  {defaultTab !== 'Score' && <Fragment>
                     <Divider dashed/>
                     <Chart
                       height={400}
@@ -803,7 +767,7 @@ class Center extends PureComponent {
                         }}
                       />
                     </Chart>
-                  </React.Fragment>}
+                  </Fragment>}
                   <Divider style={{ marginTop: 16 }} dashed/>
                   {/*老师信息*/}
                   <div className={styles.team}>
@@ -817,7 +781,7 @@ class Center extends PureComponent {
                       ))}
                     </Row>
                   </div>
-                </React.Fragment>
+                </Fragment>
               ) : <Empty description='请在上面👆搜索框中搜索学生信息！'/>}
             </Card>
           </Col>
@@ -853,9 +817,29 @@ class Center extends PureComponent {
                 </TabPane>
                 <TabPane tab={<span><Icon type="credit-card"/>一卡通</span>} key="ECard">
                   <Suspense fallback={<div>Loading...</div>}>
-                    <ConsumptionLineChart
+                    <ConsumptionOverallLineChart
                       timelyConsumptionData={timelyConsumptionData}
                       dailyConsumptionData={dConCost}
+                      date={consumptionData.date}
+                    />
+                    <Affix offsetTop={10}>
+                      <span>选择查看的时间： </span>
+                      <DatePicker
+                        defaultValue={moment(moment(), 'YYYY-MM-DD')}
+                        onChange={(_, date) => this.onDateChange(date)}
+                      />
+                      <Select defaultValue="week" style={{ width: 120 }} onChange={handleChangeTime}>
+                            <Option value="week">1周</Option>
+                            <Option value="1month">1个月</Option>
+                            <Option value="3month">3个月</Option>
+                            <Option value="6month">6个月</Option>
+                            <Option value="year">1年</Option>
+                          </Select>
+                    </Affix>
+                    <ConsumptionTimeSlotLineChart
+                      timelyConsumptionData={timelyConsumptionData}
+                      dailyConsumptionData={dConCost}
+                      date={consumptionData.date}
                     />
                   </Suspense>
                 </TabPane>

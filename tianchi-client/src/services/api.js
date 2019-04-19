@@ -21,6 +21,10 @@ export async function getKaoqinData(studentId) {
   return request(`/api/students/${studentId}/kaoqin/`);
 }
 
+export async function getConsumption({ studentId, date }) {
+  return request(`/api/students/${studentId}/consumptions/?date=${date}`);
+}
+
 export async function getTermMap() {
   return request(`/api/terms/`);
 }

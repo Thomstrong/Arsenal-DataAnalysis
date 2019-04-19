@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from consumptions.models import Consumption, DailyConsumption
+from consumptions.models import Consumption, DailyConsumption, HourlyConsumption
 from students.api.serializers import StudentMiniSerializer
 
 
@@ -13,9 +13,17 @@ class ConsumptionSerializer(serializers.ModelSerializer):
 
 
 class DailyConsumptionSerializer(serializers.ModelSerializer):
+    weekday = serializers.SerializerMethodField()
     class Meta:
         model = DailyConsumption
-        fields = ('date', 'total_cost')
+        fields = ('date', 'total_cost', 'weekday')
+    def get_weekday(self, obj):
+        return obj.date.weekday()
+
+class HourlyConsumptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HourlyConsumption
+        fields = ('hour', 'total_cost')
 
 
 class ConsumptionDailyDataSerializer(serializers.Serializer):
