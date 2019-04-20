@@ -2,7 +2,7 @@
 from datetime import timedelta
 
 from dateutil.parser import parse as parse_date
-from django.db.models import Max, Min, Avg, Q, Count, Sum
+from django.db.models import Max, Min, Avg, Q, Count, Sum, F
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
@@ -173,26 +173,63 @@ class StudentViewSet(viewsets.ModelViewSet):
             )
 
             return Response(records)
+        date_range = request.query_params.get('date_range', None)
+        if not date_range or not date_range.isdigit():
+            return Response('range error')
+        date_range = int(date_range)
 
-        # todo
-        date = parse_date(request.query_params['date']).date()
-        daily_data = DailyConsumption.objects.filter(
-            student_id=pk,
-            date__range=[date - timedelta(days=7), date + timedelta(days=6)]
-        ).order_by('date')
+        if type == 'hourly':
+            date = parse_date(request.query_params['date']).date()
+            records = HourlyConsumption.objects.filter(
+                student_id=pk,
+                date__range=[
+                    date - timedelta(days=date_range),
+                    date
+                ]
+            ).order_by('hour').values('hour').annotate(
+                avg_cost=Avg('total_cost')
+            ).values('hour', 'avg_cost')
 
-        last_week_data = []
-        i = 0
-        for data in daily_data:
-            if data.date < date:
-                last_week_data.append(data)
-                i += 1
-                continue
-            break
-        this_week_data = daily_data[i:]
+            global_records = HourlyConsumption.objects.filter(
+                date__range=[
+                    date - timedelta(days=date_range),
+                    date
+                ]
+            ).order_by('hour').values('hour').annotate(
+                avg_cost=Avg('total_cost')
+            ).values('hour', 'avg_cost')
+            return Response({
+                'student_data': records,
+                'global_data': global_records,
+            })
 
-        return Response({
-            'date': date,
-            'this_week_data': DailyConsumptionSerializer(this_week_data, many=True).data,
-            'last_week_data': DailyConsumptionSerializer(last_week_data, many=True).data,
-        })
+        if type == 'predict':
+            date = parse_date(request.query_params['date']).date()
+            daily_data = DailyConsumption.objects.filter(
+                student_id=pk,
+                date__range=[
+                    date - timedelta(days=date_range),
+                    date + timedelta(days=date_range - 1)
+                ]
+            ).order_by('date').annotate(
+                offset=F('date') - date
+            )
+
+            last_cycle_data = []
+            i = 0
+            for data in daily_data:
+                if data.date < date:
+                    data.offset += (date_range + 1)
+                    last_cycle_data.append(data)
+                    i += 1
+                    continue
+                break
+            this_cycle_data = daily_data[i:]
+
+            return Response({
+                'date': date,
+                'date_range': date_range,
+                'this_cycle_data': DailyConsumptionSerializer(this_cycle_data, many=True).data,
+                'last_cycle_data': DailyConsumptionSerializer(last_cycle_data, many=True).data,
+                'predict_data': [],
+            })

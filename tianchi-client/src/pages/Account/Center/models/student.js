@@ -5,9 +5,9 @@
 import {
   fakeChartData,
   getConsumption,
+  getGrade,
   getKaoqinData,
   getStudentBasic,
-  getGrade,
   getStudentList,
   getStudentTeachers,
 } from '@/services/api';
@@ -438,6 +438,14 @@ export default {
     radarData: [],
     hourlyAvgCost: [],
     dailySumCost: [],
+    dailyPredictData: {
+      date: '',
+      dateRange: 0,
+      lastCycleData: [],
+      thisCycleData: [],
+      predictData: [],
+    },
+    hourlyCost: [],
     consumptionData: {
 
       daily: [],
@@ -523,6 +531,26 @@ export default {
       });
       yield put({
         type: 'saveSubTrends',
+        payload: response,
+      });
+    },
+    * fetchDailyPredictData({ payload }, { call, put }) {
+      const response = yield call(getConsumption, {
+        ...payload,
+        type: 'predict'
+      });
+      yield put({
+        type: 'saveDailyPredictData',
+        payload: response,
+      });
+    },
+    * fetchHourlyCost({ payload }, { call, put }) {
+      const response = yield call(getConsumption, {
+        ...payload,
+        type: 'hourly'
+      });
+      yield put({
+        type: 'saveHourlyCost',
         payload: response,
       });
     }
@@ -652,10 +680,72 @@ export default {
         dailySumCost: payload
       };
     },
+    saveHourlyCost(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      const hourlyCost = [];
+      payload.student_data.map((data) => {
+          hourlyCost.push({
+            type: '该学生',
+            hour: data.hour,
+            cost: -data.avg_cost
+          });
+        }
+      );
+      payload.global_data.map((data) => {
+          hourlyCost.push({
+            type: '全校',
+            hour: data.hour,
+            cost: -data.avg_cost
+          });
+        }
+      );
+      return {
+        ...state,
+        hourlyCost
+      };
+    },
+    saveDailyPredictData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      const dailyPredictData = {};
+      dailyPredictData.date = payload.date;
+      dailyPredictData.dateRange = payload.date_range;
+      dailyPredictData.lastCycleData = payload.last_cycle_data.map((data) => {
+        return {
+          date: data.date,
+          offset: data.offset,
+          'last': -data.total_cost
+        };
+      });
+      dailyPredictData.thisCycleData = payload.this_cycle_data.map((data) => {
+        return {
+          date: data.date,
+          offset: data.offset,
+          'now': -data.total_cost
+        };
+      });
+      dailyPredictData.predictData = payload.this_cycle_data.map((data) => {
+        return {
+          date: data.date,
+          offset: data.offset,
+          'future': -data.total_cost
+        };
+      });
+
+      return {
+        ...state,
+        dailyPredictData
+      };
+    }
+    ,
     clear() {
       return {
         radarData: [],
       };
-    },
+    }
+    ,
   },
 };

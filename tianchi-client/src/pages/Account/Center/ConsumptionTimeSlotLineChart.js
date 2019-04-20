@@ -1,212 +1,22 @@
 /**
  * Created by 胡晓慧 on 2019/4/13.
  */
-import React, {memo} from "react";
-import {Card, Col, Row} from 'antd';
-import {Axis, Chart, Geom, Legend, Tooltip} from "bizcharts";
-import DataSet from "@antv/data-set";
+import React, { memo } from "react";
+import { Card, Col, Row } from 'antd';
+import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
+import { DATE_REANGE_ALIAS, INTERVAL_MAP } from "@/constants";
+import moment from "moment";
 //单天消费总额对比数据
-const data = [
-  {
-    time: "10:10",
-    now: 4,
-    last: 2,
-    future: 2
-  },
-  {
-    time: "10:15",
-    now: 2,
-    last: 6,
-    future: 3
-  },
-  {
-    time: "10:20",
-    now: 13,
-    last: 2,
-    future: 5
-  },
-  {
-    time: "10:25",
-    now: 9,
-    last: 9,
-    future: 9
-  },
-  {
-    time: "10:30",
-    now: 5,
-    last: 2,
-    future: 8
-  },
-  {
-    time: "10:35",
-    now: 8,
-    last: 2,
-    future: 14
-  },
-  {
-    time: "10:40",
-    now: 13,
-    last: 1,
-    future: 2
-  }
-];
-const scale = {
-  now: {
-    min: 0,max:20,
-    alias: '本周',
-    tickInterval: 2
-  },
-  last: {
-    min: 0,max:20,
-    alias: '上周',
-    tickInterval: 2
-  },
-  future: {
-    min: 0,max:20,
-    alias: '下周预测',
-    tickInterval: 2
-  },
-};
+
 let chartIns = null;
-//不同时间消费的对比数据
-const hourlyCompConsumptionData = [
-      {
-        hour: '0时',
-        全校同学: 0,
-        该同学: 0,
-      },
-      {
-        hour: '2时',
-        全校同学: 6,
-        该同学: 3,
-
-      },
-      {
-        hour: '3时',
-        全校同学: 7,
-        该同学: 3,
-      },
-      {
-        hour: '4时',
-        全校同学: 9,
-        该同学: 10,
-      },
-      {
-        hour: '5时',
-        全校同学: 20,
-        该同学: 30,
-      },
-  {
-        hour: '6时',
-        全校同学: 0,
-        该同学: 0,
-      },
-      {
-        hour: '7时',
-        全校同学: 6,
-        该同学: 3,
-
-      },
-      {
-        hour: '8时',
-        全校同学: 7,
-        该同学: 3,
-      },
-      {
-        hour: '9时',
-        全校同学: 9,
-        该同学: 10,
-      },
-      {
-        hour: '10时',
-        全校同学: 20,
-        该同学: 30,
-      },
-  {
-        hour: '11时',
-        全校同学: 0,
-        该同学: 0,
-      },
-      {
-        hour: '12时',
-        全校同学: 6,
-        该同学: 3,
-
-      },
-      {
-        hour: '13时',
-        全校同学: 7,
-        该同学: 3,
-      },
-      {
-        hour: '14时',
-        全校同学: 9,
-        该同学: 10,
-      },
-      {
-        hour: '15时',
-        全校同学: 20,
-        该同学: 30,
-      },
-  {
-        hour: '6时',
-        全校同学: 0,
-        该同学: 0,
-      },
-      {
-        hour: '17时',
-        全校同学: 6,
-        该同学: 3,
-
-      },
-      {
-        hour: '18时',
-        全校同学: 7,
-        该同学: 3,
-      },
-      {
-        hour: '19时',
-        全校同学: 9,
-        该同学: 10,
-      },
-      {
-        hour: '20时',
-        全校同学: 20,
-        该同学: 30,
-      },
-  {
-        hour: '21时',
-        全校同学: 0,
-        该同学: 0,
-      },
-      {
-        hour: '22时',
-        全校同学: 6,
-        该同学: 3,
-
-      },
-      {
-        hour: '23时',
-        全校同学: 7,
-        该同学: 3,
-      }
-    ];
-const hourlyCompConsumpData = new DataSet.View().source(hourlyCompConsumptionData).transform({
-      type: "fold",
-      fields: ["全校同学", "该同学"],
-      // 展开字段集
-      key: "user",
-      // key字段
-      value: "cost" // value字段
-    });
-
-
 
 const ConsumptionTimeSlotLineChart = memo(
-  ({timelyConsumptionData, dailyConsumptionData, date}) => (
+  ({ hourlyCost, dailyPredictData, date, dateRange, maxCost }) => (
     <React.Fragment>
-      <Card title="各时期消费情况一览" bordered={false} style={{width: '100%'}}>
-        <Card title="单天消费总额对比" bordered={false} style={{width: '100%'}} hoverable={true}>
+      <Card title={`${date} 各时期消费情况一览`} bordered={false} style={{ width: '100%' }}>
+        <Card title={`${date}起往后${DATE_REANGE_ALIAS[dateRange]}，每日消费总额、上一周期消费对比及下一周期消费预测`}
+              bordered={false} style={{ width: '100%' }} hoverable={true}
+        >
           <Row>
             <Col span={4}>
               {/*todo 文字分析,告警的触犯*/}
@@ -215,9 +25,30 @@ const ConsumptionTimeSlotLineChart = memo(
             <Col span={20}>
               <Chart
                 height={400}
-                scale={scale}
+                scale={{
+                  now: {
+                    alias: '当前时间',
+                    min: 0, max: maxCost + 10,
+                    tickInterval: 10
+                  },
+                  last: {
+                    alias: `${DATE_REANGE_ALIAS[dateRange]}前`,
+                    min: 0, max: maxCost + 10,
+                    tickInterval: 10
+                  },
+                  future: {
+                    alias: `${DATE_REANGE_ALIAS[dateRange]}后预测`,
+                    min: 0, max: maxCost + 10,
+                    tickInterval: 10
+                  },
+                  offset: {
+                    alias: `距离${date}天数`,
+                    min: 0, max: dateRange,
+                    tickInterval: INTERVAL_MAP[dateRange]
+                  }
+                }}
                 forceFit
-                data={data}
+                data={dailyPredictData}
                 onGetG2Instance={chart => {
                   chartIns = chart;
                 }}
@@ -227,7 +58,7 @@ const ConsumptionTimeSlotLineChart = memo(
                   allowAllCanceled={true}
                   items={[
                     {
-                      value: "now",
+                      value: '当前时间',
                       marker: {
                         symbol: "square",
                         fill: "#F182bd",
@@ -235,7 +66,7 @@ const ConsumptionTimeSlotLineChart = memo(
                       }
                     },
                     {
-                      value: "last",
+                      value: `${DATE_REANGE_ALIAS[dateRange]}前`,
                       marker: {
                         symbol: "hyphen",
                         stroke: "#3182bd",
@@ -244,7 +75,7 @@ const ConsumptionTimeSlotLineChart = memo(
                       }
                     },
                     {
-                      value: "future",
+                      value: `${DATE_REANGE_ALIAS[dateRange]}后预测`,
                       marker: {
                         symbol: "hyphen",
                         stroke: "#ffae6b",
@@ -253,66 +84,112 @@ const ConsumptionTimeSlotLineChart = memo(
                       }
                     }
                   ]}
-                  onClick={ev => {
-                    const item = ev.item;
-                    const value = item.value;
-                    const checked = ev.checked;
+                  onClick={({ item, checked }) => {
+                    const { value } = item;
                     const geoms = chartIns.getAllGeoms();
-
-                    for (let i = 0; i < geoms.length; i++) {
-                      const geom = geoms[i];
-
-                      if (geom.getYScale().field === value) {
+                    for (let geom of geoms) {
+                      if (geom.getYScale().alias === value) {
                         if (checked) {
                           geom.show();
-                        } else {
-                          geom.hide();
+                          continue;
                         }
+                        geom.hide();
                       }
                     }
                   }}
                 />
                 <Axis name="now"/>
-                <Tooltip />
-                <Geom type="interval" position="time*now" color="#F182bd"/>
+                <Axis name="future" visible={false}/>
+                <Axis name="last" visible={false}/>
+                <Tooltip
+                  crosshairs={{
+                    type: 'y',
+                  }}
+                />
+                <Geom
+                  type="interval"
+                  position="offset*now"
+                  color={"#F182bd"}
+                  tooltip={['offset*now', (offset, now) => {
+                    return {
+                      name: '当天消费金额',
+                      title: moment(date).add(offset, 'days').format('YYYY-MM-DD'),
+                      value: now || 0,
+                      shared: true
+                    };
+                  }]}
+                />
                 <Geom
                   type="line"
-                  position="time*last"
-                  color="#3182bd"
+                  position="offset*last"
+                  color={"#3182bd"}
                   size={2}
                   shape="smooth"
+                  tooltip={['offset*last', (offset, value) => {
+                    return {
+                      name: `${DATE_REANGE_ALIAS[dateRange]}前消费金额`,
+                      title: moment(date).add(offset, 'days').format('YYYY-MM-DD'),
+                      value: value || 0,
+                      shared: true
+                    };
+                  }]}
                 />
                 <Geom
                   type="point"
-                  position="time*last"
-                  color="#3182bd"
+                  position="offset*last"
+                  color={"#3182bd"}
                   size={2}
                   shape="circle"
+                  tooltip={['offset*last', (offset, value) => {
+                    return {
+                      name: `${DATE_REANGE_ALIAS[dateRange]}前消费金额`,
+                      title: moment(date).add(offset, 'days').format('YYYY-MM-DD'),
+                      value: value || 0,
+                      shared: true
+                    };
+                  }]}
                 />
                 <Geom
                   type="line"
-                  position="time*future"
-                  color="#fdae6b"
+                  position="offset*future"
+                  color={"#fdae6b"}
                   size={2}
                   shape="smooth"
+                  tooltip={['offset*future', (offset, value) => {
+                    return {
+                      name: `预测${DATE_REANGE_ALIAS[dateRange]}后消费金额`,
+                      title: moment(date).add(offset, 'days').format('YYYY-MM-DD'),
+                      value: value || 0,
+                      shared: true
+                    };
+                  }]}
                 />
                 <Geom
                   type="point"
-                  position="time*future"
-                  color="#fdae6b"
+                  position="offset*future"
+                  color={"#fdae6b"}
                   size={2}
                   shape="circle"
+                  tooltip={['offset*future', (offset, value) => {
+                    return {
+                      name: `预测${DATE_REANGE_ALIAS[dateRange]}后消费金额`,
+                      title: moment(date).add(offset, 'days').format('YYYY-MM-DD'),
+                      value: value || 0,
+                      shared: true
+                    };
+                  }]}
                 />
               </Chart>
             </Col>
           </Row>
         </Card>
-        <Card title={`${date} 各时段的平均消费`} bordered={false} style={{width: '100%'}} hoverable={true}>
+        <Card title={`${date}起过去${DATE_REANGE_ALIAS[dateRange]}各时段平均消费情况`} bordered={false} style={{ width: '100%' }}
+              hoverable={true}>
           <Row>
             <Col span={20}>
               <Chart
                 height={400}
-                data={hourlyCompConsumpData}
+                data={hourlyCost}
                 scale={{
                   cost: {
                     min: 0
@@ -327,12 +204,8 @@ const ConsumptionTimeSlotLineChart = memo(
                 forceFit>
                 <Axis name="hour"/>
                 <Legend/>
-                <Tooltip
-                  crosshairs={{
-                    type: "y"
-                  }}
-                />
-                <Geom type="line" position="hour*cost" size={2} color={"user"}/>
+                <Tooltip/>
+                <Geom type="line" position="hour*cost" size={2} color={"type"}/>
                 <Geom
                   type="point"
                   position="hour*cost"
@@ -341,7 +214,7 @@ const ConsumptionTimeSlotLineChart = memo(
                   style={{
                     lineWidth: 1
                   }}
-                  color={"user"}
+                  color={"type"}
                 />
               </Chart>
             </Col>
@@ -356,5 +229,4 @@ const ConsumptionTimeSlotLineChart = memo(
     </React.Fragment>
   )
 );
-
 export default ConsumptionTimeSlotLineChart;

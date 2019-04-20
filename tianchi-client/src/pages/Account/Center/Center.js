@@ -24,6 +24,8 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   termList: student.termList,
   termMap: global.termMap,
   totalHourlyAvgCost: global.totalHourlyAvgCost,
+  dailyPredictData: student.dailyPredictData,
+  hourlyCost: student.hourlyCost,
   wordCloudData: student.wordCloudData,
   loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchRadarData'],
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
@@ -38,6 +40,8 @@ class Center extends PureComponent {
     this.state = {
       studentId: '',
       scoreType: 'score',
+      dateRange: 7,
+      pickedDate: moment().format('YYYY-MM-DD'),
     };
     this.getStudentList = _.debounce(this.getStudentList, 800);
   }
@@ -125,6 +129,22 @@ class Center extends PureComponent {
         studentId: studentId,
       }
     });
+    dispatch({
+      type: 'student/fetchDailyPredictData',
+      payload: {
+        studentId: studentId,
+        dateRange: this.state.dateRange,
+        date: this.state.pickedDate,
+      }
+    });
+    dispatch({
+      type: 'student/fetchHourlyCost',
+      payload: {
+        studentId: studentId,
+        date: this.state.pickedDate,
+        dateRange: this.state.dateRange
+      }
+    });
   };
 
   getStudentList = (input) => {
@@ -165,9 +185,6 @@ class Center extends PureComponent {
     //todo
   };
 
-  onDateChange = (dateString) => {
-    const { dispatch, studentInfo } = this.props;
-  };
 
   onScoreTypeChange = (scoreType) => {
     const { dispatch, studentInfo } = this.props;
@@ -189,8 +206,86 @@ class Center extends PureComponent {
     this.setState({ scoreType });
   };
 
-  handleChangeTime = (value) => {
-    console.log(`selected ${value}`);
+  onDateChange = (pickedDate) => {
+
+    const { dispatch, studentInfo } = this.props;
+    dispatch({
+      type: 'student/fetchDailyPredictData',
+      payload: {
+        studentId: studentInfo.id,
+        dateRange: this.state.dateRange,
+        date: pickedDate,
+      }
+    });
+    dispatch({
+      type: 'student/fetchHourlyCost',
+      payload: {
+        studentId: studentInfo.id,
+        dateRange: this.state.dateRange,
+        date: pickedDate,
+      }
+    });
+    this.setState({ pickedDate });
+  };
+
+  handleChangeRange = (dateRange) => {
+    const { dispatch, studentInfo } = this.props;
+    dispatch({
+      type: 'student/fetchDailyPredictData',
+      payload: {
+        studentId: studentInfo.id,
+        dateRange: dateRange,
+        date: this.state.pickedDate,
+      }
+    });
+    dispatch({
+      type: 'student/fetchHourlyCost',
+      payload: {
+        studentId: studentInfo.id,
+        dateRange: dateRange,
+        date: this.state.pickedDate,
+      }
+    });
+    this.setState({ dateRange });
+  };
+
+  formatDailyPredictData = (dailyPredictData) => {
+    const { lastCycleData, thisCycleData, predictData, dateRange } = dailyPredictData;
+    const mergedData = new DataSet.View().source(lastCycleData.concat(thisCycleData).concat(predictData)).transform({
+      type: 'partition',
+      groupBy: ['offset'], // 以year字段进行分组
+      orderBy: ['offset']
+    }).rows;
+    const formatedData = [];
+    let maxCost = 0;
+    for (let offset = 0; offset <= dateRange; offset++) {
+      const key = `_${offset}`;
+      let data = {
+        offset: Number(offset),
+        last: 0,
+        now: 0,
+        future: 0,
+      };
+      if (!mergedData[key]) {
+        formatedData.push(data);
+        continue;
+      }
+
+      for (let item of mergedData[key]) {
+        data = {
+          ...data,
+          ...item
+        };
+      }
+      maxCost = maxCost > data.future ? maxCost : data.future;
+      maxCost = maxCost > data.now ? maxCost : data.now;
+      maxCost = maxCost > data.last ? maxCost : data.last;
+      formatedData.push(data);
+    }
+    return {
+      formatedData,
+      maxCost
+    };
   };
 
   render() {
@@ -201,6 +296,8 @@ class Center extends PureComponent {
       studentListLoading,
       termList,
       totalHourlyAvgCost,
+      dailyPredictData,
+      hourlyCost,
       hourlyAvgCost,
       dailySumCost,
       loading,
@@ -209,6 +306,8 @@ class Center extends PureComponent {
       kaoqinLoading
     } = this.props;
     //雷达图的处理
+
+    const { formatedData: predictData, maxCost } = this.formatDailyPredictData(dailyPredictData);
     const radarViewData = new DataSet.View().source(studentInfo.radarData).transform({
       type: "fold",
       fields: Object.values(SCORE_LEVEL_ALIAS),
@@ -308,13 +407,6 @@ class Center extends PureComponent {
 
     //timelyconsumption数据
     const timelyConsumptionData = hourlyAvgCost || [];
-    const dConCost = null ? new DataSet.View().source([]).transform({
-      type: 'impute',
-      field: 'cost',
-      groupBy: ['time', 'diftime'],
-      method: 'value',
-      value: 0
-    }) : [];
     //考勤的相关数据
     const kaoqinData = this.formatKaoqinData(studentInfo.kaoqinData, termList);
     const kaoqinSummary = studentInfo.kaoqinSummary;
@@ -633,21 +725,27 @@ class Center extends PureComponent {
                     />
                   </Suspense>
                   <Suspense fallback={<div>Loading...</div>}>
-                    <span>选择查看的时间： </span>
-                    <DatePicker
-                      defaultValue={moment(moment(), 'YYYY-MM-DD')}
-                      onChange={(_, date) => this.onDateChange(date)}
-                    />
-                    <Select defaultValue="week" style={{ width: 120 }} onChange={this.handleChangeTime}>
-                      <Option value="week">1周</Option>
-                      <Option value="1month">1个月</Option>
-                      <Option value="3month">3个月</Option>
-                      <Option value="6month">6个月</Option>
-                      <Option value="year">1年</Option>
-                    </Select>
+                    <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+                      <span>选择查看的时间：</span>
+                      <DatePicker
+                        defaultValue={moment(moment(), 'YYYY-MM-DD')}
+                        onChange={(_, date) => this.onDateChange(date)}
+                      />
+                      <span>分析区间：</span>
+                      <Select value={this.state.dateRange} style={{ width: 120 }} onChange={this.handleChangeRange}>
+                        <Option key='one-week' value={7}>1周</Option>
+                        <Option key='one-month' value={30}>1个月</Option>
+                        <Option key='three-month' value={90}>3个月</Option>
+                        <Option key='six-month' value={180}>6个月</Option>
+                        <Option key='one-year' value={365}>1年</Option>
+                      </Select>
+                    </Affix>
                     <ConsumptionTimeSlotLineChart
-                      timelyConsumptionData={timelyConsumptionData}
-                      dailyConsumptionData={dConCost}
+                      hourlyCost={hourlyCost}
+                      dailyPredictData={predictData}
+                      maxCost={maxCost}
+                      date={dailyPredictData.date}
+                      dateRange={dailyPredictData.dateRange}
                     />
                   </Suspense>
                 </TabPane>

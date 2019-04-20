@@ -22,8 +22,8 @@ export async function getKaoqinData(studentId) {
   return request(`/api/students/${studentId}/kaoqin/`);
 }
 
-export async function getConsumption({ studentId, date, type }) {
-  return request(`/api/students/${studentId}/consumptions/?date=${date}&type=${type}`);
+export async function getConsumption({ studentId, date, type, dateRange }) {
+  return request(`/api/students/${studentId}/consumptions/?date=${date}&type=${type}&date_range=${dateRange}`);
 }
 
 // global

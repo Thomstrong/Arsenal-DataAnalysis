@@ -32,7 +32,7 @@ const ConsumptionOverallLineChart = memo(
     if (chartIns) {
       const geoms = chartIns.getAllGeoms();
       for (let geom of geoms) {
-        geom.show();
+        geom && geom.show();
       }
     }
     return (

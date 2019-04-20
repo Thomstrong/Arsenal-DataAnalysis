@@ -13,12 +13,12 @@ class ConsumptionSerializer(serializers.ModelSerializer):
 
 
 class DailyConsumptionSerializer(serializers.ModelSerializer):
-    weekday = serializers.SerializerMethodField()
+    offset = serializers.IntegerField()
+
     class Meta:
         model = DailyConsumption
-        fields = ('date', 'total_cost', 'weekday')
-    def get_weekday(self, obj):
-        return obj.date.weekday()
+        fields = ('total_cost', 'offset')
+
 
 class HourlyConsumptionSerializer(serializers.ModelSerializer):
     class Meta:
