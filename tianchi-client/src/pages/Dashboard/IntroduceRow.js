@@ -92,6 +92,35 @@ const IntroduceRow = memo(({ loading, visitData }) => (
         </span>
       </ChartCard>
     </Col>
+    {/*住校人数*/}
+    <Col {...topColResponsiveProps}>
+      <ChartCard
+        loading={loading}
+        bordered={false}
+        title="住校生人数占比"
+        total="42%"
+        footer={
+          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
+            <Row>
+                <Col span={12}>
+                    走读生 {numeral(2220).format('0,0')}
+                </Col>
+                <Col span={12}>
+                    住校生 {numeral(1365).format('0,0')}
+                </Col>
+            </Row>
+          </div>
+        }
+        contentHeight={46}
+      >
+        <MiniProgress
+          percent={42}
+          strokeWidth={8}
+          target={50}
+          color="#13C2C2"
+        />
+      </ChartCard>
+    </Col>
     {/*2019年起消费数据一览*/}
     <Col {...topColResponsiveProps}>
       <ChartCard
@@ -132,44 +161,6 @@ const IntroduceRow = memo(({ loading, visitData }) => (
         contentHeight={46}
       >
         <MiniBar data={lastAttendanceData} />
-      </ChartCard>
-    </Col>
-    <Col {...topColResponsiveProps}>
-      <ChartCard
-        loading={loading}
-        bordered={false}
-        title="todo 不知道要展示什么"
-        action={
-          <Tooltip
-            title={<FormattedMessage id="app.analysis.introduce" defaultMessage="Introduce" />}
-          >
-            <Icon type="info-circle-o" />
-          </Tooltip>
-        }
-        total="78%"
-        footer={
-          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
-            <Trend flag="up" style={{ marginRight: 16 }}>
-              <FormattedMessage id="app.analysis.week" defaultMessage="Weekly Changes" />
-              <span className={styles.trendText}>12%</span>
-            </Trend>
-            <Trend flag="down">
-              <FormattedMessage id="app.analysis.day" defaultMessage="Weekly Changes" />
-              <span className={styles.trendText}>11%</span>
-            </Trend>
-          </div>
-        }
-        contentHeight={46}
-      >
-        <MiniProgress
-          percent={78}
-          strokeWidth={8}
-          target={80}
-          targetLabel={`${formatMessage({ id: 'component.miniProgress.tooltipDefault' }).concat(
-            ': '
-          )}80%`}
-          color="#13C2C2"
-        />
       </ChartCard>
     </Col>
   </Row>

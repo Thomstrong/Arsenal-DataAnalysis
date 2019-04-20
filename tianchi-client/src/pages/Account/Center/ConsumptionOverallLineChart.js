@@ -60,22 +60,22 @@ const TimelyConsumptionData = [
   {
     time: '0时',
     one: 5,
-    all:10
+    all: 10
   },
   {
     time: '1时',
     one: 22,
-    all:10
+    all: 10
   },
   {
     time: '2时',
     one: 23,
-    all:10
+    all: 10
   },
   {
     time: '3时',
     one: 12,
-    all:10
+    all: 10
   },
   {
     time: '4时',
@@ -119,11 +119,11 @@ const ConsumptionOverallLineChart = memo(
         <Row>
           <Col span={20}>
             <Card title="总体消费趋势" bordered={false} style={{width: '100%'}} hoverable={true}>
-          <OneTimelineChart
-            height={300}
-            data={DaySumConsumptionData}
-          />
-        </Card>
+              <OneTimelineChart
+                height={300}
+                data={DaySumConsumptionData}
+              />
+            </Card>
           </Col>
           <Col span={3} offset={1}>
             <Card title="总结" bordered={false} style={{width: '100%'}} hoverable={true}>
@@ -139,13 +139,13 @@ const ConsumptionOverallLineChart = memo(
           </Col>
           <Col span={20} offset={1}>
             <Card title="不同时间点平均消费对比" bordered={false} style={{width: '100%'}} hoverable={true}>
-          <Chart
-            height={400}
-            data={TimelyConsumptionData}
-            scale={scale}
-            forceFit
-          >
-             <Legend
+              <Chart
+                height={400}
+                data={TimelyConsumptionData}
+                scale={scale}
+                forceFit
+              >
+                <Legend
                   custom={true}
                   allowAllCanceled={true}
                   items={[
@@ -186,13 +186,13 @@ const ConsumptionOverallLineChart = memo(
                     }
                   }}
                 />
-            <Axis name="time"/>
-            <Tooltip/>
-            <Geom type="interval" position="time*one" color="#0099CC"/>
-            <Geom type="line" position="time*all" color="#FF9900" size={2} shape="smooth"/>
-            <Geom type="point" position="time*all" color="#FF9900" size={3} shape="circle"/>
-          </Chart>
-        </Card>
+                <Axis name="time"/>
+                <Tooltip/>
+                <Geom type="interval" position="time*one" color="#0099CC"/>
+                <Geom type="line" position="time*all" color="#FF9900" size={2} shape="smooth"/>
+                <Geom type="point" position="time*all" color="#FF9900" size={3} shape="circle"/>
+              </Chart>
+            </Card>
           </Col>
         </Row>
       </Card>

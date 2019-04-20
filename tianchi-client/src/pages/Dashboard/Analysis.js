@@ -12,6 +12,9 @@ const DailyConsumptionCard = React.lazy(() => import('./DailyConsumptionCard'));
 const TopSearch = React.lazy(() => import('./TopSearch'));
 const ProportionSales = React.lazy(() => import('./ProportionSales'));
 const OfflineData = React.lazy(() => import('./OfflineData'));
+const LocationMap = React.lazy(() => import('./LocationMap'));
+const EcardConsumptionCard = React.lazy(() => import('./EcardConsumptionCard'));
+const AttendanceCard = React.lazy(() => import('./AttendanceCard'));
 
 @connect(({ chart, loading }) => ({
   chart,
@@ -19,128 +22,167 @@ const OfflineData = React.lazy(() => import('./OfflineData'));
 }))
 class Analysis extends Component {
   state = {
-    salesType: 'all',
-    currentTabKey: '',
-    rangePickerValue: getTimeDistance('year'),
+    studentType: 'homeland',
+    sexType:'grade',
   };
 
-  componentDidMount() {
-    const { dispatch } = this.props;
-    this.reqRef = requestAnimationFrame(() => {
-      dispatch({
-        type: 'chart/fetchDailyConsumptionData',
-      });
-      dispatch({
-        type: 'chart/fetch',
-      });
-    });
-  }
 
-  componentWillUnmount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'chart/clear',
-    });
-    cancelAnimationFrame(this.reqRef);
-  }
-
-  handleChangeSalesType = e => {
+  handleChangeSexType = e => {
     this.setState({
-      salesType: e.target.value,
+      sexType: e.target.value,
     });
   };
 
-  handleTabChange = key => {
+  handleChangeStudentType = e => {
     this.setState({
-      currentTabKey: key,
+      studentType: e.target.value,
     });
   };
 
-  handleRangePickerChange = rangePickerValue => {
-    const { dispatch } = this.props;
-    this.setState({
-      rangePickerValue,
-    });
 
-    dispatch({
-      type: 'chart/fetchSalesData',
-    });
-  };
 
-  handleStudentChange = (value) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'chart/fetchDailyConsumptionData',
-      payload: {
-        studentId: value
-      }
-    });
-  };
-
-  selectDate = type => {
-    const { dispatch } = this.props;
-    this.setState({
-      rangePickerValue: getTimeDistance(type),
-    });
-
-    dispatch({
-      type: 'chart/fetchSalesData',
-    });
-  };
-
-  isActive = type => {
-    const { rangePickerValue } = this.state;
-    const value = getTimeDistance(type);
-    if (!rangePickerValue[0] || !rangePickerValue[1]) {
-      return '';
-    }
-    if (
-      rangePickerValue[0].isSame(value[0], 'day') &&
-      rangePickerValue[1].isSame(value[1], 'day')
-    ) {
-      return styles.currentDate;
-    }
-    return '';
-  };
 
   render() {
-    const { rangePickerValue, salesType, currentTabKey } = this.state;
+    const { sexType, studentType } = this.state;
     const { chart, loading } = this.props;
     const {
       visitData,
-      visitData2,
-      salesData,
-      searchData,
-      offlineData,
-      offlineChartData,
-      salesTypeData,
-      salesTypeDataOnline,
-      salesTypeDataOffline,
-      dailyConsumptionData,
-      student,
     } = chart;
-    let salesPieData;
-    if (salesType === 'all') {
-      salesPieData = salesTypeData;
+
+    //student表示人员分布的图表
+    const studentHomeData=[
+      {
+        x: '事例一',
+        y: 40
+      },
+      {
+        x: '事例二',
+        y: 21
+      },
+      {
+        x: '事例三',
+        y: 17
+      },
+      {
+        x: '事例四',
+        y: 13
+      },
+      {
+        x: '事例五',
+        y: 9
+      }
+    ];
+    const studentNationData=[
+      {
+        x: '事例一',
+        y: 40
+      },
+      {
+        x: '事例二',
+        y: 21
+      },
+      {
+        x: '事例三',
+        y: 17
+      },
+      {
+        x: '事例四',
+        y: 13
+      },
+      {
+        x: '事例五',
+        y: 9
+      }
+    ];
+    const studentStateData=[
+      {
+        x: '事例一',
+        y: 40
+      },
+      {
+        x: '事例二',
+        y: 21
+      },
+      {
+        x: '事例三',
+        y: 17
+      },
+      {
+        x: '事例四',
+        y: 13
+      },
+      {
+        x: '事例五',
+        y: 9
+      }
+    ];
+    let studentPieData;
+    if (studentType === 'homeland') {
+      studentPieData = studentHomeData;
     } else {
-      salesPieData = salesType === 'online' ? salesTypeDataOnline : salesTypeDataOffline;
+      studentPieData = studentType === 'nation' ? studentNationData : studentStateData;
     }
-    const menu = (
-      <Menu>
-        <Menu.Item>操作一</Menu.Item>
-        <Menu.Item>操作二</Menu.Item>
-      </Menu>
-    );
-
-    const dropdownGroup = (
-      <span className={styles.iconGroup}>
-        <Dropdown overlay={menu} placement="bottomRight">
-          <Icon type="ellipsis"/>
-        </Dropdown>
-      </span>
-    );
-
-    const activeKey = currentTabKey || (offlineData[0] && offlineData[0].name);
+    //sex表示性别分布的图表
+    let sexPieData;
+    const sexGradedata = [
+  {
+    value: 251,
+    type: '高一',
+    name: '高一男生',
+  },
+  {
+    value: 1048,
+    type: '高一',
+    name: '高一女生',
+  },
+  {
+    value: 610,
+    type: '高二',
+    name: '高二男生',
+  },
+  {
+    value: 434,
+    type: '高二',
+    name: '高二女生',
+  },
+  {
+    value: 335,
+    type: '高三',
+    name: '高三男生',
+  },
+  {
+    value: 250,
+    type: '高三',
+    name: '高三女生',
+  },
+];
+    const sexLeavedata = [
+  {
+    value: 251,
+    type: '走读',
+    name: '走读男生',
+  },
+  {
+    value: 1048,
+    type: '走读',
+    name: '走读女生',
+  },
+  {
+    value: 610,
+    type: '住校',
+    name: '住校男生',
+  },
+  {
+    value: 434,
+    type: '住校',
+    name: '住校女生',
+  }
+];
+    if (sexType === 'grade') {
+      sexPieData = sexGradedata;
+    } else {
+      sexPieData = sexLeavedata;
+    }
 
     return (
       <GridContent>
@@ -148,58 +190,23 @@ class Analysis extends Component {
           <IntroduceRow loading={loading} visitData={visitData}/>
         </Suspense>
         <Suspense fallback={null}>
-          <DailyConsumptionCard
-            handleStudentChange={this.handleStudentChange}
-            student={student}
-            dailyConsumptionData={dailyConsumptionData}
-            loading={loading}
+          <LocationMap
+            studentType={studentType}
+            sexType={sexType}
+            studentPieData={studentPieData}
+            sexPieData={sexPieData}
+            handleChangeSexType={this.handleChangeSexType}
+            handleChangeStudentType={this.handleChangeStudentType}
+
           />
         </Suspense>
         <Suspense fallback={null}>
-          <SalesCard
-            rangePickerValue={rangePickerValue}
-            salesData={salesData}
-            isActive={this.isActive}
-            handleRangePickerChange={this.handleRangePickerChange}
-            loading={loading}
-            selectDate={this.selectDate}
-          />
+          <EcardConsumptionCard/>
         </Suspense>
-        <div className={styles.twoColLayout}>
-          <Row gutter={24}>
-            <Col xl={12} lg={24} md={24} sm={24} xs={24}>
-              <Suspense fallback={null}>
-                <TopSearch
-                  loading={loading}
-                  visitData2={visitData2}
-                  selectDate={this.selectDate}
-                  searchData={searchData}
-                  dropdownGroup={dropdownGroup}
-                />
-              </Suspense>
-            </Col>
-            <Col xl={12} lg={24} md={24} sm={24} xs={24}>
-              <Suspense fallback={null}>
-                <ProportionSales
-                  dropdownGroup={dropdownGroup}
-                  salesType={salesType}
-                  loading={loading}
-                  salesPieData={salesPieData}
-                  handleChangeSalesType={this.handleChangeSalesType}
-                />
-              </Suspense>
-            </Col>
-          </Row>
-        </div>
         <Suspense fallback={null}>
-          <OfflineData
-            activeKey={activeKey}
-            loading={loading}
-            offlineData={offlineData}
-            offlineChartData={offlineChartData}
-            handleTabChange={this.handleTabChange}
-          />
+          <AttendanceCard/>
         </Suspense>
+
       </GridContent>
     );
   }
