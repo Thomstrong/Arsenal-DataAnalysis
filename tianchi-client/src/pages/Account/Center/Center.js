@@ -207,7 +207,9 @@ class Center extends PureComponent {
   };
 
   onDateChange = (pickedDate) => {
-
+    if (!pickedDate) {
+      return
+    }
     const { dispatch, studentInfo } = this.props;
     dispatch({
       type: 'student/fetchDailyPredictData',
