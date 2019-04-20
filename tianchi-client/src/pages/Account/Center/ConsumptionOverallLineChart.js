@@ -6,29 +6,10 @@ import { Card, Col, Empty, Row } from 'antd';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
 import { OneTimelineChart } from '@/components/Charts';
 
-const scale = {
-  hour: {
-    min: 0,
-    max: 23,
-    tickInterval: 1
-  },
-  avg_cost: {
-    min: 0,
-    max: 20,
-    alias: '该同学',
-    tickInterval: 5
-  },
-  total_avg: {
-    min: 0,
-    max: 20,
-    alias: '全校平均消费',
-    tickInterval: 5
-  }
-};
 let chartIns = null;
 
 const ConsumptionOverallLineChart = memo(
-  ({ hourlyAvgCost, dailySumCost }) => {
+  ({ hourlyAvgCost, dailySumCost, maxHourlyAvg }) => {
     if (chartIns) {
       const geoms = chartIns.getAllGeoms();
       for (let geom of geoms) {
@@ -68,7 +49,25 @@ const ConsumptionOverallLineChart = memo(
               {dailySumCost.length ? <Chart
                 height={400}
                 data={hourlyAvgCost}
-                scale={scale}
+                scale={{
+                  hour: {
+                    min: 0,
+                    max: 23,
+                    tickInterval: 1
+                  },
+                  avg_cost: {
+                    min: 0,
+                    max: maxHourlyAvg,
+                    alias: '该同学',
+                    tickInterval: 5
+                  },
+                  total_avg: {
+                    min: 0,
+                    max: maxHourlyAvg,
+                    alias: '全校平均消费',
+                    tickInterval: 5
+                  }
+                }}
                 onGetG2Instance={chart => {
                   chartIns = chart;
                 }}

@@ -28,17 +28,17 @@ const ConsumptionTimeSlotLineChart = memo(
                 scale={{
                   now: {
                     alias: '当前时间',
-                    min: 0, max: maxCost + 10,
+                    min: 0, max: maxCost,
                     tickInterval: 10
                   },
                   last: {
                     alias: `${DATE_REANGE_ALIAS[dateRange]}前`,
-                    min: 0, max: maxCost + 10,
+                    min: 0, max: maxCost,
                     tickInterval: 10
                   },
                   future: {
                     alias: `${DATE_REANGE_ALIAS[dateRange]}后预测`,
-                    min: 0, max: maxCost + 10,
+                    min: 0, max: maxCost,
                     tickInterval: 10
                   },
                   offset: {

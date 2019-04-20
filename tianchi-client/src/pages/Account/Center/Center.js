@@ -208,7 +208,7 @@ class Center extends PureComponent {
 
   onDateChange = (pickedDate) => {
     if (!pickedDate) {
-      return
+      return;
     }
     const { dispatch, studentInfo } = this.props;
     dispatch({
@@ -290,6 +290,35 @@ class Center extends PureComponent {
     };
   };
 
+  formatHourlyAvgCost = (hourlyAvgCost, totalHourlyAvgCost) => {
+    let i = 0;
+    let j = 0;
+    const hourlyAvgData = [];
+    let maxHourlyAvg = 0
+    for (let hour = 0; hour < 24; hour++) {
+      const data = {
+        hour,
+        avg_cost: 0,
+        total_avg: 0,
+      };
+      if (i < hourlyAvgCost.length && hourlyAvgCost[i].hour === hour) {
+        data.avg_cost = Number(hourlyAvgCost[i].avg_cost.toFixed(2));
+        maxHourlyAvg = data.avg_cost > maxHourlyAvg? data.avg_cost:maxHourlyAvg
+        i++;
+      }
+      if (j < totalHourlyAvgCost.length && totalHourlyAvgCost[j].hour === hour) {
+        data.total_avg = Number(totalHourlyAvgCost[j].total_avg.toFixed(2));
+        maxHourlyAvg = data.total_avg > maxHourlyAvg? data.total_avg:maxHourlyAvg
+        j++;
+      }
+      hourlyAvgData.push(data);
+    }
+    return {
+      hourlyAvgData,
+      maxHourlyAvg
+    };
+  };
+
   render() {
     const {
       studentInfo,
@@ -309,6 +338,7 @@ class Center extends PureComponent {
     } = this.props;
     //雷达图的处理
 
+    const {hourlyAvgData,maxHourlyAvg} = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
     const { formatedData: predictData, maxCost } = this.formatDailyPredictData(dailyPredictData);
     const radarViewData = new DataSet.View().source(studentInfo.radarData).transform({
       type: "fold",
@@ -722,8 +752,9 @@ class Center extends PureComponent {
                 <TabPane tab={<span><Icon type="credit-card"/>一卡通</span>} key="ECard">
                   <Suspense fallback={<div>Loading...</div>}>
                     <ConsumptionOverallLineChart
-                      hourlyAvgCost={hourlyAvgCost.concat(totalHourlyAvgCost)}
+                      hourlyAvgCost={hourlyAvgData}
                       dailySumCost={dailySumCost}
+                      maxHourlyAvg={maxHourlyAvg}
                     />
                   </Suspense>
                   <Suspense fallback={<div>Loading...</div>}>
