@@ -91,3 +91,18 @@ export const SCORE_LEVEL_ALIAS = {
   average: '平均分',
 };
 
+export const DATE_REANGE_ALIAS = {
+  7: '一周',
+  30: '一个月',
+  90: '一个季度',
+  180: '半年',
+  365: '一年'
+};
+
+export const INTERVAL_MAP = {
+  7: 1,
+  30: 2,
+  90: 5,
+  180: 10,
+  365: 20,
+};

@@ -1,6 +1,7 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
 
+// student
 export async function getStudentBasic(studentId) {
   return request(`/api/students/${studentId}/`);
 }
@@ -21,14 +22,20 @@ export async function getKaoqinData(studentId) {
   return request(`/api/students/${studentId}/kaoqin/`);
 }
 
-export async function getConsumption({ studentId, date }) {
-  return request(`/api/students/${studentId}/consumptions/?date=${date}`);
+export async function getConsumption({ studentId, date, type, dateRange }) {
+  return request(`/api/students/${studentId}/consumptions/?date=${date}&type=${type}&date_range=${dateRange}`);
+}
+
+// global
+export async function getTotalHourlyAvgCost() {
+  return request(`/api/consumption/hourly_avg/`);
 }
 
 export async function getTermMap() {
   return request(`/api/terms/`);
 }
 
+// course
 export async function getCourseSelectionDistribution() {
   return request(`/api/course_record/distribution/?type=selection`);
 }
@@ -37,7 +44,7 @@ export async function getCoursePercent(year) {
   return request(`/api/course_record/distribution/?type=course_percent&year=${year}`);
 }
 
-
+// useless
 export async function queryProjectNotice() {
   return request('/api/project/notice');
 }

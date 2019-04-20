@@ -23,12 +23,16 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   studentInfo: student.studentInfo,
   termList: student.termList,
   termMap: global.termMap,
+  totalHourlyAvgCost: global.totalHourlyAvgCost,
+  dailyPredictData: student.dailyPredictData,
+  hourlyCost: student.hourlyCost,
   wordCloudData: student.wordCloudData,
   loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchRadarData'],
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
-  consumptionData: student.consumptionData,
+  hourlyAvgCost: student.hourlyAvgCost,
+  dailySumCost: student.dailySumCost,
   studentListLoading: loading.effects['student/fetchStudentList'],
-  costLoading: loading.effects['student/fetchConsumptionData'],
+  costLoading: loading.effects['student/fetchHourlyAvgCost'],
 }))
 class Center extends PureComponent {
   constructor() {
@@ -36,6 +40,8 @@ class Center extends PureComponent {
     this.state = {
       studentId: '',
       scoreType: 'score',
+      dateRange: 7,
+      pickedDate: moment().format('YYYY-MM-DD'),
     };
     this.getStudentList = _.debounce(this.getStudentList, 800);
   }
@@ -61,7 +67,7 @@ class Center extends PureComponent {
   };
 
   getStudentInfo = (studentId) => {
-    const { dispatch } = this.props;
+    const { dispatch, totalHourlyAvgCost } = this.props;
     dispatch({
       type: 'student/fetchBasic',
       payload: {
@@ -96,11 +102,47 @@ class Center extends PureComponent {
         studentId: studentId,
       }
     });
+
     dispatch({
       type: 'student/fetchKaoqinData',
       payload: {
         studentId: studentId,
         termMap: this.props.termMap
+      }
+    });
+
+    if (!totalHourlyAvgCost.length) {
+      dispatch({
+        type: 'global/fetchTotalHourlyAvgCost',
+      });
+    }
+
+    dispatch({
+      type: 'student/fetchHourlyAvgCost',
+      payload: {
+        studentId: studentId,
+      }
+    });
+    dispatch({
+      type: 'student/fetchDailySumCost',
+      payload: {
+        studentId: studentId,
+      }
+    });
+    dispatch({
+      type: 'student/fetchDailyPredictData',
+      payload: {
+        studentId: studentId,
+        dateRange: this.state.dateRange,
+        date: this.state.pickedDate,
+      }
+    });
+    dispatch({
+      type: 'student/fetchHourlyCost',
+      payload: {
+        studentId: studentId,
+        date: this.state.pickedDate,
+        dateRange: this.state.dateRange
       }
     });
   };
@@ -143,16 +185,7 @@ class Center extends PureComponent {
     //todo
   };
 
-  onDateChange = (dateString) => {
-    const { dispatch, studentInfo } = this.props;
-    dispatch({
-      type: 'student/fetchConsumptionData',
-      payload: {
-        studentId: studentInfo.id,
-        date: dateString
-      }
-    });
-  };
+
   onScoreTypeChange = (scoreType) => {
     const { dispatch, studentInfo } = this.props;
     const studentId = studentInfo.id;
@@ -173,8 +206,117 @@ class Center extends PureComponent {
     this.setState({ scoreType });
   };
 
-  handleChangeTime = (value) => {
-    console.log(`selected ${value}`);
+  onDateChange = (pickedDate) => {
+    if (!pickedDate) {
+      return;
+    }
+    const { dispatch, studentInfo } = this.props;
+    dispatch({
+      type: 'student/fetchDailyPredictData',
+      payload: {
+        studentId: studentInfo.id,
+        dateRange: this.state.dateRange,
+        date: pickedDate,
+      }
+    });
+    dispatch({
+      type: 'student/fetchHourlyCost',
+      payload: {
+        studentId: studentInfo.id,
+        dateRange: this.state.dateRange,
+        date: pickedDate,
+      }
+    });
+    this.setState({ pickedDate });
+  };
+
+  handleChangeRange = (dateRange) => {
+    const { dispatch, studentInfo } = this.props;
+    dispatch({
+      type: 'student/fetchDailyPredictData',
+      payload: {
+        studentId: studentInfo.id,
+        dateRange: dateRange,
+        date: this.state.pickedDate,
+      }
+    });
+    dispatch({
+      type: 'student/fetchHourlyCost',
+      payload: {
+        studentId: studentInfo.id,
+        dateRange: dateRange,
+        date: this.state.pickedDate,
+      }
+    });
+    this.setState({ dateRange });
+  };
+
+  formatDailyPredictData = (dailyPredictData) => {
+    const { lastCycleData, thisCycleData, predictData, dateRange } = dailyPredictData;
+    const mergedData = new DataSet.View().source(lastCycleData.concat(thisCycleData).concat(predictData)).transform({
+      type: 'partition',
+      groupBy: ['offset'], // 以year字段进行分组
+      orderBy: ['offset']
+    }).rows;
+    const formatedData = [];
+    let maxCost = 0;
+    for (let offset = 0; offset <= dateRange; offset++) {
+      const key = `_${offset}`;
+      let data = {
+        offset: Number(offset),
+        last: 0,
+        now: 0,
+        future: 0,
+      };
+      if (!mergedData[key]) {
+        formatedData.push(data);
+        continue;
+      }
+
+      for (let item of mergedData[key]) {
+        data = {
+          ...data,
+          ...item
+        };
+      }
+      maxCost = maxCost > data.future ? maxCost : data.future;
+      maxCost = maxCost > data.now ? maxCost : data.now;
+      maxCost = maxCost > data.last ? maxCost : data.last;
+      formatedData.push(data);
+    }
+    return {
+      formatedData,
+      maxCost
+    };
+  };
+
+  formatHourlyAvgCost = (hourlyAvgCost, totalHourlyAvgCost) => {
+    let i = 0;
+    let j = 0;
+    const hourlyAvgData = [];
+    let maxHourlyAvg = 0
+    for (let hour = 0; hour < 24; hour++) {
+      const data = {
+        hour,
+        avg_cost: 0,
+        total_avg: 0,
+      };
+      if (i < hourlyAvgCost.length && hourlyAvgCost[i].hour === hour) {
+        data.avg_cost = Number(hourlyAvgCost[i].avg_cost.toFixed(2));
+        maxHourlyAvg = data.avg_cost > maxHourlyAvg? data.avg_cost:maxHourlyAvg
+        i++;
+      }
+      if (j < totalHourlyAvgCost.length && totalHourlyAvgCost[j].hour === hour) {
+        data.total_avg = Number(totalHourlyAvgCost[j].total_avg.toFixed(2));
+        maxHourlyAvg = data.total_avg > maxHourlyAvg? data.total_avg:maxHourlyAvg
+        j++;
+      }
+      hourlyAvgData.push(data);
+    }
+    return {
+      hourlyAvgData,
+      maxHourlyAvg
+    };
   };
 
   render() {
@@ -184,13 +326,20 @@ class Center extends PureComponent {
       studentList,
       studentListLoading,
       termList,
-      consumptionData,
+      totalHourlyAvgCost,
+      dailyPredictData,
+      hourlyCost,
+      hourlyAvgCost,
+      dailySumCost,
       loading,
       match,
       location,
       kaoqinLoading
     } = this.props;
     //雷达图的处理
+
+    const {hourlyAvgData,maxHourlyAvg} = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
+    const { formatedData: predictData, maxCost } = this.formatDailyPredictData(dailyPredictData);
     const radarViewData = new DataSet.View().source(studentInfo.radarData).transform({
       type: "fold",
       fields: Object.values(SCORE_LEVEL_ALIAS),
@@ -289,14 +438,7 @@ class Center extends PureComponent {
     const Option = Select.Option;
 
     //timelyconsumption数据
-    const timelyConsumptionData = consumptionData.hourly || [];
-    const dConCost = consumptionData.daily ? new DataSet.View().source(consumptionData.daily).transform({
-      type: 'impute',
-      field: 'cost',
-      groupBy: ['time', 'diftime'],
-      method: 'value',
-      value: 0
-    }) : [];
+    const timelyConsumptionData = hourlyAvgCost || [];
     //考勤的相关数据
     const kaoqinData = this.formatKaoqinData(studentInfo.kaoqinData, termList);
     const kaoqinSummary = studentInfo.kaoqinSummary;
@@ -453,28 +595,30 @@ class Center extends PureComponent {
         <Row gutter={24}>
           <Col lg={7} md={24}>
             <Card bordered={false} style={{ marginBottom: 24 }} loading={loading}>
-              <Select
-                style={{ width: '100%', display: 'block' }}
-                showSearch
-                notFoundContent={studentListLoading ? <Spin size="small"/> :
-                  <Empty description={this.state.studentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
-                }
-                size="large"
-                value={studentInfo.id || this.state.studentId}
-                filterOption={false}
-                onSearch={(value) => this.getStudentList(value)}
-                onChange={(studentId) => this.setState({ studentId })}
-              >
-                {studentList.map((student) => (
-                  <Option
-                    onClick={(value) => this.getStudentInfo(value.key)}
-                    value={student.id}
-                    key={`student-${student.id}`}
-                  >
-                    {`${student.id}-${student.name}`}
-                  </Option>
-                ))}
-              </Select>
+              <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+                <Select
+                  style={{ width: '100%', display: 'block' }}
+                  showSearch
+                  notFoundContent={studentListLoading ? <Spin size="small"/> :
+                    <Empty description={this.state.studentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
+                  }
+                  size="large"
+                  value={studentInfo.id || this.state.studentId}
+                  filterOption={false}
+                  onSearch={(value) => this.getStudentList(value)}
+                  onChange={(studentId) => this.setState({ studentId })}
+                >
+                  {studentList.map((student) => (
+                    <Option
+                      onClick={(value) => this.getStudentInfo(value.key)}
+                      value={student.id}
+                      key={`student-${student.id}`}
+                    >
+                      {`${student.id}-${student.name}`}
+                    </Option>
+                  ))}
+                </Select>
+              </Affix>
               {studentInfo && studentInfo.name ? (
                 <Fragment>
                   <Divider style={{ marginTop: 16 }} dashed/>
@@ -585,7 +729,7 @@ class Center extends PureComponent {
                   {studentInfo && studentInfo.name ?
                     <Suspense fallback={<div>Loading...</div>}>
                       <Row type='flex' justify='start'>
-                        <Affix offsetTop={10} style={{ 'z-index': 1 }}>
+                        <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
                           <Select
                             value={this.state.scoreType} style={{ width: 120 }}
                             onChange={this.onScoreTypeChange}
@@ -608,27 +752,33 @@ class Center extends PureComponent {
                 <TabPane tab={<span><Icon type="credit-card"/>一卡通</span>} key="ECard">
                   <Suspense fallback={<div>Loading...</div>}>
                     <ConsumptionOverallLineChart
-                      timelyConsumptionData={timelyConsumptionData}
-                      dailyConsumptionData={dConCost}
-                      date={consumptionData.date}
+                      hourlyAvgCost={hourlyAvgData}
+                      dailySumCost={dailySumCost}
+                      maxHourlyAvg={maxHourlyAvg}
                     />
-
-                    <span>选择查看的时间： </span>
-                    <DatePicker
-                      defaultValue={moment(moment(), 'YYYY-MM-DD')}
-                      onChange={(_, date) => this.onDateChange(date)}
-                    />
-                    <Select defaultValue="week" style={{ width: 120 }} onChange={this.handleChangeTime}>
-                      <Option value="week">1周</Option>
-                      <Option value="1month">1个月</Option>
-                      <Option value="3month">3个月</Option>
-                      <Option value="6month">6个月</Option>
-                      <Option value="year">1年</Option>
-                    </Select>
+                  </Suspense>
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+                      <span>选择查看的时间：</span>
+                      <DatePicker
+                        defaultValue={moment(moment(), 'YYYY-MM-DD')}
+                        onChange={(_, date) => this.onDateChange(date)}
+                      />
+                      <span>分析区间：</span>
+                      <Select value={this.state.dateRange} style={{ width: 120 }} onChange={this.handleChangeRange}>
+                        <Option key='one-week' value={7}>1周</Option>
+                        <Option key='one-month' value={30}>1个月</Option>
+                        <Option key='three-month' value={90}>3个月</Option>
+                        <Option key='six-month' value={180}>6个月</Option>
+                        <Option key='one-year' value={365}>1年</Option>
+                      </Select>
+                    </Affix>
                     <ConsumptionTimeSlotLineChart
-                      timelyConsumptionData={timelyConsumptionData}
-                      dailyConsumptionData={dConCost}
-                      date={consumptionData.date}
+                      hourlyCost={hourlyCost}
+                      dailyPredictData={predictData}
+                      maxCost={maxCost}
+                      date={dailyPredictData.date}
+                      dateRange={dailyPredictData.dateRange}
                     />
                   </Suspense>
                 </TabPane>
