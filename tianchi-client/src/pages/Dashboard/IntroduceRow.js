@@ -15,135 +15,152 @@ const topColResponsiveProps = {
   xl: 6,
   style: { marginBottom: 24 },
 };
+const lastConsumptionData = [
+    {
+        x:"2019-1-1",
+        y:1000
+    },
+    {
+        x:"2019-1-2",
+        y:6200
+    },
+    {
+        x:"2019-1-6",
+        y:2030
+    },
+    {
+        x:"2019-1-10",
+        y:6420
+    },
+    {
+        x:"2019-1-11",
+        y:7000
+    },
+    {
+        x:"2019-1-12",
+        y:6000
+    },
+];
+const lastAttendanceData = [
+    {
+        x:"2019-1-1",
+        y:2
+    },
+    {
+        x:"2019-1-2",
+        y:12
+    },
+    {
+        x:"2019-1-6",
+        y:6
+    },
+    {
+        x:"2019-1-10",
+        y:22
+    },
+    {
+        x:"2019-1-11",
+        y:23
+    },
+    {
+        x:"2019-1-12",
+        y:6
+    },
+];
+
 
 const IntroduceRow = memo(({ loading, visitData }) => (
   <Row gutter={24}>
+    {/*人数一览*/}
     <Col {...topColResponsiveProps}>
       <ChartCard
         bordered={false}
-        title={<FormattedMessage id="app.analysis.total-sales" defaultMessage="Total Sales" />}
-        action={
-          <Tooltip
-            title={<FormattedMessage id="app.analysis.introduce" defaultMessage="Introduce" />}
-          >
-            <Icon type="info-circle-o" />
-          </Tooltip>
-        }
+        title="当前学生总数"
         loading={loading}
-        total={() => <Yuan>126560</Yuan>}
+        total={() => 126560}
         footer={
           <Field
-            label={<FormattedMessage id="app.analysis.day-sales" defaultMessage="Daily Sales" />}
-            value={`￥${numeral(12423).format('0,0')}`}
+            label="2013年起就学人次达"
+            value={`${numeral(10000).format('0,0')}`}
           />
         }
         contentHeight={46}
       >
-        <Trend flag="up" style={{ marginRight: 16 }}>
-          <FormattedMessage id="app.analysis.week" defaultMessage="Weekly Changes" />
-          <span className={styles.trendText}>12%</span>
-        </Trend>
-        <Trend flag="down">
-          <FormattedMessage id="app.analysis.day" defaultMessage="Daily Changes" />
-          <span className={styles.trendText}>11%</span>
-        </Trend>
+        <span>
+          白杨校区 2555
+          东部校区 3000
+        </span>
       </ChartCard>
     </Col>
-
-    <Col {...topColResponsiveProps}>
-      <ChartCard
-        bordered={false}
-        loading={loading}
-        title={<FormattedMessage id="app.analysis.visits" defaultMessage="Visits" />}
-        action={
-          <Tooltip
-            title={<FormattedMessage id="app.analysis.introduce" defaultMessage="Introduce" />}
-          >
-            <Icon type="info-circle-o" />
-          </Tooltip>
-        }
-        total={numeral(8846).format('0,0')}
-        footer={
-          <Field
-            label={<FormattedMessage id="app.analysis.day-visits" defaultMessage="Daily Visits" />}
-            value={numeral(1234).format('0,0')}
-          />
-        }
-        contentHeight={46}
-      >
-        <MiniArea color="#975FE4" data={visitData} />
-      </ChartCard>
-    </Col>
-    <Col {...topColResponsiveProps}>
-      <ChartCard
-        bordered={false}
-        loading={loading}
-        title={<FormattedMessage id="app.analysis.payments" defaultMessage="Payments" />}
-        action={
-          <Tooltip
-            title={<FormattedMessage id="app.analysis.introduce" defaultMessage="Introduce" />}
-          >
-            <Icon type="info-circle-o" />
-          </Tooltip>
-        }
-        total={numeral(6560).format('0,0')}
-        footer={
-          <Field
-            label={
-              <FormattedMessage
-                id="app.analysis.conversion-rate"
-                defaultMessage="Conversion Rate"
-              />
-            }
-            value="60%"
-          />
-        }
-        contentHeight={46}
-      >
-        <MiniBar data={visitData} />
-      </ChartCard>
-    </Col>
+    {/*住校人数*/}
     <Col {...topColResponsiveProps}>
       <ChartCard
         loading={loading}
         bordered={false}
-        title={
-          <FormattedMessage
-            id="app.analysis.operational-effect"
-            defaultMessage="Operational Effect"
-          />
-        }
-        action={
-          <Tooltip
-            title={<FormattedMessage id="app.analysis.introduce" defaultMessage="Introduce" />}
-          >
-            <Icon type="info-circle-o" />
-          </Tooltip>
-        }
-        total="78%"
+        title="住校生人数占比"
+        total="42%"
         footer={
           <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
-            <Trend flag="up" style={{ marginRight: 16 }}>
-              <FormattedMessage id="app.analysis.week" defaultMessage="Weekly Changes" />
-              <span className={styles.trendText}>12%</span>
-            </Trend>
-            <Trend flag="down">
-              <FormattedMessage id="app.analysis.day" defaultMessage="Weekly Changes" />
-              <span className={styles.trendText}>11%</span>
-            </Trend>
+            <Row>
+                <Col span={12}>
+                    走读生 {numeral(2220).format('0,0')}
+                </Col>
+                <Col span={12}>
+                    住校生 {numeral(1365).format('0,0')}
+                </Col>
+            </Row>
           </div>
         }
         contentHeight={46}
       >
         <MiniProgress
-          percent={78}
+          percent={42}
           strokeWidth={8}
-          target={80}
-          targetLabel={`${formatMessage({ id: 'component.miniProgress.tooltipDefault' }).concat(
-            ': '
-          )}80%`}
+          target={50}
           color="#13C2C2"
         />
+      </ChartCard>
+    </Col>
+    {/*2019年起消费数据一览*/}
+    <Col {...topColResponsiveProps}>
+      <ChartCard
+        bordered={false}
+        loading={loading}
+        title='2019年消费总量'
+        total={()=><Yuan>88846</Yuan>}
+        footer={
+          <Field
+            label= '平均日消费'
+            value={`￥${numeral(1234).format('0,0')}`}
+          />
+        }
+        contentHeight={46}
+      >
+        <MiniArea color="#975FE4" data={lastConsumptionData} />
+      </ChartCard>
+    </Col>
+    {/*2019年器违纪记录一览*/}
+    <Col {...topColResponsiveProps}>
+      <ChartCard
+        bordered={false}
+        loading={loading}
+        title="2019年违纪记录"
+        total={`${numeral(13).format('0,0')}次`}
+        footer={
+          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
+            <Row>
+                <Col span={12}>
+                    迟到早退 20次
+                </Col>
+                <Col span={12}>
+                    校服违纪 36次
+                </Col>
+            </Row>
+          </div>
+        }
+        contentHeight={46}
+      >
+        <MiniBar data={lastAttendanceData} />
       </ChartCard>
     </Col>
   </Row>
