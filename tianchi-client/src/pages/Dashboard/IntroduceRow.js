@@ -25,7 +25,7 @@ const IntroduceRow = memo(({ loading, data, year }) => {
           bordered={false}
           title="当前学生总数"
           loading={loading}
-          total={totalStudentCount}
+          total={`${numeral(totalStudentCount).format('0,0')}`}
           footer={
             <Field
               label="2013年起就学人次达"
@@ -35,7 +35,7 @@ const IntroduceRow = memo(({ loading, data, year }) => {
           contentHeight={46}
         >
           {campusData.map((data) => <span key={`${data.campus}-count`} style={{ marginRight: '10px' }}>
-            {`${data.campus} ${data.count}`}
+            {`${data.campus} ${`${numeral(data.count).format('0,0')}`}`}
             </span>)}
         </ChartCard>
       </Col>
@@ -50,10 +50,10 @@ const IntroduceRow = memo(({ loading, data, year }) => {
             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
               <Row>
                 <Col span={12}>
-                  走读生 {totalStudentCount - totalStayCount}
+                  走读生 {numeral(totalStudentCount - totalStayCount).format('0,0')}
                 </Col>
                 <Col span={12}>
-                  住校生 {totalStayCount}
+                  住校生 {numeral(totalStayCount).format('0,0')}
                 </Col>
               </Row>
             </div>
@@ -78,7 +78,7 @@ const IntroduceRow = memo(({ loading, data, year }) => {
           footer={
             <Field
               label='平均日消费'
-              value={`￥${dailyAvgCost}`}
+              value={`￥${numeral(dailyAvgCost).format('0,0.00')}`}
             />
           }
           contentHeight={46}
@@ -97,10 +97,10 @@ const IntroduceRow = memo(({ loading, data, year }) => {
             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
               <Row>
                 <Col span={12}>
-                  迟到早退{kaoqinSummaryData[0].y}次
+                  迟到早退{kaoqinSummaryData[0] ? kaoqinSummaryData[0].y : 0}次
                 </Col>
                 <Col span={12}>
-                  校服违纪{kaoqinSummaryData[1].y}次
+                  校服违纪{kaoqinSummaryData[1] ? kaoqinSummaryData[1].y : 0}次
                 </Col>
               </Row>
             </div>
