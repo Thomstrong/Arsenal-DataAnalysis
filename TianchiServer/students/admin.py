@@ -6,11 +6,13 @@ from students.models.student_record import StudentRecord
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'sex','is_left', 'is_stay_school')
+    list_display = ('id', 'name', 'sex', 'is_left', 'is_stay_school')
+    list_filter = ('is_stay_school',)
+    search_fields = ('id',)
 
 
 @admin.register(StudentRecord)
 class StudentRecordAdmin(admin.ModelAdmin):
     list_display = ('id', 'student', 'stu_class', 'term',)
-    search_fields = ('id', 'student__id',)
+    search_fields = ('student__id',)
     list_filter = ('term',)

@@ -1,27 +1,12 @@
 /**
  * Created by 胡晓慧 on 2019/4/19.
  */
-import React, {memo} from 'react';
-import {Card, Tabs, Row, Col} from 'antd';
-import {formatMessage, FormattedMessage} from 'umi-plugin-react/locale';
-import {TimelineChart, Pie} from '@/components/Charts';
+import React, { memo } from 'react';
+import { Card, Col, Row } from 'antd';
+import { Pie, TimelineChart } from '@/components/Charts';
 import styles from './EcardConsumptionCard.less';
 import numeral from 'numeral';
-import {
-  G2,
-  Chart,
-  Geom,
-  Axis,
-  Tooltip,
-  Coord,
-  Label,
-  Legend,
-  View,
-  Guide,
-  Shape,
-  Facet,
-  Util
-} from "bizcharts";
+import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
 import DataSet from "@antv/data-set";
 
 //punch card的data
@@ -387,7 +372,7 @@ const colorMap = {
 
 const rankingListData = [
   {
-    title: "2017年高一迟到人数",
+    title: "2016年高一迟到人数",
     total: 66
   },
   {
@@ -395,15 +380,15 @@ const rankingListData = [
     total: 22220
   },
   {
-    title: "2017年高一迟到人数",
+    title: "2018年高一迟到人数",
     total: 22220
   },
   {
-    title: "2017年高一迟到人数",
+    title: "2019年高一迟到人数",
     total: 22220
   },
   {
-    title: "2017年高一迟到人数",
+    title: "2020年高一迟到人数",
     total: 22220
   },
 ];
@@ -431,9 +416,9 @@ const AttendanceRankingListData = [
 ];
 
 
-const AttendanceCard = memo(()=>(
+const AttendanceCard = memo(() => (
   <React.Fragment>
-    <Card title="进离校时间概况" bordered={false}  style={{marginTop: 32}}>
+    <Card title="进离校时间概况" bordered={false} style={{ marginTop: 32 }}>
       <Row>
         <Col span={16}>
           <Chart
@@ -481,9 +466,7 @@ const AttendanceCard = memo(()=>(
         <Col span={7} offset={1}>
           <div className={styles.salesRank}>
             <h4 className={styles.rankingTitle}>
-              <FormattedMessage
-                id="违纪次数排名"
-              />
+              违纪次数排名
             </h4>
             <ul className={styles.rankingList}>
               {AttendanceRankingListData.map((item, i) => (
@@ -500,7 +483,7 @@ const AttendanceCard = memo(()=>(
                 </li>
               ))}
             </ul>
-            <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
+            <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
               <p>离校时间集中在xxxx时间，建议错开放学时间，避免发生人员踩踏</p>
             </Card>
           </div>
@@ -508,14 +491,12 @@ const AttendanceCard = memo(()=>(
       </Row>
 
     </Card>
-    <Card title="考勤情况一览" bordered={false}  style={{marginTop: 32}}>
+    <Card title="考勤情况一览" bordered={false} style={{ marginTop: 32 }}>
       <Row>
         <Col span={7}>
           <div className={styles.salesRank}>
             <h4 className={styles.rankingTitle}>
-              <FormattedMessage
-                id="违纪次数排名"
-              />
+              违纪次数排名
             </h4>
             <ul className={styles.rankingList}>
               {rankingListData.map((item, i) => (
@@ -532,7 +513,7 @@ const AttendanceCard = memo(()=>(
                 </li>
               ))}
             </ul>
-            <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
+            <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
               <p>xxx年考勤不合格人数最多，早退人数呈下降趋势？高一中校服违纪的人数最多</p>
             </Card>
           </div>
@@ -586,5 +567,5 @@ const AttendanceCard = memo(()=>(
   </React.Fragment>
 ));
 
-export default AttendanceCard
+export default AttendanceCard;
 

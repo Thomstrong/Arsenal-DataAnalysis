@@ -1,26 +1,16 @@
 /**
  * Created by 胡晓慧 on 2019/4/18.
  */
-import React, {memo} from 'react';
-import {Card, Tabs, Row, Col, Dropdown, Menu, Icon, Radio} from 'antd';
-import {formatMessage, FormattedMessage} from 'umi-plugin-react/locale';
+import React, { memo } from 'react';
+import { Card, Col, Radio, Row } from 'antd';
 import styles from './LocationMap.less';
-import {TimelineChart, Pie} from '@/components/Charts';
+import { Pie, TimelineChart } from '@/components/Charts';
 import numeral from 'numeral';
-import {
-  Chart,
-  Tooltip,
-  Coord,
-  Legend,
-  Facet,
-  Geom,
-  Label,
-  View,
-} from 'bizcharts';
-import Yuan from '@/utils/Yuan';
+import { Chart, Coord, Geom, Label, Legend, Tooltip, View, } from 'bizcharts';
 
 import DataSet from '@antv/data-set';
-const {DataView} = DataSet;
+
+const { DataView } = DataSet;
 const data = [
   {
     value: 251,
@@ -63,8 +53,9 @@ const cols = {
 };
 
 
-const LocationMap = memo(({sexType, studentType, sexPieData, studentPieData, handleChangeSexType, handleChangeStudentType})=>(
-  <div className={styles.twoColLayout}>
+const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, handleChangeStudentType }) => {
+  const {sexPieData, studentPieData, totalStudentCount} = data
+  return <div className={styles.twoColLayout}>
     <Row gutter={24}>
       <Col xl={12} lg={24} md={24} sm={24} xs={24}>
         <Card
@@ -90,11 +81,11 @@ const LocationMap = memo(({sexType, studentType, sexPieData, studentPieData, han
         >
           <Chart
             data={new DataSet.View().source(sexPieData).transform({
-  type: 'percent',
-  field: 'value',
-  dimension: 'type',
-  as: 'percent',
-})}
+              type: 'percent',
+              field: 'value',
+              dimension: 'type',
+              as: 'percent',
+            })}
             scale={cols}
             height={270}
             padding='auto'
@@ -182,13 +173,13 @@ const LocationMap = memo(({sexType, studentType, sexPieData, studentPieData, han
             <div className={styles.salesCardExtra}>
               <div className={styles.salesTypeRadio}>
                 <Radio.Group value={studentType} onChange={handleChangeStudentType}>
-                  <Radio.Button value="homeland">
+                  <Radio.Button value="nativePlace">
                     来源地分布
                   </Radio.Button>
                   <Radio.Button value="nation">
                     民族分布
                   </Radio.Button>
-                  <Radio.Button value="state">
+                  <Radio.Button value="policy">
                     政治面貌分布
                   </Radio.Button>
                 </Radio.Group>
@@ -197,25 +188,21 @@ const LocationMap = memo(({sexType, studentType, sexPieData, studentPieData, han
           }
         >
           <Pie
-            hasLegend
+            hasLegend={true}
             subTitle='人员分布'
-            total={numeral(22252).format('0,0')}
+            total={totalStudentCount}
             data={studentPieData}
             valueFormat={value => `${numeral(value).format('0,0')}人`}
             height={270}
             lineWidth={4}
-            style={{padding: '8px 0'}}
+            style={{ padding: '8px 0' }}
           />
         </Card>
       </Col>
     </Row>
-  </div>
+  </div>;
 
+});
 
-
-
-
-));
-
-export default LocationMap
+export default LocationMap;
 

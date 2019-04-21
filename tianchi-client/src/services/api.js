@@ -26,6 +26,11 @@ export async function getConsumption({ studentId, date, type, dateRange }) {
   return request(`/api/students/${studentId}/consumptions/?date=${date}&type=${type}&date_range=${dateRange}`);
 }
 
+export async function getStudentSummary({ base }) {
+  return request(`/api/students/summary/?base=${base}`);
+}
+
+
 // global
 export async function getTotalHourlyAvgCost() {
   return request(`/api/consumption/hourly_avg/`);

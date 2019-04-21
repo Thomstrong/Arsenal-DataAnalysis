@@ -106,3 +106,26 @@ export const INTERVAL_MAP = {
   180: 10,
   365: 20,
 };
+
+export const CLASS_CAMPUS_CHOICE = {
+  1: '东部校区',
+  0: '白杨校区',
+};
+
+export const STAY_ALIAS = {
+  1: '住校',
+  0: '走读',
+};
+
+export const SEX_FULL_MAP = {
+  1: '男生',
+  2: '女生',
+  null: '未知',
+};
+
+export const GRADE_ALIAS = {
+  0: '初三',
+  1: '高一',
+  2: '高二',
+  3: '高三',
+};

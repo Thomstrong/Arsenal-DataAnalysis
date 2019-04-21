@@ -4,7 +4,7 @@ from datetime import timedelta
 from dateutil.parser import parse as parse_date
 from django.db.models import Max, Min, Avg, Q, Count, Sum, F
 from rest_framework import viewsets
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
 from consumptions.api.serializers import DailyConsumptionSerializer
@@ -16,7 +16,7 @@ from students.api.serializers import StudentBasicInfoSerializer, StudentMiniSeri
 from students.models.student import Student
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
-from utils.decorators import required_params
+from utils.decorators import required_params, performance_analysis
 
 gaokao_courses = [1, 2, 3, 4, 5, 6, 7, 8, 17, 59]
 
@@ -38,6 +38,81 @@ class StudentViewSet(viewsets.ModelViewSet):
             )[:50]
             return Response(self.get_serializer_class()(students, many=True).data)
         return Response(status=400, data={'reason': '不可以获取全部列表哦'})
+
+    @required_params(params=['base'])
+    @list_route(
+        methods=['GET']
+    )
+    @performance_analysis()
+    def summary(self, request):
+        base = request.query_params.get('base', '')
+        if not type:
+            return Response('type 输入有误', status=400)
+        record_filter = (Q(term__end_year=2019) | Q(term__start_year=2019)) & Q(student__is_left=False)
+        if base == 'campus':
+            record = StudentRecord.objects.filter(
+                record_filter
+            ).values('stu_class__campus_name').annotate(
+                count=Count('student_id', distinct=True)
+            ).values('stu_class__campus_name', 'count')
+            return Response(record)
+
+        if base == 'stay_school':
+            record = StudentRecord.objects.filter(
+                record_filter
+            ).values('student__is_stay_school', 'student__sex').annotate(
+                count=Count('student_id', distinct=True)
+            ).values('student__is_stay_school', 'student__sex', 'count')
+            return Response(record)
+
+        if base == 'grade':
+            record = StudentRecord.objects.filter(
+                record_filter
+            ).values('stu_class__grade_name', 'student__sex').annotate(
+                count=Count('student_id', distinct=True)
+            ).values('stu_class__grade_name', 'student__sex', 'count')
+            return Response(record)
+
+        if base == 'nation':
+            record = StudentRecord.objects.filter(
+                record_filter
+            ).values('student__nation').annotate(
+                count=Count('student_id', distinct=True)
+            ).values('student__nation', 'count')
+            return Response(record)
+
+        if base == 'policy':
+            record = StudentRecord.objects.filter(
+                record_filter
+            ).values('student__policy').annotate(
+                count=Count('student_id', distinct=True)
+            ).values('student__policy', 'count')
+            return Response(record)
+
+        if base == 'native_place':
+            record = StudentRecord.objects.filter(
+                record_filter
+            ).values('student__native_place').annotate(
+                count=Count('student_id', distinct=True)
+            ).values('student__native_place', 'count')
+            return Response(record)
+
+        # record = StudentRecord.objects.filter(
+        #     Q(term__end_year=2019) | Q(term__start_year=2019)
+        # ).values('student_id').annotate(
+        #     count=Count('student_id')
+        # ).filter(count__gt=1).values('student_id', 'count')
+        students = StudentRecord.objects.filter(
+            Q(term__end_year=2019) | Q(term__start_year=2019)
+        ).values('student_id')
+        record = StudentRecord.objects.filter(
+            student_id__in=students
+        ).values(
+            'student_id', 'stu_class__grade_name'
+        ).annotate(
+            count=Count('stu_class_id', distinct=True)
+        ).filter(count__gt=1).values('student_id', 'stu_class__grade_name', 'count', )
+        return Response(record)
 
     @required_params(params=['type'])
     @detail_route(
