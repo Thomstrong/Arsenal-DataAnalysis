@@ -2980,7 +2980,7 @@ bizcharts-plugin-slider@^2.1.1-beta.1:
   dependencies:
     "@antv/g2-plugin-slider" "2.1.0"
 
-bizcharts@^3.4.3:
+bizcharts@^3.5.2:
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/bizcharts/-/bizcharts-3.5.2.tgz#52e4ed9155ca3865c09c5b53b2ec5cd2c98d4c48"
   integrity sha512-oMWGH3FmkDiCaTiO/EVBaiESJFWWnYDbI2VlCAZsuNsbpYmn0KTq28fIbGkt6zUrmgdVk9xd1VdsZcGMNF2ArQ==

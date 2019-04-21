@@ -1,27 +1,13 @@
 /**
  * Created by 胡晓慧 on 2019/4/19.
  */
-import React, {memo} from 'react';
-import {Card, Tabs, Row, Col, Select, Icon} from 'antd';
-import {formatMessage, FormattedMessage} from 'umi-plugin-react/locale';
-import {OneTimelineChart, Pie} from '@/components/Charts';
+import React, { memo } from 'react';
+import { Card, Col, Icon, Row, Tabs } from 'antd';
+// import {formatMessage, FormattedMessage} from 'umi-plugin-react/locale';
+import { OneTimelineChart, Pie } from '@/components/Charts';
 import styles from './EcardConsumptionCard.less';
 import numeral from 'numeral';
-import {
-  G2,
-  Chart,
-  Geom,
-  Axis,
-  Tooltip,
-  Coord,
-  Label,
-  Legend,
-  View,
-  Guide,
-  Shape,
-  Facet,
-  Util
-} from "bizcharts";
+import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
 import DataSet from "@antv/data-set";
 
 const sexdata = [
@@ -368,13 +354,13 @@ const rankingListData = [
 
 ];
 
-const EcardConsumptionCard = memo(()=>(
+const EcardConsumptionCard = memo(() => (
   <React.Fragment>
     {/*<Card title="一卡通消费情况一览" bordered={false} style={{marginTop: 32}}>*/}
     {/*两个部分，分别是每天的总消费变化趋势和某时刻平均消费情况*/}
     {/*DataMarker可以后续有图表后进行补充*/}
     {/*第一部分，每天总消费变化趋势*/}
-    <Card className={styles.tabsCard} style={{marginTop: 32}}>
+    <Card className={styles.tabsCard} style={{ marginTop: 32 }}>
       <Tabs defaultActiveKey={"Sex"}>
         <TabPane tab={<span><Icon type="line-chart"/>性别对比</span>} key="Sex">
           <Row>
@@ -382,7 +368,7 @@ const EcardConsumptionCard = memo(()=>(
               <div className={styles.salesBar}>
                 <Chart height={400} data={SexData} padding="auto" forceFit>
                   <h4 className={styles.rankingTitle}>不同性别不同时刻消费情况对比</h4>
-                  <Legend />
+                  <Legend/>
                   <Axis name="time"/>
                   <Axis
                     name="cost"
@@ -411,9 +397,7 @@ const EcardConsumptionCard = memo(()=>(
             <Col span={7} offset={1}>
               <div className={styles.salesRank}>
                 <h4 className={styles.rankingTitle}>
-                  <FormattedMessage
-                    id="每时段消费额排名"
-                  />
+                  每时段消费额排名
                 </h4>
                 <ul className={styles.rankingList}>
                   {rankingListData.map((item, i) => (
@@ -430,7 +414,7 @@ const EcardConsumptionCard = memo(()=>(
                     </li>
                   ))}
                 </ul>
-                <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
+                <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
                   <p>男生的整体消费水平比女生高，男生消费主要集中在12点，女生主要集中在18点</p>
                 </Card>
               </div>
@@ -443,7 +427,7 @@ const EcardConsumptionCard = memo(()=>(
               <div className={styles.salesBar}>
                 <Chart height={400} data={GradeData} padding="auto" title="不同年级不同时刻消费情况对比" forceFit>
                   <h4 className={styles.rankingTitle}>不同年级不同时刻消费情况对比</h4>
-                  <Legend />
+                  <Legend/>
                   <Axis name="time"/>
                   <Axis
                     name="cost"
@@ -476,9 +460,7 @@ const EcardConsumptionCard = memo(()=>(
             <Col span={7} offset={1}>
               <div className={styles.salesRank}>
                 <h4 className={styles.rankingTitle}>
-                  <FormattedMessage
-                    id="每时段消费额排名"
-                  />
+                  每时段消费额排名
                 </h4>
                 <ul className={styles.rankingList}>
                   {rankingListData.map((item, i) => (
@@ -495,7 +477,7 @@ const EcardConsumptionCard = memo(()=>(
                     </li>
                   ))}
                 </ul>
-                <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
+                <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
                   <p>高一的整体消费水平比高三高，高一消费主要集中在12点，高三主要集中在18点</p>
                 </Card>
               </div>
@@ -508,7 +490,7 @@ const EcardConsumptionCard = memo(()=>(
               <div className={styles.salesBar}>
                 <Chart height={400} data={LeaveData} padding="auto" title="走读生/住校生不同时刻消费情况对比" forceFit>
                   <h4 className={styles.rankingTitle}>走读生/住校生不同时刻消费情况对比</h4>
-                  <Legend />
+                  <Legend/>
                   <Axis name="time"/>
                   <Axis
                     name="cost"
@@ -541,9 +523,7 @@ const EcardConsumptionCard = memo(()=>(
             <Col span={7} offset={1}>
               <div className={styles.salesRank}>
                 <h4 className={styles.rankingTitle}>
-                  <FormattedMessage
-                    id="每时段消费额排名"
-                  />
+                  每时段消费额排名
                 </h4>
                 <ul className={styles.rankingList}>
                   {rankingListData.map((item, i) => (
@@ -560,7 +540,7 @@ const EcardConsumptionCard = memo(()=>(
                     </li>
                   ))}
                 </ul>
-                <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
+                <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
                   <p>走读生和住校生在12点时的消费水平持平，住校生消费主要集中在12点，和6点，走读生在家吃早饭</p>
                 </Card>
               </div>
@@ -569,14 +549,12 @@ const EcardConsumptionCard = memo(()=>(
         </TabPane>
       </Tabs>
     </Card>
-    <Card title="总体消费趋势" bordered={true} style={{width: '100%', marginTop: 32}}>
+    <Card title="总体消费趋势" bordered={true} style={{ width: '100%', marginTop: 32 }}>
       <Row>
         <Col span={7}>
           <div className={styles.salesRank}>
             <h4 className={styles.rankingTitle}>
-              <FormattedMessage
-                id="消费总额排名"
-              />
+              消费总额排名
             </h4>
             <ul className={styles.rankingList}>
               {rankingListData.map((item, i) => (
@@ -593,7 +571,7 @@ const EcardConsumptionCard = memo(()=>(
                 </li>
               ))}
             </ul>
-            <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
+            <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
               <p>走读生和住校生在12点时的消费水平持平，住校生消费主要集中在12点，和6点，走读生在家吃早饭</p>
             </Card>
           </div>
@@ -609,4 +587,4 @@ const EcardConsumptionCard = memo(()=>(
   </React.Fragment>
 ));
 
-export default EcardConsumptionCard
+export default EcardConsumptionCard;

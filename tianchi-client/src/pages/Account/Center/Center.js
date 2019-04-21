@@ -41,7 +41,7 @@ class Center extends PureComponent {
       studentId: '',
       scoreType: 'score',
       dateRange: 7,
-      pickedDate: moment().format('YYYY-MM-DD'),
+      pickedDate: '2019-01-01',
     };
     this.getStudentList = _.debounce(this.getStudentList, 800);
   }
@@ -761,7 +761,7 @@ class Center extends PureComponent {
                     <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
                       <span>选择查看的时间：</span>
                       <DatePicker
-                        defaultValue={moment(moment(), 'YYYY-MM-DD')}
+                        defaultValue={moment(moment('2019-01-01'), 'YYYY-MM-DD')}
                         onChange={(_, date) => this.onDateChange(date)}
                       />
                       <span>分析区间：</span>
