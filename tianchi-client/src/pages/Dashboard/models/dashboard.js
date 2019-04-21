@@ -1,4 +1,4 @@
-import { getStudentSummary } from '@/services/api';
+import { getCostSummary, getStudentSummary } from '@/services/api';
 import { CLASS_CAMPUS_CHOICE, GRADE_ALIAS, POLICY_TYPE_ALIAS, SEX_FULL_MAP, STAY_ALIAS } from "@/constants";
 
 export default {
@@ -13,6 +13,8 @@ export default {
     nationData: [],
     nativePlaceData: [],
     policyData: [],
+    yearCostData: [],
+    totalYearCost: 0,
   },
 
   effects: {
@@ -22,6 +24,16 @@ export default {
       });
       yield put({
         type: 'saveCampusData',
+        payload: response,
+      });
+    },
+    * fetchYearCostSummary({ payload }, { call, put }) {
+      const response = yield call(getCostSummary, {
+        base: 'year',
+        ...payload,
+      });
+      yield put({
+        type: 'saveYearCost',
         payload: response,
       });
     },
@@ -88,6 +100,23 @@ export default {
           };
         }),
         totalStudentCount
+      };
+    },
+    saveYearCost(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      let totalYearCost = 0;
+      return {
+        ...state,
+        yearCostData: payload.map(data => {
+          totalYearCost += data.total_cost;
+          return {
+            x: data.date,
+            y: Number(data.total_cost.toFixed(2))
+          };
+        }),
+        totalYearCost: Number(totalYearCost.toFixed(2)),
       };
     },
     saveSatyData(state, { payload }) {

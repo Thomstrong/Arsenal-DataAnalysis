@@ -16,7 +16,7 @@ from students.api.serializers import StudentBasicInfoSerializer, StudentMiniSeri
 from students.models.student import Student
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
-from utils.decorators import required_params, performance_analysis
+from utils.decorators import required_params
 
 gaokao_courses = [1, 2, 3, 4, 5, 6, 7, 8, 17, 59]
 
@@ -43,10 +43,9 @@ class StudentViewSet(viewsets.ModelViewSet):
     @list_route(
         methods=['GET']
     )
-    @performance_analysis()
     def summary(self, request):
         base = request.query_params.get('base', '')
-        if not type:
+        if not base:
             return Response('type 输入有误', status=400)
         record_filter = (Q(term__end_year=2019) | Q(term__start_year=2019)) & Q(student__is_left=False)
         if base == 'campus':
@@ -97,22 +96,7 @@ class StudentViewSet(viewsets.ModelViewSet):
             ).values('student__native_place', 'count').order_by('-count')
             return Response(record)
 
-        # record = StudentRecord.objects.filter(
-        #     Q(term__end_year=2019) | Q(term__start_year=2019)
-        # ).values('student_id').annotate(
-        #     count=Count('student_id')
-        # ).filter(count__gt=1).values('student_id', 'count')
-        students = StudentRecord.objects.filter(
-            Q(term__end_year=2019) | Q(term__start_year=2019)
-        ).values('student_id')
-        record = StudentRecord.objects.filter(
-            student_id__in=students
-        ).values(
-            'student_id', 'stu_class__grade_name'
-        ).annotate(
-            count=Count('stu_class_id', distinct=True)
-        ).filter(count__gt=1).values('student_id', 'stu_class__grade_name', 'count', )
-        return Response(record)
+        return Response('请求错误', status=400)
 
     @required_params(params=['type'])
     @detail_route(

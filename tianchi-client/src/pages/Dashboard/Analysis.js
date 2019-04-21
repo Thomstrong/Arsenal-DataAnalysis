@@ -17,6 +17,7 @@ class Analysis extends Component {
   state = {
     studentType: 'nation',
     sexType: 'grade',
+    year: 2019
   };
 
 
@@ -52,6 +53,12 @@ class Analysis extends Component {
     dispatch({
       type: 'dashboard/fetchPolicySummary',
     });
+    dispatch({
+      type: 'dashboard/fetchYearCostSummary',
+      payload: {
+        year: this.state.year
+      }
+    });
   }
 
 
@@ -62,7 +69,7 @@ class Analysis extends Component {
     const {
       campusData, totalStudentCount, stayData,
       totalStayCount, gradeData, nationData,
-      nativePlaceData, policyData,
+      nativePlaceData, policyData, yearCostData, totalYearCost
     } = dashboard;
     //student表示人员分布的图表
     let studentPieData = [];
@@ -89,10 +96,13 @@ class Analysis extends Component {
         <Suspense fallback={<PageLoading/>}>
           <IntroduceRow
             loading={loading}
+            year={this.state.year}
             data={{
               campusData,
               totalStudentCount,
-              totalStayCount
+              totalStayCount,
+              yearCostData,
+              totalYearCost
             }}/>
         </Suspense>
         <Suspense fallback={null}>

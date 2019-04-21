@@ -12,32 +12,6 @@ const topColResponsiveProps = {
   xl: 6,
   style: { marginBottom: 24 },
 };
-const lastConsumptionData = [
-  {
-    x: "2019-1-1",
-    y: 1000
-  },
-  {
-    x: "2019-1-2",
-    y: 6200
-  },
-  {
-    x: "2019-1-6",
-    y: 2030
-  },
-  {
-    x: "2019-1-10",
-    y: 6420
-  },
-  {
-    x: "2019-1-11",
-    y: 7000
-  },
-  {
-    x: "2019-1-12",
-    y: 6000
-  },
-];
 const lastAttendanceData = [
   {
     x: "2019-1-1",
@@ -66,8 +40,9 @@ const lastAttendanceData = [
 ];
 
 
-const IntroduceRow = memo(({ loading, data }) => {
-    const { campusData, totalStudentCount,totalStayCount } = data;
+const IntroduceRow = memo(({ loading, data, year }) => {
+    const { campusData, totalStudentCount, totalStayCount, yearCostData, totalYearCost } = data;
+    console.log(totalYearCost);
     return <Row gutter={24}>
       {/*人数一览*/}
       <Col {...topColResponsiveProps}>
@@ -84,7 +59,7 @@ const IntroduceRow = memo(({ loading, data }) => {
           }
           contentHeight={46}
         >
-          {campusData.map((data) => <span key={`${data.campus}-count`} style={{marginRight: '10px'}}>
+          {campusData.map((data) => <span key={`${data.campus}-count`} style={{ marginRight: '10px' }}>
             {`${data.campus} ${data.count}`}
             </span>)}
         </ChartCard>
@@ -95,7 +70,7 @@ const IntroduceRow = memo(({ loading, data }) => {
           loading={loading}
           bordered={false}
           title="住校生人数占比"
-          total={`${(totalStayCount/totalStudentCount * 100).toFixed(2)}%`}
+          total={`${(totalStayCount / totalStudentCount * 100).toFixed(2)}%`}
           footer={
             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
               <Row>
@@ -123,8 +98,8 @@ const IntroduceRow = memo(({ loading, data }) => {
         <ChartCard
           bordered={false}
           loading={loading}
-          title='2019年消费总量'
-          total={() => <Yuan>88846</Yuan>}
+          title={`${year}年消费总量`}
+          total={() => <Yuan>{totalYearCost}</Yuan>}
           footer={
             <Field
               label='平均日消费'
@@ -133,7 +108,7 @@ const IntroduceRow = memo(({ loading, data }) => {
           }
           contentHeight={46}
         >
-          <MiniArea color="#975FE4" data={lastConsumptionData}/>
+          <MiniArea color="#975FE4" data={yearCostData}/>
         </ChartCard>
       </Col>
       {/*2019年器违纪记录一览*/}
@@ -141,7 +116,7 @@ const IntroduceRow = memo(({ loading, data }) => {
         <ChartCard
           bordered={false}
           loading={loading}
-          title="2019年违纪记录"
+          title={`${year}年违纪记录`}
           total={`${numeral(13).format('0,0')}次`}
           footer={
             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>

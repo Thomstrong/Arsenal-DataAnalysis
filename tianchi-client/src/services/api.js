@@ -6,8 +6,8 @@ export async function getStudentBasic(studentId) {
   return request(`/api/students/${studentId}/`);
 }
 
-export async function getGrade({studentId, type, scoreType}) {
-  return request(`/api/students/${studentId}/grade/?type=${type}&score_type=${scoreType}`);
+export async function getGrade({ studentId, type, scoreType }) {
+  return request(`/api/students/${studentId}/grade/?type=${type}&score_type=${scoreType || ''}`);
 }
 
 export async function getStudentTeachers(studentId) {
@@ -23,11 +23,16 @@ export async function getKaoqinData(studentId) {
 }
 
 export async function getConsumption({ studentId, date, type, dateRange }) {
-  return request(`/api/students/${studentId}/consumptions/?date=${date}&type=${type}&date_range=${dateRange}`);
+  return request(`/api/students/${studentId}/consumptions/?date=${date || ''}&type=${type}&date_range=${dateRange || ''}`);
 }
 
+// dashboard
 export async function getStudentSummary({ base }) {
   return request(`/api/students/summary/?base=${base}`);
+}
+
+export async function getCostSummary({ base, year }) {
+  return request(`/api/consumption/summary/?base=${base}&year=${year || ''}`);
 }
 
 
