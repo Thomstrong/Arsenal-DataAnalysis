@@ -35,6 +35,10 @@ export async function getCostSummary({ base, year }) {
   return request(`/api/consumption/summary/?base=${base}&year=${year || ''}`);
 }
 
+export async function getKaoqinSummary({ base, year }) {
+  return request(`/api/kaoqin_record/summary/?base=${base}&year=${year || ''}`);
+}
+
 
 // global
 export async function getTotalHourlyAvgCost() {

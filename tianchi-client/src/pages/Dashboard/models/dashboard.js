@@ -1,5 +1,12 @@
-import { getCostSummary, getStudentSummary } from '@/services/api';
-import { CLASS_CAMPUS_CHOICE, GRADE_ALIAS, POLICY_TYPE_ALIAS, SEX_FULL_MAP, STAY_ALIAS } from "@/constants";
+import { getCostSummary, getKaoqinSummary, getStudentSummary } from '@/services/api';
+import {
+  CLASS_CAMPUS_CHOICE,
+  EVENT_TYPE_ALIAS,
+  GRADE_ALIAS,
+  POLICY_TYPE_ALIAS,
+  SEX_FULL_MAP,
+  STAY_ALIAS
+} from "@/constants";
 
 export default {
   namespace: 'dashboard',
@@ -15,6 +22,8 @@ export default {
     policyData: [],
     yearCostData: [],
     totalYearCost: 0,
+    kaoqinSummaryData: [],
+    totalKaoqinCount: 0,
   },
 
   effects: {
@@ -24,6 +33,16 @@ export default {
       });
       yield put({
         type: 'saveCampusData',
+        payload: response,
+      });
+    },
+    * fetchKaoqinSummary({ payload }, { call, put }) {
+      const response = yield call(getKaoqinSummary, {
+        base: 'year',
+        ...payload,
+      });
+      yield put({
+        type: 'saveKaoqinSummaryData',
         payload: response,
       });
     },
@@ -117,6 +136,23 @@ export default {
           };
         }),
         totalYearCost: Number(totalYearCost.toFixed(2)),
+      };
+    },
+    saveKaoqinSummaryData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      let totalKaoqinCount = 0;
+      return {
+        ...state,
+        kaoqinSummaryData: payload.map(data => {
+          totalKaoqinCount += data.count;
+          return {
+            x: EVENT_TYPE_ALIAS[data.event__type_id],
+            y: data.count
+          };
+        }),
+        totalKaoqinCount: totalKaoqinCount,
       };
     },
     saveSatyData(state, { payload }) {

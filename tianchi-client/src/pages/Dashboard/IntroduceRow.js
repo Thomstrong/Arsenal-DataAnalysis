@@ -12,37 +12,12 @@ const topColResponsiveProps = {
   xl: 6,
   style: { marginBottom: 24 },
 };
-const lastAttendanceData = [
-  {
-    x: "2019-1-1",
-    y: 2
-  },
-  {
-    x: "2019-1-2",
-    y: 12
-  },
-  {
-    x: "2019-1-6",
-    y: 6
-  },
-  {
-    x: "2019-1-10",
-    y: 22
-  },
-  {
-    x: "2019-1-11",
-    y: 23
-  },
-  {
-    x: "2019-1-12",
-    y: 6
-  },
-];
-
 
 const IntroduceRow = memo(({ loading, data, year }) => {
-    const { campusData, totalStudentCount, totalStayCount, yearCostData, totalYearCost } = data;
-    console.log(totalYearCost);
+    const {
+      campusData, totalStudentCount, totalStayCount,
+      yearCostData, totalYearCost, kaoqinSummaryData, totalKaoqinCount
+    } = data;
     return <Row gutter={24}>
       {/*人数一览*/}
       <Col {...topColResponsiveProps}>
@@ -117,22 +92,22 @@ const IntroduceRow = memo(({ loading, data, year }) => {
           bordered={false}
           loading={loading}
           title={`${year}年违纪记录`}
-          total={`${numeral(13).format('0,0')}次`}
+          total={`${numeral(totalKaoqinCount).format('0,0')}次`}
           footer={
             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
               <Row>
                 <Col span={12}>
-                  迟到早退 20次
+                  迟到早退{kaoqinSummaryData[0].y}次
                 </Col>
                 <Col span={12}>
-                  校服违纪 36次
+                  校服违纪{kaoqinSummaryData[1].y}次
                 </Col>
               </Row>
             </div>
           }
           contentHeight={46}
         >
-          <MiniBar data={lastAttendanceData}/>
+          <MiniBar data={kaoqinSummaryData}/>
         </ChartCard>
       </Col>
     </Row>;

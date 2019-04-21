@@ -15,7 +15,7 @@ const AttendanceCard = React.lazy(() => import('./AttendanceCard'));
 }))
 class Analysis extends Component {
   state = {
-    studentType: 'nation',
+    studentType: 'nativePlace',
     sexType: 'grade',
     year: 2019
   };
@@ -59,6 +59,12 @@ class Analysis extends Component {
         year: this.state.year
       }
     });
+    dispatch({
+      type: 'dashboard/fetchKaoqinSummary',
+      payload: {
+        year: this.state.year
+      }
+    });
   }
 
 
@@ -69,7 +75,8 @@ class Analysis extends Component {
     const {
       campusData, totalStudentCount, stayData,
       totalStayCount, gradeData, nationData,
-      nativePlaceData, policyData, yearCostData, totalYearCost
+      nativePlaceData, policyData, yearCostData, totalYearCost,
+      kaoqinSummaryData, totalKaoqinCount,
     } = dashboard;
     //student表示人员分布的图表
     let studentPieData = [];
@@ -102,7 +109,9 @@ class Analysis extends Component {
               totalStudentCount,
               totalStayCount,
               yearCostData,
-              totalYearCost
+              totalYearCost,
+              kaoqinSummaryData,
+              totalKaoqinCount
             }}/>
         </Suspense>
         <Suspense fallback={null}>
