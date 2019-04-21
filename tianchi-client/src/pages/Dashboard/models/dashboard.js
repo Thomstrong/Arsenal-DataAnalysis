@@ -22,6 +22,7 @@ export default {
     policyData: [],
     yearCostData: [],
     totalYearCost: 0,
+    dailyAvgCost: 0,
     kaoqinSummaryData: [],
     totalKaoqinCount: 0,
   },
@@ -126,16 +127,19 @@ export default {
         return state;
       }
       let totalYearCost = 0;
+      let count = 0;
       return {
         ...state,
         yearCostData: payload.map(data => {
           totalYearCost += data.total_cost;
+          count += 1;
           return {
             x: data.date,
             y: Number(data.total_cost.toFixed(2))
           };
         }),
         totalYearCost: Number(totalYearCost.toFixed(2)),
+        dailyAvgCost: Number((totalYearCost / count).toFixed(2))
       };
     },
     saveKaoqinSummaryData(state, { payload }) {

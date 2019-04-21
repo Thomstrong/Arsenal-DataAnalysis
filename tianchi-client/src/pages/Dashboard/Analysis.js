@@ -75,7 +75,8 @@ class Analysis extends Component {
     const {
       campusData, totalStudentCount, stayData,
       totalStayCount, gradeData, nationData,
-      nativePlaceData, policyData, yearCostData, totalYearCost,
+      nativePlaceData, policyData,
+      yearCostData, totalYearCost,dailyAvgCost,
       kaoqinSummaryData, totalKaoqinCount,
     } = dashboard;
     //student表示人员分布的图表
@@ -110,6 +111,7 @@ class Analysis extends Component {
               totalStayCount,
               yearCostData,
               totalYearCost,
+              dailyAvgCost,
               kaoqinSummaryData,
               totalKaoqinCount
             }}/>

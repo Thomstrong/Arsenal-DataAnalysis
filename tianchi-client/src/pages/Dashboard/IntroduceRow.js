@@ -15,7 +15,7 @@ const topColResponsiveProps = {
 
 const IntroduceRow = memo(({ loading, data, year }) => {
     const {
-      campusData, totalStudentCount, totalStayCount,
+      campusData, totalStudentCount, totalStayCount, dailyAvgCost,
       yearCostData, totalYearCost, kaoqinSummaryData, totalKaoqinCount
     } = data;
     return <Row gutter={24}>
@@ -78,7 +78,7 @@ const IntroduceRow = memo(({ loading, data, year }) => {
           footer={
             <Field
               label='平均日消费'
-              value={`￥${numeral(1234).format('0,0')}`}
+              value={`￥${dailyAvgCost}`}
             />
           }
           contentHeight={46}
