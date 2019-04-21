@@ -94,7 +94,7 @@ class StudentViewSet(viewsets.ModelViewSet):
                 record_filter
             ).values('student__native_place').annotate(
                 count=Count('student_id', distinct=True)
-            ).values('student__native_place', 'count')
+            ).values('student__native_place', 'count').order_by('-count')
             return Response(record)
 
         # record = StudentRecord.objects.filter(

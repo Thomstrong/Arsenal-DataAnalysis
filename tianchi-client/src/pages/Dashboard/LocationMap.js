@@ -67,7 +67,7 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
           extra={
             <div className={styles.salesCardExtra}>
               <div className={styles.salesTypeRadio}>
-                <Radio.Group value={sexType} onChange={handleChangeSexType}>
+                <Radio.Group defaultValue={sexType} onChange={handleChangeSexType}>
                   <Radio.Button value="grade">
                     年级
                   </Radio.Button>
@@ -172,7 +172,7 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
           extra={
             <div className={styles.salesCardExtra}>
               <div className={styles.salesTypeRadio}>
-                <Radio.Group value={studentType} onChange={handleChangeStudentType}>
+                <Radio.Group defaultValue={studentType} onChange={handleChangeStudentType}>
                   <Radio.Button value="nativePlace">
                     来源地分布
                   </Radio.Button>

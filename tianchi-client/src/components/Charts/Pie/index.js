@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Chart, Tooltip, Geom, Coord } from 'bizcharts';
+import { Chart, Coord, Geom, Tooltip } from 'bizcharts';
 import { DataView } from '@antv/data-set';
 import { Divider } from 'antd';
 import classNames from 'classnames';
@@ -90,7 +90,7 @@ class Pie extends Component {
 
     this.setState({
       legendData,
-    });
+    }, () => this.chart.filter('x', null));
   };
 
   // for window resize auto responsive legend
@@ -219,8 +219,8 @@ class Pie extends Component {
               animate={animate}
               onGetG2Instance={this.getG2Instance}
             >
-              {!!tooltip && <Tooltip showTitle={false} />}
-              <Coord type="theta" innerRadius={inner} />
+              {!!tooltip && <Tooltip showTitle={false}/>}
+              <Coord type="theta" innerRadius={inner}/>
               <Geom
                 style={{ lineWidth, stroke: '#fff' }}
                 tooltip={tooltip && tooltipFormat}
@@ -254,7 +254,7 @@ class Pie extends Component {
                   }}
                 />
                 <span className={styles.legendTitle}>{item.x}</span>
-                <Divider type="vertical" />
+                <Divider type="vertical"/>
                 <span className={styles.percent}>
                   {`${(Number.isNaN(item.percent) ? 0 : item.percent * 100).toFixed(2)}%`}
                 </span>
