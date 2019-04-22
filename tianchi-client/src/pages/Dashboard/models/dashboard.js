@@ -5,7 +5,7 @@ import {
   GRADE_ALIAS,
   POLICY_TYPE_ALIAS,
   SEX_FULL_MAP,
-  STAY_ALIAS
+  STAY_ALIAS,
 } from "@/constants";
 
 export default {
@@ -25,6 +25,11 @@ export default {
     dailyAvgCost: 0,
     kaoqinSummaryData: [],
     totalKaoqinCount: 0,
+    sexHourlyCostData: [],
+    stayCostData: [],
+    gradeCostData: [],
+    enterSchoolData: [],
+    kaoqinMixedData: [],
   },
 
   effects: {
@@ -44,6 +49,24 @@ export default {
       });
       yield put({
         type: 'saveKaoqinSummaryData',
+        payload: response,
+      });
+    },
+    * fetchKaoqinMixedSum({ payload }, { call, put }) {
+      const response = yield call(getKaoqinSummary, {
+        base: 'mixed',
+      });
+      yield put({
+        type: 'saveKaoqinMixedData',
+        payload: response,
+      });
+    },
+    * fetchEnterSchoolSummary({ payload }, { call, put }) {
+      const response = yield call(getKaoqinSummary, {
+        base: 'enter_school',
+      });
+      yield put({
+        type: 'saveEnterSchoolData',
         payload: response,
       });
     },
@@ -102,6 +125,34 @@ export default {
         payload: response
       });
     },
+    * fetchSexHourlyCostSummary(_, { call, put }) {
+      const response = yield call(getCostSummary, {
+        base: 'sex'
+      });
+      yield put({
+        type: 'saveSexHourlyCostData',
+        payload: response
+      });
+    },
+    * fetchStayCostSummary(_, { call, put }) {
+      const response = yield call(getCostSummary, {
+        base: 'stay_school'
+      });
+      yield put({
+        type: 'saveStaySchoolCostData',
+        payload: response
+      });
+    },
+    * fetchGradeCostSummary(_, { call, put }) {
+      const response = yield call(getCostSummary, {
+        base: 'grade'
+      });
+      yield put({
+        type: 'saveGradeCostData',
+        payload: response
+      });
+    },
+
   },
 
   reducers: {
@@ -120,6 +171,36 @@ export default {
           };
         }),
         totalStudentCount
+      };
+    },
+    saveSexHourlyCostData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        sexHourlyCostData: payload.map(data => {
+          return {
+            hour: data.hour,
+            sex: SEX_FULL_MAP[data.student__sex],
+            cost: Number(data.total_cost.toFixed(2))
+          };
+        })
+      };
+    },
+    saveStaySchoolCostData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        stayCostData: payload.map(data => {
+          return {
+            hour: data.hour,
+            stayType: STAY_ALIAS[Number(data.student__is_stay_school)],
+            cost: Number(data.total_cost.toFixed(2))
+          };
+        })
       };
     },
     saveYearCost(state, { payload }) {
@@ -157,6 +238,43 @@ export default {
           };
         }),
         totalKaoqinCount: totalKaoqinCount,
+      };
+    },
+    saveKaoqinMixedData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        kaoqinMixedData: payload.map(data => {
+          const grade = data.grade;
+          const typeId = Number(data.type)
+          return {
+            term: `${data.term} 学年`,
+            type: EVENT_TYPE_ALIAS[typeId],
+            grade: `${GRADE_ALIAS[grade]}_${EVENT_TYPE_ALIAS[typeId]}`,
+            count: data.count
+          };
+        }),
+      };
+    },
+    saveEnterSchoolData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      const data = [];
+      for (let i in payload) {
+        for (let j in payload[i]) {
+          data.push({
+            weekday: Number(i),
+            hour: Number(j),
+            count: payload[i][j]
+          });
+        }
+      }
+      return {
+        ...state,
+        enterSchoolData: data,
       };
     },
     saveSatyData(state, { payload }) {
@@ -206,6 +324,25 @@ export default {
             y: data.count,
           };
         })
+      };
+    },
+    saveGradeCostData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      const gradeCostData = [];
+      for (let grade of ['1', '2', '3']) {
+        payload[grade].map((data) => [
+          gradeCostData.push({
+            hour: data.hour,
+            cost: Number(data.avg_cost.toFixed(2)),
+            grade: GRADE_ALIAS[Number(grade)]
+          })
+        ]);
+      }
+      return {
+        ...state,
+        gradeCostData
       };
     },
     savePolicyData(state, { payload }) {

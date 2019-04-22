@@ -47,7 +47,7 @@ const IntroduceRow = memo(({ loading, data, year }) => {
           title="住校生人数占比"
           total={`${(totalStayCount / totalStudentCount * 100).toFixed(2)}%`}
           footer={
-            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
+            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden'}}>
               <Row>
                 <Col span={12}>
                   走读生 {numeral(totalStudentCount - totalStayCount).format('0,0')}
@@ -58,7 +58,7 @@ const IntroduceRow = memo(({ loading, data, year }) => {
               </Row>
             </div>
           }
-          contentHeight={46}
+          contentHeight={47}
         >
           <MiniProgress
             percent={42}
@@ -73,7 +73,7 @@ const IntroduceRow = memo(({ loading, data, year }) => {
         <ChartCard
           bordered={false}
           loading={loading}
-          title={`${year}年消费总量`}
+          title={`2018-2019学年消费总量`}
           total={() => <Yuan>{totalYearCost}</Yuan>}
           footer={
             <Field

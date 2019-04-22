@@ -1,18 +1,20 @@
 # Create your views here.
-from django.db.models import Avg, Sum
+from django.db.models import Avg, Sum, Q
 from rest_framework import viewsets, status
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 
 from consumptions.api.serializers import ConsumptionSerializer, ConsumptionDailyDataSerializer
 from consumptions.models import Consumption, DailyConsumption, HourlyConsumption
-from utils.decorators import required_params
+from students.models.student_record import StudentRecord
+from utils.decorators import required_params, performance_analysis
 
 
 class ConsumptionViewSet(viewsets.ModelViewSet):
     queryset = Consumption.objects.all()
     serializer_class = ConsumptionSerializer
 
+    @performance_analysis(True)
     @required_params(params=['base'])
     @list_route(
         methods=['GET']
@@ -22,16 +24,43 @@ class ConsumptionViewSet(viewsets.ModelViewSet):
         if not base:
             return Response('type 输入有误', status=400)
         if base == 'year':
-            year = request.query_params.get('year', -1)
-            if year == -1 or not year.isdigit():
-                return Response('year error!', status=400)
-            records = DailyConsumption.objects.filter(
-                date__gte='{}-01-01'.format(year)
-            ).values('date').order_by('date').annotate(
+            records = DailyConsumption.objects.values(
+                'date'
+            ).order_by('date').annotate(
                 total_cost=-Sum('total_cost')
             ).values('date', 'total_cost')
 
             return Response(records)
+        if base == 'sex' or base == 'stay_school':
+            field = 'student__sex' if base == 'sex' else 'student__is_stay_school'
+            records = HourlyConsumption.objects.values(
+                field,
+                'hour'
+            ).annotate(
+                total_cost=-Avg('total_cost')
+            ).values('hour', field, 'total_cost').order_by('hour')
+            return Response(records)
+
+        if base == 'grade':
+            student_records = StudentRecord.objects.filter(
+                Q(term__end_year=2019) | Q(term__start_year=2019),
+                stu_class__grade_name__in=[1, 2, 3]
+            ).values('student_id', 'stu_class__grade_name')
+
+            student_grade_map = {}
+            for record in student_records:
+                grade = record['stu_class__grade_name']
+                student_grade_map[grade] = student_grade_map.get(grade, [])
+                student_grade_map[grade].append(record['student_id'])
+
+            consumption_records = {}
+            for grade in [1, 2, 3]:
+                consumption_records[grade] = HourlyConsumption.objects.filter(
+                    student_id__in=student_grade_map[grade]
+                ).values('hour').annotate(
+                    avg_cost=-Avg('total_cost')
+                ).values('hour', 'avg_cost').order_by('hour')
+            return Response(consumption_records)
 
     @required_params(params=['student_id'])
     @list_route(
@@ -54,9 +83,9 @@ class ConsumptionViewSet(viewsets.ModelViewSet):
         methods=['GET'],
     )
     def hourly_avg(self, request):
-        records = HourlyConsumption.objects.order_by(
+        records = HourlyConsumption.objects.values(
             'hour'
-        ).values('hour').annotate(
+        ).annotate(
             total_avg=-Avg('total_cost')
-        )
+        ).order_by('hour')
         return Response(records)

@@ -3,15 +3,18 @@ import { connect } from 'dva';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import { getTimeDistance } from '@/utils/utils';
 import PageLoading from '@/components/PageLoading';
+import DataSet from "@antv/data-set/build/data-set";
 
 const IntroduceRow = React.lazy(() => import('./IntroduceRow'));
 const LocationMap = React.lazy(() => import('./LocationMap'));
 const EcardConsumptionCard = React.lazy(() => import('./EcardConsumptionCard'));
 const AttendanceCard = React.lazy(() => import('./AttendanceCard'));
 
-@connect(({ loading, dashboard }) => ({
+@connect(({ loading, dashboard, global }) => ({
   dashboard,
+  totalHourlyAvgCost: global.totalHourlyAvgCost,
   loading: loading.effects['dashboard/fetchCampusSummary'],
+  sexHourlyLoading: loading.effects['dashboard/fetchSexHourlyCostSummary']
 }))
 class Analysis extends Component {
   state = {
@@ -34,7 +37,7 @@ class Analysis extends Component {
   };
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, totalHourlyAvgCost } = this.props;
     dispatch({
       type: 'dashboard/fetchCampusSummary',
     });
@@ -65,20 +68,63 @@ class Analysis extends Component {
         year: this.state.year
       }
     });
+    dispatch({
+      type: 'dashboard/fetchKaoqinMixedSum',
+    });
+    dispatch({
+      type: 'dashboard/fetchEnterSchoolSummary',
+    });
+    dispatch({
+      type: 'dashboard/fetchSexHourlyCostSummary',
+    });
+    dispatch({
+      type: 'dashboard/fetchStayCostSummary',
+    });
+    dispatch({
+      type: 'dashboard/fetchGradeCostSummary',
+    });
+    if (!totalHourlyAvgCost || !totalHourlyAvgCost.length) {
+      dispatch({
+        type: 'global/fetchTotalHourlyAvgCost',
+      });
+    }
   }
-
 
   render() {
     const { sexType, studentType } = this.state;
-    const { loading, dashboard } = this.props;
+    const { loading, dashboard, totalHourlyAvgCost, sexHourlyLoading } = this.props;
 
     const {
       campusData, totalStudentCount, stayData,
       totalStayCount, gradeData, nationData,
       nativePlaceData, policyData,
-      yearCostData, totalYearCost,dailyAvgCost,
+      yearCostData, totalYearCost, dailyAvgCost,
       kaoqinSummaryData, totalKaoqinCount,
+      sexHourlyCostData, gradeCostData, stayCostData,
+      enterSchoolData, kaoqinMixedData
     } = dashboard;
+    const sexHourlyData = sexHourlyCostData.concat(totalHourlyAvgCost.map(data => {
+      return {
+        hour: data.hour,
+        cost: Number(data.total_avg.toFixed(2)),
+        sex: '整体'
+      };
+    }));
+    const stayHourlyData = stayCostData.concat(totalHourlyAvgCost.map(data => {
+      return {
+        hour: data.hour,
+        cost: Number(data.total_avg.toFixed(2)),
+        stayType: '整体'
+      };
+    }));
+
+    const gradeHourlyData = gradeCostData.concat(totalHourlyAvgCost.map(data => {
+      return {
+        hour: data.hour,
+        cost: Number(data.total_avg.toFixed(2)),
+        grade: '整体'
+      };
+    }));
     //student表示人员分布的图表
     let studentPieData = [];
 
@@ -123,7 +169,7 @@ class Analysis extends Component {
             data={{
               totalStudentCount,
               studentPieData,
-              sexPieData
+              sexPieData,
             }}
             handleChangeSexType={this.handleChangeSexType}
             handleChangeStudentType={this.handleChangeStudentType}
@@ -131,10 +177,20 @@ class Analysis extends Component {
           />
         </Suspense>
         <Suspense fallback={null}>
-          <EcardConsumptionCard/>
+          <EcardConsumptionCard
+            data={{
+              sexHourlyData,
+              sexHourlyLoading,
+              gradeHourlyData,
+              stayHourlyData,
+              yearCostData
+            }}
+          />
         </Suspense>
         <Suspense fallback={null}>
-          <AttendanceCard/>
+          <AttendanceCard data={{
+            enterSchoolData, kaoqinMixedData
+          }}/>
         </Suspense>
 
       </GridContent>

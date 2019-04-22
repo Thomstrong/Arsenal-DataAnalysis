@@ -11,7 +11,7 @@ class OneTimelineChart extends React.Component {
     const {
       title,
       height = 400,
-      padding = [60, 20, 40, 40],
+      padding = [60, 55, 40, 75],
       titleMap = {
         y: '单天消费总额',
       },
@@ -19,7 +19,7 @@ class OneTimelineChart extends React.Component {
       data: sourceData,
     } = this.props;
 
-    const data = Array.isArray(sourceData) ? sourceData : [{ x: 0, y: 0}];
+    const data = Array.isArray(sourceData) && sourceData.length ? sourceData : [{ x: 0, y: 0}];
 
     data.sort((a, b) => a.x - b.x);
 

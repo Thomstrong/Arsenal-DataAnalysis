@@ -255,7 +255,7 @@ class Center extends PureComponent {
     const { lastCycleData, thisCycleData, predictData, dateRange } = dailyPredictData;
     const mergedData = new DataSet.View().source(lastCycleData.concat(thisCycleData).concat(predictData)).transform({
       type: 'partition',
-      groupBy: ['offset'], // 以year字段进行分组
+      groupBy: ['offset'],
       orderBy: ['offset']
     }).rows;
     const formatedData = [];
