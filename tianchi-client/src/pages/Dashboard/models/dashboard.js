@@ -28,6 +28,7 @@ export default {
     sexHourlyCostData: [],
     stayCostData: [],
     gradeCostData: [],
+    enterSchoolData: [],
   },
 
   effects: {
@@ -47,6 +48,15 @@ export default {
       });
       yield put({
         type: 'saveKaoqinSummaryData',
+        payload: response,
+      });
+    },
+    * fetchEnterSchoolSummary({ payload }, { call, put }) {
+      const response = yield call(getKaoqinSummary, {
+        base: 'enter_school',
+      });
+      yield put({
+        type: 'saveEnterSchoolData',
         payload: response,
       });
     },
@@ -220,6 +230,25 @@ export default {
         totalKaoqinCount: totalKaoqinCount,
       };
     },
+    saveEnterSchoolData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      const data = [];
+      for (let i in payload) {
+        for (let j in payload[i]) {
+          data.push({
+            weekday: Number(i),
+            hour: Number(j),
+            count: payload[i][j]
+          });
+        }
+      }
+      return {
+        ...state,
+        enterSchoolData: data,
+      };
+    },
     saveSatyData(state, { payload }) {
       if (!payload) {
         return state;
@@ -274,14 +303,14 @@ export default {
         return state;
       }
       const gradeCostData = [];
-      for (let grade of ['1','2','3']) {
+      for (let grade of ['1', '2', '3']) {
         payload[grade].map((data) => [
           gradeCostData.push({
-            hour:data.hour,
+            hour: data.hour,
             cost: Number(data.avg_cost.toFixed(2)),
             grade: GRADE_ALIAS[Number(grade)]
           })
-        ])
+        ]);
       }
       return {
         ...state,

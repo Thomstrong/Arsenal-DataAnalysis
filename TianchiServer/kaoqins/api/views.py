@@ -1,5 +1,4 @@
-# Create your views here.
-from django.db.models import Count
+from django.db.models import Count, Q
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
@@ -22,7 +21,7 @@ class KaoqinRecordViewSet(viewsets.ModelViewSet):
     def summary(self, request):
         base = request.query_params.get('base', '')
         if not base:
-            return Response('type 输入有误', status=400)
+            return Response('base 输入有误', status=400)
         if base == 'year':
             year = request.query_params.get('year', -1)
             if year == -1 or not year.isdigit():
@@ -34,4 +33,17 @@ class KaoqinRecordViewSet(viewsets.ModelViewSet):
                 count=Count('id'),
             ).order_by('event__type_id')
             return Response(records)
-        return Response('request', status=400)
+
+        if base == 'enter_school':
+            records = KaoqinRecord.objects.filter(
+                Q(term__end_year=2019) | Q(term__start_year=2019),
+                event_id=9900500,
+            ).values('created_at')
+
+            response_counter = [[0 for _ in range(24)] for _ in range(7)]
+            for record in records:
+                created_at = record['created_at']
+                week_day = created_at.weekday()
+                hour = created_at.hour
+                response_counter[week_day - 1][hour] += 1
+        return Response(response_counter)
