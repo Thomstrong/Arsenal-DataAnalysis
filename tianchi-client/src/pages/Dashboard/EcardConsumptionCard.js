@@ -10,92 +10,6 @@ import numeral from 'numeral';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
 import DataSet from "@antv/data-set";
 
-const gradedata = [
-  {
-    time: '0时',
-    Gone: 7.0,
-    Gtwo: 3.9,
-    Gthree: 20,
-    all: 10
-  },
-  {
-    time: '1时',
-    Gone: 6.9,
-    Gtwo: 4.2,
-    Gthree: 2,
-    all: 10
-  },
-  {
-    time: '2时',
-    Gone: 9.5,
-    Gtwo: 5.7,
-    Gthree: 12,
-    all: 10
-  },
-  {
-    time: '3时',
-    Gone: 14.5,
-    Gtwo: 8.5,
-    Gthree: 20,
-    all: 10
-  },
-  {
-    time: '4时',
-    Gone: 18.4,
-    Gtwo: 11.9,
-    Gthree: 20,
-    all: 10
-  },
-  {
-    time: '5时',
-    Gone: 21.5,
-    Gtwo: 15.2,
-    Gthree: 20,
-    all: 10
-  },
-  {
-    time: '6时',
-    Gone: 25.2,
-    Gtwo: 17.0,
-    Gthree: 20,
-    all: 10
-  },
-  {
-    time: '7时',
-    Gone: 26.5,
-    Gtwo: 16.6,
-    Gthree: 20,
-    all: 10
-  },
-  {
-    time: '8时',
-    Gone: 23.3,
-    Gtwo: 14.2,
-    Gthree: 20,
-    all: 10
-  },
-  {
-    time: '9时',
-    Gone: 18.3,
-    Gtwo: 10.3,
-    Gthree: 20,
-    all: 10
-  },
-  {
-    time: '10时',
-    Gone: 13.9,
-    Gtwo: 6.6,
-    Gthree: 20,
-    all: 10
-  },
-  {
-    month: '11时',
-    Gone: 9.6,
-    Gtwo: 4.8,
-    Gthree: 20,
-    all: 10
-  }
-];
 const leavedata = [
   {
     time: '0时',
@@ -171,14 +85,6 @@ const leavedata = [
   }
 ];
 
-let GradeData = new DataSet.View().source(gradedata).transform({
-  type: 'fold',
-  fields: ['Gone', 'Gtwo', 'Gthree', 'all'],
-  // 展开字段集
-  key: 'dif',
-  // key字段
-  value: 'cost' // value字段
-});
 let LeaveData = new DataSet.View().source(leavedata).transform({
   type: 'fold',
   fields: ['leave', 'stay', 'all'],
@@ -271,9 +177,18 @@ const rankingListData = [
   },
 
 ];
-
+const scale = {
+  hour: {
+    min: 0, max: 23,
+    tickInterval: 1
+  },
+  cost: {
+    min: 0,
+    tickInterval: 2,
+  }
+};
 const EcardConsumptionCard = memo(({ data }) => {
-  const { sexHourlyData, sexHourlyLoading } = data;
+  const { sexHourlyData, sexHourlyLoading, gradeHourlyData } = data;
   return <React.Fragment>
     {/*<Card title="一卡通消费情况一览" bordered={false} style={{marginTop: 32}}>*/}
     {/*两个部分，分别是每天的总消费变化趋势和某时刻平均消费情况*/}
@@ -290,16 +205,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                   data={sexHourlyData}
                   padding="auto"
                   forceFit
-                  scale={{
-                    hour: {
-                      min: 0, max: 23,
-                      tickInterval: 1
-                    },
-                    cost: {
-                      min: 0,
-                      tickInterval: 2,
-                    }
-                  }}
+                  scale={scale}
                 >
                   <h4 className={styles.rankingTitle}>不同性别不同时刻消费情况对比</h4>
                   <Legend/>
@@ -359,10 +265,10 @@ const EcardConsumptionCard = memo(({ data }) => {
           <Row>
             <Col span={16}>
               <div className={styles.salesBar}>
-                <Chart height={400} data={GradeData} padding="auto" title="不同年级不同时刻消费情况对比" forceFit>
+                <Chart height={400} data={gradeHourlyData} padding="auto" title="不同年级不同时刻消费情况对比" forceFit scale={scale}>
                   <h4 className={styles.rankingTitle}>不同年级不同时刻消费情况对比</h4>
                   <Legend/>
-                  <Axis name="time"/>
+                  <Axis name="hour"/>
                   <Axis
                     name="cost"
                   />
@@ -373,16 +279,16 @@ const EcardConsumptionCard = memo(({ data }) => {
                   />
                   <Geom
                     type="line"
-                    position="time*cost"
+                    position="hour*cost"
                     size={2}
-                    color={"dif"}
+                    color={"grade"}
                   />
                   <Geom
                     type="point"
-                    position="time*cost"
+                    position="hour*cost"
                     size={4}
                     shape={"circle"}
-                    color={"dif"}
+                    color={"grade"}
                     style={{
                       stroke: "#fff",
                       lineWidth: 1

@@ -71,6 +71,9 @@ class Analysis extends Component {
     dispatch({
       type: 'dashboard/fetchSexHourlyCostSummary',
     });
+    dispatch({
+      type: 'dashboard/fetchGradeCostSummary',
+    });
     if (!totalHourlyAvgCost || !totalHourlyAvgCost.length) {
       dispatch({
         type: 'global/fetchTotalHourlyAvgCost',
@@ -88,13 +91,21 @@ class Analysis extends Component {
       nativePlaceData, policyData,
       yearCostData, totalYearCost, dailyAvgCost,
       kaoqinSummaryData, totalKaoqinCount,
-      sexHourlyCostData
+      sexHourlyCostData,gradeCostData
     } = dashboard;
     const sexHourlyData = sexHourlyCostData.concat(totalHourlyAvgCost.map(data => {
       return {
         hour: data.hour,
         cost: Number(data.total_avg.toFixed(2)),
         sex: '整体'
+      };
+    }));
+
+    const gradeHourlyData = gradeCostData.concat(totalHourlyAvgCost.map(data => {
+      return {
+        hour: data.hour,
+        cost: Number(data.total_avg.toFixed(2)),
+        grade: '整体'
       };
     }));
     //student表示人员分布的图表
@@ -152,7 +163,8 @@ class Analysis extends Component {
           <EcardConsumptionCard
             data={{
               sexHourlyData,
-              sexHourlyLoading
+              sexHourlyLoading,
+              gradeHourlyData
             }}
           />
         </Suspense>
