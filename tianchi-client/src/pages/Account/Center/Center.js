@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { POLICY_TYPE_ALIAS, SCORE_LEVEL_ALIAS, SEX_MAP } from "@/constants";
 import router from 'umi/router';
 import _ from 'lodash';
-import { Affix, Avatar, Card, Col, DatePicker, Divider, Empty, Icon, Input, Row, Select, Spin, Tabs } from 'antd';
+import { Affix, Avatar, Card, Col, DatePicker, Divider, Empty, Icon, Input, Row, Select, Spin, Tabs, Tag } from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './Center.less';
 import { Axis, Chart, Coord, Geom, Legend, Shape, Tooltip } from "bizcharts";
@@ -631,6 +631,8 @@ class Center extends PureComponent {
                       />
                     </Suspense>
                     <div className={styles.name}>{studentInfo.name}</div>
+                    {studentInfo.is_left ? <Tag color="#f50">已离校</Tag> :
+                      <Tag color="#2db7f5">在校生</Tag>}
                   </div>
                   {/*学生详细信息*/}
                   <div className={styles.detail}>
