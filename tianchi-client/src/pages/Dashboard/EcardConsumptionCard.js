@@ -10,62 +10,6 @@ import numeral from 'numeral';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
 
 
-const DaySumConsumptionData = [
-  {
-    x: Date.parse('2019-01-01'),
-    y: 20
-  },
-  {
-    x: Date.parse('2019-01-02'),
-    y: 33
-  },
-  {
-    x: Date.parse('2019-01-03'),
-    y: 2
-  },
-  {
-    x: Date.parse('2019-01-04'),
-    y: 3
-  },
-  {
-    x: Date.parse('2019-01-05'),
-    y: 20
-  },
-  {
-    x: Date.parse('2019-01-06'),
-    y: 30
-  },
-  {
-    x: Date.parse('2019-01-07'),
-    y: 2
-  },
-  {
-    x: Date.parse('2019-01-08'),
-    y: 30
-  },
-  {
-    x: Date.parse('2019-01-09'),
-    y: 20
-  },
-  {
-    x: Date.parse('2019-01-10'),
-    y: 30
-  },
-  {
-    x: Date.parse('2019-01-11'),
-    y: 2
-  },
-  {
-    x: Date.parse('2019-01-12'),
-    y: 30
-  }
-];
-const markerList = [
-  {
-    position: [Date.parse('2019-01-10'), 30],
-    content: "变多了神奇"
-  }
-];
 const TabPane = Tabs.TabPane;
 
 //有图表后的分析数据，无需从后端获得
@@ -102,6 +46,11 @@ const scale = {
     tickInterval: 2,
   }
 };
+const getColor = (category) => {
+  return {
+    "整体": "#ea87e4",
+  }[category];
+};
 const EcardConsumptionCard = memo(({ data }) => {
   const { sexHourlyData, sexHourlyLoading, gradeHourlyData, stayHourlyData, yearCostData } = data;
   return <React.Fragment>
@@ -133,14 +82,24 @@ const EcardConsumptionCard = memo(({ data }) => {
                     type="line"
                     position="hour*cost"
                     size={2}
-                    color={"sex"}
+                    color={[
+                      "sex",
+                      function (category) {
+                        return getColor(category);
+                      }
+                    ]}
                   />
                   <Geom
                     type="point"
                     position="hour*cost"
                     size={4}
                     shape={"circle"}
-                    color={"sex"}
+                    color={[
+                      "sex",
+                      function (category) {
+                        return getColor(category);
+                      }
+                    ]}
                     style={{
                       stroke: "#fff",
                       lineWidth: 1
@@ -196,14 +155,24 @@ const EcardConsumptionCard = memo(({ data }) => {
                     type="line"
                     position="hour*cost"
                     size={2}
-                    color={"grade"}
+                    color={[
+                      "grade",
+                      function (category) {
+                        return getColor(category);
+                      }
+                    ]}
                   />
                   <Geom
                     type="point"
                     position="hour*cost"
                     size={4}
                     shape={"circle"}
-                    color={"grade"}
+                    color={[
+                      "grade",
+                      function (category) {
+                        return getColor(category);
+                      }
+                    ]}
                     style={{
                       stroke: "#fff",
                       lineWidth: 1
@@ -265,14 +234,24 @@ const EcardConsumptionCard = memo(({ data }) => {
                     type="line"
                     position="hour*cost"
                     size={2}
-                    color={"stayType"}
+                    color={[
+                      "stayType",
+                      function (category) {
+                        return getColor(category);
+                      }
+                    ]}
                   />
                   <Geom
                     type="point"
                     position="hour*cost"
                     size={4}
                     shape={"circle"}
-                    color={"stayType"}
+                    color={[
+                      "stayType",
+                      function (category) {
+                        return getColor(category);
+                      }
+                    ]}
                     style={{
                       stroke: "#fff",
                       lineWidth: 1
