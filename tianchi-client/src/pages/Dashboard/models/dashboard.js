@@ -5,7 +5,7 @@ import {
   GRADE_ALIAS,
   POLICY_TYPE_ALIAS,
   SEX_FULL_MAP,
-  STAY_ALIAS
+  STAY_ALIAS,
 } from "@/constants";
 
 export default {
@@ -29,6 +29,7 @@ export default {
     stayCostData: [],
     gradeCostData: [],
     enterSchoolData: [],
+    kaoqinMixedData: [],
   },
 
   effects: {
@@ -48,6 +49,15 @@ export default {
       });
       yield put({
         type: 'saveKaoqinSummaryData',
+        payload: response,
+      });
+    },
+    * fetchKaoqinMixedSum({ payload }, { call, put }) {
+      const response = yield call(getKaoqinSummary, {
+        base: 'mixed',
+      });
+      yield put({
+        type: 'saveKaoqinMixedData',
         payload: response,
       });
     },
@@ -228,6 +238,24 @@ export default {
           };
         }),
         totalKaoqinCount: totalKaoqinCount,
+      };
+    },
+    saveKaoqinMixedData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        kaoqinMixedData: payload.map(data => {
+          const grade = data.grade;
+          const typeId = Number(data.type)
+          return {
+            term: `${data.term} 学年`,
+            type: EVENT_TYPE_ALIAS[typeId],
+            grade: `${GRADE_ALIAS[grade]}_${EVENT_TYPE_ALIAS[typeId]}`,
+            count: data.count
+          };
+        }),
       };
     },
     saveEnterSchoolData(state, { payload }) {

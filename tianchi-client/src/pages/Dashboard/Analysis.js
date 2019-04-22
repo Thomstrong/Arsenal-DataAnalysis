@@ -69,6 +69,9 @@ class Analysis extends Component {
       }
     });
     dispatch({
+      type: 'dashboard/fetchKaoqinMixedSum',
+    });
+    dispatch({
       type: 'dashboard/fetchEnterSchoolSummary',
     });
     dispatch({
@@ -97,8 +100,8 @@ class Analysis extends Component {
       nativePlaceData, policyData,
       yearCostData, totalYearCost, dailyAvgCost,
       kaoqinSummaryData, totalKaoqinCount,
-      sexHourlyCostData,gradeCostData,stayCostData,
-      enterSchoolData
+      sexHourlyCostData, gradeCostData, stayCostData,
+      enterSchoolData, kaoqinMixedData
     } = dashboard;
     const sexHourlyData = sexHourlyCostData.concat(totalHourlyAvgCost.map(data => {
       return {
@@ -186,7 +189,7 @@ class Analysis extends Component {
         </Suspense>
         <Suspense fallback={null}>
           <AttendanceCard data={{
-            enterSchoolData
+            enterSchoolData, kaoqinMixedData
           }}/>
         </Suspense>
 

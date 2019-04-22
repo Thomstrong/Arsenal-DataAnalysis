@@ -7,7 +7,6 @@ import { Pie, TimelineChart } from '@/components/Charts';
 import styles from './EcardConsumptionCard.less';
 import numeral from 'numeral';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
-import DataSet from "@antv/data-set";
 
 const cols = {
   weekday: {
@@ -52,135 +51,16 @@ const cols = {
     ]
   }
 };
-//考勤不合格人数及类别数据（分组层叠柱状图）
-const electiveColData = [
-  {
-    State: "2014年",
-    "迟到_高一": 310,
-    "迟到_高二": 559,
-    "迟到_高三": 259,
-    "早退_高一": 450,
-    "早退_高二": 123,
-    "早退_高三": 121,
-    "校服违纪_高一": 450,
-    "校服违纪_高二": 123,
-    "校服违纪_高三": 121,
-  },
-  {
-    State: "2015年",
-    "迟到_高一": 310,
-    "迟到_高二": 559,
-    "迟到_高三": 259,
-    "早退_高一": 450,
-    "早退_高二": 123,
-    "早退_高三": 121,
-    "校服违纪_高一": 450,
-    "校服违纪_高二": 123,
-    "校服违纪_高三": 121,
-  },
-  {
-    State: "2016年",
-    "迟到_高一": 310,
-    "迟到_高二": 559,
-    "迟到_高三": 259,
-    "早退_高一": 450,
-    "早退_高二": 123,
-    "早退_高三": 121,
-    "校服违纪_高一": 450,
-    "校服违纪_高二": 123,
-    "校服违纪_高三": 121,
-  },
-  {
-    State: "2017年",
-    "迟到_高一": 310,
-    "迟到_高二": 559,
-    "迟到_高三": 259,
-    "早退_高一": 450,
-    "早退_高二": 123,
-    "早退_高三": 121,
-    "校服违纪_高一": 450,
-    "校服违纪_高二": 123,
-    "校服违纪_高三": 121,
-  },
-  {
-    State: "2018年",
-    "迟到_高一": 310,
-    "迟到_高二": 559,
-    "迟到_高三": 259,
-    "早退_高一": 450,
-    "早退_高二": 123,
-    "早退_高三": 121,
-    "校服违纪_高一": 450,
-    "校服违纪_高二": 123,
-    "校服违纪_高三": 121,
-  },
-  {
-    State: "2019年",
-    "迟到_高一": 310,
-    "迟到_高二": 559,
-    "迟到_高三": 259,
-    "早退_高一": 450,
-    "早退_高二": 123,
-    "早退_高三": 121,
-    "校服违纪_高一": 450,
-    "校服违纪_高二": 123,
-    "校服违纪_高三": 121,
-  }
-];
-const category = [
-  "迟到_高一",
-  "迟到_高二",
-  "迟到_高三",
-  "早退_高一",
-  "早退_高二",
-  "早退_高三",
-  "校服违纪_高一",
-  "校服违纪_高二",
-  "校服违纪_高三",
-];
-const eleColData = new DataSet.View().source(electiveColData)
-  .transform({
-    type: "fold",
-    fields: category,
-    key: "category",
-    value: "population",
-    retains: ["State"]
-  })
-  .transform({
-    type: "map",
-    callback: obj => {
-      const key = obj.category;
-      let type;
-
-      if (
-        key === "迟到_高一" ||
-        key === "迟到_高二" ||
-        key === "迟到_高三"
-      ) {
-        type = "迟到";
-      } else if (
-        key === "早退_高一" ||
-        key === "早退_高二" ||
-        key === "早退_高三"
-      ) {
-        type = "早退";
-      } else {
-        type = "校服违纪";
-      }
-      obj.type = type;
-      return obj;
-    }
-  });
 const colorMap = {
-  "迟到_高一": "#36CFC9",
-  "迟到_高二": "#209BDD",
-  "迟到_高三": "#1581E6",
-  "早退_高一": "#36CFC9",
-  "早退_高二": "#209BDD",
-  "早退_高三": "#1581E6",
-  "校服违纪_高一": "#36CFC9",
-  "校服违纪_高二": "#209BDD",
-  "校服违纪_高三": "#1581E6",
+  "高一_迟到": "#36CFC9",
+  "高二_迟到": "#209BDD",
+  "高三_迟到": "#1581E6",
+  "高一_早退": "#36CFC9",
+  "高二_早退": "#209BDD",
+  "高三_早退": "#1581E6",
+  "高一_校服违纪": "#36CFC9",
+  "高二_校服违纪": "#209BDD",
+  "高三_校服违纪": "#1581E6",
 };
 
 const rankingListData = [
@@ -230,7 +110,7 @@ const AttendanceRankingListData = [
 
 
 const AttendanceCard = memo(({ data }) => {
-    const { enterSchoolData } = data;
+    const { enterSchoolData, kaoqinMixedData } = data;
     return <React.Fragment>
       <Card title="进离校时间概况" bordered={false} style={{ marginTop: 32 }}>
         <Row>
@@ -335,26 +215,26 @@ const AttendanceCard = memo(({ data }) => {
           <Col span={16} offset={1}>
             <Chart
               height={400}
-              data={eleColData}
+              data={kaoqinMixedData}
               padding={[20, 160, 80, 60]}
               forceFit
             >
               <Axis
-                name="population"
+                name="count"
               />
               <Legend position="right"/>
               <Tooltip/>
               <Geom
                 type="interval"
-                position="State*population"
+                position="term*count"
                 color={[
-                  "category",
+                  "grade",
                   function (category) {
                     return colorMap[category];
                   }
                 ]}
                 tooltip={[
-                  "category*population",
+                  "grade*count",
                   (category, population) => {
                     return {
                       name: category,
