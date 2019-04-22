@@ -26,6 +26,7 @@ export default {
     kaoqinSummaryData: [],
     totalKaoqinCount: 0,
     sexHourlyCostData: [],
+    stayCostData: [],
     gradeCostData: [],
   },
 
@@ -113,6 +114,15 @@ export default {
         payload: response
       });
     },
+    * fetchStayCostSummary(_, { call, put }) {
+      const response = yield call(getCostSummary, {
+        base: 'stay_school'
+      });
+      yield put({
+        type: 'saveStaySchoolCostData',
+        payload: response
+      });
+    },
     * fetchGradeCostSummary(_, { call, put }) {
       const response = yield call(getCostSummary, {
         base: 'grade'
@@ -153,6 +163,21 @@ export default {
           return {
             hour: data.hour,
             sex: SEX_FULL_MAP[data.student__sex],
+            cost: Number(data.total_cost.toFixed(2))
+          };
+        })
+      };
+    },
+    saveStaySchoolCostData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        stayCostData: payload.map(data => {
+          return {
+            hour: data.hour,
+            stayType: STAY_ALIAS[Number(data.student__is_stay_school)],
             cost: Number(data.total_cost.toFixed(2))
           };
         })

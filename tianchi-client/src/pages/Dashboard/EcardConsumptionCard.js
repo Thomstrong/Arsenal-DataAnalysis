@@ -8,91 +8,6 @@ import { OneTimelineChart, Pie } from '@/components/Charts';
 import styles from './EcardConsumptionCard.less';
 import numeral from 'numeral';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
-import DataSet from "@antv/data-set";
-
-const leavedata = [
-  {
-    time: '0时',
-    leave: 7.0,
-    stay: 3.9,
-    all: 10
-  },
-  {
-    time: '1时',
-    leave: 6.9,
-    stay: 4.2,
-    all: 10
-  },
-  {
-    time: '2时',
-    leave: 9.5,
-    stay: 5.7,
-    all: 10
-  },
-  {
-    time: '3时',
-    leave: 14.5,
-    stay: 8.5,
-    all: 10
-  },
-  {
-    time: '4时',
-    leave: 18.4,
-    stay: 11.9,
-    all: 10
-  },
-  {
-    time: '5时',
-    leave: 21.5,
-    stay: 15.2,
-    all: 10
-  },
-  {
-    time: '6时',
-    leave: 25.2,
-    stay: 17.0,
-    all: 10
-  },
-  {
-    time: '7时',
-    leave: 26.5,
-    stay: 16.6,
-    all: 10
-  },
-  {
-    time: '8时',
-    leave: 23.3,
-    stay: 14.2,
-    all: 10
-  },
-  {
-    time: '9时',
-    leave: 18.3,
-    stay: 10.3,
-    all: 10
-  },
-  {
-    time: '10时',
-    leave: 13.9,
-    stay: 6.6,
-    all: 10
-  },
-  {
-    month: '11时',
-    leave: 9.6,
-    stay: 4.8,
-    all: 10
-  }
-];
-
-let LeaveData = new DataSet.View().source(leavedata).transform({
-  type: 'fold',
-  fields: ['leave', 'stay', 'all'],
-  // 展开字段集
-  key: 'dif',
-  // key字段
-  value: 'cost' // value字段
-});
 
 
 const DaySumConsumptionData = [
@@ -188,7 +103,7 @@ const scale = {
   }
 };
 const EcardConsumptionCard = memo(({ data }) => {
-  const { sexHourlyData, sexHourlyLoading, gradeHourlyData } = data;
+  const { sexHourlyData, sexHourlyLoading, gradeHourlyData, stayHourlyData, yearCostData } = data;
   return <React.Fragment>
     {/*<Card title="一卡通消费情况一览" bordered={false} style={{marginTop: 32}}>*/}
     {/*两个部分，分别是每天的总消费变化趋势和某时刻平均消费情况*/}
@@ -328,10 +243,16 @@ const EcardConsumptionCard = memo(({ data }) => {
           <Row>
             <Col span={16}>
               <div className={styles.salesBar}>
-                <Chart height={400} data={LeaveData} padding="auto" title="走读生/住校生不同时刻消费情况对比" forceFit>
+                <Chart
+                  height={400} scale={scale}
+                  data={stayHourlyData}
+                  padding="auto"
+                  title="走读生/住校生不同时刻消费情况对比"
+                  forceFit
+                >
                   <h4 className={styles.rankingTitle}>走读生/住校生不同时刻消费情况对比</h4>
                   <Legend/>
-                  <Axis name="time"/>
+                  <Axis name="hour"/>
                   <Axis
                     name="cost"
                   />
@@ -342,16 +263,16 @@ const EcardConsumptionCard = memo(({ data }) => {
                   />
                   <Geom
                     type="line"
-                    position="time*cost"
+                    position="hour*cost"
                     size={2}
-                    color={"dif"}
+                    color={"stayType"}
                   />
                   <Geom
                     type="point"
-                    position="time*cost"
+                    position="hour*cost"
                     size={4}
                     shape={"circle"}
-                    color={"dif"}
+                    color={"stayType"}
                     style={{
                       stroke: "#fff",
                       lineWidth: 1
@@ -419,7 +340,12 @@ const EcardConsumptionCard = memo(({ data }) => {
         <Col span={16} offset={1}>
           <OneTimelineChart
             height={400}
-            data={DaySumConsumptionData}
+            data={yearCostData.map((data) => {
+              return {
+                x: Date.parse(data.x),
+                y: data.y
+              };
+            })}
           />
         </Col>
       </Row>

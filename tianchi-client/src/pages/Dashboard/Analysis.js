@@ -72,6 +72,9 @@ class Analysis extends Component {
       type: 'dashboard/fetchSexHourlyCostSummary',
     });
     dispatch({
+      type: 'dashboard/fetchStayCostSummary',
+    });
+    dispatch({
       type: 'dashboard/fetchGradeCostSummary',
     });
     if (!totalHourlyAvgCost || !totalHourlyAvgCost.length) {
@@ -91,13 +94,20 @@ class Analysis extends Component {
       nativePlaceData, policyData,
       yearCostData, totalYearCost, dailyAvgCost,
       kaoqinSummaryData, totalKaoqinCount,
-      sexHourlyCostData,gradeCostData
+      sexHourlyCostData,gradeCostData,stayCostData
     } = dashboard;
     const sexHourlyData = sexHourlyCostData.concat(totalHourlyAvgCost.map(data => {
       return {
         hour: data.hour,
         cost: Number(data.total_avg.toFixed(2)),
         sex: '整体'
+      };
+    }));
+    const stayHourlyData = stayCostData.concat(totalHourlyAvgCost.map(data => {
+      return {
+        hour: data.hour,
+        cost: Number(data.total_avg.toFixed(2)),
+        stayType: '整体'
       };
     }));
 
@@ -164,7 +174,9 @@ class Analysis extends Component {
             data={{
               sexHourlyData,
               sexHourlyLoading,
-              gradeHourlyData
+              gradeHourlyData,
+              stayHourlyData,
+              yearCostData
             }}
           />
         </Suspense>
