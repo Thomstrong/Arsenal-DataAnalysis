@@ -122,6 +122,18 @@ export default [
           },
         ],
       },
+      {
+        name: 'class',
+        icon: 'team',
+        path: '/class',
+        routes: [
+          {
+            path: '/class/analysis',
+            name: 'analysis',
+            component: './Class/ClassAnalysis',
+          }
+        ],
+      },
       // forms
       {
         path: '/form',

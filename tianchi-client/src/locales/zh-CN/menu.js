@@ -45,4 +45,7 @@ export default {
   'menu.courseAnalysis':'科目分析',
   'menu.courseAnalysis.elective':'选课情况分析',
   'menu.courseAnalysis.subject':'课程分数分析',
+  'menu.class':'班级分析',
+  'menu.class.analysis':'班级信息分析',
+
 };
