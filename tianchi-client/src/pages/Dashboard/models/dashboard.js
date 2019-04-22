@@ -25,6 +25,7 @@ export default {
     dailyAvgCost: 0,
     kaoqinSummaryData: [],
     totalKaoqinCount: 0,
+    sexHourlyCostData: []
   },
 
   effects: {
@@ -102,6 +103,16 @@ export default {
         payload: response
       });
     },
+    * fetchSexHourlyCostSummary(_, { call, put }) {
+      const response = yield call(getCostSummary, {
+        base: 'sex'
+      });
+      yield put({
+        type: 'saveSexHourlyCostData',
+        payload: response
+      });
+    },
+
   },
 
   reducers: {
@@ -120,6 +131,21 @@ export default {
           };
         }),
         totalStudentCount
+      };
+    },
+    saveSexHourlyCostData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        sexHourlyCostData: payload.map(data => {
+          return {
+            hour: data.hour,
+            sex: SEX_FULL_MAP[data.student__sex],
+            cost: Number(data.total_cost.toFixed(2))
+          };
+        })
       };
     },
     saveYearCost(state, { payload }) {

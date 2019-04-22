@@ -10,80 +10,6 @@ import numeral from 'numeral';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
 import DataSet from "@antv/data-set";
 
-const sexdata = [
-  {
-    time: '0时',
-    boy: 7.0,
-    girl: 3.9,
-    all: 10
-  },
-  {
-    time: '1时',
-    boy: 6.9,
-    girl: 4.2,
-    all: 10
-  },
-  {
-    time: '2时',
-    boy: 9.5,
-    girl: 5.7,
-    all: 10
-  },
-  {
-    time: '3时',
-    boy: 14.5,
-    girl: 8.5,
-    all: 10
-  },
-  {
-    time: '4时',
-    boy: 18.4,
-    girl: 11.9,
-    all: 10
-  },
-  {
-    time: '5时',
-    boy: 21.5,
-    girl: 15.2,
-    all: 10
-  },
-  {
-    time: '6时',
-    boy: 25.2,
-    girl: 17.0,
-    all: 10
-  },
-  {
-    time: '7时',
-    boy: 26.5,
-    girl: 16.6,
-    all: 10
-  },
-  {
-    time: '8时',
-    boy: 23.3,
-    girl: 14.2,
-    all: 10
-  },
-  {
-    time: '9时',
-    boy: 18.3,
-    girl: 10.3,
-    all: 10
-  },
-  {
-    time: '10时',
-    boy: 13.9,
-    girl: 6.6,
-    all: 10
-  },
-  {
-    month: '11时',
-    boy: 9.6,
-    girl: 4.8,
-    all: 10
-  }
-];
 const gradedata = [
   {
     time: '0时',
@@ -245,14 +171,6 @@ const leavedata = [
   }
 ];
 
-let SexData = new DataSet.View().source(sexdata).transform({
-  type: 'fold',
-  fields: ['boy', 'girl', 'all'],
-  // 展开字段集
-  key: 'dif',
-  // key字段
-  value: 'cost' // value字段
-});
 let GradeData = new DataSet.View().source(gradedata).transform({
   type: 'fold',
   fields: ['Gone', 'Gtwo', 'Gthree', 'all'],
@@ -354,38 +272,54 @@ const rankingListData = [
 
 ];
 
-const EcardConsumptionCard = memo(() => (
-  <React.Fragment>
+const EcardConsumptionCard = memo(({ data }) => {
+  const { sexHourlyData, sexHourlyLoading } = data;
+  return <React.Fragment>
     {/*<Card title="一卡通消费情况一览" bordered={false} style={{marginTop: 32}}>*/}
     {/*两个部分，分别是每天的总消费变化趋势和某时刻平均消费情况*/}
     {/*DataMarker可以后续有图表后进行补充*/}
     {/*第一部分，每天总消费变化趋势*/}
-    <Card className={styles.tabsCard} style={{ marginTop: 32 }}>
+    <Card loading={sexHourlyLoading} className={styles.tabsCard} style={{ marginTop: 32 }}>
       <Tabs defaultActiveKey={"Sex"}>
         <TabPane tab={<span><Icon type="line-chart"/>性别对比</span>} key="Sex">
           <Row>
             <Col span={16}>
               <div className={styles.salesBar}>
-                <Chart height={400} data={SexData} padding="auto" forceFit>
+                <Chart
+                  height={400}
+                  data={sexHourlyData}
+                  padding="auto"
+                  forceFit
+                  scale={{
+                    hour: {
+                      min: 0, max: 23,
+                      tickInterval: 1
+                    },
+                    cost: {
+                      min: 0,
+                      tickInterval: 2,
+                    }
+                  }}
+                >
                   <h4 className={styles.rankingTitle}>不同性别不同时刻消费情况对比</h4>
                   <Legend/>
-                  <Axis name="time"/>
+                  <Axis name="hour"/>
                   <Axis
                     name="cost"
                   />
                   <Tooltip/>
                   <Geom
                     type="line"
-                    position="time*cost"
+                    position="hour*cost"
                     size={2}
-                    color={"dif"}
+                    color={"sex"}
                   />
                   <Geom
                     type="point"
-                    position="time*cost"
+                    position="hour*cost"
                     size={4}
                     shape={"circle"}
-                    color={"dif"}
+                    color={"sex"}
                     style={{
                       stroke: "#fff",
                       lineWidth: 1
@@ -584,7 +518,7 @@ const EcardConsumptionCard = memo(() => (
         </Col>
       </Row>
     </Card>
-  </React.Fragment>
-));
+  </React.Fragment>;
+});
 
 export default EcardConsumptionCard;
