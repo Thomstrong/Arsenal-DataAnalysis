@@ -7,14 +7,13 @@ from rest_framework.response import Response
 from consumptions.api.serializers import ConsumptionSerializer, ConsumptionDailyDataSerializer
 from consumptions.models import Consumption, DailyConsumption, HourlyConsumption
 from students.models.student_record import StudentRecord
-from utils.decorators import required_params, performance_analysis
+from utils.decorators import required_params
 
 
 class ConsumptionViewSet(viewsets.ModelViewSet):
     queryset = Consumption.objects.all()
     serializer_class = ConsumptionSerializer
 
-    @performance_analysis(True)
     @required_params(params=['base'])
     @list_route(
         methods=['GET']

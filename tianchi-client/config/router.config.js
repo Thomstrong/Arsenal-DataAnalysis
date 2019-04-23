@@ -131,7 +131,12 @@ export default [
             path: '/class/analysis',
             name: 'analysis',
             component: './Class/ClassAnalysis',
-          }
+            routes: [
+              { path: '/class/analysis/Trend' },
+              { path: '/class/analysis/Specific' },
+            ]
+          },
+
         ],
       },
       // forms

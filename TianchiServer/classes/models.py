@@ -18,4 +18,5 @@ class Class(models.Model):
         return self.__unicode__()
 
 
+
 pre_save.connect(check_campus, sender=Class)

@@ -14,3 +14,4 @@ class TeacherAdmin(admin.ModelAdmin):
 class TeachRecordAdmin(admin.ModelAdmin):
     list_display = ('teacher', 'term', 'teach_class', 'course',)
     search_fields = ('teacher__name', 'teacher__id', 'teach_class__id')
+    list_filter = ('teach_class__grade_name',)
