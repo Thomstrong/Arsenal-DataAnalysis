@@ -115,7 +115,8 @@ class ClassAnalysis extends PureComponent {
     } = this.props;
 
     const { distributionData, classInfo, teachers, classList } = stuClass;
-    const {boy, stay, total, local, policy} = distributionData;
+    const { boy, stay, total, local, policy } = distributionData;
+    const isAtSchool = classInfo.start_year === 2018;
     const { Line } = Guide;
     const defaultTab = _.difference(location.pathname.split('/'), match.path.split('/'))[0] || 'Trend';
     const columns = [
@@ -358,7 +359,7 @@ class ClassAnalysis extends PureComponent {
                   <Divider style={{ marginTop: 16 }} dashed/>
                   <div className={styles.avatarHolder}>
                     <div className={styles.name}>{classInfo.class_name}</div>
-                    {classInfo.start_year === 2018 ? <Tag color="#2db7f5">在校班级</Tag> :
+                    {isAtSchool ? <Tag color="#2db7f5">在校班级</Tag> :
                       <Tag color="#f50">过往班级</Tag>}
                   </div>
                   {/*班级详细信息，拟计划有校区，所处学年，共有学生人数，及分布情况*/}
@@ -376,16 +377,18 @@ class ClassAnalysis extends PureComponent {
                         <Statistic title="共有学生" value={`${total}人`} valueStyle={{ color: '#cf1322' }}/>
                       </Col>
                     </Row>
-                    <Row type="flex" justify="space-between" style={{ marginTop: 10 }}>
-                      <Col span={6}><Statistic title="男生" value={boy} suffix={`/${total}`}/></Col>
-                      <Col span={6}><Statistic title="女生" value={total - boy} suffix={`/${total}`}/></Col>
-                      <Col span={6}><Statistic title="走读生" value={total - stay} suffix={`/${total}`}/></Col>
-                      <Col span={6}><Statistic title="住校生" value={stay} suffix={`/${total}`}/></Col>
-                      <Col span={6}><Statistic title="本地生源" value={local} suffix={`/${total}`}/></Col>
-                      <Col span={6}><Statistic title="外地生源" value={total - local} suffix={`/${total}`}/></Col>
-                      <Col span={6}><Statistic title="团员" value={policy} suffix={`/${total}`}/></Col>
-                      <Col span={6}><Statistic title="其他面貌" value={total - policy} suffix={`/${total}`}/></Col>
-                    </Row>
+                    {isAtSchool ?
+                      <Row type="flex" justify="space-between" style={{ marginTop: 10 }}>
+                        <Col span={6}><Statistic title="男生" value={boy} suffix={`/${total}`}/></Col>
+                        <Col span={6}><Statistic title="女生" value={total - boy} suffix={`/${total}`}/></Col>
+                        <Col span={6}><Statistic title="走读生" value={total - stay} suffix={`/${total}`}/></Col>
+                        <Col span={6}><Statistic title="住校生" value={stay} suffix={`/${total}`}/></Col>
+                        <Col span={6}><Statistic title="本地生源" value={local} suffix={`/${total}`}/></Col>
+                        <Col span={6}><Statistic title="外地生源" value={total - local} suffix={`/${total}`}/></Col>
+                        <Col span={6}><Statistic title="团员" value={policy} suffix={`/${total}`}/></Col>
+                        <Col span={6}><Statistic title="其他面貌" value={total - policy} suffix={`/${total}`}/></Col>
+                      </Row> : <Empty description='班级学生分布数据缺失'/>
+                    }
                   </div>
 
                   <Divider style={{ marginTop: 16 }} dashed/>
