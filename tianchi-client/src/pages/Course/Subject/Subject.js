@@ -4,189 +4,111 @@
 //具体科目的分析,用户可以选择学年,呈现出该学年,该学科,不同班级每次考试的成绩分布
 
 import React, { PureComponent } from 'react';
-import { POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
-import { Card, Col, Row, Select } from 'antd';
+import { COURSE_FULLNAME_ALIAS, GAOKAO_COURSES, POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
+import { Affix, Card, Col, Row, Select } from 'antd';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
-import DataSet from "@antv/data-set";
+import { connect } from "dva";
 
+const { Option } = Select;
+
+@connect(({ loading, course }) => ({
+  course,
+  loading: loading.effects['course/fetchClassExamData'],
+}))
 class Subject extends PureComponent {
+  constructor() {
+    super();
+    this.state = {
+      term: 2018,
+      grade: 3,
+      course: 1
+    };
+  }
+
+  componentDidMount() {
+    this.fetchClassExam(
+      this.state.term, this.state.grade, this.state.course
+    );
+  }
+
+  fetchClassExam = (term, grade, course) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'course/fetchClassExamData',
+      payload: {
+        startYear: term,
+        grade,
+        course
+      }
+    });
+  };
+  handleTermChanged = (term) => {
+    this.fetchClassExam(
+      term, this.state.grade, this.state.course
+    );
+    this.setState({ term });
+  };
+
+  handleGradeChanged = (grade) => {
+    this.fetchClassExam(
+      this.state.term, grade, this.state.course
+    );
+    this.setState({ grade });
+  };
+
+  handleCourseChanged = (course) => {
+    this.fetchClassExam(
+      this.state.term, this.state.grade, course
+    );
+    this.setState({ course });
+  };
+
   render() {
-    function handleChangeYear(value) {
-      console.log(`selected ${value}`);
-    }
-
-    function handleChangeGarde(value) {
-      console.log(`selected ${value}`);
-    }
-
-    function handleChangeSubject(value) {
-      console.log(`selected ${value}`);
-    }
-
-    const highestScoreData = [
-      {
-        examName: "2014-2015考试",
-        class1: 7.0,
-        class2: 3.9
-      },
-      {
-        examName: "六校联考",
-        class1: 6.9,
-        class2: 4.2
-      },
-      {
-        examName: "7校联考",
-        class1: 9.5,
-        class2: 5.7
-      },
-      {
-        examName: "2014-2015年期末考试",
-        class1: 14.5,
-        class2: 8.5
-      },
-      {
-        examName: "模拟考试",
-        class1: 18.4,
-        class2: 11.9
-      }
-    ];
-    const hScoreData = new DataSet.View().source(highestScoreData);
-    hScoreData.transform({
-      type: "fold",
-      fields: ["class1", "class2"],
-      // 展开字段集
-      key: "class",
-      // key字段
-      value: "score" // value字段
-    });
-
-    const averageScoreData = [
-      {
-        examName: "2014-2015考试",
-        class1: 7.0,
-        class2: 3.9
-      },
-      {
-        examName: "六校联考",
-        class1: 6.9,
-        class2: 4.2
-      },
-      {
-        examName: "7校联考",
-        class1: 9.5,
-        class2: 5.7
-      },
-      {
-        examName: "2014-2015年期末考试",
-        class1: 14.5,
-        class2: 8.5
-      },
-      {
-        examName: "模拟考试",
-        class1: 18.4,
-        class2: 11.9
-      }
-    ];
-    const aScoreData = new DataSet.View().source(averageScoreData);
-    aScoreData.transform({
-      type: "fold",
-      fields: ["class1", "class2"],
-      // 展开字段集
-      key: "class",
-      // key字段
-      value: "score" // value字段
-    });
-
-    const lowerScoreData = [
-      {
-        examName: "2014-2015考试",
-        class1: 7.0,
-        class2: 3.9
-      },
-      {
-        examName: "六校联考",
-        class1: 6.9,
-        class2: 4.2
-      },
-      {
-        examName: "7校联考",
-        class1: 9.5,
-        class2: 5.7
-      },
-      {
-        examName: "2014-2015年期末考试",
-        class1: 14.5,
-        class2: 8.5
-      },
-      {
-        examName: "模拟考试",
-        class1: 18.4,
-        class2: 11.9
-      }
-    ];
-    const lScoreData = new DataSet.View().source(lowerScoreData);
-    lScoreData.transform({
-      type: "fold",
-      fields: ["class1", "class2"],
-      // 展开字段集
-      key: "class",
-      // key字段
-      value: "score" // value字段
-    });
-
+    const { loading, course } = this.props;
+    const { classExamData } = course;
     return (
       <div>
         <Card title="各班某年某科目成绩统计" bordered={true} style={{ width: '100%' }}>
           <Row type="flex" justify="end" style={{ padding: 10 }}>
-            <Col span={10}>
-              <Row type='flex' justify='space-between'>
-                <Col span={10}>
-                  <Select defaultValue="2018-2019学年" style={{ width: "100%" }} onChange={handleChangeYear}>
-                    <Option value="20134">2013-2014学年</Option>
-                    <Option value="20145">2014-2015学年</Option>
-                    <Option value="20156">2015-2016学年</Option>
-                    <Option value="20167">2016-2017学年</Option>
-                    <Option value="20178">2017-2018学年</Option>
-                    <Option value="20189">2018-2019学年</Option>
-                  </Select>
-                </Col>
-                <Col span={5}>
-                  <Select defaultValue="高三" style={{ width: "100%" }} onChange={handleChangeGarde}>
-                    <Option value="grade1">高一</Option>
-                    <Option value="grade2">高二</Option>
-                    <Option value="grade3">高三</Option>
-                  </Select>
-                </Col>
-                <Col span={5}>
-                  {/*todo 有一个问题,除了常见学科外,一些特殊学科实际上与学年有关*/}
-                  <Select defaultValue="语文" style={{ width: "100%" }} onChange={handleChangeSubject}>
-                    <Option value="chinese">语文</Option>
-                    <Option value="math">数学</Option>
-                    <Option value="english">英语</Option>
-                    <Option value="political">政治</Option>
-                    <Option value="history">历史</Option>
-                    <Option value="geography">地理</Option>
-                    <Option value="physical">物理</Option>
-                    <Option value="chemistry">化学</Option>
-                    <Option value="biological">生物</Option>
-                    <Option value="technology">技术</Option>
-                    <Option value="art">美术</Option>
-                    <Option value="PE">体育</Option>
-                    <Option value="music">音乐</Option>
-                    <Option value="infoTech">信息技术</Option>
-                    <Option value="commonTech">通用技术</Option>
-                    <Option value="1B">1B模块总分</Option>
-                  </Select>
-                </Col>
-              </Row>
-            </Col>
+            <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
+              <Col span={10} style={{ display: 'inline-flex' }}>
+                <Select
+                  loading={loading} disabled={loading} value={this.state.term}
+                  style={{ width: 170 }} onChange={this.handleTermChanged}
+                >
+                  <Option key="term-option-2013" value={2013}>2013-2014学年</Option>
+                  <Option key="term-option-2014" value={2014}>2014-2015学年</Option>
+                  <Option key="term-option-2015" value={2015}>2015-2016学年</Option>
+                  <Option key="term-option-2016" value={2016}>2016-2017学年</Option>
+                  <Option key="term-option-2017" value={2017}>2017-2018学年</Option>
+                  <Option key="term-option-2018" value={2018}>2018-2019学年</Option>
+                </Select>
+                <Select
+                  loading={loading} disabled={loading} value={this.state.grade}
+                  style={{ width: "100%" }} onChange={this.handleGradeChanged}
+                >
+                  <Option key="grade-option-1" value={1}>高一</Option>
+                  <Option key="grade-option-2" value={2}>高二</Option>
+                  <Option key="grade-option-3" value={3}>高三</Option>
+                </Select>
+                {/*todo 有一个问题,除了常见学科外,一些特殊学科实际上与学年有关*/}
+                <Select
+                  loading={loading} disabled={loading} value={this.state.course}
+                  style={{ width: "100%" }} onChange={this.handleCourseChanged}
+                >
+                  {GAOKAO_COURSES.map(course => <Option key={`course-option-${course}`} value={course}>
+                    {COURSE_FULLNAME_ALIAS[course]}
+                  </Option>)}
+                </Select>
+              </Col>
+            </Affix>
           </Row>
           <Row style={{ padding: 10 }}>
             <Col span={18}>
               <Card type="inner" title="各班某年某科目最高分统计" bordered={true} style={{ width: '100%' }} hoverable={true}>
-                <Chart height={400} data={hScoreData} forceFit>
+                <Chart height={400} data={classExamData.highest} forceFit>
                   <Legend/>
-                  <Axis name="examName"/>
+                  <Axis name="exam"/>
                   <Axis
                     name="score"
                   />
@@ -197,16 +119,16 @@ class Subject extends PureComponent {
                   />
                   <Geom
                     type="line"
-                    position="examName*score"
+                    position="exam*score"
                     size={2}
-                    color={"class"}
+                    color={"stuClass"}
                   />
                   <Geom
                     type="point"
-                    position="examName*score"
+                    position="exam*score"
                     size={4}
                     shape={"circle"}
-                    color={"class"}
+                    color={"stuClass"}
                     style={{
                       stroke: "#fff",
                       lineWidth: 1
@@ -231,14 +153,11 @@ class Subject extends PureComponent {
             </Col>
             <Col span={18} offset={1}>
               <Card type="inner" title="各班某年某科目平均分统计" bordered={true} style={{ width: '100%' }} hoverable={true}>
-                <Chart height={400} data={aScoreData} forceFit>
+                <Chart height={400} data={classExamData.average} forceFit>
                   <Legend/>
-                  <Axis name="examName"/>
+                  <Axis name="exam"/>
                   <Axis
                     name="score"
-                    label={{
-                      formatter: val => `${val}°C`
-                    }}
                   />
                   <Tooltip
                     crosshairs={{
@@ -247,16 +166,16 @@ class Subject extends PureComponent {
                   />
                   <Geom
                     type="line"
-                    position="examName*score"
+                    position="exam*score"
                     size={2}
-                    color={"class"}
+                    color={"stuClass"}
                   />
                   <Geom
                     type="point"
-                    position="examName*score"
+                    position="exam*score"
                     size={4}
                     shape={"circle"}
-                    color={"class"}
+                    color={"stuClass"}
                     style={{
                       stroke: "#fff",
                       lineWidth: 1
@@ -269,14 +188,11 @@ class Subject extends PureComponent {
           <Row style={{ padding: 10 }}>
             <Col span={18}>
               <Card type="inner" title="各班某年某科目最低分统计" bordered={true} style={{ width: '100%' }} hoverable={true}>
-                <Chart height={400} data={lScoreData} forceFit>
+                <Chart height={400} data={classExamData.lowest} forceFit>
                   <Legend/>
-                  <Axis name="examName"/>
+                  <Axis name="exam"/>
                   <Axis
                     name="score"
-                    label={{
-                      formatter: val => `${val}°C`
-                    }}
                   />
                   <Tooltip
                     crosshairs={{
@@ -285,16 +201,16 @@ class Subject extends PureComponent {
                   />
                   <Geom
                     type="line"
-                    position="examName*score"
+                    position="exam*score"
                     size={2}
-                    color={"class"}
+                    color={"stuClass"}
                   />
                   <Geom
                     type="point"
-                    position="examName*score"
+                    position="exam*score"
                     size={4}
                     shape={"circle"}
-                    color={"class"}
+                    color={"stuClass"}
                     style={{
                       stroke: "#fff",
                       lineWidth: 1

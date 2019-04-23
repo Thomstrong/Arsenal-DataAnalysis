@@ -42,6 +42,8 @@ export const COURSE_FULLNAME_ALIAS = {
   1: '语文',
 };
 
+export const GAOKAO_COURSES = [1, 2, 3, 4, 5, 6, 7, 8, 17, 59];
+
 export const WEEKDAY_ALIAS = {
   7: '星期日',
   6: '星期六',

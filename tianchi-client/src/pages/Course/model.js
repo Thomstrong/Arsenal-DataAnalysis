@@ -2,7 +2,7 @@
  * Created by 胡晓慧 on 2019/4/12.
  */
 
-import { getCoursePercent, getCourseSelectionDistribution } from '@/services/api';
+import { getClassExamData, getCoursePercent, getCourseSelectionDistribution } from '@/services/api';
 import { COURSE_ALIAS, SEX_MAP } from "@/constants";
 
 export default {
@@ -12,6 +12,11 @@ export default {
     distributions: [],
     coursePercents: [],
     totalStudents: 0,
+    classExamData: {
+      highest: [],
+      lowest: [],
+      average: [],
+    },
     loading: false,
   },
 
@@ -27,6 +32,13 @@ export default {
       const response = yield call(getCoursePercent, payload.year || 2019);
       yield put({
         type: 'saveCoursePercents',
+        payload: response
+      });
+    },
+    * fetchClassExamData({ payload }, { call, put }) {
+      const response = yield call(getClassExamData, payload);
+      yield put({
+        type: 'saveClassExamData',
         payload: response
       });
     },
@@ -68,6 +80,40 @@ export default {
         ...state,
         coursePercents,
         totalStudents: maxCount * 1.2,
+      };
+    },
+    saveClassExamData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      const classExamData = {
+        highest: [],
+        lowest: [],
+        average: [],
+      };
+
+      for (let data of payload) {
+        const baseInfo = {
+          stuClass: data.stu_class,
+          exam: data.exam_name
+        };
+
+        classExamData.highest.push({
+          ...baseInfo,
+          score: data.highest_score
+        });
+        classExamData.lowest.push({
+          ...baseInfo,
+          score: data.lowest_score
+        });
+        classExamData.average.push({
+          ...baseInfo,
+          score: Number((data.total_score / data.attend_count).toFixed(0))
+        });
+      }
+      return {
+        ...state,
+        classExamData
       };
     },
     clear() {
