@@ -385,7 +385,7 @@ class ClassAnalysis extends PureComponent {
                         <Col span={6}><Statistic title="住校生" value={stay} suffix={`/${total}`}/></Col>
                         <Col span={6}><Statistic title="本地生源" value={local} suffix={`/${total}`}/></Col>
                         <Col span={6}><Statistic title="外地生源" value={total - local} suffix={`/${total}`}/></Col>
-                        <Col span={6}><Statistic title="团员" value={policy} suffix={`/${total}`}/></Col>
+                        <Col span={6}><Statistic title="团员/党员" value={policy} suffix={`/${total}`}/></Col>
                         <Col span={6}><Statistic title="其他面貌" value={total - policy} suffix={`/${total}`}/></Col>
                       </Row> : <Empty description='班级学生分布数据缺失'/>
                     }
