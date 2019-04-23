@@ -5,9 +5,8 @@
 
 import React, { PureComponent } from 'react';
 import { COURSE_FULLNAME_ALIAS, GAOKAO_COURSES, POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
-import { Card, Col, Row, Select } from 'antd';
+import { Affix, Card, Col, Row, Select } from 'antd';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
-import DataSet from "@antv/data-set";
 import { connect } from "dva";
 
 const { Option } = Select;
@@ -67,44 +66,42 @@ class Subject extends PureComponent {
   render() {
     const { loading, course } = this.props;
     const { classExamData } = course;
-    console.log(classExamData)
-
     return (
       <div>
         <Card title="各班某年某科目成绩统计" bordered={true} style={{ width: '100%' }}>
           <Row type="flex" justify="end" style={{ padding: 10 }}>
-            <Col span={10}>
-              <Row type='flex' justify='space-between'>
-                <Col span={10}>
-                  <Select loading={loading} disabled={loading} value={this.state.term} style={{ width: "100%" }}
-                          onChange={this.handleTermChanged}>
-                    <Option key="term-option-2013" value={2013}>2013-2014学年</Option>
-                    <Option key="term-option-2014" value={2014}>2014-2015学年</Option>
-                    <Option key="term-option-2015" value={2015}>2015-2016学年</Option>
-                    <Option key="term-option-2016" value={2016}>2016-2017学年</Option>
-                    <Option key="term-option-2017" value={2017}>2017-2018学年</Option>
-                    <Option key="term-option-2018" value={2018}>2018-2019学年</Option>
-                  </Select>
-                </Col>
-                <Col span={5}>
-                  <Select loading={loading} disabled={loading} value={this.state.grade} style={{ width: "100%" }}
-                          onChange={this.handleGradeChanged}>
-                    <Option key="grade-option-1" value={1}>高一</Option>
-                    <Option key="grade-option-2" value={2}>高二</Option>
-                    <Option key="grade-option-3" value={3}>高三</Option>
-                  </Select>
-                </Col>
-                <Col span={5}>
-                  {/*todo 有一个问题,除了常见学科外,一些特殊学科实际上与学年有关*/}
-                  <Select loading={loading} disabled={loading} value={this.state.course} style={{ width: "100%" }}
-                          onChange={this.handleCourseChanged}>
-                    {GAOKAO_COURSES.map(course => <Option key={`course-option-${course}`} value={course}>
-                      {COURSE_FULLNAME_ALIAS[course]}
-                    </Option>)}
-                  </Select>
-                </Col>
-              </Row>
-            </Col>
+            <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
+              <Col span={10} style={{ display: 'inline-flex' }}>
+                <Select
+                  loading={loading} disabled={loading} value={this.state.term}
+                  style={{ width: 170 }} onChange={this.handleTermChanged}
+                >
+                  <Option key="term-option-2013" value={2013}>2013-2014学年</Option>
+                  <Option key="term-option-2014" value={2014}>2014-2015学年</Option>
+                  <Option key="term-option-2015" value={2015}>2015-2016学年</Option>
+                  <Option key="term-option-2016" value={2016}>2016-2017学年</Option>
+                  <Option key="term-option-2017" value={2017}>2017-2018学年</Option>
+                  <Option key="term-option-2018" value={2018}>2018-2019学年</Option>
+                </Select>
+                <Select
+                  loading={loading} disabled={loading} value={this.state.grade}
+                  style={{ width: "100%" }} onChange={this.handleGradeChanged}
+                >
+                  <Option key="grade-option-1" value={1}>高一</Option>
+                  <Option key="grade-option-2" value={2}>高二</Option>
+                  <Option key="grade-option-3" value={3}>高三</Option>
+                </Select>
+                {/*todo 有一个问题,除了常见学科外,一些特殊学科实际上与学年有关*/}
+                <Select
+                  loading={loading} disabled={loading} value={this.state.course}
+                  style={{ width: "100%" }} onChange={this.handleCourseChanged}
+                >
+                  {GAOKAO_COURSES.map(course => <Option key={`course-option-${course}`} value={course}>
+                    {COURSE_FULLNAME_ALIAS[course]}
+                  </Option>)}
+                </Select>
+              </Col>
+            </Affix>
           </Row>
           <Row style={{ padding: 10 }}>
             <Col span={18}>
