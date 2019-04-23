@@ -631,11 +631,10 @@ class Selection extends PureComponent {
                 {this.state.pieFront ? <Chart
                     key={'pie-chart'}
                     height={chartHeight}
-                    weight={chartWidth}
                     forceFit
                     padding={[20, 0, "auto", 0]}
                   >
-                    <Axis key={'2312321'} name="value"/>
+                    <Axis name="value"/>
                     <Tooltip showTitle={false}/>
                     <Legend/>
                     <View
@@ -725,13 +724,11 @@ class Selection extends PureComponent {
                   <Chart
                     key={'polygon-chart'}
                     height={chartHeight}
-                    weight={chartWidth}
                     data={nodes}
                     forceFit
                     scale={scale}
                     padding={[20, 0, "auto", 0]}
                   >
-                    <Axis key={'2321'} name='value' visible={false}/>
                     <Tooltip showTitle={false} itemTpl={htmlStr}/>
                     <Geom
                       type="polygon"
