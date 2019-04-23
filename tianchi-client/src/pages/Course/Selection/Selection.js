@@ -3,16 +3,16 @@
  */
 //展示选课情况,包括各科目选课人数分布,及不同7选3的分布情况
 
-import React, { Fragment, PureComponent } from 'react';
-import { POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
-import { Card, Col, Row, Select } from 'antd';
+import React, {Fragment, PureComponent} from 'react';
+import {POLICY_TYPE_ALIAS, SEX_MAP} from "@/constants";
+import {Card, Col, Row, Select} from 'antd';
 import DataSet from "@antv/data-set";
-import { Axis, Chart, Coord, Geom, Guide, Label, Legend, Tooltip, View } from "bizcharts";
-import { connect } from "dva";
+import {Axis, Chart, Coord, Geom, Guide, Label, Legend, Tooltip, View} from "bizcharts";
+import {connect} from "dva";
 
-const { Option } = Select;
+const {Option} = Select;
 
-@connect(({ loading, course }) => ({
+@connect(({loading, course}) => ({
   distributions: course.distributions,
   coursePercents: course.coursePercents,
   totalStudents: course.totalStudents,
@@ -20,7 +20,7 @@ const { Option } = Select;
 }))
 class Selection extends PureComponent {
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
     dispatch({
       type: 'course/fetchSelectionDistribution',
     });
@@ -34,7 +34,7 @@ class Selection extends PureComponent {
   }
 
   onYearChanged = (year, type) => {
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
     dispatch({
       type: `course/${type}`,
       payload: {
@@ -44,13 +44,17 @@ class Selection extends PureComponent {
   };
 
   render() {
-    const { distributions, coursePercents, totalStudents } = this.props;
+    const {distributions, coursePercents, totalStudents} = this.props;
 
     function handleChangeCombin(value) {
       console.log(`selected ${value}`);
     }
 
-    const { Text } = Guide;
+    function handleChangeSubject(value) {
+      console.log(`selected ${value}`);
+    }
+
+    const {Text} = Guide;
     //分组层叠图数据
     const colorMap = {
       "2017_未知": "#E3F4BF",
@@ -167,6 +171,7 @@ class Selection extends PureComponent {
         value: 10
       }
     ];
+    //求和部分不能删除,后续计算百分比时还有需要
     let sum = 0;
     data.forEach(function (obj) {
       sum += obj.value;
@@ -239,10 +244,200 @@ class Selection extends PureComponent {
       }
     });
 
+    //矩形树图的数据
+    const Tdata = {
+      name: "root",
+      children: [
+        {
+          name: "政史地",
+          value: 560
+        },
+        {
+          name: "理化生",
+          value: 500
+        },
+        {
+          name: "政史化",
+          value: 150
+        },
+        {
+          name: "分类 4",
+          value: 140
+        },
+        {
+          name: "分类 5",
+          value: 115
+        },
+        {
+          name: "分类 6",
+          value: 95
+        },
+        {
+          name: "分类 7",
+          value: 90
+        },
+        {
+          name: "分类 8",
+          value: 75
+        },
+        {
+          name: "分类 9",
+          value: 98
+        },
+        {
+          name: "分类 10",
+          value: 60
+        },
+        {
+          name: "分类 11",
+          value: 45
+        },
+        {
+          name: "分类 12",
+          value: 40
+        },
+        {
+          name: "分类 13",
+          value: 40
+        },
+        {
+          name: "分类 14",
+          value: 35
+        },
+        {
+          name: "分类 15",
+          value: 40
+        },
+        {
+          name: "分类 16",
+          value: 40
+        },
+        {
+          name: "分类 17",
+          value: 40
+        },
+        {
+          name: "分类 18",
+          value: 30
+        },
+        {
+          name: "分类 19",
+          value: 28
+        },
+        {
+          name: "分类 20",
+          value: 16
+        }
+      ]
+    };
+    const dv = new DataSet.View().source(Tdata, {
+      type: "hierarchy"
+    }).transform({
+      field: "value",
+      type: "hierarchy.treemap",
+      tile: "treemapResquarify",
+      as: ["x", "y"]
+    });
+    const nodes = dv.getAllNodes();
+    nodes.map(node => {
+      node.name = node.data.name;
+      node.value = node.data.value;
+      return node;
+    });
+    const scale = {
+      value: {
+        nice: false
+      }
+    };
+    const htmlStr =
+      "<li data-index={index}>" +
+      '<span style="background-color:{color};" class="g2-tooltip-marker"></span>' +
+      "{name}<br/>" +
+      '<span style="padding-left: 16px">选课人数：{count}</span><br/>' +
+      "</li>";
+
+    //todo 和弦图数据,sourceweight和targetweight相等，表示人数
+    const arcData2 = {
+      "nodes": [{"id": 0, "name": "物理", "value": 21}, {"id": 1, "name": "化学", "value": 34}, {
+        "id": 2,
+        "name": "生物",
+        "value": 9
+      }, {"id": 3, "name": "历史", "value": 40}, {"id": 4, "name": "政治", "value": 18}, {
+        "id": 5,
+        "name": "地理",
+        "value": 25
+      }, {"id": 6, "name": "技术", "value": 10}],
+      "links": [{"source": 0, "target": 1, "sourceWeight": 6, "targetWeight": 6}, {
+        "source": 0,
+        "target": 2,
+        "sourceWeight": 9,
+        "targetWeight": 9
+      }, {"source": 0, "target": 3, "sourceWeight": 2, "targetWeight": 2}, {
+        "source": 0,
+        "target": 4,
+        "sourceWeight": 2,
+        "targetWeight": 2
+      }, {"source": 0, "target": 5, "sourceWeight": 1, "targetWeight": 1}, {
+        "source": 0,
+        "target": 6,
+        "sourceWeight": 1,
+        "targetWeight": 1
+      }, {"source": 1, "target": 2, "sourceWeight": 0, "targetWeight": 0}, {
+        "source": 1,
+        "target": 3,
+        "sourceWeight": 9,
+        "targetWeight": 9
+      }, {"source": 1, "target": 4, "sourceWeight": 2, "targetWeight": 2}, {
+        "source": 1,
+        "target": 5,
+        "sourceWeight": 2,
+        "targetWeight": 2
+      }, {"source": 2, "target": 5, "sourceWeight": 1, "targetWeight": 1}, {
+        "source": 2,
+        "target": 6,
+        "sourceWeight": 1,
+        "targetWeight": 1
+      }, {"source": 3, "target": 2, "sourceWeight": 0, "targetWeight": 0}, {
+        "source": 3,
+        "target": 4,
+        "sourceWeight": 9,
+        "targetWeight": 9
+      }, {"source": 3, "target": 5, "sourceWeight": 2, "targetWeight": 2}, {
+        "source": 4,
+        "target": 5,
+        "sourceWeight": 2,
+        "targetWeight": 2
+      }, {"source": 6, "target": 5, "sourceWeight": 1, "targetWeight": 1}, {
+        "source": 5,
+        "target": 6,
+        "sourceWeight": 1,
+        "targetWeight": 1
+      }]
+    };
+    const arcDv = new DataSet.View().source(arcData2, {
+      type: "graph",
+      edges: d => d.links
+    });
+    arcDv.transform({
+      type: "diagram.arc",
+      sourceWeight: e => e.sourceWeight,
+      targetWeight: e => e.targetWeight,
+      weight: true,
+      marginRatio: 0.3
+    });
+    const arcScale = {
+      x: {
+        sync: true
+      },
+      y: {
+        sync: true
+      }
+    };
+
 
     return (
       <Fragment>
-        <Card title="各科目选课情况分布" bordered={true} style={{ width: '100%' }}>
+        <Card title="各科目选课情况分布" bordered={true} style={{width: '100%'}}>
           {/*分组堆叠*/}
           <Chart
             height={400}
@@ -287,70 +482,109 @@ class Selection extends PureComponent {
             />
           </Chart>
           <Row>
-            {/*文字分析*/}
-            <Col span={12} offset={1}>
-              <Card title='总结' bordered={false} hoverable={true}>
-                <p>xxxx学年xxx学科选的人最多</p>
-                <p>男女比相近</p>
-              </Card>
-            </Col>
-            {/*玉珏图*/}
-            <Col span={9} offset={1}>
-              <Row>
-                <Select
-                  id='yujue-year'
-                  defaultValue="2019"
-                  style={{ width: 120, float: "right" }}
-                  onChange={(year) => this.onYearChanged(year, 'fetchCoursePercents')}
+            <Select
+              id='yujue-year'
+              defaultValue="2019"
+              style={{width: 120, float: "right"}}
+              onChange={(year) => this.onYearChanged(year, 'fetchCoursePercents')}
+            >
+              <Option key={`course-percents-2017`} value="2017">2017年</Option>
+              <Option key={`course-percents-2018`} value="2018">2018年</Option>
+              <Option key={`course-percents-2019`} value="2019">2019年</Option>
+            </Select>
+          </Row>
+          <Row>
+            <Col span={12}>
+              {/*玉珏*/}
+              <Chart height={400} data={coursePercents} scale={radialcols} forceFit>
+                <Coord type="polar" innerRadius={0.1} transpose/>
+                <Tooltip title="course"/>
+                <Geom
+                  type="interval"
+                  position="course*count"
+                  color={["percent", "#BAE7FF-#1890FF-#0050B3"]}
+                  tooltip={[
+                    "percent",
+                    val => {
+                      return {
+                        name: "占比",
+                        value: `${val}%`
+                      };
+                    }
+                  ]}
+                  style={{
+                    lineWidth: 1,
+                    stroke: "#fff"
+                  }}
                 >
-                  <Option key={`course-percents-2017`} value="2017">2017年</Option>
-                  <Option key={`course-percents-2018`} value="2018">2018年</Option>
-                  <Option key={`course-percents-2019`} value="2019">2019年</Option>
-                </Select>
-              </Row>
-              <Row>
-                <Chart height={400} data={coursePercents} scale={radialcols} forceFit>
-                  <Coord type="polar" innerRadius={0.1} transpose/>
-                  <Tooltip title="course"/>
+                  <Label content="count" offset={-5}/>
+                </Geom>
+                <Guide>
+                  {coursePercents.map(obj => {
+                    return (
+                      <Text
+                        position={[obj.course, 0]}
+                        content={obj.course + " "}
+                        style={{
+                          textAlign: "right"
+                        }}
+                      />
+                    );
+                  })}
+                </Guide>
+              </Chart>
+            </Col>
+            <Col span={12}>
+              {/*和弦图*/}
+              <Chart
+                data={data}
+                forceFit={true}
+                height={window.innerHeight}
+                scale={arcScale}
+              >
+                <Tooltip showTitle={false}/>
+                <View data={arcDv.edges} axis={false}>
+                  <Coord type="polar" reflect="y"/>
                   <Geom
-                    type="interval"
-                    position="course*count"
-                    color={["percent", "#BAE7FF-#1890FF-#0050B3"]}
+                    type="edge"
+                    position="x*y"
+                    shape="arc"
+                    color="source"
+                    opacity={0.5}
                     tooltip={[
-                      "percent",
-                      val => {
+                      "source*target*sourceWeight",
+                      (source, target, sourceWeight, targetWeight) => {
+                        console.log(source);
                         return {
-                          name: "占比",
-                          value: `${val}%`
+                          name: arcDv.nodes[source].name + " <-> " + arcDv.nodes[target].name + "</span>",
+                          value: sourceWeight
+
                         };
                       }
                     ]}
-                    style={{
-                      lineWidth: 1,
-                      stroke: "#fff"
-                    }}
-                  >
-                    <Label content="count" offset={-5}/>
+                  />
+                </View>
+                <View data={arcDv.nodes} axis={false}>
+                  <Coord type="polar" reflect="y"/>
+                  <Geom type="polygon" position="x*y" color="id">
+                    <Label
+                      content="name"
+                      labelEmit={true}
+                      textStyle={{
+                        fill: "black"
+                      }}
+                    />
                   </Geom>
-                  <Guide>
-                    {coursePercents.map(obj => {
-                      return (
-                        <Text
-                          position={[obj.course, 0]}
-                          content={obj.course + " "}
-                          style={{
-                            textAlign: "right"
-                          }}
-                        />
-                      );
-                    })}
-                  </Guide>
-                </Chart>
-              </Row>
+                </View>
+              </Chart>
             </Col>
           </Row>
+          <Card title='总结' bordered={false} hoverable={true} style={{marginLeft: 32, marginRight: 32}}>
+            <p>xxxx学年xxx学科选的人最多</p>
+            <p>男女比相近</p>
+          </Card>
         </Card>
-        <Card title="七选三组合分布情况" bordered={true} style={{ width: '100%' }}>
+        <Card title="七选三组合分布情况" bordered={true} style={{width: '100%', marginTop: 32}}>
           {/*柱状图显示35种选择人数分布情况,分组柱状图*/}
           <Chart height={400} data={s2tData} forceFit>
             <Axis name="科目组合"/>
@@ -373,116 +607,154 @@ class Selection extends PureComponent {
               ]}
             />
           </Chart>
-          {/*饼图柱状图显示分布比例*/}
+          {/*饼图柱状图显示分布比例,仅显示比例*/}
+          {/*矩形树图,与饼图柱状图结合,做成卡片翻转样式,仅显示数值*/}
           <Row>
             <Col span={16} offset={1}>
-              <Select id='3in7-year' defaultValue="2019" style={{ width: 120, float: "center" }} onChange={handleChangeCombin}>
+              <Select id='3in7-year' defaultValue="2019" style={{width: 120, float: "center"}}
+                      onChange={handleChangeCombin}>
                 <Option key="bing20171" value="2017">2017年</Option>
                 <Option key="bing20181" value="2018">2018年</Option>
                 <Option key="bing20191" value="2019">2019年</Option>
               </Select>
-              <Chart
-                height={chartHeight}
-                weight={chartWidth}
-                forceFit
-                padding={[20, 0, "auto", 0]}
-              >
-                {/*<Axis name="value" />*/}
-                <Tooltip showTitle={false}/>
-                <Legend/>
-                <View
-                  data={data}
-                  start={{
-                    x: 0,
-                    y: 0
-                  }}
-                  end={{
-                    x: 0.5,
-                    y: 1
-                  }}
+              {/*todo 针对此card进行翻转*/}
+              <Card bordered={false}>
+                {/*饼图柱状图显示分布比例,仅显示比例*/}
+                <Chart
+                  height={chartHeight}
+                  weight={chartWidth}
+                  forceFit
+                  padding={[20, 0, "auto", 0]}
                 >
-                  <Coord
-                    type="theta"
-                    startAngle={0 + otherOffsetAngle}
-                    endAngle={Math.PI * 2 + otherOffsetAngle}
-                  />
-                  <Geom
-                    type="intervalStack"
-                    position="value"
-                    color="type"
-                    shape={[
-                      "type",
-                      function (type) {
-                        if (type === "Other") {
-                          return "otherShape";
-                        }
+                  {/*<Axis name="value" />*/}
+                  <Tooltip showTitle={false}/>
+                  <Legend/>
+                  <View
+                    data={data}
+                    start={{
+                      x: 0,
+                      y: 0
+                    }}
+                    end={{
+                      x: 0.5,
+                      y: 1
+                    }}
+                  >
+                    <Coord
+                      type="theta"
+                      startAngle={0 + otherOffsetAngle}
+                      endAngle={Math.PI * 2 + otherOffsetAngle}
+                    />
+                    <Geom
+                      type="intervalStack"
+                      position="value"
+                      color="type"
+                      shape={[
+                        "type",
+                        function (type) {
+                          if (type === "Other") {
+                            return "otherShape";
+                          }
 
-                        return "rect";
-                      }
-                    ]}
-                    tooltip={[
-                      "type*value",
-                      (type, value) => {
-                        return {
-                          name: type,
-                          value: value / sum * 100 + "%"
-                        };
-                      }
-                    ]}
+                          return "rect";
+                        }
+                      ]}
+                      tooltip={[
+                        "type*value",
+                        (type, value) => {
+                          return {
+                            name: type,
+                            value: value
+                          };
+                        }
+                      ]}
+                    >
+                      <Label
+                        content="value*type"
+                        offset={-20}
+                        textStyle={{
+                          rotate: 0
+                        }}
+                        formatter={(val, item) => {
+                          return item.point.type + ": " + (val / sum * 100).toFixed(3) + "%";
+                        }}
+                      />
+                    </Geom>
+                  </View>
+                  <View
+                    data={others}
+                    scale={scale2}
+                    start={{
+                      x: 0.6,
+                      y: 0
+                    }}
+                    end={{
+                      x: 1,
+                      y: 1
+                    }}
                   >
-                    <Label
-                      content="value*type"
-                      offset={-20}
-                      textStyle={{
-                        rotate: 0
-                      }}
-                      formatter={(val, item) => {
-                        return item.point.type + ": " + val;
-                      }}
-                    />
-                  </Geom>
-                </View>
-                <View
-                  data={others}
-                  scale={scale2}
-                  start={{
-                    x: 0.6,
-                    y: 0
-                  }}
-                  end={{
-                    x: 1,
-                    y: 1
-                  }}
+                    {/*todo 还未确定呈现形式,是堆叠还是分组,但是数据格式是相同的(将1改为otherType)*/}
+                    <Geom
+                      type="intervalStack"
+                      position="1*value"
+                      boolean={true}
+                      color={["otherType", "#FCD7DE-#F04864"]}
+                    >
+                      <Label
+                        content="value*otherType"
+                        offset={-20}
+                        textStyle={{
+                          rotate: 0
+                        }}
+                        formatter={(val, item) => {
+                          return item.point.otherType + ": " + (val / sum * 100).toFixed(3) + "%";
+                        }}
+                      />
+                    </Geom>
+                  </View>
+                </Chart>
+                {/*矩形树图,与饼图柱状图结合,做成卡片翻转样式,仅显示数值*/}
+                <Chart
+                  data={nodes}
+                  forceFit={true}
+                  height={400}
+                  scale={scale}
+                  padding={[20, 0, "auto", 0]}
                 >
-                  {/*todo 还未确定呈现形式,是堆叠还是分组,但是数据格式是相同的(将1改为otherType)*/}
+                  <Tooltip showTitle={false} itemTpl={htmlStr}/>
                   <Geom
-                    type="intervalStack"
-                    position="1*value"
-                    boolean={true}
-                    color={["otherType", "#FCD7DE-#F04864"]}
+                    type="polygon"
+                    position="x*y"
+                    color="name"
                     tooltip={[
-                      "1*value",
-                      (a, value) => {
+                      "name*value",
+                      (name, count) => {
                         return {
-                          name: "占比",
-                          value: value / sum * 100 + "%"
+                          name,
+                          count
                         };
                       }
                     ]}
+                    style={{
+                      lineWidth: 1,
+                      stroke: "#fff"
+                    }}
                   >
                     <Label
-                      content="value*otherType"
-                      offset={-20}
+                      content="name"
+                      offset={0}
                       textStyle={{
-                        rotate: 0
+                        textBaseline: "middle"
                       }}
-                      formatter={(val, item) => {
-                        return item.point.otherType + ": " + val;
+                      formatter={val => {
+                        if (val !== "root") {
+                          return val;
+                        }
                       }}
                     />
                   </Geom>
-                </View>
-              </Chart>
+                </Chart>
+              </Card>
             </Col>
             <Col span={6} pull={0.5}>
               <Card title='总结' bordered={false} hoverable={true}>
@@ -491,6 +763,8 @@ class Selection extends PureComponent {
               </Card>
             </Col>
           </Row>
+
+
         </Card>
       </Fragment>
     );
@@ -498,5 +772,3 @@ class Selection extends PureComponent {
 }
 
 export default Selection;
-
-
