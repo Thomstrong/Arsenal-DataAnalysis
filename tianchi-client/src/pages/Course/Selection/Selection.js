@@ -16,6 +16,13 @@ const { Option } = Select;
   distributions: course.distributions,
   coursePercents: course.coursePercents,
   totalStudents: course.totalStudents,
+  arcCourse: course.arcCourse,
+  seven2threeDistribution: course.seven2threeDistribution,
+  courseSelectionPie: course.courseSelectionPie,
+  courseSelectionPieOther: course.courseSelectionPieOther,
+  pieOtherOffsetAngle:course.pieOtherOffsetAngle,
+  pieSum:course.pieSum,
+  courseSelectionTree: course.courseSelectionTree,
   loading: loading.models.rule,
 }))
 class Selection extends PureComponent {
@@ -31,35 +38,72 @@ class Selection extends PureComponent {
     dispatch({
       type: 'course/fetchSelectionDistribution',
     });
-
     dispatch({
       type: `course/fetchCoursePercents`,
       payload: {
         year: 2019
       }
     });
+    //todo
+    dispatch({
+      type: 'course/fetchArcCourse',
+      payload: {
+        year: 2019
+      }
+    });
+    dispatch({
+      type: 'course/fetchSeven2ThreeDistribution',
+    });
+    dispatch({
+      type: 'course/fetchCourseSelectionPie',
+      payload: {
+        year: 2019
+      }
+    });
+    dispatch({
+      type: 'course/fetchCourseSelectionTree',
+      payload: {
+        year: 2019
+      }
+    });
   }
 
-  onYearChanged = (year, type) => {
+  onYearChanged = (year, type1, type2) => {
     const { dispatch } = this.props;
     dispatch({
-      type: `course/${type}`,
+      type: `course/${type1}`,
+      payload: {
+        year
+      }
+    });
+    dispatch({
+      type: `course/${type2}`,
       payload: {
         year
       }
     });
   };
 
+  seven2threeYearChanged = (year, type1, type2) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: `course/${type1}`,
+      payload: {
+        year
+      }
+    });
+    dispatch({
+      type: `course/${type2}`,
+      payload: {
+        year
+      }
+    });
+  };
+
+
   render() {
-    const { distributions, coursePercents, totalStudents } = this.props;
-
-    function handleChangeCombin(value) {
-      console.log(`selected ${value}`);
-    }
-
-    function handleChangeSubject(value) {
-      console.log(`selected ${value}`);
-    }
+    //todo saveSeven2ThreeDistribution有时候有数据有时候是undefined
+    const { distributions, coursePercents, totalStudents, arcCourse, seven2threeDistribution, courseSelectionPie,courseSelectionPieOther, pieOtherOffsetAngle,pieSum,courseSelectionTree } = this.props;
 
     const { Text } = Guide;
     //分组层叠图数据
@@ -71,150 +115,8 @@ class Selection extends PureComponent {
       "2019_男": "#60ccf9",
       "2019_女": "#f5aeae",
     };
-    //玉珏图数据
-    const radialData = [
-      {
-        subject: "物理",
-        percent: 0.21
-      },
-      {
-        subject: "化学",
-        percent: 0.4
-      },
-      {
-        subject: "生物",
-        percent: 0.49
-      },
-      {
-        subject: "地理",
-        percent: 0.52
-      },
-      {
-        subject: "历史",
-        percent: 0.53
-      },
-      {
-        subject: "政治",
-        percent: 0.84
-      },
-      {
-        subject: "技术",
-        percent: 0.33
-      }
-    ];
-    const radialcols = {
-      percent: {
-        min: 0,
-        max: 1
-      },
-      count: {
-        max: totalStudents || 1000
-      }
-    };
-    //7选3 人数数据,分组柱状图
-    const sevenTothreeData = [
-      {
-        name: "2017",
-        "理化生": 120,
-        "政史地": 127,
-        "理史地": 39,
-        "政化生": 81,
-        "理化政": 47,
-        "理化史": 20,
-        "理化地": 24,
-        "理化技": 35,
-      },
-      {
-        name: "2018",
-        "理化生": 12,
-        "政史地": 127,
-        "理史地": 32,
-        "政化生": 81,
-        "理化政": 40,
-        "理化史": 20,
-        "理化地": 24,
-        "理化技": 35,
-      },
-      {
-        name: "2019",
-        "理化生": 120,
-        "政史地": 17,
-        "理史地": 49,
-        "政化生": 81,
-        "理化政": 47,
-        "理化史": 20,
-        "理化地": 34,
-        "理化技": 35,
-      }
-    ];
-    const s2tData = new DataSet.View().source(sevenTothreeData).transform({
-      type: "fold",
-      fields: ["理化生", "政史地", "理史地", "政化生", "理化政", "理化史", "理化地", "理化技"],
-      // 展开字段集
-      key: "科目组合",
-      // key字段
-      value: "选课人数" // value字段
-    });
-    //饼图柱状图
-    const data = [
-      {
-        type: "分类一",
-        value: 200
-      },
-      {
-        type: "分类二",
-        value: 18
-      },
-      {
-        type: "分类三",
-        value: 32
-      },
-      {
-        type: "分类四",
-        value: 15
-      },
-      {
-        type: "Other",
-        value: 10
-      }
-    ];
-    //求和部分不能删除,后续计算百分比时还有需要
-    let sum = 0;
-    data.forEach(function (obj) {
-      sum += obj.value;
-    });
-    const otherRatio = data[data.length - 1].value / sum; // Other 的占比
-    const otherOffsetAngle = otherRatio * Math.PI; // other 占的角度的一半
     const chartWidth = window.innerWidth;
     const chartHeight = 400;
-    const others = [
-      {
-        otherType: "Other1",
-        value: 2
-      },
-      {
-        otherType: "Other2",
-        value: 3
-      },
-      {
-        otherType: "Other3",
-        value: 5
-      },
-      {
-        otherType: "Other4",
-        value: 2
-      },
-      {
-        otherType: "Other5",
-        value: 3
-      }
-    ];
-    const scale2 = {
-      value: {
-        nice: true
-      }
-    };
-
     // 定义 other 的图形，增加两条辅助线
     G2.Shape.registerShape("interval", "otherShape", {
       draw(cfg, container) {
@@ -250,188 +152,23 @@ class Selection extends PureComponent {
         });
       }
     });
-
-    //矩形树图的数据
-    const Tdata = {
-      name: "root",
-      children: [
-        {
-          name: "政史地",
-          value: 560
-        },
-        {
-          name: "理化生",
-          value: 500
-        },
-        {
-          name: "政史化",
-          value: 150
-        },
-        {
-          name: "分类 4",
-          value: 140
-        },
-        {
-          name: "分类 5",
-          value: 115
-        },
-        {
-          name: "分类 6",
-          value: 95
-        },
-        {
-          name: "分类 7",
-          value: 90
-        },
-        {
-          name: "分类 8",
-          value: 75
-        },
-        {
-          name: "分类 9",
-          value: 98
-        },
-        {
-          name: "分类 10",
-          value: 60
-        },
-        {
-          name: "分类 11",
-          value: 45
-        },
-        {
-          name: "分类 12",
-          value: 40
-        },
-        {
-          name: "分类 13",
-          value: 40
-        },
-        {
-          name: "分类 14",
-          value: 35
-        },
-        {
-          name: "分类 15",
-          value: 40
-        },
-        {
-          name: "分类 16",
-          value: 40
-        },
-        {
-          name: "分类 17",
-          value: 40
-        },
-        {
-          name: "分类 18",
-          value: 30
-        },
-        {
-          name: "分类 19",
-          value: 28
-        },
-        {
-          name: "分类 20",
-          value: 16
-        }
-      ]
-    };
-    const dv = new DataSet.View().source(Tdata, {
-      type: "hierarchy"
-    }).transform({
-      field: "value",
-      type: "hierarchy.treemap",
-      tile: "treemapResquarify",
-      as: ["x", "y"]
-    });
-    const nodes = dv.getAllNodes();
-    nodes.map(node => {
-      node.name = node.data.name;
-      node.value = node.data.value;
-      return node;
-    });
+    //矩形树图
     const scale = {
       value: {
         nice: false
       }
     };
-    const htmlStr =
-      "<li data-index={index}>" +
-      '<span style="background-color:{color};" class="g2-tooltip-marker"></span>' +
-      "{name}<br/>" +
-      '<span style="padding-left: 16px">选课人数：{count}</span><br/>' +
-      "</li>";
-
-    //todo 和弦图数据,sourceweight和targetweight相等，表示人数
-    const arcData2 = {
-      "nodes": [{ "id": 0, "name": "物理", "value": 21 }, { "id": 1, "name": "化学", "value": 34 }, {
-        "id": 2,
-        "name": "生物",
-        "value": 9
-      }, { "id": 3, "name": "历史", "value": 40 }, { "id": 4, "name": "政治", "value": 18 }, {
-        "id": 5,
-        "name": "地理",
-        "value": 25
-      }, { "id": 6, "name": "技术", "value": 10 }],
-      "links": [{ "source": 0, "target": 1, "sourceWeight": 6, "targetWeight": 6 }, {
-        "source": 0,
-        "target": 2,
-        "sourceWeight": 9,
-        "targetWeight": 9
-      }, { "source": 0, "target": 3, "sourceWeight": 2, "targetWeight": 2 }, {
-        "source": 0,
-        "target": 4,
-        "sourceWeight": 2,
-        "targetWeight": 2
-      }, { "source": 0, "target": 5, "sourceWeight": 1, "targetWeight": 1 }, {
-        "source": 0,
-        "target": 6,
-        "sourceWeight": 1,
-        "targetWeight": 1
-      }, { "source": 1, "target": 2, "sourceWeight": 0, "targetWeight": 0 }, {
-        "source": 1,
-        "target": 3,
-        "sourceWeight": 9,
-        "targetWeight": 9
-      }, { "source": 1, "target": 4, "sourceWeight": 2, "targetWeight": 2 }, {
-        "source": 1,
-        "target": 5,
-        "sourceWeight": 2,
-        "targetWeight": 2
-      }, { "source": 2, "target": 5, "sourceWeight": 1, "targetWeight": 1 }, {
-        "source": 2,
-        "target": 6,
-        "sourceWeight": 1,
-        "targetWeight": 1
-      }, { "source": 3, "target": 2, "sourceWeight": 0, "targetWeight": 0 }, {
-        "source": 3,
-        "target": 4,
-        "sourceWeight": 9,
-        "targetWeight": 9
-      }, { "source": 3, "target": 5, "sourceWeight": 2, "targetWeight": 2 }, {
-        "source": 4,
-        "target": 5,
-        "sourceWeight": 2,
-        "targetWeight": 2
-      }, { "source": 6, "target": 5, "sourceWeight": 1, "targetWeight": 1 }, {
-        "source": 5,
-        "target": 6,
-        "sourceWeight": 1,
-        "targetWeight": 1
-      }]
+    //玉珏图
+    const radialcols = {
+      percent: {
+        min: 0,
+        max: 1
+      },
+      count: {
+        max: totalStudents || 1000
+      }
     };
-    const arcDv = new DataSet.View().source(arcData2, {
-      type: "graph",
-      edges: d => d.links
-    });
-    arcDv.transform({
-      type: "diagram.arc",
-      sourceWeight: e => e.sourceWeight,
-      targetWeight: e => e.targetWeight,
-      weight: true,
-      marginRatio: 0.3
-    });
+    //和弦图
     const arcScale = {
       x: {
         sync: true
@@ -440,6 +177,77 @@ class Selection extends PureComponent {
         sync: true
       }
     };
+
+      const arcCourseData = {
+        "nodes": [{ "id": 0, "name": "物理", "value": 21 }, { "id": 1, "name": "化学", "value": 34 }, {
+          "id": 2,
+          "name": "生物",
+          "value": 9
+        }, { "id": 3, "name": "历史", "value": 40 }, { "id": 4, "name": "政治", "value": 18 }, {
+          "id": 5,
+          "name": "地理",
+          "value": 25
+        }, { "id": 6, "name": "技术", "value": 10 }],
+        "links": [{ "source": 0, "target": 1, "sourceWeight": 6, "targetWeight": 6 }, {
+          "source": 0,
+          "target": 2,
+          "sourceWeight": 9,
+          "targetWeight": 9
+        }, { "source": 0, "target": 3, "sourceWeight": 2, "targetWeight": 2 }, {
+          "source": 0,
+          "target": 4,
+          "sourceWeight": 2,
+          "targetWeight": 2
+        }, { "source": 0, "target": 5, "sourceWeight": 1, "targetWeight": 1 }, {
+          "source": 0,
+          "target": 6,
+          "sourceWeight": 1,
+          "targetWeight": 1
+        }, { "source": 1, "target": 2, "sourceWeight": 0, "targetWeight": 0 }, {
+          "source": 1,
+          "target": 3,
+          "sourceWeight": 9,
+          "targetWeight": 9
+        }, { "source": 1, "target": 4, "sourceWeight": 2, "targetWeight": 2 }, {
+          "source": 1,
+          "target": 5,
+          "sourceWeight": 2,
+          "targetWeight": 2
+        }, { "source": 2, "target": 5, "sourceWeight": 1, "targetWeight": 1 }, {
+          "source": 2,
+          "target": 6,
+          "sourceWeight": 1,
+          "targetWeight": 1
+        }, { "source": 3, "target": 2, "sourceWeight": 0, "targetWeight": 0 }, {
+          "source": 3,
+          "target": 4,
+          "sourceWeight": 9,
+          "targetWeight": 9
+        }, { "source": 3, "target": 5, "sourceWeight": 2, "targetWeight": 2 }, {
+          "source": 4,
+          "target": 5,
+          "sourceWeight": 2,
+          "targetWeight": 2
+        }, { "source": 6, "target": 5, "sourceWeight": 1, "targetWeight": 1 }, {
+          "source": 5,
+          "target": 6,
+          "sourceWeight": 1,
+          "targetWeight": 1
+        }]
+      };
+      const arcCourse1 = new DataSet.View().source(arcCourseData, {
+        type: "graph",
+        edges: d => d.links
+
+      }).transform({
+        type: "diagram.arc",
+        sourceWeight: e => e.sourceWeight,
+        targetWeight: e => e.targetWeight,
+        weight: true,
+        marginRatio: 0.3
+      });
+    console.log(arcCourse);//通过model传入的数据
+    console.log(arcCourse1);//写死的数据
 
 
     return (
@@ -493,7 +301,7 @@ class Selection extends PureComponent {
               id='yujue-year'
               defaultValue="2019"
               style={{ width: 120, float: "right" }}
-              onChange={(year) => this.onYearChanged(year, 'fetchCoursePercents')}
+              onChange={(year) => this.onYearChanged(year, 'fetchCoursePercents', 'fetchArcCourse')}
             >
               <Option key={`course-percents-2017`} value="2017">2017年</Option>
               <Option key={`course-percents-2018`} value="2018">2018年</Option>
@@ -527,7 +335,7 @@ class Selection extends PureComponent {
                   <Label content="count" offset={-5}/>
                 </Geom>
                 <Guide>
-                  {coursePercents.map(obj => {
+                  {coursePercents && coursePercents.map(obj => {
                     return (
                       <Text
                         position={[obj.course, 0]}
@@ -544,13 +352,13 @@ class Selection extends PureComponent {
             <Col span={12}>
               {/*和弦图*/}
               <Chart
-                data={data}
+                data={arcCourse}
                 forceFit={true}
-                height={window.innerHeight}
+                height={500}
                 scale={arcScale}
               >
                 <Tooltip showTitle={false}/>
-                <View data={arcDv.edges} axis={false}>
+                <View data={arcCourse1.edges} axis={false}>
                   <Coord type="polar" reflect="y"/>
                   <Geom
                     type="edge"
@@ -560,10 +368,9 @@ class Selection extends PureComponent {
                     opacity={0.5}
                     tooltip={[
                       "source*target*sourceWeight",
-                      (source, target, sourceWeight, targetWeight) => {
-                        console.log(source);
+                      (source, target, sourceWeight) => {
                         return {
-                          name: arcDv.nodes[source].name + " <-> " + arcDv.nodes[target].name + "</span>",
+                          name: arcCourse1.nodes[source].name + " <-> " + arcCourse1.nodes[target].name + "</span>",
                           value: sourceWeight
 
                         };
@@ -571,7 +378,7 @@ class Selection extends PureComponent {
                     ]}
                   />
                 </View>
-                <View data={arcDv.nodes} axis={false}>
+                <View data={arcCourse1.nodes} axis={false}>
                   <Coord type="polar" reflect="y"/>
                   <Geom type="polygon" position="x*y" color="id">
                     <Label
@@ -593,7 +400,7 @@ class Selection extends PureComponent {
         </Card>
         <Card title="七选三组合分布情况" bordered={true} style={{ width: '100%', marginTop: 32 }}>
           {/*柱状图显示35种选择人数分布情况,分组柱状图*/}
-          <Chart height={400} data={s2tData} forceFit>
+          <Chart height={400} data={seven2threeDistribution} forceFit>
             <Axis name="科目组合"/>
             <Axis name="选课人数"/>
             <Legend/>
@@ -619,117 +426,119 @@ class Selection extends PureComponent {
           <Row>
             <Col span={16} offset={1}>
               <Select id='3in7-year' defaultValue="2019" style={{ width: 120, float: "center" }}
-                      onChange={handleChangeCombin}>
+                      onChange={(year) => this.seven2threeYearChanged(year, 'fetchCourseSelectionPie', 'fetchCourseSelectionTree')}
+              >
                 <Option key="bing20171" value="2017">2017年</Option>
                 <Option key="bing20181" value="2018">2018年</Option>
                 <Option key="bing20191" value="2019">2019年</Option>
               </Select>
               <Button onClick={() => this.setState({ pieFront: !this.state.pieFront })}> 切换视图</Button>
-              {/*todo 针对此card进行翻转*/}
               <Card bordered={false}>
-                {/*饼图柱状图显示分布比例,仅显示比例*/}
                 {this.state.pieFront ? <Chart
-                    key={'pie-chart'}
-                    height={chartHeight}
-                    forceFit
-                    padding={[20, 0, "auto", 0]}
+                  key={'pie-chart'}
+                  height={chartHeight}
+                  forceFit
+                  padding={[20, 0, "auto", 0]}
+                >
+                  <Axis name="value"/>
+                  <Tooltip showTitle={false}/>
+                  <Legend/>
+                  <View
+                    data={courseSelectionPie}
+                    start={{
+                      x: 0,
+                      y: 0
+                    }}
+                    end={{
+                      x: 0.5,
+                      y: 1
+                    }}
                   >
-                    <Axis name="value"/>
-                    <Tooltip showTitle={false}/>
-                    <Legend/>
-                    <View
-                      data={data}
-                      start={{
-                        x: 0,
-                        y: 0
-                      }}
-                      end={{
-                        x: 0.5,
-                        y: 1
-                      }}
-                    >
-                      <Coord
-                        type="theta"
-                        startAngle={0 + otherOffsetAngle}
-                        endAngle={Math.PI * 2 + otherOffsetAngle}
-                      />
-                      <Geom
-                        type="intervalStack"
-                        position="value"
-                        color="type"
-                        shape={[
-                          "type",
-                          function (type) {
-                            if (type === "Other") {
-                              return "otherShape";
-                            }
+                    <Coord
+                      type="theta"
+                      startAngle={0 + pieOtherOffsetAngle}
+                      endAngle={Math.PI * 2 + pieOtherOffsetAngle}
+                    />
+                    <Geom
+                      type="intervalStack"
+                      position="value"
+                      color="type"
+                      shape={[
+                        "type",
+                        function (type) {
+                          if (type === "Other") {
+                            return "otherShape";
+                          }
 
-                            return "rect";
-                          }
-                        ]}
-                        tooltip={[
-                          "type*value",
-                          (type, value) => {
-                            return {
-                              name: type,
-                              value: value
-                            };
-                          }
-                        ]}
-                      >
-                        <Label
-                          content="value*type"
-                          offset={-20}
-                          textStyle={{
-                            rotate: 0
-                          }}
-                          formatter={(val, item) => {
-                            return item.point.type + ": " + (val / sum * 100).toFixed(3) + "%";
-                          }}
-                        />
-                      </Geom>
-                    </View>
-                    <View
-                      data={others}
-                      scale={scale2}
-                      start={{
-                        x: 0.6,
-                        y: 0
-                      }}
-                      end={{
-                        x: 1,
-                        y: 1
-                      }}
+                          return "rect";
+                        }
+                      ]}
+                      tooltip={[
+                        "type*value",
+                        (type, value) => {
+                          return {
+                            name: type,
+                            value: value
+                          };
+                        }
+                      ]}
                     >
-                      {/*todo 还未确定呈现形式,是堆叠还是分组,但是数据格式是相同的(将1改为otherType)*/}
-                      <Geom
-                        type="intervalStack"
-                        position="1*value"
-                        boolean={true}
-                        color={["otherType", "#FCD7DE-#F04864"]}
-                      >
-                        <Label
-                          content="value*otherType"
-                          offset={-20}
-                          textStyle={{
-                            rotate: 0
-                          }}
-                          formatter={(val, item) => {
-                            return item.point.otherType + ": " + (val / sum * 100).toFixed(3) + "%";
-                          }}
-                        />
-                      </Geom>
-                    </View>
-                  </Chart> :
+                      <Label
+                        content="value*type"
+                        offset={-20}
+                        textStyle={{
+                          rotate: 0
+                        }}
+                        formatter={(val, item) => {
+                          return item.point.type + ": " + (val / pieSum * 100).toFixed(3) + "%";
+                        }}
+                      />
+                    </Geom>
+                  </View>
+                  <View
+                    data={courseSelectionPieOther}
+                    scale={scale}
+                    start={{
+                      x: 0.6,
+                      y: 0
+                    }}
+                    end={{
+                      x: 1,
+                      y: 1
+                    }}
+                  >
+                    <Geom
+                      type="intervalStack"
+                      position="1*value"
+                      boolean={true}
+                      color={["otherType", "#FCD7DE-#F04864"]}
+                    >
+                      <Label
+                        content="value*otherType"
+                        offset={-20}
+                        textStyle={{
+                          rotate: 0
+                        }}
+                        formatter={(val, item) => {
+                          return item.point.otherType + ": " + (val / pieSum * 100).toFixed(3) + "%";
+                        }}
+                      />
+                    </Geom>
+                  </View>
+                </Chart> :
                   <Chart
                     key={'polygon-chart'}
                     height={chartHeight}
-                    data={nodes}
+                    data={courseSelectionTree}
                     forceFit
                     scale={scale}
                     padding={[20, 0, "auto", 0]}
                   >
-                    <Tooltip showTitle={false} itemTpl={htmlStr}/>
+                    <Tooltip showTitle={false} itemTpl={"<li data-index={index}>" +
+                    '<span style="background-color:{color};" class="g2-tooltip-marker"></span>' +
+                    "{name}<br/>" +
+                    '<span style="padding-left: 16px">选课人数：{count}</span><br/>' +
+                    "</li>"}/>
                     <Geom
                       type="polygon"
                       position="x*y"
@@ -762,7 +571,6 @@ class Selection extends PureComponent {
                       />
                     </Geom>
                   </Chart>}
-                {/*矩形树图,与饼图柱状图结合,做成卡片翻转样式,仅显示数值*/}
 
               </Card>
             </Col>
