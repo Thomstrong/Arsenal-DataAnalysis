@@ -11,7 +11,6 @@ class ClassMiniSerializer(serializers.ModelSerializer):
         fields = ('id', 'class_name', 'start_year')
 
     def get_start_year(self, obj):
-        print(obj.id)
         year = obj.studentrecord_set.select_related(
             'term'
         ).last().term.start_year

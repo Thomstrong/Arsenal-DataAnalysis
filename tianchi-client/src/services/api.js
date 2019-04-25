@@ -18,6 +18,9 @@ export async function getClassList({ query }) {
   return request(`/api/classes/?query=${query}`);
 }
 
+export async function getClassGrade({ classId, type, scoreType }) {
+  return request(`/api/classes/${classId}/grade/?type=${type}&score_type=${scoreType || ''}`);
+}
 
 // student
 export async function getStudentBasic(studentId) {

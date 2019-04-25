@@ -1,4 +1,4 @@
-import { getClassBasic, getClassList, getClassTeachers, getDistribution, } from '@/services/api';
+import { getClassBasic, getClassGrade, getClassList, getClassTeachers, getDistribution, } from '@/services/api';
 import { COURSE_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, WEEKDAY_ALIAS } from "@/constants";
 
 
@@ -22,6 +22,7 @@ export default {
     teachers: [],
     classList: [],
     loading: false,
+    radarData: [],
   },
 
   effects: {
@@ -50,6 +51,16 @@ export default {
       const response = yield call(getClassList, payload);
       yield put({
         type: 'saveClassList',
+        payload: response
+      });
+    },
+    * fetchRadarData({ payload }, { call, put }) {
+      const response = yield call(getClassGrade, {
+        ...payload,
+        type: 'radar'
+      });
+      yield put({
+        type: 'saveRadarData',
         payload: response
       });
     },
@@ -104,6 +115,23 @@ export default {
             id: data.teacher_id,
             name: data.teacher__name,
             courseName: COURSE_ALIAS[data.course_id],
+          };
+        })
+      };
+    },
+    saveRadarData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      console.log(payload)
+      return {
+        ...state,
+        radarData: payload.map((data) => {
+          return {
+            'item': COURSE_ALIAS[data.sub_exam__course_id],
+            [SCORE_LEVEL_ALIAS.highest]: Number(data.highest.toFixed(0)),
+            [SCORE_LEVEL_ALIAS.lowest]: Number(data.lowest.toFixed(0)),
+            [SCORE_LEVEL_ALIAS.average]: Number(data.average.toFixed(0)),
           };
         })
       };

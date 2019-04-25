@@ -1,14 +1,18 @@
 # Create your views here.
-from django.db.models import Q
+from django.db.models import Q, Max, Min, Avg
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
 from classes.api.serializers import ClassBasicSerializer, ClassMiniSerializer
 from classes.models import Class
+from exams.models.exam_record import StudentExamRecord
 from students.constants import SexType, PolicyType
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
+from utils.decorators import required_params
+
+gaokao_courses = [1, 2, 3, 4, 5, 6, 7, 8, 17, 59]
 
 
 class ClassViewSet(viewsets.ModelViewSet):
@@ -76,3 +80,28 @@ class ClassViewSet(viewsets.ModelViewSet):
             teach_class_id=pk
         ).values('teacher_id', 'teacher__name', 'course_id')
         return Response(teachers)
+
+    @required_params(params=['type'])
+    @detail_route(
+        methods=['GET'],
+    )
+    def grade(self, request, pk):
+        type = request.query_params.get('type', '')
+        if not type:
+            return Response('type 输入有误', status=400)
+
+        if type == 'radar':
+            students = StudentRecord.objects.filter(
+                stu_class_id=pk
+            ).values_list('student_id', flat=True)
+            exam_records = StudentExamRecord.objects.filter(
+                Q(score__gte=0),
+                student_id__in=students,
+                sub_exam__course_id__in=gaokao_courses,
+            ).order_by('sub_exam__course_id').values('sub_exam__course_id').annotate(
+                highest=Max('t_score'),
+                lowest=Min('t_score'),
+                average=Avg('t_score'),
+            )
+
+            return Response(exam_records)

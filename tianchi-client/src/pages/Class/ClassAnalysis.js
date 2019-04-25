@@ -1,6 +1,6 @@
 import React, { Fragment, PureComponent, Suspense } from 'react';
 import { connect } from 'dva';
-import { CLASS_CAMPUS_CHOICE } from "@/constants";
+import { CLASS_CAMPUS_CHOICE, SCORE_LEVEL_ALIAS } from "@/constants";
 import router from 'umi/router';
 import _ from 'lodash';
 import { Affix, Avatar, Card, Col, Divider, Empty, Icon, Row, Select, Spin, Statistic, Table, Tabs, Tag } from 'antd';
@@ -14,11 +14,13 @@ const ScoreTrendChart = React.lazy(() => import('./ScoreTrendChart'));
 
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
+const Line = Guide.Line;
 
 @connect(({ loading, stuClass }) => ({
   stuClass,
   loading: loading.effects['stuClass/fetchBasic'],
-  classListLoading: loading.effects['stuClass/fetchClassList']
+  classListLoading: loading.effects['stuClass/fetchClassList'],
+  radarLoading: loading.effects['stuClass/fetchRadarData'],
 }))
 
 class ClassAnalysis extends PureComponent {
@@ -68,6 +70,12 @@ class ClassAnalysis extends PureComponent {
         classId
       }
     });
+    dispatch({
+      type: 'stuClass/fetchRadarData',
+      payload: {
+        classId
+      }
+    });
     this.setState({ classId });
   };
 
@@ -111,14 +119,21 @@ class ClassAnalysis extends PureComponent {
 
   render() {
     const {
-      stuClass, classListLoading, loading, match
+      stuClass, classListLoading, loading, match, radarLoading
     } = this.props;
 
-    const { distributionData, classInfo, teachers, classList } = stuClass;
+    const { distributionData, classInfo, teachers, classList, radarData } = stuClass;
     const { boy, stay, total, local, policy } = distributionData;
     const isAtSchool = classInfo.start_year === 2018;
-    const { Line } = Guide;
     const defaultTab = _.difference(location.pathname.split('/'), match.path.split('/'))[0] || 'Trend';
+
+    const radarViewData = new DataSet.View().source(radarData).transform({
+      type: "fold",
+      fields: Object.values(SCORE_LEVEL_ALIAS),
+      key: "user",
+      value: "score" // value字段
+    });
+
     const columns = [
       {
         title: '最新排名',
@@ -390,7 +405,63 @@ class ClassAnalysis extends PureComponent {
                       </Row> : <Empty description='班级学生分布数据缺失'/>
                     }
                   </div>
-
+                  {defaultTab !== 'Trend' && <Fragment>
+                    <Divider dashed/>
+                    <Chart
+                      height={400}
+                      scale={{
+                        'score': {
+                          min: 0,
+                          max: 100,
+                          tickCount: 5
+                        }
+                      }}
+                      data={radarViewData}
+                      padding={[20, 20, 95, 20]}
+                      forceFit
+                      loading={radarLoading}
+                    >
+                      <Coord type="polar" radius={0.8}/>
+                      <Axis
+                        name="item"
+                        line={null}
+                        tickLine={null}
+                        grid={{
+                          lineStyle: {
+                            lineDash: null
+                          },
+                          hideFirstLine: false
+                        }}
+                      />
+                      <Tooltip/>
+                      <Axis
+                        name="score"
+                        line={null}
+                        tickLine={null}
+                        grid={{
+                          type: "polygon",
+                          lineStyle: {
+                            lineDash: null
+                          },
+                          alternateColor: "rgba(0, 0, 0, 0.04)"
+                        }}
+                      />
+                      <Legend name="user" marker="circle" offset={30}/>
+                      <Geom type="line" position="item*score" color="user" size={2}/>
+                      <Geom
+                        type="point"
+                        position="item*score"
+                        color="user"
+                        shape="circle"
+                        size={4}
+                        style={{
+                          stroke: "#fff",
+                          lineWidth: 1,
+                          fillOpacity: 1
+                        }}
+                      />
+                    </Chart>
+                  </Fragment>}
                   <Divider style={{ marginTop: 16 }} dashed/>
                   {/*老师信息*/}
                   <div className={styles.team}>
@@ -433,7 +504,7 @@ class ClassAnalysis extends PureComponent {
                         <Suspense fallback={<div>Loading...</div>}>
                           <ScoreTrendChart
                             lineData={[]}
-                            radarViewData={[]}
+                            radarViewData={radarViewData}
                             subData={[]}
                           />
                         </Suspense>
