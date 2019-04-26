@@ -20,8 +20,8 @@ const { Option } = Select;
   seven2threeDistribution: course.seven2threeDistribution,
   courseSelectionPie: course.courseSelectionPie,
   courseSelectionPieOther: course.courseSelectionPieOther,
-  pieOtherOffsetAngle:course.pieOtherOffsetAngle,
-  pieSum:course.pieSum,
+  pieOtherOffsetAngle: course.pieOtherOffsetAngle,
+  pieSum: course.pieSum,
   courseSelectionTree: course.courseSelectionTree,
   loading: loading.models.rule,
 }))
@@ -103,7 +103,12 @@ class Selection extends PureComponent {
 
   render() {
     //todo saveSeven2ThreeDistribution有时候有数据有时候是undefined
-    const { distributions, coursePercents, totalStudents, arcCourse, seven2threeDistribution, courseSelectionPie,courseSelectionPieOther, pieOtherOffsetAngle,pieSum,courseSelectionTree } = this.props;
+    const {
+      distributions, coursePercents, totalStudents,
+      arcCourse, seven2threeDistribution, courseSelectionPie,
+      courseSelectionPieOther, pieOtherOffsetAngle, pieSum,
+      courseSelectionTree
+    } = this.props;
 
     const { Text } = Guide;
     //分组层叠图数据
@@ -178,83 +183,24 @@ class Selection extends PureComponent {
       }
     };
 
-      const arcCourseData = {
-        "nodes": [{ "id": 0, "name": "物理", "value": 21 }, { "id": 1, "name": "化学", "value": 34 }, {
-          "id": 2,
-          "name": "生物",
-          "value": 9
-        }, { "id": 3, "name": "历史", "value": 40 }, { "id": 4, "name": "政治", "value": 18 }, {
-          "id": 5,
-          "name": "地理",
-          "value": 25
-        }, { "id": 6, "name": "技术", "value": 10 }],
-        "links": [{ "source": 0, "target": 1, "sourceWeight": 6, "targetWeight": 6 }, {
-          "source": 0,
-          "target": 2,
-          "sourceWeight": 9,
-          "targetWeight": 9
-        }, { "source": 0, "target": 3, "sourceWeight": 2, "targetWeight": 2 }, {
-          "source": 0,
-          "target": 4,
-          "sourceWeight": 2,
-          "targetWeight": 2
-        }, { "source": 0, "target": 5, "sourceWeight": 1, "targetWeight": 1 }, {
-          "source": 0,
-          "target": 6,
-          "sourceWeight": 1,
-          "targetWeight": 1
-        }, { "source": 1, "target": 2, "sourceWeight": 0, "targetWeight": 0 }, {
-          "source": 1,
-          "target": 3,
-          "sourceWeight": 9,
-          "targetWeight": 9
-        }, { "source": 1, "target": 4, "sourceWeight": 2, "targetWeight": 2 }, {
-          "source": 1,
-          "target": 5,
-          "sourceWeight": 2,
-          "targetWeight": 2
-        }, { "source": 2, "target": 5, "sourceWeight": 1, "targetWeight": 1 }, {
-          "source": 2,
-          "target": 6,
-          "sourceWeight": 1,
-          "targetWeight": 1
-        }, { "source": 3, "target": 2, "sourceWeight": 0, "targetWeight": 0 }, {
-          "source": 3,
-          "target": 4,
-          "sourceWeight": 9,
-          "targetWeight": 9
-        }, { "source": 3, "target": 5, "sourceWeight": 2, "targetWeight": 2 }, {
-          "source": 4,
-          "target": 5,
-          "sourceWeight": 2,
-          "targetWeight": 2
-        }, { "source": 6, "target": 5, "sourceWeight": 1, "targetWeight": 1 }, {
-          "source": 5,
-          "target": 6,
-          "sourceWeight": 1,
-          "targetWeight": 1
-        }]
-      };
-      const arcCourse1 = new DataSet.View().source(arcCourseData, {
-        type: "graph",
-        edges: d => d.links
+    const arcCourseData = arcCourse.nodes ? new DataSet.View().source(arcCourse, {
+      type: "graph",
+      edges: d => d.links
 
-      }).transform({
-        type: "diagram.arc",
-        sourceWeight: e => e.sourceWeight,
-        targetWeight: e => e.targetWeight,
-        weight: true,
-        marginRatio: 0.3
-      });
-    console.log(arcCourse);//通过model传入的数据
-    console.log(arcCourse1);//写死的数据
-
+    }).transform({
+      type: "diagram.arc",
+      sourceWeight: e => e.sourceWeight,
+      targetWeight: e => e.targetWeight,
+      weight: true,
+      marginRatio: 0.3
+    }) : { edges: [], nodes: [] };
 
     return (
       <Fragment>
         <Card title="各科目选课情况分布" bordered={true} style={{ width: '100%' }}>
           {/*分组堆叠*/}
           <Chart
+            key='selection-total-distribute-chart'
             height={400}
             data={distributions}
             padding={[20, 160, 80, 60]}
@@ -311,7 +257,7 @@ class Selection extends PureComponent {
           <Row>
             <Col span={12}>
               {/*玉珏*/}
-              <Chart height={400} data={coursePercents} scale={radialcols} forceFit>
+              <Chart key='selection-jade-chart' height={400} data={coursePercents} scale={radialcols} forceFit>
                 <Coord type="polar" innerRadius={0.1} transpose/>
                 <Tooltip title="course"/>
                 <Geom
@@ -338,6 +284,7 @@ class Selection extends PureComponent {
                   {coursePercents && coursePercents.map(obj => {
                     return (
                       <Text
+                        key={`jade-${obj.course}`}
                         position={[obj.course, 0]}
                         content={obj.course + " "}
                         style={{
@@ -352,13 +299,14 @@ class Selection extends PureComponent {
             <Col span={12}>
               {/*和弦图*/}
               <Chart
-                data={arcCourse}
+                data={arcCourseData}
+                key='selection-arc-chart'
                 forceFit={true}
                 height={500}
                 scale={arcScale}
               >
                 <Tooltip showTitle={false}/>
-                <View data={arcCourse1.edges} axis={false}>
+                <View data={arcCourseData.edges} axis={false}>
                   <Coord type="polar" reflect="y"/>
                   <Geom
                     type="edge"
@@ -370,7 +318,7 @@ class Selection extends PureComponent {
                       "source*target*sourceWeight",
                       (source, target, sourceWeight) => {
                         return {
-                          name: arcCourse1.nodes[source].name + " <-> " + arcCourse1.nodes[target].name + "</span>",
+                          name: arcCourseData.nodes[source].name + " <-> " + arcCourseData.nodes[target].name + "</span>",
                           value: sourceWeight
 
                         };
@@ -378,7 +326,7 @@ class Selection extends PureComponent {
                     ]}
                   />
                 </View>
-                <View data={arcCourse1.nodes} axis={false}>
+                <View data={arcCourseData.nodes} axis={false}>
                   <Coord type="polar" reflect="y"/>
                   <Geom type="polygon" position="x*y" color="id">
                     <Label
@@ -400,7 +348,12 @@ class Selection extends PureComponent {
         </Card>
         <Card title="七选三组合分布情况" bordered={true} style={{ width: '100%', marginTop: 32 }}>
           {/*柱状图显示35种选择人数分布情况,分组柱状图*/}
-          <Chart height={400} data={seven2threeDistribution} forceFit>
+          <Chart
+            key='selection-3_in_7-chart'
+            height={400}
+            data={seven2threeDistribution}
+            forceFit
+          >
             <Axis name="科目组合"/>
             <Axis name="选课人数"/>
             <Legend/>
@@ -435,97 +388,97 @@ class Selection extends PureComponent {
               <Button onClick={() => this.setState({ pieFront: !this.state.pieFront })}> 切换视图</Button>
               <Card bordered={false}>
                 {this.state.pieFront ? <Chart
-                  key={'pie-chart'}
-                  height={chartHeight}
-                  forceFit
-                  padding={[20, 0, "auto", 0]}
-                >
-                  <Axis name="value"/>
-                  <Tooltip showTitle={false}/>
-                  <Legend/>
-                  <View
-                    data={courseSelectionPie}
-                    start={{
-                      x: 0,
-                      y: 0
-                    }}
-                    end={{
-                      x: 0.5,
-                      y: 1
-                    }}
+                    key={'pie-chart'}
+                    height={chartHeight}
+                    forceFit
+                    padding={[20, 0, "auto", 0]}
                   >
-                    <Coord
-                      type="theta"
-                      startAngle={0 + pieOtherOffsetAngle}
-                      endAngle={Math.PI * 2 + pieOtherOffsetAngle}
-                    />
-                    <Geom
-                      type="intervalStack"
-                      position="value"
-                      color="type"
-                      shape={[
-                        "type",
-                        function (type) {
-                          if (type === "Other") {
-                            return "otherShape";
-                          }
+                    <Axis name="value"/>
+                    <Tooltip showTitle={false}/>
+                    <Legend/>
+                    <View
+                      data={courseSelectionPie}
+                      start={{
+                        x: 0,
+                        y: 0
+                      }}
+                      end={{
+                        x: 0.5,
+                        y: 1
+                      }}
+                    >
+                      <Coord
+                        type="theta"
+                        startAngle={0 + pieOtherOffsetAngle}
+                        endAngle={Math.PI * 2 + pieOtherOffsetAngle}
+                      />
+                      <Geom
+                        type="intervalStack"
+                        position="value"
+                        color="type"
+                        shape={[
+                          "type",
+                          function (type) {
+                            if (type === "Other") {
+                              return "otherShape";
+                            }
 
-                          return "rect";
-                        }
-                      ]}
-                      tooltip={[
-                        "type*value",
-                        (type, value) => {
-                          return {
-                            name: type,
-                            value: value
-                          };
-                        }
-                      ]}
+                            return "rect";
+                          }
+                        ]}
+                        tooltip={[
+                          "type*value",
+                          (type, value) => {
+                            return {
+                              name: type,
+                              value: value
+                            };
+                          }
+                        ]}
+                      >
+                        <Label
+                          content="value*type"
+                          offset={-20}
+                          textStyle={{
+                            rotate: 0
+                          }}
+                          formatter={(val, item) => {
+                            return item.point.type + ": " + (val / pieSum * 100).toFixed(3) + "%";
+                          }}
+                        />
+                      </Geom>
+                    </View>
+                    <View
+                      data={courseSelectionPieOther}
+                      scale={scale}
+                      start={{
+                        x: 0.6,
+                        y: 0
+                      }}
+                      end={{
+                        x: 1,
+                        y: 1
+                      }}
                     >
-                      <Label
-                        content="value*type"
-                        offset={-20}
-                        textStyle={{
-                          rotate: 0
-                        }}
-                        formatter={(val, item) => {
-                          return item.point.type + ": " + (val / pieSum * 100).toFixed(3) + "%";
-                        }}
-                      />
-                    </Geom>
-                  </View>
-                  <View
-                    data={courseSelectionPieOther}
-                    scale={scale}
-                    start={{
-                      x: 0.6,
-                      y: 0
-                    }}
-                    end={{
-                      x: 1,
-                      y: 1
-                    }}
-                  >
-                    <Geom
-                      type="intervalStack"
-                      position="1*value"
-                      boolean={true}
-                      color={["otherType", "#FCD7DE-#F04864"]}
-                    >
-                      <Label
-                        content="value*otherType"
-                        offset={-20}
-                        textStyle={{
-                          rotate: 0
-                        }}
-                        formatter={(val, item) => {
-                          return item.point.otherType + ": " + (val / pieSum * 100).toFixed(3) + "%";
-                        }}
-                      />
-                    </Geom>
-                  </View>
-                </Chart> :
+                      <Geom
+                        type="intervalStack"
+                        position="1*value"
+                        boolean={true}
+                        color={["otherType", "#FCD7DE-#F04864"]}
+                      >
+                        <Label
+                          content="value*otherType"
+                          offset={-20}
+                          textStyle={{
+                            rotate: 0
+                          }}
+                          formatter={(val, item) => {
+                            return item.point.otherType + ": " + (val / pieSum * 100).toFixed(3) + "%";
+                          }}
+                        />
+                      </Geom>
+                    </View>
+                  </Chart> :
                   <Chart
                     key={'polygon-chart'}
                     height={chartHeight}

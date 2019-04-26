@@ -2,7 +2,7 @@
  * Created by 胡晓慧 on 2019/4/12.
  */
 
-import { getClassExamData, getCoursePercent, getCourseSelectionDistribution } from '@/services/api';
+import { getClassExamData, getCourseSelectionDistribution } from '@/services/api';
 import { COURSE_ALIAS, SEX_MAP } from "@/constants";
 import DataSet from "@antv/data-set";
 
@@ -12,7 +12,7 @@ export default {
   state: {
     distributions: [],
     coursePercents: [],
-    arcCourse: [],
+    arcCourse: {},
     seven2threeDistribution: [],
     courseSelectionTree: {},
     courseSelectionPie: [],
@@ -30,14 +30,19 @@ export default {
 
   effects: {
     * fetchSelectionDistribution(_, { call, put }) {
-      const response = yield call(getCourseSelectionDistribution);
+      const response = yield call(getCourseSelectionDistribution, {
+        type: 'selection'
+      });
       yield put({
         type: 'saveDistribution',
         payload: response
       });
     },
     * fetchCoursePercents({ payload }, { call, put }) {
-      const response = yield call(getCoursePercent, payload.year || 2019);
+      const response = yield call(getCourseSelectionDistribution, {
+        ...payload,
+        type: 'course_percent'
+      });
       yield put({
         type: 'saveCoursePercents',
         payload: response
@@ -51,28 +56,39 @@ export default {
       });
     },
     //todo 待修改payload表示选择的年份，与玉珏图的年份选择相同
-    *fetchArcCourse({ payload }, { call, put }){
-      const response = yield call(getCoursePercent, payload.year || 2019);
+    * fetchArcCourse({ payload }, { call, put }) {
+      const response = yield call(getCourseSelectionDistribution, {
+        ...payload,
+        type: 'arc_count'
+      });
       yield put({
         type: 'saveArcCourse',
         payload: response
       });
     },
     * fetchSeven2ThreeDistribution(_, { call, put }) {
-      const response = yield call(getCourseSelectionDistribution);
+      const response = yield call(getCourseSelectionDistribution, {
+        type: '3_in_7'
+      });
       yield put({
         type: 'saveSeven2ThreeDistribution',
         payload: response
       });
     },
-    *fetchCourseSelectionPie({ payload }, { call, put }){
-      const response = yield call(getCoursePercent, payload.year || 2019);
+    * fetchCourseSelectionPie({ payload }, { call, put }) {
+      const response = yield call(getCourseSelectionDistribution, {
+        ...payload,
+        type: 'pie_data'
+      });
       yield put({
         type: 'saveCourseSelectionPie',
         payload: response
       });
-    }, *fetchCourseSelectionTree({ payload }, { call, put }){
-      const response = yield call(getCoursePercent, payload.year || 2019);
+    }, * fetchCourseSelectionTree({ payload }, { call, put }) {
+      const response = yield call(getCourseSelectionDistribution, {
+        ...payload,
+        type: 'polygon_tree'
+      });
       yield put({
         type: 'saveCourseSelectionTree',
         payload: response
@@ -158,9 +174,9 @@ export default {
     },
 
     //  todo
-    saveArcCourse(state){
+    saveArcCourse(state) {
       //和弦图数据,sourceweight和targetweight相等，表示人数
-      const arcCourseData = {
+      const arcCourse = {
         "nodes": [{ "id": 0, "name": "物理", "value": 21 }, { "id": 1, "name": "化学", "value": 34 }, {
           "id": 2,
           "name": "生物",
@@ -217,22 +233,12 @@ export default {
           "targetWeight": 1
         }]
       };
-      const arcCourse = new DataSet.View().source(arcCourseData, {
-        type: "graph",
-        edges: d => d.links
-
-      }).transform({
-        type: "diagram.arc",
-        sourceWeight: e => e.sourceWeight,
-        targetWeight: e => e.targetWeight,
-        weight: true,
-        marginRatio: 0.3
-      });
       return {
+        ...state,
         arcCourse
       };
     },
-    saveSeven2ThreeDistribution(state){
+    saveSeven2ThreeDistribution(state) {
       //7选3 人数数据,分组柱状图,按选课人数从多到少排列
       const sevenTothreeData = [
         {
@@ -282,7 +288,7 @@ export default {
         seven2threeDistribution
       };
     },
-    saveCourseSelectionPie(state){
+    saveCourseSelectionPie(state) {
       const courseSelectionPie = [
         {
           type: "分类一",
@@ -338,7 +344,7 @@ export default {
       courseSelectionPieOther.forEach(function (obj) {
         pieOtherSum += obj.value;
       });
-      const otherRatio = pieOtherSum/ pieSum; // 确定Other 的占比
+      const otherRatio = pieOtherSum / pieSum; // 确定Other 的占比
       //  确定两条辅助线的位置
       const pieOtherOffsetAngle = otherRatio * Math.PI; // other 占的角度的一半
 
@@ -350,7 +356,7 @@ export default {
         pieSum,
       };
     },
-    saveCourseSelectionTree(state){
+    saveCourseSelectionTree(state) {
       const data = {
         name: "root",
         children: [
