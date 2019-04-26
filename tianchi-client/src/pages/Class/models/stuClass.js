@@ -152,7 +152,6 @@ export default {
       if (!payload) {
         return state;
       }
-      console.log(payload)
       const totalTrend = [];
       let subTrends = {};
       for (let key in payload) {
