@@ -3,7 +3,22 @@ import { connect } from 'dva';
 import { POLICY_TYPE_ALIAS, SCORE_LEVEL_ALIAS, SEX_MAP } from "@/constants";
 import router from 'umi/router';
 import _ from 'lodash';
-import { Affix, Avatar, Card, Col, DatePicker, Divider, Empty, Icon, Input, Row, Select, Spin, Tabs, Tag } from 'antd';
+import {
+  Affix,
+  Avatar,
+  Card,
+  Col,
+  DatePicker,
+  Divider,
+  Empty,
+  Icon,
+  message,
+  Row,
+  Select,
+  Spin,
+  Tabs,
+  Tag
+} from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './Center.less';
 import { Axis, Chart, Coord, Geom, Legend, Shape, Tooltip } from "bizcharts";
@@ -21,7 +36,9 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
 
 @connect(({ loading, student, global }) => ({
   studentList: student.studentList,
+  vsStudentList: student.vsStudentList,
   studentInfo: student.studentInfo,
+  vsStudentInfo: student.vsStudentInfo,
   termList: student.termList,
   termMap: global.termMap,
   totalHourlyAvgCost: global.totalHourlyAvgCost,
@@ -33,6 +50,7 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   hourlyAvgCost: student.hourlyAvgCost,
   dailySumCost: student.dailySumCost,
   studentListLoading: loading.effects['student/fetchStudentList'],
+  vsStudentListLoading: loading.effects['student/fetchVsStudentList'],
   costLoading: loading.effects['student/fetchHourlyAvgCost'],
 }))
 class Center extends PureComponent {
@@ -40,6 +58,7 @@ class Center extends PureComponent {
     super();
     this.state = {
       studentId: '',
+      vsStudentId: '',
       scoreType: 'score',
       dateRange: 7,
       pickedDate: '2019-01-01',
@@ -67,10 +86,15 @@ class Center extends PureComponent {
     }
   };
 
-  getStudentInfo = (studentId) => {
+  getStudentInfo = (studentId, type = '') => {
+    if (type === 'Vs' && studentId === this.state.studentId) {
+      message.warning('同一个学生对比可没有意义哦～😅', 5);
+      this.setState({ vsStudentId: '' });
+      return;
+    }
     const { dispatch, totalHourlyAvgCost } = this.props;
     dispatch({
-      type: 'student/fetchBasic',
+      type: `student/fetch${type}Basic`,
       payload: {
         studentId: studentId
       }
@@ -148,11 +172,21 @@ class Center extends PureComponent {
     });
   };
 
-  getStudentList = (input) => {
+  getStudentList = (input, type = '') => {
     if (!input) {
       return;
     }
     const { dispatch } = this.props;
+    if (type === 'compare') {
+      dispatch({
+        type: 'student/fetchVsStudentList',
+        payload: {
+          query: input
+        }
+      });
+      return;
+    }
+
     dispatch({
       type: 'student/fetchStudentList',
       payload: {
@@ -323,9 +357,12 @@ class Center extends PureComponent {
   render() {
     const {
       studentInfo,
+      vsStudentInfo,
       wordCloudData,
       studentList,
+      vsStudentList,
       studentListLoading,
+      vsStudentListLoading,
       termList,
       totalHourlyAvgCost,
       dailyPredictData,
@@ -409,7 +446,7 @@ class Center extends PureComponent {
       fontSize(d) {
         if (d.value) {
           const divisor = (max - min) !== 0 ? (max - min) : 1;
-          return ((d.value - min) / divisor) * (20 - 6) + 6;
+          return ((d.value - min) / divisor) * (20 - 6) + 8;
         }
 
         return 0;
@@ -800,12 +837,28 @@ class Center extends PureComponent {
                 </TabPane>
                 <TabPane tab={<span><i className="fa fa-window-restore"/> 对比分析</span>} key="Compare">
                   <div style={{ textAlign: 'center' }}>
-                    <Input.Search
-                      placeholder="请输入待对比学生ID"
-                      enterButton="确定"
+                    <Select
+                      style={{ width: '100%', display: 'block' }}
+                      showSearch
+                      notFoundContent={vsStudentListLoading ? <Spin size="small"/> :
+                        <Empty description={this.state.vsStudentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
+                      }
                       size="large"
-                      onSearch={this.handleComparedStuChange}
-                    />
+                      value={vsStudentInfo.id || this.state.vsStudentId}
+                      filterOption={false}
+                      onSearch={(value) => this.getStudentList(value, 'compare')}
+                      onChange={(vsStudentId) => this.setState({ vsStudentId })}
+                    >
+                      {vsStudentList.map((student) => (
+                        <Option
+                          onClick={(value) => this.getStudentInfo(value.key, 'Vs')}
+                          value={student.id}
+                          key={`vsStudent-${student.id}`}
+                        >
+                          {`${student.id}-${student.name}`}
+                        </Option>
+                      ))}
+                    </Select>
                   </div>
                   {/*基本信息对比*/}
                   <Card title="基本信息对比" bordered={false} style={{ width: '100%' }}>
@@ -820,12 +873,23 @@ class Center extends PureComponent {
                       </Col>
                       <Col span={16} push={2}>
                         {/*todo 待对比学生基本信息个人名片之类*/}
-                        <Card title={comparedStu.Name} bordered={false} hoverable={true}>
-                          <p>学生ID: {comparedStu.id}</p>
-                          <p>民族: {comparedStu.Nation}</p>
-                          <p>出生年月: {comparedStu.BornDate}</p>
-                          <p>家庭住址: {comparedStu.NativePlace}</p>
-                          <p>所在班级: {comparedStu.ClassName}</p>
+                        <Card title={vsStudentInfo.name} bordered={false} hoverable={true}>
+                          <p><i className={`fa fa-group ${styles.iconStyle}`}/>
+                            {vsStudentInfo.nation}
+                          </p>
+                          <p><i className={`fa fa fa-archive ${styles.iconStyle}`}/>
+                            {POLICY_TYPE_ALIAS[vsStudentInfo.policy]}
+                          </p>
+                          <p><i className={`fa fa-birthday-cake ${styles.iconStyle}`}/>
+                            {vsStudentInfo.born_year > 0 ? vsStudentInfo.born_year : '未知'} 年
+                          </p>
+                          <p><i className={`fa fa-home ${styles.iconStyle}`}/>
+                            {vsStudentInfo.native_place}
+                          </p>
+                          <p><i
+                            className={`fa ${vsStudentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
+                            {SEX_MAP[vsStudentInfo.sex]}
+                          </p>
                         </Card>
                       </Col>
                     </Row>
