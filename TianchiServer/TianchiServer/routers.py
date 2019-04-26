@@ -1,5 +1,6 @@
 from rest_framework import routers
 
+from classes.api.views import ClassViewSet
 from consumptions.api.views import ConsumptionViewSet
 from courses.api.views import CourseRecordViewSet
 from exams.api.views import ClassExamViewSet
@@ -15,5 +16,6 @@ router.register(r'course_record', CourseRecordViewSet)
 router.register(r'kaoqin_record', KaoqinRecordViewSet)
 router.register(r'terms', TermViewSet)
 router.register(r'class_exam', ClassExamViewSet)
+router.register(r'classes', ClassViewSet)
 
 urlpatterns = router.urls

@@ -1,6 +1,27 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
 
+// class
+export async function getClassBasic({ classId }) {
+  return request(`/api/classes/${classId}/`);
+}
+
+export async function getClassTeachers({ classId }) {
+  return request(`/api/classes/${classId}/teachers/`);
+}
+
+export async function getDistribution({ classId }) {
+  return request(`/api/classes/${classId}/student_distribution/`);
+}
+
+export async function getClassList({ query }) {
+  return request(`/api/classes/?query=${query}`);
+}
+
+export async function getClassGrade({ classId, type, scoreType }) {
+  return request(`/api/classes/${classId}/grade/?type=${type}&score_type=${scoreType || ''}`);
+}
+
 // student
 export async function getStudentBasic(studentId) {
   return request(`/api/students/${studentId}/`);
