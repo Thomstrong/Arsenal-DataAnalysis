@@ -9,6 +9,7 @@ import styles from './Center.less';
 import { Axis, Chart, Coord, Geom, Legend, Shape, Tooltip } from "bizcharts";
 import DataSet from "@antv/data-set";
 import moment from "moment";
+import Link from 'umi/link';
 
 const ScoreLineChart = React.lazy(() => import('./ScoreLineChart'));
 const WordCloud = React.lazy(() => import('./WordCloud'));
@@ -50,16 +51,16 @@ class Center extends PureComponent {
     const { match } = this.props;
     switch (key) {
       case 'Score':
-        router.push(`${match.url}/Score`);
+        router.push(`${match.path}/Score`);
         break;
       case 'ECard':
-        router.push(`${match.url}/ECard`);
+        router.push(`${match.path}/ECard`);
         break;
       case 'Attendance':
-        router.push(`${match.url}/Attendance`);
+        router.push(`${match.path}/Attendance`);
         break;
       case 'Compare':
-        router.push(`${match.url}/Compare`);
+        router.push(`${match.path}/Compare`);
         break;
       default:
         break;
@@ -294,7 +295,7 @@ class Center extends PureComponent {
     let i = 0;
     let j = 0;
     const hourlyAvgData = [];
-    let maxHourlyAvg = 0
+    let maxHourlyAvg = 0;
     for (let hour = 0; hour < 24; hour++) {
       const data = {
         hour,
@@ -303,12 +304,12 @@ class Center extends PureComponent {
       };
       if (i < hourlyAvgCost.length && hourlyAvgCost[i].hour === hour) {
         data.avg_cost = Number(hourlyAvgCost[i].avg_cost.toFixed(2));
-        maxHourlyAvg = data.avg_cost > maxHourlyAvg? data.avg_cost:maxHourlyAvg
+        maxHourlyAvg = data.avg_cost > maxHourlyAvg ? data.avg_cost : maxHourlyAvg;
         i++;
       }
       if (j < totalHourlyAvgCost.length && totalHourlyAvgCost[j].hour === hour) {
         data.total_avg = Number(totalHourlyAvgCost[j].total_avg.toFixed(2));
-        maxHourlyAvg = data.total_avg > maxHourlyAvg? data.total_avg:maxHourlyAvg
+        maxHourlyAvg = data.total_avg > maxHourlyAvg ? data.total_avg : maxHourlyAvg;
         j++;
       }
       hourlyAvgData.push(data);
@@ -338,7 +339,7 @@ class Center extends PureComponent {
     } = this.props;
     //雷达图的处理
 
-    const {hourlyAvgData,maxHourlyAvg} = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
+    const { hourlyAvgData, maxHourlyAvg } = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
     const { formatedData: predictData, maxCost } = this.formatDailyPredictData(dailyPredictData);
     const radarViewData = new DataSet.View().source(studentInfo.radarData).transform({
       type: "fold",
@@ -708,6 +709,9 @@ class Center extends PureComponent {
                   {/*老师信息*/}
                   <div className={styles.team}>
                     <div className={styles.teamTitle}>班级信息</div>
+                    <Link to={`/class/analysis/?classId=${studentInfo.class_id}`}>
+                      查看详细
+                    </Link>
                     <Row gutter={36}>
                       {teacherInfo.map(item => (
                         <Col key={item.id} lg={24} xl={12}>

@@ -22,28 +22,36 @@ const Line = Guide.Line;
   classListLoading: loading.effects['stuClass/fetchClassList'],
   radarLoading: loading.effects['stuClass/fetchRadarData'],
 }))
-
 class ClassAnalysis extends PureComponent {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      classId: '',
+      classId: props.match.params.classId,
       scoreType: 'score',
       dateRange: 7,
       pickedDate: moment().format('YYYY-MM-DD'),
     };
     this.getClassList = _.debounce(this.getClassList, 800);
+
+  }
+
+  componentDidMount() {
+    const { classInfo } = this.props.stuClass;
+    const { query } = this.props.location;
+    if (query && query.classId && Number(query.classId) !== classInfo.id) {
+      this.getClassInfo(query.classId);
+    }
   }
 
   onTabChange = key => {
     const { match } = this.props;
     switch (key) {
       case 'Trend':
-        router.push(`${match.url}/Trend`);
+        router.push(`${match.path}/Trend`);
         break;
       case 'Specific':
-        router.push(`${match.url}/Specific`);
+        router.push(`${match.path}/Specific`);
         break;
       default:
         break;
@@ -134,7 +142,6 @@ class ClassAnalysis extends PureComponent {
       subTrends
     } = stuClass;
 
-    console.log(totalTrend, subTrends)
     const { boy, stay, total, local, policy } = distributionData;
     const isAtSchool = classInfo.start_year === 2018;
     const defaultTab = _.difference(location.pathname.split('/'), match.path.split('/'))[0] || 'Trend';
@@ -374,7 +381,7 @@ class ClassAnalysis extends PureComponent {
                     <Empty description={this.state.classId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
                   }
                   size="large"
-                  value={classInfo.id || this.state.classId}
+                  value={classInfo.id ? `${classInfo.id}-${classInfo.start_year}-${classInfo.class_name}` : this.state.classId}
                   filterOption={false}
                   onSearch={(value) => this.getClassList(value)}
                   onChange={(classId) => this.setState({ classId })}
@@ -489,7 +496,7 @@ class ClassAnalysis extends PureComponent {
                     <div className={styles.teamTitle}>老师信息</div>
                     <Row gutter={36}>
                       {teachers.map(item => (
-                        <Col key={item.id} lg={24} xl={12}>
+                        <Col key={`teacher-${item.id}`} lg={24} xl={12}>
                           <Avatar size={32}><b>{item.courseName}</b></Avatar>
                           {item.name}
                         </Col>

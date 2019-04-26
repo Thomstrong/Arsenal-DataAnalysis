@@ -78,7 +78,7 @@ class ClassViewSet(viewsets.ModelViewSet):
     def teachers(self, request, pk):
         teachers = TeachRecord.objects.filter(
             teach_class_id=pk
-        ).values('teacher_id', 'teacher__name', 'course_id')
+        ).distinct('teacher_id').values('teacher_id', 'teacher__name', 'course_id')
         return Response(teachers)
 
     @required_params(params=['type'])
