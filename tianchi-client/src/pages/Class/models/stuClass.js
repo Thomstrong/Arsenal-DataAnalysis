@@ -23,6 +23,9 @@ export default {
     classList: [],
     loading: false,
     radarData: [],
+
+    totalTrend: [],
+    subTrends: []
   },
 
   effects: {
@@ -61,6 +64,16 @@ export default {
       });
       yield put({
         type: 'saveRadarData',
+        payload: response
+      });
+    },
+    * fetchTrendData({ payload }, { call, put }) {
+      const response = yield call(getClassGrade, {
+        ...payload,
+        type: 'trend'
+      });
+      yield put({
+        type: 'saveTrendData',
         payload: response
       });
     },
@@ -123,7 +136,6 @@ export default {
       if (!payload) {
         return state;
       }
-      console.log(payload)
       return {
         ...state,
         radarData: payload.map((data) => {
@@ -134,6 +146,37 @@ export default {
             [SCORE_LEVEL_ALIAS.average]: Number(data.average.toFixed(0)),
           };
         })
+      };
+    },
+    saveTrendData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      console.log(payload)
+      const totalTrend = [];
+      let subTrends = {};
+      for (let key in payload) {
+        for (let record of payload[key]) {
+          if (record.course === 0) {
+            totalTrend.push({
+              exam: key,
+              score: record.score
+            });
+            continue;
+          }
+          if (!subTrends[record.course]) {
+            subTrends[record.course] = [];
+          }
+          subTrends[record.course].push({
+            exam: key,
+            score: record.score
+          });
+        }
+      }
+      return {
+        ...state,
+        totalTrend,
+        subTrends,
       };
     },
     clear() {

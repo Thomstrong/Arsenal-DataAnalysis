@@ -76,6 +76,12 @@ class ClassAnalysis extends PureComponent {
         classId
       }
     });
+    dispatch({
+      type: 'stuClass/fetchTrendData',
+      payload: {
+        classId
+      }
+    });
     this.setState({ classId });
   };
 
@@ -122,7 +128,13 @@ class ClassAnalysis extends PureComponent {
       stuClass, classListLoading, loading, match, radarLoading
     } = this.props;
 
-    const { distributionData, classInfo, teachers, classList, radarData } = stuClass;
+    const {
+      distributionData, classInfo, teachers,
+      classList, radarData, totalTrend,
+      subTrends
+    } = stuClass;
+
+    console.log(totalTrend, subTrends)
     const { boy, stay, total, local, policy } = distributionData;
     const isAtSchool = classInfo.start_year === 2018;
     const defaultTab = _.difference(location.pathname.split('/'), match.path.split('/'))[0] || 'Trend';
@@ -133,6 +145,15 @@ class ClassAnalysis extends PureComponent {
       key: "user",
       value: "score" // value字段
     });
+
+    const subData = subTrends ? new DataSet.View().source([subTrends]).transform({
+      type: "fold",
+      fields: Object.keys(subTrends),
+      // 展开字段集
+      key: "title",
+      // key字段
+      value: "lineData" // value字段
+    }).rows : [];
 
     const columns = [
       {
@@ -489,7 +510,7 @@ class ClassAnalysis extends PureComponent {
                 <TabPane tab={<span><Icon type="line-chart"/>成绩趋势显示</span>} key="Trend">
                   {classInfo && classInfo.id ?
                     <Fragment>
-                      <Card title="该班级考试得分趋势变化" bordered={false}>
+                      <Card title={`${classInfo.class_name}考试得分趋势变化`} bordered={false}>
                         <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
                           <Select
                             value={this.state.scoreType} style={{ width: 120 }}
@@ -503,9 +524,9 @@ class ClassAnalysis extends PureComponent {
                         </Affix>
                         <Suspense fallback={<div>Loading...</div>}>
                           <ScoreTrendChart
-                            lineData={[]}
+                            lineData={totalTrend}
                             radarViewData={radarViewData}
-                            subData={[]}
+                            subData={subData}
                           />
                         </Suspense>
                       </Card>

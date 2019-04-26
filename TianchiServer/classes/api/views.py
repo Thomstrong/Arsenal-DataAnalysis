@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from classes.api.serializers import ClassBasicSerializer, ClassMiniSerializer
 from classes.models import Class
-from exams.models.exam_record import StudentExamRecord
+from exams.models.exam_record import StudentExamRecord, ClassExamRecord
 from students.constants import SexType, PolicyType
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
@@ -105,3 +105,44 @@ class ClassViewSet(viewsets.ModelViewSet):
             )
 
             return Response(exam_records)
+
+        if type == 'trend':
+            records = ClassExamRecord.objects.filter(
+                stu_class_id=pk,
+                sub_exam__course_id__in=gaokao_courses,
+            ).order_by('sub_exam__started_at').values(
+                'sub_exam__exam__name'
+            ).values(
+                'sub_exam__course_id',
+                'sub_exam__exam__name',
+                'total_score',
+                'attend_count'
+            )
+
+            formated_records = {}
+            total = 0
+            exam_name = ''
+            for record in records:
+                if not exam_name:
+                    exam_name = record['sub_exam__exam__name']
+                    formated_records[exam_name] = []
+                if not exam_name == record['sub_exam__exam__name']:
+                    formated_records[exam_name].append({
+                        'course': 0,
+                        'score': total
+                    })
+                    exam_name = record['sub_exam__exam__name']
+                    formated_records[exam_name] = []
+                    total = 0
+
+                avg_score = record['total_score'] / record['attend_count']
+                formated_records[exam_name].append({
+                    'course': record['sub_exam__course_id'],
+                    'score': avg_score
+                })
+                total += avg_score
+            formated_records[exam_name].append({
+                'course': 0,
+                'score': total
+            })
+            return Response(formated_records)
