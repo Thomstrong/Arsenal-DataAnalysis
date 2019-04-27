@@ -406,12 +406,11 @@ class Center extends PureComponent {
   mergeDailyCost = (dailyCost, vsDailyCost) => {
     const mergedData = [];
     let i = 0;
-    let j = 0;
 
     for (let data of vsDailyCost) {
       while (i < dailyCost.length && dailyCost[i].date < data.date) {
         mergedData.push({
-          x: dailyCost[i].date,
+          x: Date.parse(dailyCost[i].date),
           y1: dailyCost[i].total,
           y2: 0,
         });
@@ -420,7 +419,7 @@ class Center extends PureComponent {
 
       if (i < dailyCost.length && data.date === dailyCost[i].date) {
         mergedData.push({
-          x: data.date,
+          x: Date.parse(data.date),
           y1: dailyCost[i].total,
           y2: data.total,
         });
@@ -428,7 +427,7 @@ class Center extends PureComponent {
         continue;
       }
       mergedData.push({
-        x: data.date,
+        x: Date.parse(data.date),
         y1: 0,
         y2: data.total,
       });
@@ -436,7 +435,7 @@ class Center extends PureComponent {
 
     while (i < dailyCost.length) {
       mergedData.push({
-        x: dailyCost[i].date,
+        x: Date.parse(dailyCost[i].date),
         y1: dailyCost[i].total,
         y2: 0,
       });
