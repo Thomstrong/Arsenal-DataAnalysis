@@ -46,6 +46,7 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   dailyPredictData: student.dailyPredictData,
   hourlyCost: student.hourlyCost,
   costVsData: student.costVsData,
+  vsDailySumCost: student.vsDailySumCost,
   wordCloudData: student.wordCloudData,
   loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchRadarData'],
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
@@ -113,6 +114,12 @@ class Center extends PureComponent {
       });
       dispatch({
         type: 'student/fetchCostCompare',
+        payload: {
+          studentId: studentId,
+        }
+      });
+      dispatch({
+        type: 'student/fetchVsDailySumCost',
         payload: {
           studentId: studentId,
         }
@@ -396,6 +403,51 @@ class Center extends PureComponent {
       maxHourlyAvg
     };
   };
+  mergeDailyCost = (dailyCost, vsDailyCost) => {
+    const mergedData = [];
+    let i = 0;
+    let j = 0;
+
+    for (let data of vsDailyCost) {
+      while (i < dailyCost.length && dailyCost[i].date < data.date) {
+        mergedData.push({
+          x: dailyCost[i].date,
+          y1: dailyCost[i].total,
+          y2: 0,
+        });
+        i++;
+      }
+
+      if (i < dailyCost.length && data.date === dailyCost[i].date) {
+        mergedData.push({
+          x: data.date,
+          y1: dailyCost[i].total,
+          y2: data.total,
+        });
+        i++;
+        continue;
+      }
+      mergedData.push({
+        x: data.date,
+        y1: 0,
+        y2: data.total,
+      });
+    }
+
+    while (i < dailyCost.length) {
+      mergedData.push({
+        x: dailyCost[i].date,
+        y1: dailyCost[i].total,
+        y2: 0,
+      });
+      i++;
+    }
+
+
+    return {
+      vsDailyCostData: mergedData,
+    };
+  };
 
   render() {
     const {
@@ -412,6 +464,7 @@ class Center extends PureComponent {
       dailyPredictData,
       hourlyCost,
       costVsData,
+      vsDailySumCost,
       hourlyAvgCost,
       dailySumCost,
       loading,
@@ -420,8 +473,9 @@ class Center extends PureComponent {
       kaoqinLoading
     } = this.props;
     const { hourlyAvgData, maxHourlyAvg } = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
-    const { hourlyAvgData: vsAverageData} = this.formatHourlyAvgCost(hourlyAvgCost, costVsData);
+    const { hourlyAvgData: vsAverageData } = this.formatHourlyAvgCost(hourlyAvgCost, costVsData);
     const { formatedData: predictData, maxCost } = this.formatDailyPredictData(dailyPredictData);
+    const { vsDailyCostData } = this.mergeDailyCost(dailySumCost, vsDailySumCost);
     const radarViewData = new DataSet.View().source(studentInfo.radarData).transform({
       type: "fold",
       fields: Object.values(SCORE_LEVEL_ALIAS),
@@ -526,11 +580,11 @@ class Center extends PureComponent {
     const hourlyVsCostData = new DataSet.View().source(vsAverageData).transform({
       type: 'map',
       callback(row) {
-          const newRow = { ...row };
-          newRow[`${vsStudentInfo.id}-${vsStudentInfo.name}`] = row.total_avg;
-          newRow[`${studentInfo.id}-${studentInfo.name}`] = row.avg_cost;
-          return newRow;
-        },
+        const newRow = { ...row };
+        newRow[`${vsStudentInfo.id}-${vsStudentInfo.name}`] = row.total_avg;
+        newRow[`${studentInfo.id}-${studentInfo.name}`] = row.avg_cost;
+        return newRow;
+      },
     }).transform({
       type: "fold",
       fields: [`${studentInfo.id}-${studentInfo.name}`, `${vsStudentInfo.id}-${vsStudentInfo.name}`],
@@ -853,7 +907,13 @@ class Center extends PureComponent {
                     <StuComparedChart
                       comparedScoreData={gradeVsData}
                       hourlyVsCostData={hourlyVsCostData}
-                      dailyComparedConsumptionData={[]}
+                      vsDailyCostData={{
+                        data: vsDailyCostData,
+                        titleMap: {
+                          y1: `${studentInfo.id}-${studentInfo.name}`,
+                          y2: `${vsStudentInfo.id}-${vsStudentInfo.name}`,
+                        }
+                      }}
                       comparedAttendData={compAdata}
                     />
                   </Suspense>

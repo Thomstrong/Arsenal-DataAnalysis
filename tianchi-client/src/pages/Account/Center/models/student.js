@@ -79,6 +79,7 @@ export default {
     },
     gradeVsData: [],
     costVsData: [],
+    vsDailySumCost:[],
     termList: [],
     studentList: [],
     vsStudentList: [],
@@ -172,6 +173,16 @@ export default {
       });
       yield put({
         type: 'saveDailySumCost',
+        payload: response,
+      });
+    },
+    * fetchVsDailySumCost({ payload }, { call, put }) {
+      const response = yield call(getConsumption, {
+        ...payload,
+        type: 'daily_sum'
+      });
+      yield put({
+        type: 'saveVsDailySumCost',
         payload: response,
       });
     },
@@ -374,6 +385,15 @@ export default {
       return {
         ...state,
         dailySumCost: payload
+      };
+    },
+    saveVsDailySumCost(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        vsDailySumCost: payload
       };
     },
     saveHourlyCost(state, { payload }) {

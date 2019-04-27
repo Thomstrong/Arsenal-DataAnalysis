@@ -7,20 +7,6 @@ import { Axis, Chart, Coord, Geom, Legend, Tooltip } from "bizcharts";
 import DataSet from "@antv/data-set";
 import { TimelineChart } from '@/components/Charts';
 
-const cols = {
-  cost: {
-    min: 0
-  }
-};
-const offlineChartData = [];
-for (let i = 0; i < 20; i += 1) {
-  offlineChartData.push({
-    x: new Date().getTime() + 1000 * 60 * 30 * i,
-    y1: Math.floor(Math.random() * 100) + 10,
-    y2: Math.floor(Math.random() * 100) + 10,
-  });
-}
-
 const AttendData = [
   {
     name: "李晓明",
@@ -48,7 +34,8 @@ AttData.transform({
 });
 
 const StuComparedChart = memo(
-  ({ comparedScoreData, hourlyVsCostData, dailyComparedConsumptionData, comparedAttendData }) => {
+  ({ comparedScoreData, hourlyVsCostData, vsDailyCostData, comparedAttendData }) => {
+
     return <React.Fragment>
       {/*成绩对比*/}
       <Card title="平均成绩对比" bordered={false} style={{ width: '100%' }}>
@@ -138,14 +125,11 @@ const StuComparedChart = memo(
         </Chart>
         {/*各个时期总消费金额对比*/}
         <div style={{ padding: '0 24px' }}>
-          <TimelineChart
-            titleMap={{
-              y1:'学生1',
-              y2:'学生2'
-            }}
+          {vsDailyCostData.data.length ? <TimelineChart
+            titleMap={vsDailyCostData.titleMap}
             height={300}
-            data={offlineChartData}
-          />
+            data={vsDailyCostData.data}
+          /> : <Empty/>}
         </div>
       </Card>
       {/*考勤*/}
