@@ -79,7 +79,8 @@ export default {
     },
     gradeVsData: [],
     costVsData: [],
-    vsDailySumCost:[],
+    vsDailySumCost: [],
+    kaoqinVsData: [],
     termList: [],
     studentList: [],
     vsStudentList: [],
@@ -183,6 +184,16 @@ export default {
       });
       yield put({
         type: 'saveVsDailySumCost',
+        payload: response,
+      });
+    },
+    * fetchKaoqinVsData({ payload }, { call, put }) {
+      const response = yield call(getCompare, {
+        ...payload,
+        type: 'kaoqin'
+      });
+      yield put({
+        type: 'saveKaoqinVsData',
         payload: response,
       });
     },
@@ -481,7 +492,21 @@ export default {
           return {
             hour: data.hour,
             total_avg: data.avg_cost
-          }
+          };
+        })
+      };
+    },
+    saveKaoqinVsData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        kaoqinVsData: payload.map(data => {
+          return {
+            ...data,
+            type: EVENT_TYPE_ALIAS[Number(data.type)]
+          };
         })
       };
     },

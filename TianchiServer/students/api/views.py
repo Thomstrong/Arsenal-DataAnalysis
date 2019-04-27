@@ -200,7 +200,7 @@ class StudentViewSet(viewsets.ModelViewSet):
             student_id=pk,
             event_id__gte=9900100
         ).values('event__type_id').annotate(
-            count=Count('event__type_id'),
+            count=Count('id'),
         )
 
         return Response({
@@ -316,12 +316,44 @@ class StudentViewSet(viewsets.ModelViewSet):
             ).order_by('sub_exam__course_id').values('sub_exam__course_id', 'student__name', 'student_id').annotate(
                 average=Avg('t_score'),
             )
-            formated_records = []
+            formatted_records = []
 
             for record in exam_records:
-                formated_records.append({
+                formatted_records.append({
                     'course': record['sub_exam__course_id'],
-                    'student': '{}-{}'.format(record['student_id'],record['student__name']),
+                    'student': '{}-{}'.format(record['student_id'], record['student__name']),
                     'average': float('%.2f' % record['average']),
                 })
-            return Response(formated_records)
+            return Response(formatted_records)
+        if type == 'kaoqin':
+            records = KaoqinRecord.objects.filter(
+                student_id__in=[pk, another_id],
+                event_id__gte=9900100
+            ).select_related(
+                'student'
+            ).values('student_id', 'event__type_id').annotate(
+                count=Count('id'),
+            ).values('student_id', 'student__name', 'event__type_id', 'count')
+            chat_records = StudentExamRecord.objects.filter(
+                student_id__in=[pk, another_id],
+                score=-1
+            ).select_related(
+                'student'
+            ).values('student_id').annotate(
+                count=Count('id'),
+            ).values('student_id', 'student__name', 'count')
+            formatted_records = []
+            for record in records:
+                formatted_records.append({
+                    'student': '{}-{}'.format(record['student_id'], record['student__name']),
+                    'type': record['event__type_id'],
+                    'count': record['count'],
+                })
+            for record in chat_records:
+                formatted_records.append({
+                    'student': '{}-{}'.format(record['student_id'], record['student__name']),
+                    'type': '100000',
+                    'count': record['count'],
+                })
+
+            return Response(formatted_records)

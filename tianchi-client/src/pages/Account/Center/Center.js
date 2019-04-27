@@ -46,6 +46,7 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   dailyPredictData: student.dailyPredictData,
   hourlyCost: student.hourlyCost,
   costVsData: student.costVsData,
+  kaoqinVsData: student.kaoqinVsData,
   vsDailySumCost: student.vsDailySumCost,
   wordCloudData: student.wordCloudData,
   loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchRadarData'],
@@ -124,10 +125,15 @@ class Center extends PureComponent {
           studentId: studentId,
         }
       });
+      dispatch({
+        type: 'student/fetchKaoqinVsData',
+        payload: {
+          studentId: this.state.studentId,
+          compareId: studentId,
+        }
+      });
 
     }
-
-
   };
 
   getStudentInfo = (studentId) => {
@@ -468,6 +474,7 @@ class Center extends PureComponent {
       dailySumCost,
       loading,
       match,
+      kaoqinVsData,
       location,
       kaoqinLoading
     } = this.props;
@@ -913,7 +920,7 @@ class Center extends PureComponent {
                           y2: `${vsStudentInfo.id}-${vsStudentInfo.name}`,
                         }
                       }}
-                      comparedAttendData={compAdata}
+                      kaoqinVsData={kaoqinVsData}
                     />
                   </Suspense>
                 </TabPane>

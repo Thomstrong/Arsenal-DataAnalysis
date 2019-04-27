@@ -34,7 +34,7 @@ AttData.transform({
 });
 
 const StuComparedChart = memo(
-  ({ comparedScoreData, hourlyVsCostData, vsDailyCostData, comparedAttendData }) => {
+  ({ comparedScoreData, hourlyVsCostData, vsDailyCostData, kaoqinVsData }) => {
 
     return <React.Fragment>
       {/*成绩对比*/}
@@ -134,7 +134,7 @@ const StuComparedChart = memo(
       </Card>
       {/*考勤*/}
       <Card title="总考勤情况对比" bordered={false} style={{ width: '100%' }}>
-        <Chart height={400} data={AttData} forceFit>
+        <Chart height={400} data={kaoqinVsData} forceFit>
           <Axis name="考勤类型"/>
           <Axis name="次数"/>
           <Legend position="bottom"/>
@@ -145,8 +145,8 @@ const StuComparedChart = memo(
           />
           <Geom
             type="interval"
-            position="考勤类型*次数"
-            color={"name"}
+            position="type*count"
+            color={"student"}
             adjust={[
               {
                 type: "dodge",
