@@ -174,64 +174,19 @@ export default {
     },
 
     //  todo
-    saveArcCourse(state) {
+    saveArcCourse(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
       //和弦图数据,sourceweight和targetweight相等，表示人数
       const arcCourse = {
-        "nodes": [{ "id": 0, "name": "物理", "value": 21 }, { "id": 1, "name": "化学", "value": 34 }, {
-          "id": 2,
-          "name": "生物",
-          "value": 9
-        }, { "id": 3, "name": "历史", "value": 40 }, { "id": 4, "name": "政治", "value": 18 }, {
-          "id": 5,
-          "name": "地理",
-          "value": 25
-        }, { "id": 6, "name": "技术", "value": 10 }],
-        "links": [{ "source": 0, "target": 1, "sourceWeight": 6, "targetWeight": 6 }, {
-          "source": 0,
-          "target": 2,
-          "sourceWeight": 9,
-          "targetWeight": 9
-        }, { "source": 0, "target": 3, "sourceWeight": 2, "targetWeight": 2 }, {
-          "source": 0,
-          "target": 4,
-          "sourceWeight": 2,
-          "targetWeight": 2
-        }, { "source": 0, "target": 5, "sourceWeight": 1, "targetWeight": 1 }, {
-          "source": 0,
-          "target": 6,
-          "sourceWeight": 1,
-          "targetWeight": 1
-        }, { "source": 1, "target": 2, "sourceWeight": 0, "targetWeight": 0 }, {
-          "source": 1,
-          "target": 3,
-          "sourceWeight": 9,
-          "targetWeight": 9
-        }, { "source": 1, "target": 4, "sourceWeight": 2, "targetWeight": 2 }, {
-          "source": 1,
-          "target": 5,
-          "sourceWeight": 2,
-          "targetWeight": 2
-        }, { "source": 2, "target": 5, "sourceWeight": 1, "targetWeight": 1 }, {
-          "source": 2,
-          "target": 6,
-          "sourceWeight": 1,
-          "targetWeight": 1
-        }, { "source": 3, "target": 2, "sourceWeight": 0, "targetWeight": 0 }, {
-          "source": 3,
-          "target": 4,
-          "sourceWeight": 9,
-          "targetWeight": 9
-        }, { "source": 3, "target": 5, "sourceWeight": 2, "targetWeight": 2 }, {
-          "source": 4,
-          "target": 5,
-          "sourceWeight": 2,
-          "targetWeight": 2
-        }, { "source": 6, "target": 5, "sourceWeight": 1, "targetWeight": 1 }, {
-          "source": 5,
-          "target": 6,
-          "sourceWeight": 1,
-          "targetWeight": 1
-        }]
+        nodes: payload.nodes.map(courseId => {
+          return {
+            id: courseId,
+            name: COURSE_ALIAS[courseId]
+          };
+        }),
+        edges: payload.edges
       };
       return {
         ...state,

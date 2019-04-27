@@ -4,7 +4,7 @@
 //展示选课情况,包括各科目选课人数分布,及不同7选3的分布情况
 
 import React, { Fragment, PureComponent } from 'react';
-import { POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
+import { POLICY_TYPE_ALIAS, SEX_MAP,COURSE_FULLNAME_ALIAS } from "@/constants";
 import { Button, Card, Col, Row, Select } from 'antd';
 import DataSet from "@antv/data-set";
 import { Axis, Chart, Coord, Geom, Guide, Label, Legend, Tooltip, View } from "bizcharts";
@@ -183,8 +183,7 @@ class Selection extends PureComponent {
     };
     const arcCourseData = arcCourse.nodes ? new DataSet.View().source(arcCourse, {
       type: "graph",
-      edges: d => d.links
-
+      edges: d => d.edges
     }).transform({
       type: "diagram.arc",
       sourceWeight: e => e.sourceWeight,
@@ -317,7 +316,7 @@ class Selection extends PureComponent {
                       "source*target*sourceWeight",
                       (source, target, sourceWeight) => {
                         return {
-                          name: arcCourseData.nodes[source].name + " <-> " + arcCourseData.nodes[target].name + "</span>",
+                          name: COURSE_FULLNAME_ALIAS[source]+ " <-> " + COURSE_FULLNAME_ALIAS[target] + "</span>",
                           value: sourceWeight
 
                         };
