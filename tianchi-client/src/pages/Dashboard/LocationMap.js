@@ -10,39 +10,6 @@ import { Chart, Coord, Geom, Label, Legend, Tooltip, View, } from 'bizcharts';
 
 import DataSet from '@antv/data-set';
 
-const { DataView } = DataSet;
-const data = [
-  {
-    value: 251,
-    type: '高一',
-    name: '高一男生',
-  },
-  {
-    value: 1048,
-    type: '高一',
-    name: '高一女生',
-  },
-  {
-    value: 610,
-    type: '高二',
-    name: '高二男生',
-  },
-  {
-    value: 434,
-    type: '高二',
-    name: '高二女生',
-  },
-  {
-    value: 335,
-    type: '高三',
-    name: '高三男生',
-  },
-  {
-    value: 250,
-    type: '高三',
-    name: '高三女生',
-  },
-];
 const cols = {
   percent: {
     formatter: (val) => {
@@ -54,7 +21,7 @@ const cols = {
 
 
 const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, handleChangeStudentType }) => {
-  const {sexPieData, studentPieData, totalStudentCount} = data
+  const { sexPieData, studentPieData, totalStudentCount } = data;
   return <div className={styles.twoColLayout}>
     <Row gutter={24}>
       <Col xl={12} lg={24} md={24} sm={24} xs={24}>
@@ -80,6 +47,7 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
           }
         >
           <Chart
+            key='sex-distribution-chart'
             data={new DataSet.View().source(sexPieData).transform({
               type: 'percent',
               field: 'value',
@@ -119,12 +87,16 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
             >
               <Label content="type" offset={-10}/>
             </Geom>
-            <View data={new DataSet.View().source(sexPieData).transform({
-              type: 'percent',
-              field: 'value',
-              dimension: 'name',
-              as: 'percent',
-            })} scale={cols}>
+            <View
+              data={new DataSet.View().source(sexPieData).transform({
+                type: 'percent',
+                field: 'value',
+                dimension: 'name',
+                as: 'percent',
+              })}
+              scale={cols}
+              key='sex-distribution-grade'
+            >
               <Coord type="theta" radius={0.75} innerRadius={0.5 / 0.75}/>
               <Geom
                 type="intervalStack"
@@ -188,8 +160,9 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
           }
         >
           <Pie
+            key='nativePlace-distribution'
             hasLegend={true}
-            subTitle='人员分布'
+            subTitle='学生总数'
             total={totalStudentCount}
             data={studentPieData}
             valueFormat={value => `${numeral(value).format('0,0')}人`}
