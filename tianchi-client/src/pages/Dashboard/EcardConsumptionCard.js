@@ -36,6 +36,51 @@ const rankingListData = [
   },
 
 ];
+const sexRankingData = [
+  {
+    title: "女生8时平均消费",
+    total: 18.72
+  },
+  {
+    title: "女生14时平均消费",
+    total: 17.75
+  },
+    title: "女生13时平均消费",
+    total: 15.09
+  },
+  {
+    title: "女生15时平均消费",
+    total: 14.84
+  },
+  {
+    title: "男生8时平均消费",
+    total: 13.15
+  },
+
+];
+const yearCostRankingData = [
+  {
+    title: "2018年11月26日",
+    total: 50828.37
+  },
+  {
+    title: "2018年11月21日",
+    total: 45518.94
+  },
+  {
+    title: "2019年1月15日",
+    total: 45000.19
+  },
+  // {
+  //   title: "2018年11月19日",
+  //   total: 44391.67
+  // },
+  // {
+  //   title: "2018年11月20日",
+  //   total: 44387.74
+  // },
+
+];
 const scale = {
   hour: {
     type: "cat",
@@ -83,6 +128,7 @@ const EcardConsumptionCard = memo(({ data }) => {
     {/*两个部分，分别是每天的总消费变化趋势和某时刻平均消费情况*/}
     {/*DataMarker可以后续有图表后进行补充*/}
     {/*第一部分，每天总消费变化趋势*/}
+    {/*todo 消费对比的分析，等到添加完人数分布后*/}
     <Card loading={sexHourlyLoading} className={styles.tabsCard} style={{ marginTop: 32 }}>
       <Tabs defaultActiveKey={"Sex"}>
         <TabPane tab={<span><Icon type="line-chart"/>性别对比</span>} key="Sex">
@@ -139,7 +185,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                   每时段消费额排名
                 </h4>
                 <ul className={styles.rankingList}>
-                  {rankingListData.map((item, i) => (
+                  {sexRankingData.map((item, i) => (
                     <li key={item.title}>
                         <span
                           className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}
@@ -154,7 +200,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                   ))}
                 </ul>
                 <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
-                  <p>男生的整体消费水平比女生高，男生消费主要集中在12点，女生主要集中在18点</p>
+                  <p>女生的平均消费水平比男生高，todo 男生消费主要集中在12点，女生主要集中在18点</p>
                 </Card>
               </div>
             </Col>
@@ -322,10 +368,10 @@ const EcardConsumptionCard = memo(({ data }) => {
               消费总额排名
             </h4>
             <ul className={styles.rankingList}>
-              {rankingListData.map((item, i) => (
+              {yearCostRankingData.map((item, i) => (
                 <li key={item.title}>
                         <span
-                          className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}
+                          className={`${styles.rankingItemNumber} ${i < 1 ? styles.active : ''}`}
                         >
                           {i + 1}
                         </span>
@@ -337,7 +383,9 @@ const EcardConsumptionCard = memo(({ data }) => {
               ))}
             </ul>
             <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
-              <p>走读生和住校生在12点时的消费水平持平，住校生消费主要集中在12点，和6点，走读生在家吃早饭</p>
+              <p>1. 呈周期性变化符合逻辑,周一二三四水平相当，周五由于学生准备离校消费减半，周六周日几乎没有消费;</p>
+              <p>2. 2018年11月中旬，由于期中考试和运动会的原因，周中的消费水平较平常呈现明显下降趋势;</p>
+              <p>3. 每日消费总额基本稳定在4万元左右.</p>
             </Card>
           </div>
         </Col>

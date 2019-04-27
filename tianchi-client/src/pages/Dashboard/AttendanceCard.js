@@ -51,68 +51,81 @@ const cols = {
     ]
   }
 };
+// const colorMap = {
+// //   "高三_迟到": "#1ea2c9",
+// //   "高二_迟到": "#21adac",
+// //   "高一_迟到": "#14dcdc",
+// //   "高一_早退": "#ff6271",
+// //   "高二_早退": "#cc4756",
+// //   "高三_早退": "#85343f",
+// //   "高一_校服违纪": "#FFD747",
+// //   "高二_校服违纪": "#bc9e31",
+// //   "高三_校服违纪": "#918f0c",
+// // };
 const colorMap = {
-  "高一_迟到": "#36CFC9",
-  "高二_迟到": "#209BDD",
-  "高三_迟到": "#1581E6",
-  "高一_早退": "#36CFC9",
-  "高二_早退": "#209BDD",
-  "高三_早退": "#1581E6",
-  "高一_校服违纪": "#36CFC9",
-  "高二_校服违纪": "#209BDD",
-  "高三_校服违纪": "#1581E6",
+  "高三_迟到": "#2190d3",
+  "高二_迟到": "#60acfc",
+  "高一_迟到": "#80bcfc",
+  "高一_早退": "#7bcfb2",
+  "高二_早退": "#5bc49f",
+  "高三_早退": "#51b08e",
+  "高一_校服违纪": "#ffe168",
+  "高二_校服违纪": "#feb64d",
+  "高三_校服违纪": "#e58d5e",
 };
 
-const rankingListData = [
-  {
-    title: "2016年高一迟到人数",
-    total: 66
-  },
-  {
-    title: "2017年高二迟到人数",
-    total: 22220
-  },
-  {
-    title: "2018年高一迟到人数",
-    total: 22220
-  },
-  {
-    title: "2019年高一迟到人数",
-    total: 22220
-  },
-  {
-    title: "2020年高一迟到人数",
-    total: 22220
-  },
-];
+
 const AttendanceRankingListData = [
   {
-    title: "12点10分",
-    total: 66
+    title: "周六中午10点进离校人次",
+    total: 293
   },
   {
-    title: "12点20",
-    total: 22220
+    title: "周六中午12点进离校人次",
+    total: 207
   },
   {
-    title: "16点10",
-    total: 22220
+    title: "周二早上6点进离校人次",
+    total: 202
   },
   {
-    title: "16点20",
-    total: 22220
+    title: "周五早上6点进离校人次",
+    total: 187
+  },
+  // {
+  //   title: "周六中午11点进离校人次",
+  //   total: 186
+  // },
+];
+const violationRankingData = [
+  {
+    title: "2017-2018学年高三早退人数",
+    total: 863
   },
   {
-    title: "16点30",
-    total: 22220
+    title: "2017-2018学年高三迟到人数",
+    total: 545
   },
+  {
+    title: "2017-2018学年高二校服违纪人数",
+    total: 424
+  },
+  // {
+  //   title: "2017-2018学年高三校服违纪人数",
+  //   total: 392
+  // },
+  // {
+  //   title: "2017-2018学年高二迟到人数",
+  //   total: 359
+  // },
 ];
 
 
 const AttendanceCard = memo(({ data }) => {
     const { enterSchoolData, kaoqinMixedData } = data;
+    console.log(enterSchoolData);
     return <React.Fragment>
-      <Card title="进离校时间概况" bordered={false} style={{ marginTop: 32 }}>
+      <Card title="2018-2019学年进离校时间概况" bordered={false} style={{ marginTop: 32 }}>
         <Row>
           <Col span={16}>
             <Chart
@@ -160,13 +173,13 @@ const AttendanceCard = memo(({ data }) => {
           <Col span={7} offset={1}>
             <div className={styles.salesRank}>
               <h4 className={styles.rankingTitle}>
-                违纪次数排名
+                进离校时间排名
               </h4>
               <ul className={styles.rankingList}>
                 {AttendanceRankingListData.map((item, i) => (
                   <li key={item.title}>
                         <span
-                          className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}
+                          className={`${styles.rankingItemNumber} ${i < 1 ? styles.active : ''}`}
                         >
                           {i + 1}
                         </span>
@@ -178,7 +191,9 @@ const AttendanceCard = memo(({ data }) => {
                 ))}
               </ul>
               <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
-                <p>离校时间集中在xxxx时间，建议错开放学时间，避免发生人员踩踏</p>
+                <p>1. 数据量有限不能代表所有学生的进离校情况;</p>
+                <p>2. 早上6点多是绝大多数学生的进校时间,7点会有部分学生姗姗来迟;</p>
+                <p>3. 周五下午3、4点是离校高峰，周日10点到12点住校生普遍返校</p>
               </Card>
             </div>
           </Col>
@@ -193,10 +208,10 @@ const AttendanceCard = memo(({ data }) => {
                 违纪次数排名
               </h4>
               <ul className={styles.rankingList}>
-                {rankingListData.map((item, i) => (
+                {violationRankingData.map((item, i) => (
                   <li key={item.title}>
                         <span
-                          className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}
+                          className={`${styles.rankingItemNumber} ${i < 1 ? styles.active : ''}`}
                         >
                           {i + 1}
                         </span>
@@ -208,7 +223,9 @@ const AttendanceCard = memo(({ data }) => {
                 ))}
               </ul>
               <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
-                <p>xxx年考勤不合格人数最多，早退人数呈下降趋势？高一中校服违纪的人数最多</p>
+                <p>1. 违纪情况呈递增趋势，2018年考勤不合格人数最多(18-19学年仅有一半数据);</p>
+                <p>2. 高一违纪情况在任一学年任一类型都是最少的，同时，高三几乎肩负起了一半的违纪指标;</p>
+                <p>3. 每一学年的高三学生都会有迟到和校服违纪的现象，但早退集中在17学年和18学年。</p>
               </Card>
             </div>
           </Col>
