@@ -45,6 +45,7 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   totalHourlyAvgCost: global.totalHourlyAvgCost,
   dailyPredictData: student.dailyPredictData,
   hourlyCost: student.hourlyCost,
+  costVsData: student.costVsData,
   wordCloudData: student.wordCloudData,
   loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchRadarData'],
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
@@ -110,6 +111,13 @@ class Center extends PureComponent {
           compareId: studentId,
         }
       });
+      dispatch({
+        type: 'student/fetchCostCompare',
+        payload: {
+          studentId: studentId,
+        }
+      });
+
     }
 
 
@@ -403,6 +411,7 @@ class Center extends PureComponent {
       totalHourlyAvgCost,
       dailyPredictData,
       hourlyCost,
+      costVsData,
       hourlyAvgCost,
       dailySumCost,
       loading,
@@ -410,8 +419,8 @@ class Center extends PureComponent {
       location,
       kaoqinLoading
     } = this.props;
-
     const { hourlyAvgData, maxHourlyAvg } = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
+    const { hourlyAvgData: vsAverageData} = this.formatHourlyAvgCost(hourlyAvgCost, costVsData);
     const { formatedData: predictData, maxCost } = this.formatDailyPredictData(dailyPredictData);
     const radarViewData = new DataSet.View().source(studentInfo.radarData).transform({
       type: "fold",
@@ -510,86 +519,25 @@ class Center extends PureComponent {
     //呈现成绩信息的筛选
     const Option = Select.Option;
 
-    //timelyconsumption数据
-    const timelyConsumptionData = hourlyAvgCost || [];
     //考勤的相关数据
     const kaoqinData = this.formatKaoqinData(studentInfo.kaoqinData, termList);
     const kaoqinSummary = studentInfo.kaoqinSummary;
     // 一卡通对比数据1 0-23小时的平均消费
-    const timelyCompConsumptionData = [
-      {
-        time: '0时',
-        cost1: 0,
-        cost2: 0,
-      },
-      {
-        time: '2时',
-        cost1: 6,
-        cost2: 3,
-
-      },
-      {
-        time: '3时',
-        cost1: 7,
-        cost2: 3,
-      },
-      {
-        time: '4时',
-        cost1: 9,
-        cost2: 10,
-      },
-      {
-        time: '5时',
-        cost1: 20,
-        cost2: 30,
-      }
-    ];
-    const timelyCompConsumpData = new DataSet.View().source(timelyCompConsumptionData).transform({
+    const hourlyVsCostData = new DataSet.View().source(vsAverageData).transform({
+      type: 'map',
+      callback(row) {
+          const newRow = { ...row };
+          newRow[`${vsStudentInfo.id}-${vsStudentInfo.name}`] = row.total_avg;
+          newRow[`${studentInfo.id}-${studentInfo.name}`] = row.avg_cost;
+          return newRow;
+        },
+    }).transform({
       type: "fold",
-      fields: ["cost1", "cost2"],
-      // 展开字段集
-      key: "type",
-      // key字段
-      value: "value" // value字段
+      fields: [`${studentInfo.id}-${studentInfo.name}`, `${vsStudentInfo.id}-${vsStudentInfo.name}`],
+      key: "student",
+      value: "cost"
     });
 
-    //  一卡通对比数据2 每天开销数据的对比
-    const dailyCompConsumptionData = [
-      {
-        time: '星期一',
-        该同学: 0,
-        对比同学: 20,
-      },
-      {
-        time: '星期二',
-        该同学: 70,
-        对比同学: 30,
-      },
-      {
-        time: '星期三',
-        该同学: 30,
-        对比同学: 30,
-      },
-      {
-        time: '星期四',
-        该同学: 10,
-        对比同学: 5,
-      },
-      {
-        time: '星期五',
-        该同学: 20,
-        对比同学: 30,
-      }
-    ];
-    const offlineChartData = [];
-    for (let i = 0; i < 20; i += 1) {
-      offlineChartData.push({
-        x: new Date().getTime() + 1000 * 60 * 30 * i,
-        A: Math.floor(Math.random() * 100) + 10,
-        B: Math.floor(Math.random() * 100) + 10,
-      });
-    }
-    ;
     //考勤对比数据
     const AttendData = [
       {
@@ -904,8 +852,8 @@ class Center extends PureComponent {
                   <Suspense fallback={<div>Loading...</div>}>
                     <StuComparedChart
                       comparedScoreData={gradeVsData}
-                      timelyComparedConsumptionData={timelyCompConsumpData}
-                      dailyComparedConsumptionData={offlineChartData}
+                      hourlyVsCostData={hourlyVsCostData}
+                      dailyComparedConsumptionData={[]}
                       comparedAttendData={compAdata}
                     />
                   </Suspense>

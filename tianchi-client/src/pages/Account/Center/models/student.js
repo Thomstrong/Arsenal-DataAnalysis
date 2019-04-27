@@ -78,6 +78,7 @@ export default {
       name: ''
     },
     gradeVsData: [],
+    costVsData: [],
     termList: [],
     studentList: [],
     vsStudentList: [],
@@ -94,7 +95,6 @@ export default {
     },
     hourlyCost: [],
     consumptionData: {
-
       daily: [],
       date: ''
     },
@@ -222,6 +222,16 @@ export default {
       });
       yield put({
         type: 'saveGradeVsData',
+        payload: response,
+      });
+    },
+    * fetchCostCompare({ payload }, { call, put }) {
+      const response = yield call(getConsumption, {
+        ...payload,
+        type: 'hourly_avg'
+      });
+      yield put({
+        type: 'saveCostVsData',
         payload: response,
       });
     }
@@ -439,6 +449,20 @@ export default {
             course: COURSE_FULLNAME_ALIAS[data.course]
           };
         }),
+      };
+    },
+    saveCostVsData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        costVsData: payload.map(data => {
+          return {
+            hour: data.hour,
+            total_avg: data.avg_cost
+          }
+        })
       };
     },
     clear() {

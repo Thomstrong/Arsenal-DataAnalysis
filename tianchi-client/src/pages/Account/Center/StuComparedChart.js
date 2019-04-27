@@ -46,46 +46,9 @@ AttData.transform({
   // key字段
   value: "次数" // value字段
 });
-const timelyCompConsumptionData = [
-  {
-    time: '0时',
-    cost1: 0,
-    cost2: 0,
-  },
-  {
-    time: '2时',
-    cost1: 6,
-    cost2: 3,
-
-  },
-  {
-    time: '3时',
-    cost1: 7,
-    cost2: 3,
-  },
-  {
-    time: '4时',
-    cost1: 9,
-    cost2: 10,
-  },
-  {
-    time: '5时',
-    cost1: 20,
-    cost2: 30,
-  }
-];
-const timelyCompConsumpData = new DataSet.View().source(timelyCompConsumptionData).transform({
-  type: "fold",
-  fields: ["cost1", "cost2"],
-// 展开字段集
-  key: "stu",
-// key字段
-  value: "cost" // value字段
-});
-
 
 const StuComparedChart = memo(
-  ({ comparedScoreData, timelyComparedConsumptionData, dailyComparedConsumptionData, comparedAttendData }) => {
+  ({ comparedScoreData, hourlyVsCostData, dailyComparedConsumptionData, comparedAttendData }) => {
     return <React.Fragment>
       {/*成绩对比*/}
       <Card title="平均成绩对比" bordered={false} style={{ width: '100%' }}>
@@ -118,23 +81,55 @@ const StuComparedChart = memo(
         {/*平均消费时间的对比,图表*/}
         <Chart
           height={400}
-          data={timelyCompConsumpData}
-          scale={cols}
-          forceFit>
-          <Legend position="top"/>
-          <Axis name="time"/>
+          data={hourlyVsCostData}
+          scale={{
+            hour: {
+              type: "cat",
+              values: [
+                "0时",
+                "1时",
+                "2时",
+                "3时",
+                "4时",
+                "5时",
+                "6时",
+                "7时",
+                "8时",
+                "9时",
+                "10时",
+                "11时",
+                "12时",
+                "13时",
+                "14时",
+                "15时",
+                "16时",
+                "17时",
+                "18时",
+                "19时",
+                "20时",
+                "21时",
+                "22时",
+                "23时"
+              ]
+            }
+          }}
+          forceFit
+        >
+          <Legend position="bottom"/>
+          <Axis name="hour"/>
           <Axis name="cost"/>
           <Tooltip
             crosshairs={{
               type: "y"
             }}
           />
-          <Geom type="line" position="time*cost" size={2} color={"stu"}/>
+          <Geom type="line" position="hour*cost" size={2} color={"student"}/>
           <Geom
             type="point"
-            position="time*cost"
+            position="hour*cost"
             size={4}
             shape={"circle"}
+            color={"student"}
             style={{
               stroke: "#fff",
               lineWidth: 1
@@ -144,6 +139,10 @@ const StuComparedChart = memo(
         {/*各个时期总消费金额对比*/}
         <div style={{ padding: '0 24px' }}>
           <TimelineChart
+            titleMap={{
+              y1:'学生1',
+              y2:'学生2'
+            }}
             height={300}
             data={offlineChartData}
           />
@@ -154,7 +153,7 @@ const StuComparedChart = memo(
         <Chart height={400} data={AttData} forceFit>
           <Axis name="考勤类型"/>
           <Axis name="次数"/>
-          <Legend/>
+          <Legend position="bottom"/>
           <Tooltip
             crosshairs={{
               type: "y"
