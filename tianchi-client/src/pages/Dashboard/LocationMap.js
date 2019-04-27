@@ -200,6 +200,15 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
         </Card>
       </Col>
     </Row>
+    <Row gutter={24}>
+      <Col xl={24} xs={24}>
+        <Card title="人员分析" hoverable={true}>
+          <p>1. 高一高二高三人数递减，高一男生占全校学生数的1／4;各年级女生人数比较稳定都在16%左右，男生人数呈明显递减趋势，高三年级女生人数反超男生;</p>
+          <p>2. 当前学年，走读生占6成; 男生走读人数和住校人数持平，女生走读人数是住校人数的近3倍;住校生中男生人数也是女生的两倍有余;</p>
+          <p>3. 学校生源主要来自于浙江宁波(本地)，外地生源中以湖北省的生源最多。todo 待做</p>
+        </Card>
+      </Col>
+    </Row>
   </div>;
 
 });
