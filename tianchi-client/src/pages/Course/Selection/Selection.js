@@ -111,14 +111,13 @@ class Selection extends PureComponent {
     } = this.props;
 
     const { Text } = Guide;
-    //分组层叠图数据
+    //分组层叠图颜色
     const colorMap = {
-      "2017_未知": "#E3F4BF",
-      "2017_女": "#BEF7C8",
-      "2018_未知": "#86E6C8",
-      "2018_女": "#36CFC9",
-      "2019_男": "#60ccf9",
-      "2019_女": "#f5aeae",
+      "2017_未知": "#36c0e1",
+      "2019_男": "#0860BF",
+      "2019_女": "#1581E6",
+      "2018_未知": "#209BDD",
+      // "2017_未知": "#80B2D3",
     };
     const chartWidth = window.innerWidth;
     const chartHeight = 400;
@@ -182,7 +181,6 @@ class Selection extends PureComponent {
         sync: true
       }
     };
-
     const arcCourseData = arcCourse.nodes ? new DataSet.View().source(arcCourse, {
       type: "graph",
       edges: d => d.links
@@ -197,13 +195,13 @@ class Selection extends PureComponent {
 
     return (
       <Fragment>
-        <Card title="各科目选课情况分布" bordered={true} style={{ width: '100%' }}>
+        <Card title="高三各科目选课情况分布" bordered={true} style={{ width: '100%' }}>
           {/*分组堆叠*/}
           <Chart
             key='selection-total-distribute-chart'
             height={400}
             data={distributions}
-            padding={[20, 160, 80, 60]}
+            padding={[20, 160, 80, 40]}
             forceFit
           >
             <Axis
@@ -246,7 +244,7 @@ class Selection extends PureComponent {
             <Select
               id='yujue-year'
               defaultValue="2019"
-              style={{ width: 120, float: "right" }}
+              style={{ width: 180, float: "right", paddingRight:60}}
               onChange={(year) => this.onYearChanged(year, 'fetchCoursePercents', 'fetchArcCourse')}
             >
               <Option key={`course-percents-2017`} value="2017">2017年</Option>
@@ -255,9 +253,9 @@ class Selection extends PureComponent {
             </Select>
           </Row>
           <Row>
-            <Col span={12}>
+            <Col xs={24} xl={11}>
               {/*玉珏*/}
-              <Chart key='selection-jade-chart' height={400} data={coursePercents} scale={radialcols} forceFit>
+              <Chart key='selection-jade-chart' height={400} padding={{top:60, right:40, bottom:25}} data={coursePercents} scale={radialcols} forceFit>
                 <Coord type="polar" innerRadius={0.1} transpose/>
                 <Tooltip title="course"/>
                 <Geom
@@ -296,14 +294,15 @@ class Selection extends PureComponent {
                 </Guide>
               </Chart>
             </Col>
-            <Col span={12}>
+            <Col xs={24} xl={11}>
               {/*和弦图*/}
               <Chart
                 data={arcCourseData}
                 key='selection-arc-chart'
                 forceFit={true}
-                height={500}
+                height={420}
                 scale={arcScale}
+                padding={{top:30, right:40, bottom:20}}
               >
                 <Tooltip showTitle={false}/>
                 <View data={arcCourseData.edges} axis={false}>
@@ -342,8 +341,9 @@ class Selection extends PureComponent {
             </Col>
           </Row>
           <Card title='总结' bordered={false} hoverable={true} style={{ marginLeft: 32, marginRight: 32 }}>
-            <p>xxxx学年xxx学科选的人最多</p>
-            <p>男女比相近</p>
+            <p>1. 自2017年高考改革以来物理、化学、生物的人数一直居高不下，历史在七门学科中较为弱势。由于填报志愿时不同专业对选课要求的不同，物理化学在填报志愿时较有优势，其中选考物理后的可申报专业覆盖面高达93.5%，化学为85.5%</p>
+            <p>2. 2019年，男女生选课差异并不明显，女男比在理化生三个学科上依次增高，男女选课人数最不均衡的居然是政治接近1：5。其中，化学、地理的选课男女比接近1：1；物理、技术接近2：1；生物、历史接近1：2。</p>
+            <p>3. 分流情况，选物理的都同时选了什么呀</p>
           </Card>
         </Card>
         <Card title="七选三组合分布情况" bordered={true} style={{ width: '100%', marginTop: 32 }}>
@@ -365,7 +365,7 @@ class Selection extends PureComponent {
             <Geom
               type="interval"
               position="科目组合*选课人数"
-              color={"name"}
+              color={["name", "#26BFBF-#FC6170-#FFD747"]}
               adjust={[
                 {
                   type: "dodge",
@@ -377,7 +377,7 @@ class Selection extends PureComponent {
           {/*饼图柱状图显示分布比例,仅显示比例*/}
           {/*矩形树图,与饼图柱状图结合,做成卡片翻转样式,仅显示数值*/}
           <Row>
-            <Col span={16} offset={1}>
+            <Col offset={1} xs={24} xl={16}>
               <Select id='3in7-year' defaultValue="2019" style={{ width: 120, float: "center" }}
                       onChange={(year) => this.seven2threeYearChanged(year, 'fetchCourseSelectionPie', 'fetchCourseSelectionTree')}
               >
@@ -527,7 +527,7 @@ class Selection extends PureComponent {
 
               </Card>
             </Col>
-            <Col span={6} pull={0.5}>
+            <Col pull={0.5} xs={24} xl={6}>
               <Card title='总结' bordered={false} hoverable={true}>
                 <p>选择xxx的学生最多</p>
                 <p>哪些组合基本没人考虑</p>
