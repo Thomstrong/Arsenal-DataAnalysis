@@ -71,11 +71,11 @@ export async function getTermMap() {
 }
 
 // course
-export async function getCourseSelectionDistribution() {
-  return request(`/api/course_record/distribution/?type=selection`);
+export async function getCourseSelectionDistribution({ year, type }) {
+  return request(`/api/course_record/distribution/?type=${type}&year=${year || ''}`);
 }
 
-export async function getCoursePercent(year) {
+export async function getCourseDistribution(year) {
   return request(`/api/course_record/distribution/?type=course_percent&year=${year}`);
 }
 

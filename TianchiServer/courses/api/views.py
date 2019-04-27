@@ -50,3 +50,11 @@ class CourseRecordViewSet(viewsets.ModelViewSet):
                 'total': total,
                 'records': records
             })
+        if type == 'arc_count':
+            return Response([])
+        if type == '3_in_7':
+            return Response([])
+        if type == 'pie_data':
+            return Response([])
+        if type == 'polygon_tree':
+            return Response([])
