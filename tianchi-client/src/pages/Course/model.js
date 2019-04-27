@@ -13,7 +13,7 @@ export default {
     distributions: [],
     coursePercents: [],
     arcCourse: {},
-    seven2threeDistribution: [],
+    detailDistribution: [],
     courseSelectionTree: {},
     courseSelectionPie: [],
     courseSelectionPieOther: [],
@@ -66,12 +66,12 @@ export default {
         payload: response
       });
     },
-    * fetchSeven2ThreeDistribution(_, { call, put }) {
+    * fetchDetailDistribution(_, { call, put }) {
       const response = yield call(getCourseSelectionDistribution, {
         type: '3_in_7'
       });
       yield put({
-        type: 'saveSeven2ThreeDistribution',
+        type: 'saveDetailDistribution',
         payload: response
       });
     },
@@ -193,54 +193,25 @@ export default {
         arcCourse
       };
     },
-    saveSeven2ThreeDistribution(state) {
-      //7选3 人数数据,分组柱状图,按选课人数从多到少排列
-      const sevenTothreeData = [
-        {
-          name: "2017",
-          "理化生": 120,
-          "政史地": 127,
-          "理史地": 39,
-          "政化生": 81,
-          "理化政": 47,
-          "理化史": 20,
-          "理化地": 24,
-          "理化技": 35,
-        },
-        {
-          name: "2018",
-          "理化生": 12,
-          "政史地": 127,
-          "理史地": 32,
-          "政化生": 81,
-          "理化政": 40,
-          "理化史": 20,
-          "理化地": 24,
-          "理化技": 35,
-        },
-        {
-          name: "2019",
-          "理化生": 120,
-          "政史地": 17,
-          "理史地": 49,
-          "政化生": 81,
-          "理化政": 47,
-          "理化史": 20,
-          "理化地": 34,
-          "理化技": 35,
+    saveDetailDistribution(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      const detailDistribution = [];
+      for (let data of payload) {
+        const { year } = data;
+        for (let selection in data.data) {
+          const courses = selection.split('#').map(id => COURSE_ALIAS[id]);
+          detailDistribution.push({
+            year: String(year),
+            selection: courses.join(''),
+            count: data.data[selection]
+          });
         }
-      ];
-      const seven2threeDistribution = new DataSet.View().source(sevenTothreeData).transform({
-        type: "fold",
-        fields: ["理化生", "政史地", "理史地", "政化生", "理化政", "理化史", "理化地", "理化技"],
-        // 展开字段集
-        key: "科目组合",
-        // key字段
-        value: "选课人数" // value字段
-      }).rows;
+      }
       return {
         ...state,
-        seven2threeDistribution
+        detailDistribution
       };
     },
     saveCourseSelectionPie(state) {

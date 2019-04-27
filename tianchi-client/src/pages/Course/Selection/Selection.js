@@ -4,7 +4,7 @@
 //展示选课情况,包括各科目选课人数分布,及不同7选3的分布情况
 
 import React, { Fragment, PureComponent } from 'react';
-import { POLICY_TYPE_ALIAS, SEX_MAP,COURSE_FULLNAME_ALIAS } from "@/constants";
+import { COURSE_FULLNAME_ALIAS, POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
 import { Button, Card, Col, Row, Select } from 'antd';
 import DataSet from "@antv/data-set";
 import { Axis, Chart, Coord, Geom, Guide, Label, Legend, Tooltip, View } from "bizcharts";
@@ -17,7 +17,7 @@ const { Option } = Select;
   coursePercents: course.coursePercents,
   totalStudents: course.totalStudents,
   arcCourse: course.arcCourse,
-  seven2threeDistribution: course.seven2threeDistribution,
+  detailDistribution: course.detailDistribution,
   courseSelectionPie: course.courseSelectionPie,
   courseSelectionPieOther: course.courseSelectionPieOther,
   pieOtherOffsetAngle: course.pieOtherOffsetAngle,
@@ -52,7 +52,7 @@ class Selection extends PureComponent {
       }
     });
     dispatch({
-      type: 'course/fetchSeven2ThreeDistribution',
+      type: 'course/fetchDetailDistribution',
     });
     dispatch({
       type: 'course/fetchCourseSelectionPie',
@@ -84,16 +84,16 @@ class Selection extends PureComponent {
     });
   };
 
-  seven2threeYearChanged = (year, type1, type2) => {
+  onDetailYearChanged = (year) => {
     const { dispatch } = this.props;
     dispatch({
-      type: `course/${type1}`,
+      type: 'course/fetchCourseSelectionPie',
       payload: {
         year
       }
     });
     dispatch({
-      type: `course/${type2}`,
+      type: 'course/fetchCourseSelectionTree',
       payload: {
         year
       }
@@ -102,13 +102,13 @@ class Selection extends PureComponent {
 
 
   render() {
-    //todo saveSeven2ThreeDistribution有时候有数据有时候是undefined
     const {
       distributions, coursePercents, totalStudents,
-      arcCourse, seven2threeDistribution, courseSelectionPie,
+      arcCourse, detailDistribution, courseSelectionPie,
       courseSelectionPieOther, pieOtherOffsetAngle, pieSum,
       courseSelectionTree
     } = this.props;
+    console.log(detailDistribution);
 
     const { Text } = Guide;
     //分组层叠图颜色
@@ -243,7 +243,7 @@ class Selection extends PureComponent {
             <Select
               id='yujue-year'
               defaultValue="2019"
-              style={{ width: 180, float: "right", paddingRight:60}}
+              style={{ width: 180, float: "right", paddingRight: 60 }}
               onChange={(year) => this.onYearChanged(year, 'fetchCoursePercents', 'fetchArcCourse')}
             >
               <Option key={`course-percents-2017`} value="2017">2017年</Option>
@@ -254,7 +254,8 @@ class Selection extends PureComponent {
           <Row>
             <Col xs={24} xl={11}>
               {/*玉珏*/}
-              <Chart key='selection-jade-chart' height={400} padding={{top:60, right:40, bottom:25}} data={coursePercents} scale={radialcols} forceFit>
+              <Chart key='selection-jade-chart' height={400} padding={{ top: 60, right: 40, bottom: 25 }}
+                     data={coursePercents} scale={radialcols} forceFit>
                 <Coord type="polar" innerRadius={0.1} transpose/>
                 <Tooltip title="course"/>
                 <Geom
@@ -301,7 +302,7 @@ class Selection extends PureComponent {
                 forceFit={true}
                 height={420}
                 scale={arcScale}
-                padding={{top:30, right:40, bottom:20}}
+                padding={{ top: 30, right: 40, bottom: 20 }}
               >
                 <Tooltip showTitle={false}/>
                 <View data={arcCourseData.edges} axis={false}>
@@ -316,7 +317,7 @@ class Selection extends PureComponent {
                       "source*target*sourceWeight",
                       (source, target, sourceWeight) => {
                         return {
-                          name: COURSE_FULLNAME_ALIAS[source]+ " <-> " + COURSE_FULLNAME_ALIAS[target] + "</span>",
+                          name: COURSE_FULLNAME_ALIAS[source] + " <-> " + COURSE_FULLNAME_ALIAS[target] + "</span>",
                           value: sourceWeight
 
                         };
@@ -340,8 +341,10 @@ class Selection extends PureComponent {
             </Col>
           </Row>
           <Card title='总结' bordered={false} hoverable={true} style={{ marginLeft: 32, marginRight: 32 }}>
-            <p>1. 自2017年高考改革以来物理、化学、生物的人数一直居高不下，历史在七门学科中较为弱势。由于填报志愿时不同专业对选课要求的不同，物理化学在填报志愿时较有优势，其中选考物理后的可申报专业覆盖面高达93.5%，化学为85.5%</p>
-            <p>2. 2019年，男女生选课差异并不明显，女男比在理化生三个学科上依次增高，男女选课人数最不均衡的居然是政治接近1：5。其中，化学、地理的选课男女比接近1：1；物理、技术接近2：1；生物、历史接近1：2。</p>
+            <p>1.
+              自2017年高考改革以来物理、化学、生物的人数一直居高不下，历史在七门学科中较为弱势。由于填报志愿时不同专业对选课要求的不同，物理化学在填报志愿时较有优势，其中选考物理后的可申报专业覆盖面高达93.5%，化学为85.5%</p>
+            <p>2.
+              2019年，男女生选课差异并不明显，女男比在理化生三个学科上依次增高，男女选课人数最不均衡的居然是政治接近1：5。其中，化学、地理的选课男女比接近1：1；物理、技术接近2：1；生物、历史接近1：2。</p>
             <p>3. 分流情况，选物理的都同时选了什么呀</p>
           </Card>
         </Card>
@@ -350,21 +353,17 @@ class Selection extends PureComponent {
           <Chart
             key='selection-3_in_7-chart'
             height={400}
-            data={seven2threeDistribution}
+            data={detailDistribution}
             forceFit
           >
-            <Axis name="科目组合"/>
-            <Axis name="选课人数"/>
+            <Axis name="selection"/>
+            <Axis name="count"/>
             <Legend/>
-            <Tooltip
-              crosshairs={{
-                type: "y"
-              }}
-            />
+            <Tooltip/>
             <Geom
               type="interval"
-              position="科目组合*选课人数"
-              color={["name", "#26BFBF-#FC6170-#FFD747"]}
+              position="selection*count"
+              color={["year", "#26BFBF-#FC6170-#FFD747"]}
               adjust={[
                 {
                   type: "dodge",
@@ -378,7 +377,7 @@ class Selection extends PureComponent {
           <Row>
             <Col offset={1} xs={24} xl={16}>
               <Select id='3in7-year' defaultValue="2019" style={{ width: 120, float: "center" }}
-                      onChange={(year) => this.seven2threeYearChanged(year, 'fetchCourseSelectionPie', 'fetchCourseSelectionTree')}
+                      onChange={(year) => this.onDetailYearChanged(year)}
               >
                 <Option key="bing20171" value="2017">2017年</Option>
                 <Option key="bing20181" value="2018">2018年</Option>

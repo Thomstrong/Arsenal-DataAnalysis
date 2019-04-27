@@ -8,6 +8,12 @@ from courses.api.serializers import CourseRecordSerializer
 from courses.models.course_record import CourseRecord
 from utils.decorators import required_params
 
+gaokao_selections = [4, 5, 6, 7, 8, 17, 59]
+all_selections = ['6#8#17', '8#17#59', '5#6#59', '4#5#8', '6#7#59', '4#5#7', '5#8#17', '4#5#59', '5#8#59', '5#6#17',
+                  '4#6#59', '5#7#8', '4#6#7', '5#17#59', '4#8#17', '6#8#59', '4#7#8', '6#17#59', '6#7#8', '4#17#59',
+                  '7#8#59', '4#6#8', '4#5#17', '5#7#17', '4#6#17', '7#17#59', '4#7#17', '6#7#17', '4#8#59', '4#7#59',
+                  '7#8#17', '5#6#8', '5#7#59', '4#5#6', '5#6#7']
+
 
 class CourseRecordViewSet(viewsets.ModelViewSet):
     queryset = CourseRecord.objects.all()
@@ -51,7 +57,6 @@ class CourseRecordViewSet(viewsets.ModelViewSet):
                 'records': records
             })
         if type == 'arc_count':
-            gaokao_selections = [4, 5, 6, 7, 8, 17, 59]
             course_count = len(gaokao_selections)
             index_map = {
                 gaokao_selections[i]: i
@@ -101,8 +106,70 @@ class CourseRecordViewSet(viewsets.ModelViewSet):
                 'edges': edges
             })
         if type == '3_in_7':
-            return Response([])
+            results = []
+            for year in [2017, 2018, 2019]:
+                records = CourseRecord.objects.filter(
+                    year=year
+                ).order_by(
+                    'student_id', 'course_id'
+                ).values('student_id', 'course_id')
+
+                student_id = None
+                selections = []
+                counter = {
+                    option: 0
+                    for option in all_selections
+                }
+                for record in records:
+                    if student_id is None:
+                        student_id = record['student_id']
+                    if record['student_id'] == student_id:
+                        selections.append(str(record['course_id']))
+                        continue
+                    selection = '#'.join(selections)
+                    counter[selection] += 1
+                    student_id = record['student_id']
+                    selections = [str(record['course_id'])]
+                selection = '#'.join(selections)
+                counter[selection] += 1
+
+                results.append({
+                    'year': year,
+                    'data': counter
+                })
+            return Response(results)
         if type == 'pie_data':
-            return Response([])
+            year = request.query_params.get('year', 2019)
+            records = CourseRecord.objects.filter(
+                year=year
+            ).order_by(
+                'student_id', 'course_id'
+            ).values('student_id', 'course_id')
+
+            student_id = None
+            selections = []
+            counter = {
+                option: 0
+                for option in all_selections
+            }
+            total = 0
+            for record in records:
+                total += 1
+                if student_id is None:
+                    student_id = record['student_id']
+                if record['student_id'] == student_id:
+                    selections.append(str(record['course_id']))
+                    continue
+                selection = '#'.join(selections)
+                counter[selection] += 1
+                student_id = record['student_id']
+                selections = [str(record['course_id'])]
+            selection = '#'.join(selections)
+            counter[selection] += 1
+
+            return Response({
+                'total': int(total / 3),
+                'data': counter
+            })
         if type == 'polygon_tree':
             return Response([])
