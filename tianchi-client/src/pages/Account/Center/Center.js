@@ -580,7 +580,7 @@ class Center extends PureComponent {
         <Row gutter={24}>
           <Col lg={7} md={24}>
             <Card bordered={false} style={{ marginBottom: 24 }} loading={loading}>
-              <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+              <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
                 <Select
                   style={{ width: '100%', display: 'block' }}
                   showSearch
@@ -719,7 +719,7 @@ class Center extends PureComponent {
                   {studentInfo && studentInfo.name ?
                     <Suspense fallback={<div>Loading...</div>}>
                       <Row type='flex' justify='start'>
-                        <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+                        <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
                           <Select
                             value={this.state.scoreType} style={{ width: 120 }}
                             onChange={this.onScoreTypeChange}
@@ -748,7 +748,7 @@ class Center extends PureComponent {
                     />
                   </Suspense>
                   <Suspense fallback={<div>Loading...</div>}>
-                    <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+                    <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
                       <span>选择查看的时间：</span>
                       <DatePicker
                         defaultValue={moment(moment('2019-01-01'), 'YYYY-MM-DD')}
@@ -783,7 +783,7 @@ class Center extends PureComponent {
                   </Suspense>
                 </TabPane>
                 <TabPane tab={<span><i className="fa fa-window-restore"/> 对比分析</span>} key="Compare">
-                  <div style={{ textAlign: 'center' }}>
+                  <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
                     <Select
                       style={{ width: '100%', display: 'block' }}
                       showSearch
@@ -806,7 +806,7 @@ class Center extends PureComponent {
                         </Option>
                       ))}
                     </Select>
-                  </div>
+                  </Affix>
                   {/*基本信息对比*/}
                   <Card title="基本信息对比" bordered={false} style={{ width: '100%' }}>
                     <Row>
