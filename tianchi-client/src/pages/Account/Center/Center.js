@@ -39,6 +39,7 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   vsStudentList: student.vsStudentList,
   studentInfo: student.studentInfo,
   vsStudentInfo: student.vsStudentInfo,
+  gradeVsData: student.gradeVsData,
   termList: student.termList,
   termMap: global.termMap,
   totalHourlyAvgCost: global.totalHourlyAvgCost,
@@ -86,15 +87,39 @@ class Center extends PureComponent {
     }
   };
 
-  getStudentInfo = (studentId, type = '') => {
-    if (type === 'Vs' && studentId === this.state.studentId) {
+  getCompareInfo = (studentId) => {
+    if (studentId === this.state.studentId) {
       message.warning('同一个学生对比可没有意义哦～😅', 5);
       this.setState({ vsStudentId: '' });
       return;
     }
+
+    const { dispatch } = this.props;
+    dispatch({
+      type: `student/fetchVsBasic`,
+      payload: {
+        studentId: studentId
+      }
+    });
+
+    if (this.state.studentId) {
+      dispatch({
+        type: 'student/fetchGradeCompare',
+        payload: {
+          studentId: this.state.studentId,
+          compareId: studentId,
+        }
+      });
+    }
+
+
+  };
+
+  getStudentInfo = (studentId) => {
+
     const { dispatch, totalHourlyAvgCost } = this.props;
     dispatch({
-      type: `student/fetch${type}Basic`,
+      type: `student/fetchBasic`,
       payload: {
         studentId: studentId
       }
@@ -170,6 +195,16 @@ class Center extends PureComponent {
         dateRange: this.state.dateRange
       }
     });
+
+    if (this.state.vsStudentId) {
+      dispatch({
+        type: 'student/fetchGradeCompare',
+        payload: {
+          studentId: studentId,
+          compareId: this.state.vsStudentId,
+        }
+      });
+    }
   };
 
   getStudentList = (input, type = '') => {
@@ -364,6 +399,7 @@ class Center extends PureComponent {
       studentListLoading,
       vsStudentListLoading,
       termList,
+      gradeVsData,
       totalHourlyAvgCost,
       dailyPredictData,
       hourlyCost,
@@ -374,7 +410,6 @@ class Center extends PureComponent {
       location,
       kaoqinLoading
     } = this.props;
-    //雷达图的处理
 
     const { hourlyAvgData, maxHourlyAvg } = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
     const { formatedData: predictData, maxCost } = this.formatDailyPredictData(dailyPredictData);
@@ -480,42 +515,6 @@ class Center extends PureComponent {
     //考勤的相关数据
     const kaoqinData = this.formatKaoqinData(studentInfo.kaoqinData, termList);
     const kaoqinSummary = studentInfo.kaoqinSummary;
-    //成绩对比数据
-    const comparedScoreData = [
-      {
-        label: "数学",
-        series1: 80,
-        series2: 60
-      },
-      {
-        label: "语文",
-        series1: 110,
-        series2: 150
-      },
-      {
-        label: "历史",
-        series1: 95,
-        series2: 90
-      },
-      {
-        label: "物理",
-        series1: 50,
-        series2: 0
-      },
-      {
-        label: "地理",
-        series1: 70,
-        series2: 0
-      }
-    ];
-    const compScoreData = new DataSet.View().source(comparedScoreData).transform({
-      type: "fold",
-      fields: ["series1", "series2"],
-      // 展开字段集
-      key: "type",
-      // key字段
-      value: "value" // value字段
-    });
     // 一卡通对比数据1 0-23小时的平均消费
     const timelyCompConsumptionData = [
       {
@@ -851,7 +850,7 @@ class Center extends PureComponent {
                     >
                       {vsStudentList.map((student) => (
                         <Option
-                          onClick={(value) => this.getStudentInfo(value.key, 'Vs')}
+                          onClick={(value) => this.getCompareInfo(value.key, 'Vs')}
                           value={student.id}
                           key={`vsStudent-${student.id}`}
                         >
@@ -873,7 +872,15 @@ class Center extends PureComponent {
                       </Col>
                       <Col span={16} push={2}>
                         {/*todo 待对比学生基本信息个人名片之类*/}
-                        <Card title={vsStudentInfo.name} bordered={false} hoverable={true}>
+                        <Card
+                          title={<Fragment>
+                            {vsStudentInfo.name}
+                            {studentInfo.is_left ? <Tag color="#f50">已离校</Tag> :
+                              <Tag color="#2db7f5">在校生</Tag>}
+                          </Fragment>}
+                          bordered={false}
+                          hoverable={true}
+                        >
                           <p><i className={`fa fa-group ${styles.iconStyle}`}/>
                             {vsStudentInfo.nation}
                           </p>
@@ -896,7 +903,7 @@ class Center extends PureComponent {
                   </Card>
                   <Suspense fallback={<div>Loading...</div>}>
                     <StuComparedChart
-                      comparedScoreData={compScoreData}
+                      comparedScoreData={gradeVsData}
                       timelyComparedConsumptionData={timelyCompConsumpData}
                       dailyComparedConsumptionData={offlineChartData}
                       comparedAttendData={compAdata}

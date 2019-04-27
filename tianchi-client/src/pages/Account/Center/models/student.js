@@ -4,6 +4,7 @@
 
 import {
   fakeChartData,
+  getCompare,
   getConsumption,
   getGrade,
   getKaoqinData,
@@ -11,7 +12,7 @@ import {
   getStudentList,
   getStudentTeachers,
 } from '@/services/api';
-import { COURSE_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, WEEKDAY_ALIAS } from "@/constants";
+import { COURSE_ALIAS, COURSE_FULLNAME_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, WEEKDAY_ALIAS } from "@/constants";
 
 let data =
   [
@@ -73,9 +74,10 @@ export default {
       subTrends: [],
     },
     vsStudentInfo: {
-      id:'',
-      name:''
+      id: '',
+      name: ''
     },
+    gradeVsData: [],
     termList: [],
     studentList: [],
     vsStudentList: [],
@@ -210,6 +212,16 @@ export default {
       });
       yield put({
         type: 'saveHourlyCost',
+        payload: response,
+      });
+    },
+    * fetchGradeCompare({ payload }, { call, put }) {
+      const response = yield call(getCompare, {
+        ...payload,
+        type: 'grade'
+      });
+      yield put({
+        type: 'saveGradeVsData',
         payload: response,
       });
     }
@@ -413,8 +425,22 @@ export default {
         ...state,
         dailyPredictData
       };
-    }
-    ,
+    },
+    saveGradeVsData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+
+      return {
+        ...state,
+        gradeVsData: payload.map((data) => {
+          return {
+            ...data,
+            course: COURSE_FULLNAME_ALIAS[data.course]
+          };
+        }),
+      };
+    },
     clear() {
       return {
         radarData: [],

@@ -292,3 +292,36 @@ class StudentViewSet(viewsets.ModelViewSet):
                 'last_cycle_data': DailyConsumptionSerializer(last_cycle_data, many=True).data,
                 'predict_data': [],
             })
+
+    @required_params(params=['with', 'type'])
+    @detail_route(
+        methods=['GET'],
+    )
+    def compare(self, request, pk):
+        type = request.query_params.get('type', '')
+        if not type:
+            return Response(status=400)
+
+        another_id = request.query_params.get('with', '')
+        if not another_id:
+            return Response(status=400)
+
+        if type == 'grade':
+            exam_records = StudentExamRecord.objects.filter(
+                student_id__in=[pk, another_id],
+                sub_exam__course_id__in=gaokao_courses,
+                score__gte=0
+            ).select_related(
+                'student'
+            ).order_by('sub_exam__course_id').values('sub_exam__course_id', 'student__name', 'student_id').annotate(
+                average=Avg('t_score'),
+            )
+            formated_records = []
+
+            for record in exam_records:
+                formated_records.append({
+                    'course': record['sub_exam__course_id'],
+                    'student': '{}-{}'.format(record['student_id'],record['student__name']),
+                    'average': float('%.2f' % record['average']),
+                })
+            return Response(formated_records)
