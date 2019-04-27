@@ -26,8 +26,11 @@ export default {
     kaoqinSummaryData: [],
     totalKaoqinCount: 0,
     sexHourlyCostData: [],
+    sexHourlyCountData: [],
     stayCostData: [],
+    stayCountData: [],
     gradeCostData: [],
+    gradeCostCountData: [],
     enterSchoolData: [],
     kaoqinMixedData: [],
   },
@@ -177,30 +180,49 @@ export default {
       if (!payload) {
         return state;
       }
+      const sexHourlyCostData = [];
+      const sexHourlyCountData = [];
+      payload.map(data => {
+        sexHourlyCostData.push({
+          hour: data.hour,
+          sex: SEX_FULL_MAP[data.student__sex],
+          cost: Number(data.total_cost.toFixed(2)),
+        });
+        sexHourlyCountData.push({
+          hour: data.hour,
+          sex: `${SEX_FULL_MAP[data.student__sex]}消费人数`,
+          count: data.count
+        });
+
+      });
       return {
         ...state,
-        sexHourlyCostData: payload.map(data => {
-          return {
-            hour: data.hour,
-            sex: SEX_FULL_MAP[data.student__sex],
-            cost: Number(data.total_cost.toFixed(2))
-          };
-        })
+        sexHourlyCostData,
+        sexHourlyCountData
       };
     },
     saveStaySchoolCostData(state, { payload }) {
       if (!payload) {
         return state;
       }
+      const stayCostData = [];
+      const stayCountData = [];
+      payload.map(data => {
+        stayCostData.push({
+          hour: data.hour,
+          stayType: STAY_ALIAS[Number(data.student__is_stay_school)],
+          cost: Number(data.total_cost.toFixed(2))
+        });
+        stayCountData.push({
+          hour: data.hour,
+          stayType: `${STAY_ALIAS[Number(data.student__is_stay_school)]}消费人数`,
+          count: data.count
+        });
+      });
       return {
         ...state,
-        stayCostData: payload.map(data => {
-          return {
-            hour: data.hour,
-            stayType: STAY_ALIAS[Number(data.student__is_stay_school)],
-            cost: Number(data.total_cost.toFixed(2))
-          };
-        })
+        stayCostData,
+        stayCountData
       };
     },
     saveYearCost(state, { payload }) {
@@ -248,7 +270,7 @@ export default {
         ...state,
         kaoqinMixedData: payload.map(data => {
           const grade = data.grade;
-          const typeId = Number(data.type)
+          const typeId = Number(data.type);
           return {
             term: `${data.term} 学年`,
             type: EVENT_TYPE_ALIAS[typeId],
@@ -331,18 +353,25 @@ export default {
         return state;
       }
       const gradeCostData = [];
+      const gradeCostCountData = [];
       for (let grade of ['1', '2', '3']) {
-        payload[grade].map((data) => [
+        payload[grade].map((data) => {
           gradeCostData.push({
             hour: data.hour,
             cost: Number(data.avg_cost.toFixed(2)),
             grade: GRADE_ALIAS[Number(grade)]
-          })
-        ]);
+          });
+          gradeCostCountData.push({
+            hour: data.hour,
+            count: data.count,
+            grade: `${GRADE_ALIAS[Number(grade)]}消费人数`
+          });
+        });
       }
       return {
         ...state,
-        gradeCostData
+        gradeCostData,
+        gradeCostCountData
       };
     },
     savePolicyData(state, { payload }) {

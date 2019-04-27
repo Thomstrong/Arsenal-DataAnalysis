@@ -3,7 +3,6 @@ import { connect } from 'dva';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import { getTimeDistance } from '@/utils/utils';
 import PageLoading from '@/components/PageLoading';
-import DataSet from "@antv/data-set/build/data-set";
 
 const IntroduceRow = React.lazy(() => import('./IntroduceRow'));
 const LocationMap = React.lazy(() => import('./LocationMap'));
@@ -100,8 +99,9 @@ class Analysis extends Component {
       nativePlaceData, policyData,
       yearCostData, totalYearCost, dailyAvgCost,
       kaoqinSummaryData, totalKaoqinCount,
-      sexHourlyCostData, gradeCostData, stayCostData,
-      enterSchoolData, kaoqinMixedData
+      sexHourlyCostData, sexHourlyCountData,
+      gradeCostData, gradeCostCountData,
+      stayCostData, stayCountData, enterSchoolData, kaoqinMixedData
     } = dashboard;
     const sexHourlyData = sexHourlyCostData.concat(totalHourlyAvgCost.map(data => {
       return {
@@ -180,9 +180,12 @@ class Analysis extends Component {
           <EcardConsumptionCard
             data={{
               sexHourlyData,
+              sexHourlyCountData,
               sexHourlyLoading,
               gradeHourlyData,
+              gradeCostCountData,
               stayHourlyData,
+              stayCountData,
               yearCostData
             }}
           />
