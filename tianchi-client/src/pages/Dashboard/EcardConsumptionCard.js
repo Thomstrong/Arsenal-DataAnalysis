@@ -3,14 +3,14 @@
  */
 import React, { memo } from 'react';
 import { Card, Col, Icon, Row, Tabs } from 'antd';
-// import {formatMessage, FormattedMessage} from 'umi-plugin-react/locale';
 import { OneTimelineChart, Pie } from '@/components/Charts';
 import styles from './EcardConsumptionCard.less';
 import numeral from 'numeral';
-import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
+import { Axis, Chart, Geom, Legend, Tooltip, View } from "bizcharts";
 
 
 const TabPane = Tabs.TabPane;
+
 
 //有图表后的分析数据，无需从后端获得
 const rankingListData = [
@@ -113,8 +113,12 @@ const scale = {
     ]
   },
   cost: {
-    min: 0,
-    tickInterval: 2,
+    min: 0, max: 20,
+    tickCount: 11,
+  },
+  count: {
+    min: 0, max: 60000,
+    tickCount: 11,
   }
 };
 const getColor = (category) => {
@@ -123,7 +127,12 @@ const getColor = (category) => {
   }[category];
 };
 const EcardConsumptionCard = memo(({ data }) => {
-  const { sexHourlyData, sexHourlyLoading, gradeHourlyData, stayHourlyData, yearCostData } = data;
+  const {
+    sexHourlyData, sexHourlyCountData, sexHourlyLoading,
+    gradeHourlyData, gradeCostCountData,
+    stayHourlyData, stayCountData,
+    yearCostData
+  } = data;
   return <React.Fragment>
     {/*<Card title="一卡通消费情况一览" bordered={false} style={{marginTop: 32}}>*/}
     {/*两个部分，分别是每天的总消费变化趋势和某时刻平均消费情况*/}
@@ -138,45 +147,71 @@ const EcardConsumptionCard = memo(({ data }) => {
               <div className={styles.salesBar}>
                 <Chart
                   height={400}
-                  data={sexHourlyData}
+                  key='cost-summary-sex'
                   padding="auto"
                   forceFit
                   scale={scale}
                 >
                   <h4 className={styles.rankingTitle}>不同性别不同时刻消费情况对比</h4>
                   <Legend/>
-                  <Axis name="hour"/>
-                  <Axis
-                    name="cost"
-                  />
                   <Tooltip/>
-                  <Geom
-                    type="line"
-                    position="hour*cost"
-                    size={2}
-                    color={[
-                      "sex",
-                      function (category) {
-                        return getColor(category);
-                      }
-                    ]}
-                  />
-                  <Geom
-                    type="point"
-                    position="hour*cost"
-                    size={4}
-                    shape={"circle"}
-                    color={[
-                      "sex",
-                      function (category) {
-                        return getColor(category);
-                      }
-                    ]}
-                    style={{
-                      stroke: "#fff",
-                      lineWidth: 1
-                    }}
-                  />
+                  <View data={sexHourlyData} scale={scale}>
+                    <Axis name="hour"/>
+                    <Axis
+                      name="cost"
+                    />
+                    <Geom
+                      type="line"
+                      position="hour*cost"
+                      size={2}
+                      color={[
+                        "sex",
+                        function (category) {
+                          return getColor(category);
+                        }
+                      ]}
+                    />
+                    <Geom
+                      type="point"
+                      position="hour*cost"
+                      size={4}
+                      shape={"circle"}
+                      color={[
+                        "sex",
+                        function (category) {
+                          return getColor(category);
+                        }
+                      ]}
+                      style={{
+                        stroke: "#fff",
+                        lineWidth: 1
+                      }}
+                    />
+                  </View>
+                  <View data={sexHourlyCountData} scale={scale}>
+                    <Legend hoverable={false}/>
+                    <Axis name="hour" visible={false}/>
+                    <Axis name="count" position="right"/>
+                    <Tooltip visible={false} title={false}/>
+                    <Geom
+                      type="interval"
+                      position="hour*count"
+                      opacity={0.5}
+                      color={[
+                        "sex",
+                        function (category) {
+                          return getColor(category);
+                        }
+                      ]}
+                      size={6}
+                      tooltip={['hour*count*sex', (hour, count, sex) => {
+                        return {
+                          name: sex,
+                          value: count + "人"
+                        };
+                      }]}
+                    />
+                  </View>
                 </Chart>
               </div>
             </Col>
@@ -211,13 +246,19 @@ const EcardConsumptionCard = memo(({ data }) => {
           <Row>
             <Col span={16}>
               <div className={styles.salesBar}>
-                <Chart height={400} data={gradeHourlyData} padding="auto" title="不同年级不同时刻消费情况对比" forceFit scale={scale}>
+                <Chart
+                  key='cost-summary-grade'
+                  height={400}
+                  data={gradeHourlyData}
+                  padding="auto"
+                  title="不同年级不同时刻消费情况对比"
+                  forceFit
+                  scale={scale}
+                >
                   <h4 className={styles.rankingTitle}>不同年级不同时刻消费情况对比</h4>
                   <Legend/>
                   <Axis name="hour"/>
-                  <Axis
-                    name="cost"
-                  />
+                  <Axis name="cost"/>
                   <Tooltip
                     crosshairs={{
                       type: "y"
@@ -250,6 +291,31 @@ const EcardConsumptionCard = memo(({ data }) => {
                       lineWidth: 1
                     }}
                   />
+                  <View data={gradeCostCountData} scale={scale}>
+                    <Axis name="hour" visible={false}/>
+                    <Axis
+                      name="count" position="right"
+                    />
+                    <Tooltip visible={false} title={false}/>
+                    <Geom
+                      type="interval"
+                      position="hour*count"
+                      opacity={0.5}
+                      color={[
+                        "grade",
+                        function (category) {
+                          return getColor(category);
+                        }
+                      ]}
+                      size={6}
+                      tooltip={['hour*count*grade', (hour, count, grade) => {
+                        return {
+                          name: grade,
+                          value: count + "人"
+                        };
+                      }]}
+                    />
+                  </View>
                 </Chart>
               </div>
             </Col>
@@ -285,6 +351,7 @@ const EcardConsumptionCard = memo(({ data }) => {
             <Col span={16}>
               <div className={styles.salesBar}>
                 <Chart
+                  key='cost-summary-staySchool'
                   height={400} scale={scale}
                   data={stayHourlyData}
                   padding="auto"
@@ -329,6 +396,29 @@ const EcardConsumptionCard = memo(({ data }) => {
                       lineWidth: 1
                     }}
                   />
+                  <View data={stayCountData} scale={scale}>
+                    <Axis name="hour" visible={false}/>
+                    <Axis name="count" position="right"/>
+                    <Tooltip visible={false} title={false}/>
+                    <Geom
+                      opacity={0.5}
+                      type="interval"
+                      position="hour*count"
+                      color={[
+                        "stayType",
+                        function (category) {
+                          return getColor(category);
+                        }
+                      ]}
+                      size={6}
+                      tooltip={['hour*count*stayType', (hour, count, stayType) => {
+                        return {
+                          name: stayType,
+                          value: count + "人"
+                        };
+                      }]}
+                    />
+                  </View>
                 </Chart>
               </div>
             </Col>
@@ -407,3 +497,4 @@ const EcardConsumptionCard = memo(({ data }) => {
 });
 
 export default EcardConsumptionCard;
+

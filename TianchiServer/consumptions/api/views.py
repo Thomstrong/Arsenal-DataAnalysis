@@ -1,5 +1,5 @@
 # Create your views here.
-from django.db.models import Avg, Sum, Q
+from django.db.models import Avg, Sum, Q, Count
 from rest_framework import viewsets, status
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
@@ -26,8 +26,8 @@ class ConsumptionViewSet(viewsets.ModelViewSet):
             records = DailyConsumption.objects.values(
                 'date'
             ).order_by('date').annotate(
-                total_cost=-Sum('total_cost')
-            ).values('date', 'total_cost')
+                total_cost=-Sum('total_cost'),
+            )
 
             return Response(records)
         if base == 'sex' or base == 'stay_school':
@@ -36,8 +36,9 @@ class ConsumptionViewSet(viewsets.ModelViewSet):
                 field,
                 'hour'
             ).annotate(
-                total_cost=-Avg('total_cost')
-            ).values('hour', field, 'total_cost').order_by('hour')
+                total_cost=-Avg('total_cost'),
+                count=Count('id')
+            ).values('hour', field, 'total_cost','count').order_by('hour')
             return Response(records)
 
         if base == 'grade':
@@ -57,8 +58,9 @@ class ConsumptionViewSet(viewsets.ModelViewSet):
                 consumption_records[grade] = HourlyConsumption.objects.filter(
                     student_id__in=student_grade_map[grade]
                 ).values('hour').annotate(
-                    avg_cost=-Avg('total_cost')
-                ).values('hour', 'avg_cost').order_by('hour')
+                    avg_cost=-Avg('total_cost'),
+                    count=Count('id'),
+                ).order_by('hour')
             return Response(consumption_records)
 
     @required_params(params=['student_id'])
