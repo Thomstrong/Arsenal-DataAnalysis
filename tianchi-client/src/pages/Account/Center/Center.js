@@ -3,7 +3,22 @@ import { connect } from 'dva';
 import { POLICY_TYPE_ALIAS, SCORE_LEVEL_ALIAS, SEX_MAP } from "@/constants";
 import router from 'umi/router';
 import _ from 'lodash';
-import { Affix, Avatar, Card, Col, DatePicker, Divider, Empty, Icon, Input, Row, Select, Spin, Tabs, Tag } from 'antd';
+import {
+  Affix,
+  Avatar,
+  Card,
+  Col,
+  DatePicker,
+  Divider,
+  Empty,
+  Icon,
+  message,
+  Row,
+  Select,
+  Spin,
+  Tabs,
+  Tag
+} from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './Center.less';
 import { Axis, Chart, Coord, Geom, Legend, Shape, Tooltip } from "bizcharts";
@@ -21,18 +36,25 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
 
 @connect(({ loading, student, global }) => ({
   studentList: student.studentList,
+  vsStudentList: student.vsStudentList,
   studentInfo: student.studentInfo,
+  vsStudentInfo: student.vsStudentInfo,
+  gradeVsData: student.gradeVsData,
   termList: student.termList,
   termMap: global.termMap,
   totalHourlyAvgCost: global.totalHourlyAvgCost,
   dailyPredictData: student.dailyPredictData,
   hourlyCost: student.hourlyCost,
+  costVsData: student.costVsData,
+  kaoqinVsData: student.kaoqinVsData,
+  vsDailySumCost: student.vsDailySumCost,
   wordCloudData: student.wordCloudData,
   loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchRadarData'],
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
   hourlyAvgCost: student.hourlyAvgCost,
   dailySumCost: student.dailySumCost,
   studentListLoading: loading.effects['student/fetchStudentList'],
+  vsStudentListLoading: loading.effects['student/fetchVsStudentList'],
   costLoading: loading.effects['student/fetchHourlyAvgCost'],
 }))
 class Center extends PureComponent {
@@ -40,6 +62,7 @@ class Center extends PureComponent {
     super();
     this.state = {
       studentId: '',
+      vsStudentId: '',
       scoreType: 'score',
       dateRange: 7,
       pickedDate: '2019-01-01',
@@ -67,10 +90,57 @@ class Center extends PureComponent {
     }
   };
 
+  getCompareInfo = (studentId) => {
+    if (studentId === this.state.studentId) {
+      message.warning('同一个学生对比可没有意义哦～😅', 5);
+      this.setState({ vsStudentId: '' });
+      return;
+    }
+
+    const { dispatch } = this.props;
+    dispatch({
+      type: `student/fetchVsBasic`,
+      payload: {
+        studentId: studentId
+      }
+    });
+
+    if (this.state.studentId) {
+      dispatch({
+        type: 'student/fetchGradeCompare',
+        payload: {
+          studentId: this.state.studentId,
+          compareId: studentId,
+        }
+      });
+      dispatch({
+        type: 'student/fetchCostCompare',
+        payload: {
+          studentId: studentId,
+        }
+      });
+      dispatch({
+        type: 'student/fetchVsDailySumCost',
+        payload: {
+          studentId: studentId,
+        }
+      });
+      dispatch({
+        type: 'student/fetchKaoqinVsData',
+        payload: {
+          studentId: this.state.studentId,
+          compareId: studentId,
+        }
+      });
+
+    }
+  };
+
   getStudentInfo = (studentId) => {
+
     const { dispatch, totalHourlyAvgCost } = this.props;
     dispatch({
-      type: 'student/fetchBasic',
+      type: `student/fetchBasic`,
       payload: {
         studentId: studentId
       }
@@ -146,13 +216,33 @@ class Center extends PureComponent {
         dateRange: this.state.dateRange
       }
     });
+
+    if (this.state.vsStudentId) {
+      dispatch({
+        type: 'student/fetchGradeCompare',
+        payload: {
+          studentId: studentId,
+          compareId: this.state.vsStudentId,
+        }
+      });
+    }
   };
 
-  getStudentList = (input) => {
+  getStudentList = (input, type = '') => {
     if (!input) {
       return;
     }
     const { dispatch } = this.props;
+    if (type === 'compare') {
+      dispatch({
+        type: 'student/fetchVsStudentList',
+        payload: {
+          query: input
+        }
+      });
+      return;
+    }
+
     dispatch({
       type: 'student/fetchStudentList',
       payload: {
@@ -319,28 +409,79 @@ class Center extends PureComponent {
       maxHourlyAvg
     };
   };
+  mergeDailyCost = (dailyCost, vsDailyCost) => {
+    const mergedData = [];
+    let i = 0;
+
+    for (let data of vsDailyCost) {
+      while (i < dailyCost.length && dailyCost[i].date < data.date) {
+        mergedData.push({
+          x: Date.parse(dailyCost[i].date),
+          y1: dailyCost[i].total,
+          y2: 0,
+        });
+        i++;
+      }
+
+      if (i < dailyCost.length && data.date === dailyCost[i].date) {
+        mergedData.push({
+          x: Date.parse(data.date),
+          y1: dailyCost[i].total,
+          y2: data.total,
+        });
+        i++;
+        continue;
+      }
+      mergedData.push({
+        x: Date.parse(data.date),
+        y1: 0,
+        y2: data.total,
+      });
+    }
+
+    while (i < dailyCost.length) {
+      mergedData.push({
+        x: Date.parse(dailyCost[i].date),
+        y1: dailyCost[i].total,
+        y2: 0,
+      });
+      i++;
+    }
+
+
+    return {
+      vsDailyCostData: mergedData,
+    };
+  };
 
   render() {
     const {
       studentInfo,
+      vsStudentInfo,
       wordCloudData,
       studentList,
+      vsStudentList,
       studentListLoading,
+      vsStudentListLoading,
       termList,
+      gradeVsData,
       totalHourlyAvgCost,
       dailyPredictData,
       hourlyCost,
+      costVsData,
+      vsDailySumCost,
       hourlyAvgCost,
       dailySumCost,
       loading,
       match,
+      kaoqinVsData,
       location,
       kaoqinLoading
     } = this.props;
-    //雷达图的处理
-
     const { hourlyAvgData, maxHourlyAvg } = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
+    const { hourlyAvgData: vsAverageData } = this.formatHourlyAvgCost(hourlyAvgCost, costVsData);
     const { formatedData: predictData, maxCost } = this.formatDailyPredictData(dailyPredictData);
+    const { vsDailyCostData } = this.mergeDailyCost(dailySumCost, vsDailySumCost);
     const radarViewData = new DataSet.View().source(studentInfo.radarData).transform({
       type: "fold",
       fields: Object.values(SCORE_LEVEL_ALIAS),
@@ -409,7 +550,7 @@ class Center extends PureComponent {
       fontSize(d) {
         if (d.value) {
           const divisor = (max - min) !== 0 ? (max - min) : 1;
-          return ((d.value - min) / divisor) * (20 - 6) + 6;
+          return ((d.value - min) / divisor) * (20 - 6) + 8;
         }
 
         return 0;
@@ -438,122 +579,25 @@ class Center extends PureComponent {
     //呈现成绩信息的筛选
     const Option = Select.Option;
 
-    //timelyconsumption数据
-    const timelyConsumptionData = hourlyAvgCost || [];
     //考勤的相关数据
     const kaoqinData = this.formatKaoqinData(studentInfo.kaoqinData, termList);
     const kaoqinSummary = studentInfo.kaoqinSummary;
-    //成绩对比数据
-    const comparedScoreData = [
-      {
-        label: "数学",
-        series1: 80,
-        series2: 60
-      },
-      {
-        label: "语文",
-        series1: 110,
-        series2: 150
-      },
-      {
-        label: "历史",
-        series1: 95,
-        series2: 90
-      },
-      {
-        label: "物理",
-        series1: 50,
-        series2: 0
-      },
-      {
-        label: "地理",
-        series1: 70,
-        series2: 0
-      }
-    ];
-    const compScoreData = new DataSet.View().source(comparedScoreData).transform({
-      type: "fold",
-      fields: ["series1", "series2"],
-      // 展开字段集
-      key: "type",
-      // key字段
-      value: "value" // value字段
-    });
     // 一卡通对比数据1 0-23小时的平均消费
-    const timelyCompConsumptionData = [
-      {
-        time: '0时',
-        cost1: 0,
-        cost2: 0,
+    const hourlyVsCostData = new DataSet.View().source(vsAverageData).transform({
+      type: 'map',
+      callback(row) {
+        const newRow = { ...row };
+        newRow[`${vsStudentInfo.id}-${vsStudentInfo.name}`] = row.total_avg;
+        newRow[`${studentInfo.id}-${studentInfo.name}`] = row.avg_cost;
+        return newRow;
       },
-      {
-        time: '2时',
-        cost1: 6,
-        cost2: 3,
-
-      },
-      {
-        time: '3时',
-        cost1: 7,
-        cost2: 3,
-      },
-      {
-        time: '4时',
-        cost1: 9,
-        cost2: 10,
-      },
-      {
-        time: '5时',
-        cost1: 20,
-        cost2: 30,
-      }
-    ];
-    const timelyCompConsumpData = new DataSet.View().source(timelyCompConsumptionData).transform({
+    }).transform({
       type: "fold",
-      fields: ["cost1", "cost2"],
-      // 展开字段集
-      key: "type",
-      // key字段
-      value: "value" // value字段
+      fields: [`${studentInfo.id}-${studentInfo.name}`, `${vsStudentInfo.id}-${vsStudentInfo.name}`],
+      key: "student",
+      value: "cost"
     });
 
-    //  一卡通对比数据2 每天开销数据的对比
-    const dailyCompConsumptionData = [
-      {
-        time: '星期一',
-        该同学: 0,
-        对比同学: 20,
-      },
-      {
-        time: '星期二',
-        该同学: 70,
-        对比同学: 30,
-      },
-      {
-        time: '星期三',
-        该同学: 30,
-        对比同学: 30,
-      },
-      {
-        time: '星期四',
-        该同学: 10,
-        对比同学: 5,
-      },
-      {
-        time: '星期五',
-        该同学: 20,
-        对比同学: 30,
-      }
-    ];
-    const offlineChartData = [];
-    for (let i = 0; i < 20; i += 1) {
-      offlineChartData.push({
-        x: new Date().getTime() + 1000 * 60 * 30 * i,
-        A: Math.floor(Math.random() * 100) + 10,
-        B: Math.floor(Math.random() * 100) + 10,
-      });
-    }
-    ;
     //考勤对比数据
     const AttendData = [
       {
@@ -596,7 +640,7 @@ class Center extends PureComponent {
         <Row gutter={24}>
           <Col lg={7} md={24}>
             <Card bordered={false} style={{ marginBottom: 24 }} loading={loading}>
-              <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+              <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
                 <Select
                   style={{ width: '100%', display: 'block' }}
                   showSearch
@@ -735,7 +779,7 @@ class Center extends PureComponent {
                   {studentInfo && studentInfo.name ?
                     <Suspense fallback={<div>Loading...</div>}>
                       <Row type='flex' justify='start'>
-                        <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+                        <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
                           <Select
                             value={this.state.scoreType} style={{ width: 120 }}
                             onChange={this.onScoreTypeChange}
@@ -764,7 +808,7 @@ class Center extends PureComponent {
                     />
                   </Suspense>
                   <Suspense fallback={<div>Loading...</div>}>
-                    <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+                    <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
                       <span>选择查看的时间：</span>
                       <DatePicker
                         defaultValue={moment(moment('2019-01-01'), 'YYYY-MM-DD')}
@@ -799,14 +843,30 @@ class Center extends PureComponent {
                   </Suspense>
                 </TabPane>
                 <TabPane tab={<span><i className="fa fa-window-restore"/> 对比分析</span>} key="Compare">
-                  <div style={{ textAlign: 'center' }}>
-                    <Input.Search
-                      placeholder="请输入待对比学生ID"
-                      enterButton="确定"
+                  <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
+                    <Select
+                      style={{ width: '100%', display: 'block' }}
+                      showSearch
+                      notFoundContent={vsStudentListLoading ? <Spin size="small"/> :
+                        <Empty description={this.state.vsStudentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
+                      }
                       size="large"
-                      onSearch={this.handleComparedStuChange}
-                    />
-                  </div>
+                      value={vsStudentInfo.id || this.state.vsStudentId}
+                      filterOption={false}
+                      onSearch={(value) => this.getStudentList(value, 'compare')}
+                      onChange={(vsStudentId) => this.setState({ vsStudentId })}
+                    >
+                      {vsStudentList.map((student) => (
+                        <Option
+                          onClick={(value) => this.getCompareInfo(value.key, 'Vs')}
+                          value={student.id}
+                          key={`vsStudent-${student.id}`}
+                        >
+                          {`${student.id}-${student.name}`}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Affix>
                   {/*基本信息对比*/}
                   <Card title="基本信息对比" bordered={false} style={{ width: '100%' }}>
                     <Row>
@@ -820,22 +880,47 @@ class Center extends PureComponent {
                       </Col>
                       <Col span={16} push={2}>
                         {/*todo 待对比学生基本信息个人名片之类*/}
-                        <Card title={comparedStu.Name} bordered={false} hoverable={true}>
-                          <p>学生ID: {comparedStu.id}</p>
-                          <p>民族: {comparedStu.Nation}</p>
-                          <p>出生年月: {comparedStu.BornDate}</p>
-                          <p>家庭住址: {comparedStu.NativePlace}</p>
-                          <p>所在班级: {comparedStu.ClassName}</p>
+                        <Card
+                          title={<Fragment>
+                            {vsStudentInfo.name}
+                            {studentInfo.is_left ? <Tag color="#f50">已离校</Tag> :
+                              <Tag color="#2db7f5">在校生</Tag>}
+                          </Fragment>}
+                          bordered={false}
+                          hoverable={true}
+                        >
+                          <p><i className={`fa fa-group ${styles.iconStyle}`}/>
+                            {vsStudentInfo.nation}
+                          </p>
+                          <p><i className={`fa fa fa-archive ${styles.iconStyle}`}/>
+                            {POLICY_TYPE_ALIAS[vsStudentInfo.policy]}
+                          </p>
+                          <p><i className={`fa fa-birthday-cake ${styles.iconStyle}`}/>
+                            {vsStudentInfo.born_year > 0 ? vsStudentInfo.born_year : '未知'} 年
+                          </p>
+                          <p><i className={`fa fa-home ${styles.iconStyle}`}/>
+                            {vsStudentInfo.native_place}
+                          </p>
+                          <p><i
+                            className={`fa ${vsStudentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
+                            {SEX_MAP[vsStudentInfo.sex]}
+                          </p>
                         </Card>
                       </Col>
                     </Row>
                   </Card>
                   <Suspense fallback={<div>Loading...</div>}>
                     <StuComparedChart
-                      comparedScoreData={compScoreData}
-                      timelyComparedConsumptionData={timelyCompConsumpData}
-                      dailyComparedConsumptionData={offlineChartData}
-                      comparedAttendData={compAdata}
+                      comparedScoreData={gradeVsData}
+                      hourlyVsCostData={hourlyVsCostData}
+                      vsDailyCostData={{
+                        data: vsDailyCostData,
+                        titleMap: {
+                          y1: `${studentInfo.id}-${studentInfo.name}`,
+                          y2: `${vsStudentInfo.id}-${vsStudentInfo.name}`,
+                        }
+                      }}
+                      kaoqinVsData={kaoqinVsData}
                     />
                   </Suspense>
                 </TabPane>

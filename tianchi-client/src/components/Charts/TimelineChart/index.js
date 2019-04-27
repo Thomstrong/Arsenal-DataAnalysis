@@ -11,7 +11,7 @@ class TimelineChart extends React.Component {
     const {
       title,
       height = 400,
-      padding = [60, 20, 40, 40],
+      padding = [60, 20, 60, 40],
       titleMap = {
         y1: 'y1',
         y2: 'y2',
@@ -81,7 +81,7 @@ class TimelineChart extends React.Component {
 
     const SliderGen = () => (
       <Slider
-        padding={[0, padding[1] + 20, 0, padding[3]]}
+        padding={[0, padding[1] + 20, 0, padding[3] + 35]}
         width="auto"
         height={26}
         xAxis="x"
@@ -105,7 +105,7 @@ class TimelineChart extends React.Component {
           <Chart height={height} padding={padding} data={dv} scale={cols} forceFit>
             <Axis name="x" />
             <Tooltip />
-            <Legend name="key" position="top" />
+            <Legend name="key" position="bottom" />
             <Geom type="line" position="x*value" size={borderWidth} color="key" />
           </Chart>
           <div style={{ marginRight: -20 }}>

@@ -55,6 +55,7 @@ export const WEEKDAY_ALIAS = {
 };
 
 export const EVENT_TYPE_ALIAS = {
+  100000: '作弊',
   99005: '进校',
   99004: '离校',
   99003: '早退',

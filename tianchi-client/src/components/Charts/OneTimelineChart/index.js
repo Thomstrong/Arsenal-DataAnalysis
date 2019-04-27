@@ -108,9 +108,8 @@ class OneTimelineChart extends React.Component {
               type: "y"
             }}
           />
-            {/*<Legend name="key" position="top" />*/}
             <Geom type="line" position="x*value" size={borderWidth} color="key" />
-            <Geom type="point" position="x*value" size={3} shape={"circle"} style={{stroke: "#fff", lineWidth: 1}}/>
+            {/*<Geom type="point" position="x*value" size={3} shape={"circle"} style={{stroke: "#fff", lineWidth: 1}}/>*/}
           </Chart>
           <div style={{ marginRight: -20 }}>
             <SliderGen />

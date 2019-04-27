@@ -200,7 +200,7 @@ class StudentViewSet(viewsets.ModelViewSet):
             student_id=pk,
             event_id__gte=9900100
         ).values('event__type_id').annotate(
-            count=Count('event__type_id'),
+            count=Count('id'),
         )
 
         return Response({
@@ -292,3 +292,68 @@ class StudentViewSet(viewsets.ModelViewSet):
                 'last_cycle_data': DailyConsumptionSerializer(last_cycle_data, many=True).data,
                 'predict_data': [],
             })
+
+    @required_params(params=['with', 'type'])
+    @detail_route(
+        methods=['GET'],
+    )
+    def compare(self, request, pk):
+        type = request.query_params.get('type', '')
+        if not type:
+            return Response(status=400)
+
+        another_id = request.query_params.get('with', '')
+        if not another_id:
+            return Response(status=400)
+
+        if type == 'grade':
+            exam_records = StudentExamRecord.objects.filter(
+                student_id__in=[pk, another_id],
+                sub_exam__course_id__in=gaokao_courses,
+                score__gte=0
+            ).select_related(
+                'student'
+            ).order_by('sub_exam__course_id').values('sub_exam__course_id', 'student__name', 'student_id').annotate(
+                average=Avg('t_score'),
+            )
+            formatted_records = []
+
+            for record in exam_records:
+                formatted_records.append({
+                    'course': record['sub_exam__course_id'],
+                    'student': '{}-{}'.format(record['student_id'], record['student__name']),
+                    'average': float('%.2f' % record['average']),
+                })
+            return Response(formatted_records)
+        if type == 'kaoqin':
+            records = KaoqinRecord.objects.filter(
+                student_id__in=[pk, another_id],
+                event_id__gte=9900100
+            ).select_related(
+                'student'
+            ).values('student_id', 'event__type_id').annotate(
+                count=Count('id'),
+            ).values('student_id', 'student__name', 'event__type_id', 'count')
+            chat_records = StudentExamRecord.objects.filter(
+                student_id__in=[pk, another_id],
+                score=-1
+            ).select_related(
+                'student'
+            ).values('student_id').annotate(
+                count=Count('id'),
+            ).values('student_id', 'student__name', 'count')
+            formatted_records = []
+            for record in records:
+                formatted_records.append({
+                    'student': '{}-{}'.format(record['student_id'], record['student__name']),
+                    'type': record['event__type_id'],
+                    'count': record['count'],
+                })
+            for record in chat_records:
+                formatted_records.append({
+                    'student': '{}-{}'.format(record['student_id'], record['student__name']),
+                    'type': '100000',
+                    'count': record['count'],
+                })
+
+            return Response(formatted_records)
