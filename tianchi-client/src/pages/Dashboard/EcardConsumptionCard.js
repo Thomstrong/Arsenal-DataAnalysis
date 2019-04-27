@@ -45,6 +45,7 @@ const sexRankingData = [
     title: "女生14时平均消费",
     total: 17.75
   },
+  {
     title: "女生13时平均消费",
     total: 15.09
   },
