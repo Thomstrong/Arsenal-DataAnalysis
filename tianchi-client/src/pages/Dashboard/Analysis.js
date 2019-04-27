@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import { getTimeDistance } from '@/utils/utils';
 import PageLoading from '@/components/PageLoading';
+import DataSet from "@antv/data-set";
 
 const IntroduceRow = React.lazy(() => import('./IntroduceRow'));
 const LocationMap = React.lazy(() => import('./LocationMap'));
@@ -89,6 +90,100 @@ class Analysis extends Component {
     }
   }
 
+  // shit code...
+  addZeroForTotalAvg = (costData) => {
+    let i = 0;
+    const len = costData.length;
+    if (!len) {
+      return;
+    }
+    const template = {
+      ...costData[0],
+      total_avg: 0,
+    };
+    for (let hour = 0; hour < 24 && i < len; hour++) {
+      if (costData[i].hour === hour) {
+        i += 1;
+        continue;
+      }
+      costData.push({
+        ...template,
+        hour
+      });
+    }
+  };
+
+  addZeroForTwoFieldData = (costData, fieldName, biFilds) => {
+    const partitionData = new DataSet.View().source(costData).transform({
+      type: 'partition',
+      groupBy: ['hour'],
+    }).rows;
+
+    for (let hour = 0; hour < 24; hour++) {
+      if (partitionData[`_${hour}`]) {
+        if (hour === 5 && fieldName === 'stayType') {
+          costData.push({
+            cost: 0,
+            hour: hour,
+            [fieldName]: '走读',
+          });
+        }
+        continue;
+      }
+      costData.push({
+        cost: 0,
+        hour: hour,
+        [fieldName]: biFilds[0],
+      });
+      costData.push({
+        cost: 0,
+        hour: hour,
+        [fieldName]: biFilds[1],
+      });
+    }
+  };
+
+  addZeroForGradeData = (costData) => {
+    const partitionData = new DataSet.View().source(costData).transform({
+      type: 'partition',
+      groupBy: ['hour'],
+    }).rows;
+
+    for (let hour = 0; hour < 24; hour++) {
+      if (partitionData[`_${hour}`]) {
+        if (hour === 5) {
+          costData.push({
+            cost: 0,
+            hour: hour,
+            grade: '高二',
+          });
+          costData.push({
+            cost: 0,
+            hour: hour,
+            grade: '高三',
+          });
+        }
+        continue;
+      }
+      costData.push({
+        cost: 0,
+        hour: hour,
+        grade: '高一',
+      });
+      costData.push({
+        cost: 0,
+        hour: hour,
+        grade: '高二',
+      });
+      costData.push({
+        cost: 0,
+        hour: hour,
+        grade: '高三',
+      });
+    }
+  };
+
+
   render() {
     const { sexType, studentType } = this.state;
     const { loading, dashboard, totalHourlyAvgCost, sexHourlyLoading } = this.props;
@@ -103,6 +198,10 @@ class Analysis extends Component {
       gradeCostData, gradeCostCountData,
       stayCostData, stayCountData, enterSchoolData, kaoqinMixedData
     } = dashboard;
+    this.addZeroForTotalAvg(totalHourlyAvgCost);
+    this.addZeroForTwoFieldData(sexHourlyCostData, 'sex', ['男生', '女生']);
+    this.addZeroForTwoFieldData(stayCostData, 'stayType', ['走读', '住校']);
+    this.addZeroForGradeData(gradeCostData);
     const sexHourlyData = sexHourlyCostData.concat(totalHourlyAvgCost.map(data => {
       return {
         hour: data.hour,
