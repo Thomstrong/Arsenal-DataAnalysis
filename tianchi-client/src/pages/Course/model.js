@@ -75,26 +75,16 @@ export default {
         payload: response
       });
     },
-    * fetchCourseSelectionPie({ payload }, { call, put }) {
+    * fetchDetailPercent({ payload }, { call, put }) {
       const response = yield call(getCourseSelectionDistribution, {
         ...payload,
-        type: 'pie_data'
+        type: 'pie_and_tree'
       });
       yield put({
-        type: 'saveCourseSelectionPie',
+        type: 'saveDetailPercent',
         payload: response
       });
-    }, * fetchCourseSelectionTree({ payload }, { call, put }) {
-      const response = yield call(getCourseSelectionDistribution, {
-        ...payload,
-        type: 'polygon_tree'
-      });
-      yield put({
-        type: 'saveCourseSelectionTree',
-        payload: response
-      });
-    },
-
+    }
   },
 
   reducers: {
@@ -201,10 +191,10 @@ export default {
       for (let data of payload) {
         const { year } = data;
         for (let selection in data.data) {
-          const courses = selection.split('#').map(id => COURSE_ALIAS[id]);
+          const courses = selection.split('#').map(id => COURSE_ALIAS[id]).join('');
           detailDistribution.push({
             year: String(year),
-            selection: courses.join(''),
+            selection: courses,
             count: data.data[selection]
           });
         }
@@ -214,161 +204,53 @@ export default {
         detailDistribution
       };
     },
-    saveCourseSelectionPie(state) {
-      const courseSelectionPie = [
-        {
-          type: "分类一",
-          value: 200
-        },
-        {
-          type: "分类二",
-          value: 18
-        },
-        {
-          type: "分类三",
-          value: 32
-        },
-        {
-          type: "分类四",
-          value: 15
-        },
-        {
-          type: "Other",
-          value: 10
-        }
-      ];
+    saveDetailPercent(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+
+      const { total, data } = payload;
+      const tree_data = {
+        name: "root",
+        children: []
+      };
+      const courseSelectionPie = [];
       // other部分的数据
-      const courseSelectionPieOther = [
-        {
-          otherType: "Other1",
-          value: 2
-        },
-        {
-          otherType: "Other2",
-          value: 3
-        },
-        {
-          otherType: "Other3",
-          value: 5
-        },
-        {
-          otherType: "Other4",
-          value: 2
-        },
-        {
-          otherType: "Other5",
-          value: 3
-        }
-      ];
-      //计算所有的数值和，以便求百分比
-      let pieSum = 0;
-      courseSelectionPie.forEach(function (obj) {
-        pieSum += obj.value;
-      });
-      //为什么要这么做呢只是为了获得other的大小，本可以用courseSelectionPie[-1].value但实际编码中报错，.value不存在
+      const courseSelectionPieOther = [];
       let pieOtherSum = 0;
-      courseSelectionPieOther.forEach(function (obj) {
-        pieOtherSum += obj.value;
+      for (let selectionHash in data) {
+        const courses = selectionHash.split('#').map(id => COURSE_ALIAS[id]).join('');
+        const count = data[selectionHash];
+        tree_data.children.push({
+          name: courses,
+          value: count
+        });
+
+        if (count < 8) {
+          courseSelectionPieOther.push({
+            otherType: courses,
+            value: count
+          });
+          pieOtherSum += count;
+          continue;
+        }
+        courseSelectionPie.push({
+          type: courses,
+          value: count
+        });
+      }
+      courseSelectionPie.push({
+        type: '其他',
+        value: pieOtherSum
       });
-      const otherRatio = pieOtherSum / pieSum; // 确定Other 的占比
+
+      //计算所有的数值和，以便求百分比
+      const otherRatio = pieOtherSum / total; // 确定Other 的占比
       //  确定两条辅助线的位置
       const pieOtherOffsetAngle = otherRatio * Math.PI; // other 占的角度的一半
 
-      return {
-        ...state,
-        courseSelectionPie,
-        courseSelectionPieOther,
-        pieOtherOffsetAngle,
-        pieSum,
-      };
-    },
-    saveCourseSelectionTree(state) {
-      const data = {
-        name: "root",
-        children: [
-          {
-            name: "政史地",
-            value: 560
-          },
-          {
-            name: "理化生",
-            value: 500
-          },
-          {
-            name: "政史化",
-            value: 150
-          },
-          {
-            name: "分类 4",
-            value: 140
-          },
-          {
-            name: "分类 5",
-            value: 115
-          },
-          {
-            name: "分类 6",
-            value: 95
-          },
-          {
-            name: "分类 7",
-            value: 90
-          },
-          {
-            name: "分类 8",
-            value: 75
-          },
-          {
-            name: "分类 9",
-            value: 98
-          },
-          {
-            name: "分类 10",
-            value: 60
-          },
-          {
-            name: "分类 11",
-            value: 45
-          },
-          {
-            name: "分类 12",
-            value: 40
-          },
-          {
-            name: "分类 13",
-            value: 40
-          },
-          {
-            name: "分类 14",
-            value: 35
-          },
-          {
-            name: "分类 15",
-            value: 40
-          },
-          {
-            name: "分类 16",
-            value: 40
-          },
-          {
-            name: "分类 17",
-            value: 40
-          },
-          {
-            name: "分类 18",
-            value: 30
-          },
-          {
-            name: "分类 19",
-            value: 28
-          },
-          {
-            name: "分类 20",
-            value: 16
-          }
-        ]
-      };
-      const dv = new DataSet.View().source(data, {
+
+      const dv = new DataSet.View().source(tree_data, {
         type: "hierarchy"
       }).transform({
         field: "value",
@@ -384,7 +266,11 @@ export default {
       });
       return {
         ...state,
-        courseSelectionTree
+        courseSelectionTree,
+        courseSelectionPie,
+        courseSelectionPieOther,
+        pieOtherOffsetAngle,
+        pieSum: total,
       };
     },
 

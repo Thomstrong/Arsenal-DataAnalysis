@@ -55,13 +55,7 @@ class Selection extends PureComponent {
       type: 'course/fetchDetailDistribution',
     });
     dispatch({
-      type: 'course/fetchCourseSelectionPie',
-      payload: {
-        year: 2019
-      }
-    });
-    dispatch({
-      type: 'course/fetchCourseSelectionTree',
+      type: 'course/fetchDetailPercent',
       payload: {
         year: 2019
       }
@@ -87,13 +81,7 @@ class Selection extends PureComponent {
   onDetailYearChanged = (year) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'course/fetchCourseSelectionPie',
-      payload: {
-        year
-      }
-    });
-    dispatch({
-      type: 'course/fetchCourseSelectionTree',
+      type: 'course/fetchDetailPercent',
       payload: {
         year
       }
@@ -108,7 +96,6 @@ class Selection extends PureComponent {
       courseSelectionPieOther, pieOtherOffsetAngle, pieSum,
       courseSelectionTree
     } = this.props;
-    console.log(detailDistribution);
 
     const { Text } = Guide;
     //分组层叠图颜色
@@ -159,26 +146,7 @@ class Selection extends PureComponent {
     //矩形树图
     const scale = {
       value: {
-        nice: false
-      }
-    };
-    //玉珏图
-    const radialcols = {
-      percent: {
-        min: 0,
-        max: 1
-      },
-      count: {
-        max: totalStudents || 1000
-      }
-    };
-    //和弦图
-    const arcScale = {
-      x: {
-        sync: true
-      },
-      y: {
-        sync: true
+        nice: true
       }
     };
     const arcCourseData = arcCourse.nodes ? new DataSet.View().source(arcCourse, {
@@ -254,8 +222,21 @@ class Selection extends PureComponent {
           <Row>
             <Col xs={24} xl={11}>
               {/*玉珏*/}
-              <Chart key='selection-jade-chart' height={400} padding={{ top: 60, right: 40, bottom: 25 }}
-                     data={coursePercents} scale={radialcols} forceFit>
+              <Chart
+                key='selection-jade-chart' height={400}
+                padding={{ top: 60, right: 40, bottom: 25 }}
+                data={coursePercents}
+                scale={{
+                  percent: {
+                    min: 0,
+                    max: 1
+                  },
+                  count: {
+                    max: totalStudents || 1000
+                  }
+                }}
+                forceFit
+              >
                 <Coord type="polar" innerRadius={0.1} transpose/>
                 <Tooltip title="course"/>
                 <Geom
@@ -301,7 +282,14 @@ class Selection extends PureComponent {
                 key='selection-arc-chart'
                 forceFit={true}
                 height={420}
-                scale={arcScale}
+                scale={{
+                  x: {
+                    sync: true
+                  },
+                  y: {
+                    sync: true
+                  }
+                }}
                 padding={{ top: 30, right: 40, bottom: 20 }}
               >
                 <Tooltip showTitle={false}/>

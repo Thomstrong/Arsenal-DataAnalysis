@@ -138,7 +138,7 @@ class CourseRecordViewSet(viewsets.ModelViewSet):
                     'data': counter
                 })
             return Response(results)
-        if type == 'pie_data':
+        if type == 'pie_and_tree':
             year = request.query_params.get('year', 2019)
             records = CourseRecord.objects.filter(
                 year=year
@@ -166,10 +166,7 @@ class CourseRecordViewSet(viewsets.ModelViewSet):
                 selections = [str(record['course_id'])]
             selection = '#'.join(selections)
             counter[selection] += 1
-
             return Response({
                 'total': int(total / 3),
                 'data': counter
             })
-        if type == 'polygon_tree':
-            return Response([])
