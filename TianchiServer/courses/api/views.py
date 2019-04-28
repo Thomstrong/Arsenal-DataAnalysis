@@ -130,8 +130,9 @@ class CourseRecordViewSet(viewsets.ModelViewSet):
                     counter[selection] += 1
                     student_id = record['student_id']
                     selections = [str(record['course_id'])]
-                selection = '#'.join(selections)
-                counter[selection] += 1
+                if selections:
+                    selection = '#'.join(selections)
+                    counter[selection] += 1
 
                 results.append({
                     'year': year,
@@ -164,8 +165,9 @@ class CourseRecordViewSet(viewsets.ModelViewSet):
                 counter[selection] += 1
                 student_id = record['student_id']
                 selections = [str(record['course_id'])]
-            selection = '#'.join(selections)
-            counter[selection] += 1
+            if selections:
+                selection = '#'.join(selections)
+                counter[selection] += 1
 
             counter_data = [{
                 'courses': key,

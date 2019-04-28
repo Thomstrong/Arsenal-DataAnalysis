@@ -17,15 +17,14 @@ const TabPane = Tabs.TabPane;
 const Option = Select.Option;
 const Line = Guide.Line;
 
-@connect(({ loading, stuClass }) => ({
+@connect(({ loading, stuClass,global }) => ({
   stuClass,
   loading: loading.effects['stuClass/fetchBasic'],
   classListLoading: loading.effects['stuClass/fetchClassList'],
   radarLoading: loading.effects['stuClass/fetchRadarData'],
   kaoqinLoading: loading.effects['stuClass/fetchKaoqinData'],
+  termMap: global.termMap,
   termList: stuClass.termList,
-  kaoqinData: stuClass.kaoqinData,
-  kaoqinSummary: stuClass.kaoqinSummary,
 }))
 class ClassAnalysis extends PureComponent {
 
@@ -64,7 +63,7 @@ class ClassAnalysis extends PureComponent {
   };
 
   getClassInfo = (classId) => {
-    const { dispatch } = this.props;
+    const { dispatch,termMap } = this.props;
     dispatch({
       type: 'stuClass/fetchBasic',
       payload: {
@@ -93,6 +92,13 @@ class ClassAnalysis extends PureComponent {
       type: 'stuClass/fetchTrendData',
       payload: {
         classId
+      }
+    });
+    dispatch({
+      type: 'stuClass/fetchKaoqinData',
+      payload: {
+        classId,
+        termMap
       }
     });
     this.setState({ classId });
@@ -158,13 +164,13 @@ class ClassAnalysis extends PureComponent {
 
   render() {
     const {
-      stuClass, classListLoading, loading, match, radarLoading, kaoqinLoading, termList, kaoqinSummary, kaoqinData
+      stuClass, classListLoading, loading, match, radarLoading, kaoqinLoading, termList
     } = this.props;
 
     const {
       distributionData, classInfo, teachers,
       classList, radarData, totalTrend,
-      subTrends
+      subTrends, kaoqinSummary, kaoqinData
     } = stuClass;
 
     const kaoQinData = this.formatKaoqinData(kaoqinData, termList);
@@ -519,11 +525,11 @@ class ClassAnalysis extends PureComponent {
                   </Fragment>}
                   <Divider style={{ marginTop: 16 }} dashed/>
                   {/*老师信息*/}
-                  <div className={styles.team}>
-                    <div className={styles.teamTitle}>老师信息</div>
+                  <div className={styles.teacherInfo}>
+                    <div className={styles.infoTitle}>教师信息</div>
                     <Row gutter={36}>
                       {teachers.map(item => (
-                        <Col key={`teacher-${item.id}`} lg={24} xl={12}>
+                        <Col className={styles.infoItem} key={`teacher-${item.id}`} lg={22} xl={10}>
                           <Avatar size={32}><b>{item.courseName}</b></Avatar>
                           {item.name}
                         </Col>
@@ -578,7 +584,7 @@ class ClassAnalysis extends PureComponent {
                     </Fragment> : <Empty description='请在左侧搜索框中搜索班级数据'/>
                   }
                 </TabPane>
-                <TabPane tab={<span><Icon type="copy" />具体考试分析</span>} key="Specific">
+                <TabPane tab={<span><Icon type="copy"/>具体考试分析</span>} key="Specific">
                   <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
                     <Select
                       showSearch

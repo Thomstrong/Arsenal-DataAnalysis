@@ -1,4 +1,4 @@
-import { getClassBasic, getClassGrade, getClassList, getClassTeachers, getDistribution, } from '@/services/api';
+import { getClassBasic, getClassGrade, getClassList, getClassTeachers, getDistribution, getClassKaoqinData} from '@/services/api';
 import { COURSE_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, WEEKDAY_ALIAS } from "@/constants";
 
 
@@ -81,7 +81,9 @@ export default {
     },
     //todo 修改为班级考勤信息
     * fetchKaoqinData({ payload }, { call, put }) {
-      const response = yield call(getKaoqinData, 14554);
+      const response = yield call(getClassKaoqinData,{
+        ...payload
+      });
       yield put({
         type: 'saveKaoqinData',
         payload: response,

@@ -1,5 +1,5 @@
 # Create your views here.
-from django.db.models import Q, Max, Min, Avg
+from django.db.models import Q, Max, Min, Avg, Count
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from classes.api.serializers import ClassBasicSerializer, ClassMiniSerializer
 from classes.models import Class
 from exams.models.exam_record import StudentExamRecord, ClassExamRecord
+from kaoqins.models.kaoqin_record import KaoqinRecord
 from students.constants import SexType, PolicyType
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
@@ -141,8 +142,35 @@ class ClassViewSet(viewsets.ModelViewSet):
                     'score': avg_score
                 })
                 total += avg_score
-            formated_records[exam_name].append({
-                'course': 0,
-                'score': total
-            })
+            if exam_name:
+                formated_records[exam_name].append({
+                    'course': 0,
+                    'score': total
+                })
             return Response(formated_records)
+
+    @detail_route(
+        methods=['GET'],
+    )
+    def kaoqin(self, request, pk):
+        students = StudentRecord.objects.filter(
+            stu_class_id=pk
+        ).values_list('student_id', flat=True)
+        records = KaoqinRecord.objects.filter(
+            student_id__in=students,
+            event_id__gte=9900100
+        ).exclude(event_id=9900500).values('event__type_id', 'term').annotate(
+            count=Count('id'),
+        ).order_by('term__start_year').order_by('term__order')
+
+        sumary = KaoqinRecord.objects.filter(
+            student_id__in=students,
+            event_id__gte=9900100
+        ).exclude(event_id=9900500).values('event__type_id').annotate(
+            count=Count('id'),
+        ).order_by('-count')
+
+        return Response({
+            'records': records,
+            'summary': sumary,
+        })

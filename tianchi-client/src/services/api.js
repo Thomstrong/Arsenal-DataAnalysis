@@ -22,6 +22,10 @@ export async function getClassGrade({ classId, type, scoreType }) {
   return request(`/api/classes/${classId}/grade/?type=${type}&score_type=${scoreType || ''}`);
 }
 
+export async function getClassKaoqinData({ classId }) {
+  return request(`/api/classes/${classId}/kaoqin/`);
+}
+
 // student
 export async function getStudentBasic(studentId) {
   return request(`/api/students/${studentId}/`);
@@ -47,7 +51,7 @@ export async function getConsumption({ studentId, date, type, dateRange }) {
   return request(`/api/students/${studentId}/consumptions/?date=${date || ''}&type=${type}&date_range=${dateRange || ''}`);
 }
 
-export async function getCompare({ studentId,compareId, type }) {
+export async function getCompare({ studentId, compareId, type }) {
   return request(`/api/students/${studentId}/compare?with=${compareId}&type=${type}`);
 }
 

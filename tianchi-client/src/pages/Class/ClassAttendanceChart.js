@@ -43,7 +43,10 @@ const AttendanceChart = memo(
                 return;
               }
               return `${data.name} ${data.count} 次, `;
-            })} </Text></Paragraph>
+            })} </Text>
+          其中，最多的是<Text strong style={{color:"#c6464a"}}>
+              {kaoqinSummary[0].name}</Text>
+            </Paragraph>
         </Col>
       </Row> : <Empty description='该班级暂无不良考勤数据'/>}
     </Card>
