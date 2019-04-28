@@ -137,7 +137,6 @@ class Center extends PureComponent {
   };
 
   getStudentInfo = (studentId) => {
-
     const { dispatch, totalHourlyAvgCost } = this.props;
     dispatch({
       type: `student/fetchBasic`,
@@ -218,13 +217,7 @@ class Center extends PureComponent {
     });
 
     if (this.state.vsStudentId) {
-      dispatch({
-        type: 'student/fetchGradeCompare',
-        payload: {
-          studentId: studentId,
-          compareId: this.state.vsStudentId,
-        }
-      });
+      this.getCompareInfo(this.state.vsStudentId);
     }
   };
 
@@ -697,6 +690,9 @@ class Center extends PureComponent {
                     <p><i className={`fa ${studentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
                       {SEX_MAP[studentInfo.sex]}
                     </p>
+                    <p><i className={`fa fa-bed ${styles.iconStyle}`}/>
+                      {studentInfo.is_stay_school ? `住校-${studentInfo.room_num}室` : '走读'}
+                    </p>
                   </div>
 
                   {defaultTab !== 'Score' && <Fragment>
@@ -809,7 +805,7 @@ class Center extends PureComponent {
                     />
                   </Suspense>
                   <Suspense fallback={<div>Loading...</div>}>
-                    <Affix offsetTop={80} style={{ 'zIndex': 1 ,marginTop:10}}>
+                    <Affix offsetTop={80} style={{ 'zIndex': 1, marginTop: 10 }}>
                       <span>选择查看的时间：</span>
                       <DatePicker
                         defaultValue={moment(moment('2019-01-01'), 'YYYY-MM-DD')}
@@ -881,7 +877,7 @@ class Center extends PureComponent {
                       </Col>
                       <Col span={16} push={2}>
                         {/*todo 待对比学生基本信息个人名片之类*/}
-                        <Card
+                        {vsStudentInfo.id ? <Card
                           title={<Fragment>
                             {vsStudentInfo.name}
                             {studentInfo.is_left ? <Tag color="#f50">已离校</Tag> :
@@ -906,7 +902,13 @@ class Center extends PureComponent {
                             className={`fa ${vsStudentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
                             {SEX_MAP[vsStudentInfo.sex]}
                           </p>
-                        </Card>
+                          <p><i className={`fa fa-book ${styles.iconStyle}`}/>
+                            {`${vsStudentInfo.stu_class.start_year}年-${vsStudentInfo.stu_class.class_name}`}
+                          </p>
+                          <p><i className={`fa fa-bed ${styles.iconStyle}`}/>
+                            {vsStudentInfo.is_stay_school ? `住校-${vsStudentInfo.room_num}室` : '走读'}
+                          </p>
+                        </Card> : <Empty/>}
                       </Col>
                     </Row>
                   </Card>

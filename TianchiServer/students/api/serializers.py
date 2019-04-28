@@ -20,6 +20,7 @@ class StudentBasicInfoSerializer(serializers.ModelSerializer):
             'nation', 'born_year',
             'native_place', 'policy',
             'is_left', 'is_stay_school',
+            'room_num',
             'stu_class'
         )
 

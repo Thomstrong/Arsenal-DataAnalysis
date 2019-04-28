@@ -60,7 +60,7 @@ def run():
                 policy = policy_to_int[split_line[8]]
                 is_stay = True if split_line[11] else False
                 is_left = True if split_line[12] else False
-                room_num = split_line[13]
+                room_num = str(split_line[13]).split('.')[0]
 
                 class_name = split_line[5]
                 class_id = split_line[9]
