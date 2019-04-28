@@ -525,11 +525,11 @@ class ClassAnalysis extends PureComponent {
                   </Fragment>}
                   <Divider style={{ marginTop: 16 }} dashed/>
                   {/*老师信息*/}
-                  <div className={styles.team}>
-                    <div className={styles.teamTitle}>老师信息</div>
+                  <div className={styles.teacherInfo}>
+                    <div className={styles.infoTitle}>教师信息</div>
                     <Row gutter={36}>
                       {teachers.map(item => (
-                        <Col key={`teacher-${item.id}`} lg={24} xl={12}>
+                        <Col className={styles.infoItem} key={`teacher-${item.id}`} lg={22} xl={10}>
                           <Avatar size={32}><b>{item.courseName}</b></Avatar>
                           {item.name}
                         </Col>
