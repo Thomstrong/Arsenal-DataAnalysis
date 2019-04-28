@@ -111,6 +111,8 @@ class StudentViewSet(viewsets.ModelViewSet):
             selected_courses = CourseRecord.objects.filter(
                 student_id=pk
             ).values_list('course_id', flat=True)
+            if not selected_courses:
+                selected_courses = gaokao_courses
             grade_filter = Q(sub_exam__course_id__in=selected_courses) | Q(sub_exam__course_id__in=[1, 2, 3])
             exam_records = StudentExamRecord.objects.filter(
                 Q(student_id=pk),
