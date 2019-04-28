@@ -123,7 +123,6 @@ const violationRankingData = [
 
 const AttendanceCard = memo(({ data }) => {
     const { enterSchoolData, kaoqinMixedData } = data;
-    console.log(enterSchoolData);
     return <React.Fragment>
       <Card title="2018-2019学年进离校时间概况" bordered={false} style={{ marginTop: 32 }}>
         <Row>

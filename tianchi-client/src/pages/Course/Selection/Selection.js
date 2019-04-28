@@ -4,10 +4,10 @@
 //展示选课情况,包括各科目选课人数分布,及不同7选3的分布情况
 
 import React, { Fragment, PureComponent } from 'react';
-import { POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
+import { COURSE_FULLNAME_ALIAS, POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
 import { Button, Card, Col, Row, Select } from 'antd';
 import DataSet from "@antv/data-set";
-import { Axis, Chart, Coord, Geom, Guide, Label, Legend, Tooltip, View } from "bizcharts";
+import { Axis, Chart, Coord, G2, Geom, Guide, Label, Legend, Tooltip, View } from "bizcharts";
 import { connect } from "dva";
 
 const { Option } = Select;
@@ -17,7 +17,7 @@ const { Option } = Select;
   coursePercents: course.coursePercents,
   totalStudents: course.totalStudents,
   arcCourse: course.arcCourse,
-  seven2threeDistribution: course.seven2threeDistribution,
+  detailDistribution: course.detailDistribution,
   courseSelectionPie: course.courseSelectionPie,
   courseSelectionPieOther: course.courseSelectionPieOther,
   pieOtherOffsetAngle: course.pieOtherOffsetAngle,
@@ -44,7 +44,6 @@ class Selection extends PureComponent {
         year: 2019
       }
     });
-    //todo
     dispatch({
       type: 'course/fetchArcCourse',
       payload: {
@@ -52,16 +51,10 @@ class Selection extends PureComponent {
       }
     });
     dispatch({
-      type: 'course/fetchSeven2ThreeDistribution',
+      type: 'course/fetchDetailDistribution',
     });
     dispatch({
-      type: 'course/fetchCourseSelectionPie',
-      payload: {
-        year: 2019
-      }
-    });
-    dispatch({
-      type: 'course/fetchCourseSelectionTree',
+      type: 'course/fetchDetailPercent',
       payload: {
         year: 2019
       }
@@ -84,16 +77,10 @@ class Selection extends PureComponent {
     });
   };
 
-  seven2threeYearChanged = (year, type1, type2) => {
+  onDetailYearChanged = (year) => {
     const { dispatch } = this.props;
     dispatch({
-      type: `course/${type1}`,
-      payload: {
-        year
-      }
-    });
-    dispatch({
-      type: `course/${type2}`,
+      type: 'course/fetchDetailPercent',
       payload: {
         year
       }
@@ -102,11 +89,11 @@ class Selection extends PureComponent {
 
 
   render() {
-    //todo saveSeven2ThreeDistribution有时候有数据有时候是undefined
     const {
       distributions, coursePercents, totalStudents,
-      arcCourse, seven2threeDistribution, courseSelectionPie,
-      courseSelectionPieOther, pieOtherOffsetAngle, pieSum,
+      arcCourse, detailDistribution,
+      courseSelectionPie, courseSelectionPieOther,
+      pieOtherOffsetAngle, pieSum,
       courseSelectionTree
     } = this.props;
 
@@ -120,7 +107,7 @@ class Selection extends PureComponent {
       // "2017_未知": "#80B2D3",
     };
     const chartWidth = window.innerWidth;
-    const chartHeight = 400;
+    const chartHeight = window.innerHeight / 2;
     // 定义 other 的图形，增加两条辅助线
     G2.Shape.registerShape("interval", "otherShape", {
       draw(cfg, container) {
@@ -136,9 +123,9 @@ class Selection extends PureComponent {
         const parsePoints = this.parsePoints(points);
         const linePath = [
           ["M", parsePoints[3].x, parsePoints[3].y],
-          ["L", chartWidth * 0.4, 20],
+          ["L", chartWidth * 0.4 + 50, 20],
           ["M", parsePoints[2].x, parsePoints[2].y],
-          ["L", chartWidth * 0.4, chartHeight - 70]
+          ["L", chartWidth * 0.4 + 50, chartHeight - 30]
         ];
 
         container.addShape("path", {
@@ -162,29 +149,9 @@ class Selection extends PureComponent {
         nice: false
       }
     };
-    //玉珏图
-    const radialcols = {
-      percent: {
-        min: 0,
-        max: 1
-      },
-      count: {
-        max: totalStudents || 1000
-      }
-    };
-    //和弦图
-    const arcScale = {
-      x: {
-        sync: true
-      },
-      y: {
-        sync: true
-      }
-    };
     const arcCourseData = arcCourse.nodes ? new DataSet.View().source(arcCourse, {
       type: "graph",
-      edges: d => d.links
-
+      edges: d => d.edges
     }).transform({
       type: "diagram.arc",
       sourceWeight: e => e.sourceWeight,
@@ -244,7 +211,7 @@ class Selection extends PureComponent {
             <Select
               id='yujue-year'
               defaultValue="2019"
-              style={{ width: 180, float: "right", paddingRight:60}}
+              style={{ width: 180, float: "right", paddingRight: 60 }}
               onChange={(year) => this.onYearChanged(year, 'fetchCoursePercents', 'fetchArcCourse')}
             >
               <Option key={`course-percents-2017`} value="2017">2017年</Option>
@@ -255,7 +222,21 @@ class Selection extends PureComponent {
           <Row>
             <Col xs={24} xl={11}>
               {/*玉珏*/}
-              <Chart key='selection-jade-chart' height={400} padding={{top:60, right:40, bottom:25}} data={coursePercents} scale={radialcols} forceFit>
+              <Chart
+                key='selection-jade-chart' height={400}
+                padding={{ top: 60, right: 40, bottom: 25 }}
+                data={coursePercents}
+                scale={{
+                  percent: {
+                    min: 0,
+                    max: 1
+                  },
+                  count: {
+                    max: totalStudents || 1000
+                  }
+                }}
+                forceFit
+              >
                 <Coord type="polar" innerRadius={0.1} transpose/>
                 <Tooltip title="course"/>
                 <Geom
@@ -301,8 +282,15 @@ class Selection extends PureComponent {
                 key='selection-arc-chart'
                 forceFit={true}
                 height={420}
-                scale={arcScale}
-                padding={{top:30, right:40, bottom:20}}
+                scale={{
+                  x: {
+                    sync: true
+                  },
+                  y: {
+                    sync: true
+                  }
+                }}
+                padding={{ top: 30, right: 40, bottom: 20 }}
               >
                 <Tooltip showTitle={false}/>
                 <View data={arcCourseData.edges} axis={false}>
@@ -317,7 +305,7 @@ class Selection extends PureComponent {
                       "source*target*sourceWeight",
                       (source, target, sourceWeight) => {
                         return {
-                          name: arcCourseData.nodes[source].name + " <-> " + arcCourseData.nodes[target].name + "</span>",
+                          name: COURSE_FULLNAME_ALIAS[source] + " <-> " + COURSE_FULLNAME_ALIAS[target] + "</span>",
                           value: sourceWeight
 
                         };
@@ -341,8 +329,10 @@ class Selection extends PureComponent {
             </Col>
           </Row>
           <Card title='总结' bordered={false} hoverable={true} style={{ marginLeft: 32, marginRight: 32 }}>
-            <p>1. 自2017年高考改革以来物理、化学、生物的人数一直居高不下，历史在七门学科中较为弱势。由于填报志愿时不同专业对选课要求的不同，物理化学在填报志愿时较有优势，其中选考物理后的可申报专业覆盖面高达93.5%，化学为85.5%</p>
-            <p>2. 2019年，男女生选课差异并不明显，女男比在理化生三个学科上依次增高，男女选课人数最不均衡的居然是政治接近1：5。其中，化学、地理的选课男女比接近1：1；物理、技术接近2：1；生物、历史接近1：2。</p>
+            <p>1.
+              自2017年高考改革以来物理、化学、生物的人数一直居高不下，历史在七门学科中较为弱势。由于填报志愿时不同专业对选课要求的不同，物理化学在填报志愿时较有优势，其中选考物理后的可申报专业覆盖面高达93.5%，化学为85.5%</p>
+            <p>2.
+              2019年，男女生选课差异并不明显，女男比在理化生三个学科上依次增高，男女选课人数最不均衡的居然是政治接近1：5。其中，化学、地理的选课男女比接近1：1；物理、技术接近2：1；生物、历史接近1：2。</p>
             <p>3. 分流情况，选物理的都同时选了什么呀</p>
           </Card>
         </Card>
@@ -351,21 +341,17 @@ class Selection extends PureComponent {
           <Chart
             key='selection-3_in_7-chart'
             height={400}
-            data={seven2threeDistribution}
+            data={detailDistribution}
             forceFit
           >
-            <Axis name="科目组合"/>
-            <Axis name="选课人数"/>
+            <Axis name="selection"/>
+            <Axis name="count"/>
             <Legend/>
-            <Tooltip
-              crosshairs={{
-                type: "y"
-              }}
-            />
+            <Tooltip/>
             <Geom
               type="interval"
-              position="科目组合*选课人数"
-              color={["name", "#26BFBF-#FC6170-#FFD747"]}
+              position="selection*count"
+              color={["year", "#26BFBF-#FC6170-#FFD747"]}
               adjust={[
                 {
                   type: "dodge",
@@ -377,25 +363,26 @@ class Selection extends PureComponent {
           {/*饼图柱状图显示分布比例,仅显示比例*/}
           {/*矩形树图,与饼图柱状图结合,做成卡片翻转样式,仅显示数值*/}
           <Row>
-            <Col offset={1} xs={24} xl={16}>
+            <Col offset={1} xs={24} xl={18}>
               <Select id='3in7-year' defaultValue="2019" style={{ width: 120, float: "center" }}
-                      onChange={(year) => this.seven2threeYearChanged(year, 'fetchCourseSelectionPie', 'fetchCourseSelectionTree')}
+                      onChange={(year) => this.onDetailYearChanged(year)}
               >
                 <Option key="bing20171" value="2017">2017年</Option>
                 <Option key="bing20181" value="2018">2018年</Option>
                 <Option key="bing20191" value="2019">2019年</Option>
               </Select>
-              <Button onClick={() => this.setState({ pieFront: !this.state.pieFront })}> 切换视图</Button>
+              <Button onClick={() => this.setState({ pieFront: !this.state.pieFront })}>
+                {`${this.state.pieFront ? '查看人数详情' : '查看占比详情'}`}
+              </Button>
               <Card bordered={false}>
                 {this.state.pieFront ? <Chart
                     key={'pie-chart'}
-                    height={chartHeight}
                     forceFit
-                    padding={[20, 0, "auto", 0]}
+                    height={chartHeight}
+                    weight={chartWidth}
+                    padding={[20, 0, 20, 50]}
                   >
-                    <Axis name="value"/>
                     <Tooltip showTitle={false}/>
-                    <Legend/>
                     <View
                       data={courseSelectionPie}
                       start={{
@@ -419,7 +406,7 @@ class Selection extends PureComponent {
                         shape={[
                           "type",
                           function (type) {
-                            if (type === "Other") {
+                            if (type === "其他") {
                               return "otherShape";
                             }
 
@@ -438,7 +425,6 @@ class Selection extends PureComponent {
                       >
                         <Label
                           content="value*type"
-                          offset={-20}
                           textStyle={{
                             rotate: 0
                           }}
@@ -468,12 +454,12 @@ class Selection extends PureComponent {
                       >
                         <Label
                           content="value*otherType"
-                          offset={-20}
+                          offset={-10}
                           textStyle={{
-                            rotate: 0
+                            fill: '#717171'
                           }}
                           formatter={(val, item) => {
-                            return item.point.otherType + ": " + (val / pieSum * 100).toFixed(3) + "%";
+                            return `${item.point.otherType}: ${val}人  ${(val / pieSum * 100).toFixed(3)}%`;
                           }}
                         />
                       </Geom>
@@ -514,7 +500,8 @@ class Selection extends PureComponent {
                         content="name"
                         offset={0}
                         textStyle={{
-                          textBaseline: "middle"
+                          textBaseline: "middle",
+                          fill: '#fff'
                         }}
                         formatter={val => {
                           if (val !== "root") {
@@ -527,7 +514,7 @@ class Selection extends PureComponent {
 
               </Card>
             </Col>
-            <Col pull={0.5} xs={24} xl={6}>
+            <Col pull={0.5} xs={24} xl={4}>
               <Card title='总结' bordered={false} hoverable={true}>
                 <p>选择xxx的学生最多</p>
                 <p>哪些组合基本没人考虑</p>
