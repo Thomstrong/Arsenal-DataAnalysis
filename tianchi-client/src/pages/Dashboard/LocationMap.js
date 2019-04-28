@@ -21,12 +21,14 @@ const cols = {
 
 
 const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, handleChangeStudentType }) => {
-  const { sexPieData, studentPieData, totalStudentCount } = data;
+  const { sexPieData, studentPieData, totalStudentCount, sexDistriLoading, locationLoading } = data;
+  const showAnalysis = sexPieData.length + studentPieData.length + totalStudentCount;
   return <div className={styles.twoColLayout}>
     <Row gutter={24}>
       <Col xl={12} lg={24} md={24} sm={24} xs={24}>
         <Card
           height={400}
+          loading={sexDistriLoading}
           className={styles.salesCard}
           bordered={false}
           title='性别分布一览'
@@ -137,6 +139,7 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
       <Col xl={12} lg={24} md={24} sm={24} xs={24}>
         <Card
           height={400}
+          loading={locationLoading}
           className={styles.salesCard}
           bordered={false}
           title='人员分布情况'
@@ -173,7 +176,7 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
         </Card>
       </Col>
     </Row>
-    <Row gutter={24}>
+    {!!showAnalysis && !sexDistriLoading && !locationLoading && <Row gutter={24}>
       <Col xl={24} xs={24}>
         <Card title="人员分析" hoverable={true}>
           <p>1. 高一高二高三人数递减，高一男生占全校学生数的1／4;各年级女生人数比较稳定都在16%左右，男生人数呈明显递减趋势，高三年级女生人数反超男生;</p>
@@ -181,7 +184,7 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
           <p>3. 学校生源主要来自于浙江宁波(本地)，外地生源中以湖北省的生源最多。todo 待做</p>
         </Card>
       </Col>
-    </Row>
+    </Row>}
   </div>;
 
 });
