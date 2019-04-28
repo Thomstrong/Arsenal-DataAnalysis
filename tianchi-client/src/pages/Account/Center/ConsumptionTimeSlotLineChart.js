@@ -1,26 +1,102 @@
 /**
  * Created by 胡晓慧 on 2019/4/13.
  */
-import React, { memo } from "react";
-import { Card, Col, Row } from 'antd';
-import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
-import { DATE_REANGE_ALIAS, INTERVAL_MAP } from "@/constants";
+import React, {memo} from "react";
+import {Card, Col, Row, Empty} from 'antd';
+import {Axis, Chart, Geom, Legend, Tooltip} from "bizcharts";
+import {DATE_REANGE_ALIAS, INTERVAL_MAP} from "@/constants";
 import moment from "moment";
+import {Typography} from 'antd';
+import empty from "bizcharts/src/components/Chart/empty";
+
+const {Paragraph, Title, Text} = Typography;
 //单天消费总额对比数据
 
 let chartIns = null;
 
 const ConsumptionTimeSlotLineChart = memo(
-  ({ hourlyCost, dailyPredictData, date, dateRange, maxCost }) => (
-    <React.Fragment>
-      <Card title={`${date} 各时期消费情况一览`} bordered={false} style={{ width: '100%' }}>
+  ({hourlyCost, dailyPredictData, date, dateRange, maxCost}) => {
+
+    let lastAllCost = 0;
+    let nowAllCost = 0;
+    let futureAllCost = 0;
+    let maxNowCost = 0;
+    let maxNowTime = 0;
+    let attention = 0;
+    for (let i = 0; i < dailyPredictData.length; i++) {
+      lastAllCost = lastAllCost + dailyPredictData[i].last;
+      nowAllCost = nowAllCost + dailyPredictData[i].now;
+      futureAllCost = futureAllCost + dailyPredictData[i].future;
+      if (dailyPredictData[i].now > maxNowCost) {
+        maxNowCost = dailyPredictData[i].now;
+        maxNowTime = i
+      }
+    }
+    //当本周期消费与上一周期消费相差20元时，告警
+    if ((Math.abs(nowAllCost - lastAllCost)) > 2) {
+      attention = 1
+    }
+
+    //关于某周期时间点消费的文字分析
+    let equal = 1;
+    let high = 0;
+    let costTimeList = [];
+    let maxHourlyTime = 0;
+    let maxHourlyCost = 0;
+    let timeString = '';
+    let dic = {student: 0, school: 0};
+    let list = [];
+    for (let i = 0; i < hourlyCost.length; i++) {
+      if (hourlyCost[i].type === "该学生") {
+        timeString = hourlyCost[i].hour + "时";
+        costTimeList.push(timeString);
+        dic.student = hourlyCost[i].cost;
+        list[hourlyCost[i].hour] = dic;
+        dic = {student: 0, school: 0};
+        if (hourlyCost[i].cost > maxHourlyCost) {
+          maxHourlyCost = hourlyCost[i].cost;
+          maxHourlyTime = hourlyCost[i].hour;
+        }
+      } else {
+        if (list[hourlyCost[i].hour] == null) {
+          dic.school = hourlyCost[i].cost;
+          list[hourlyCost[i].hour] = dic;
+          dic = {student: 0, school: 0};
+        } else {
+          list[hourlyCost[i].hour].school = hourlyCost[i].cost;
+        }
+      }
+    }
+
+    for (let i = 0; i < list.length; i++) {
+      if (list[i] !== undefined) {
+        if (list[i].student !== 0) {
+          if ((list[i].student - list[i].school) > 5) {
+            equal = 0;
+            high = 1;
+          } else if ((list[i].school - list[i].student) > 5) {
+            equal = 0;
+            high = 0;
+          }
+        }
+      }
+    }
+
+
+    return (
+      <Card title={`${date} 各时期消费情况一览`} bordered={false} style={{width: '100%'}}>
         <Card title={`${date}起往后${DATE_REANGE_ALIAS[dateRange]}，每日消费总额、上一周期消费对比及下一周期消费预测`}
-              bordered={false} style={{ width: '100%' }} hoverable={true}
+              bordered={false} style={{width: '100%'}} hoverable={true}
         >
-          <Row>
+          {hourlyCost.length ? <Row type="flex" align="middle">
             <Col span={4}>
-              {/*todo 文字分析,告警的触犯*/}
-              <p>告警!!!该同学近期的消费水平与之前产生较大不同</p>
+              {attention ? <Title style={{color: "#c04b4f"}} code level={4}>告警</Title> :
+                <Paragraph><Text strong code>消费稳定</Text></Paragraph>}
+              <Paragraph>上一周期消费总额为<Text strong style={{color: "#cc4756"}}>¥{lastAllCost}元</Text></Paragraph>
+              <Paragraph>当前周期消费总额为<Text strong style={{color: "#cc4756"}}>¥{nowAllCost}元</Text></Paragraph>
+              <Paragraph>预测下周期消费总额为<Text strong style={{color: "#cc4756"}}>¥{futureAllCost}元</Text></Paragraph>
+              <Paragraph>本周期消费金额最高出现在<Text strong style={{color: "#cc4756"}}>第{maxNowTime}天</Text>,消费金额为<Text strong
+                                                                                                              style={{color: "#cc4756"}}>¥{maxNowCost}</Text></Paragraph>
             </Col>
             <Col span={20}>
               <Chart
@@ -84,8 +160,8 @@ const ConsumptionTimeSlotLineChart = memo(
                       }
                     }
                   ]}
-                  onClick={({ item, checked }) => {
-                    const { value } = item;
+                  onClick={({item, checked}) => {
+                    const {value} = item;
                     const geoms = chartIns.getAllGeoms();
                     for (let geom of geoms) {
                       if (geom.getYScale().alias === value) {
@@ -181,11 +257,11 @@ const ConsumptionTimeSlotLineChart = memo(
                 />
               </Chart>
             </Col>
-          </Row>
+          </Row> : <Empty/>}
         </Card>
-        <Card title={`${date}起过去${DATE_REANGE_ALIAS[dateRange]}各时段平均消费情况`} bordered={false} style={{ width: '100%' }}
+        <Card title={`${date}起过去${DATE_REANGE_ALIAS[dateRange]}各时段平均消费情况`} bordered={false} style={{width: '100%'}}
               hoverable={true}>
-          <Row>
+          {hourlyCost.length ? <Row type="flex" align="middle">
             <Col span={20}>
               <Chart
                 height={400}
@@ -219,14 +295,17 @@ const ConsumptionTimeSlotLineChart = memo(
               </Chart>
             </Col>
             <Col span={4}>
-              {/*todo 应该有一些实际总结,但我还不知道要总结什么*/}
-              <p>该同学此段时刻的消费水平属于本校消费的平均水平</p>
-              {/*文字分析*/}
+              <Paragraph>该同学本周期的消费分布在<Text strong style={{color: "#cc4756"}}>{costTimeList}</Text></Paragraph>
+              <Paragraph>平均消费最高是在<Text strong style={{color: "#cc4756"}}>{maxHourlyTime}时</Text>平均消费<Text strong
+                                                                                                          style={{color: "#cc4756"}}>¥{maxHourlyCost}元</Text></Paragraph>
+              <Paragraph>该同学在对应时刻消费水平较校平均消费水平{equal ? <Text strong style={{color: "#cc4756"}}>持平</Text> : (high ?
+                <Text strong style={{color: "#cc4756"}}>高</Text> :
+                <Text strong style={{color: "#cc4756"}}>低</Text>)}</Paragraph>
             </Col>
-          </Row>
+          </Row> : <Empty/>}
         </Card>
       </Card>
-    </React.Fragment>
-  )
+    );
+  }
 );
 export default ConsumptionTimeSlotLineChart;

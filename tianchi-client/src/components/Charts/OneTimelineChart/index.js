@@ -11,7 +11,7 @@ class OneTimelineChart extends React.Component {
     const {
       title,
       height = 400,
-      padding = [60, 55, 40, 75],
+      padding = [20, 55, 40, 75],
       titleMap = {
         y: '单天消费总额',
       },

@@ -496,6 +496,7 @@ class Center extends PureComponent {
       }
     };
 
+
     //词云的处理
     function getTextAttrs(cfg) {
       return _.assign(
@@ -808,13 +809,13 @@ class Center extends PureComponent {
                     />
                   </Suspense>
                   <Suspense fallback={<div>Loading...</div>}>
-                    <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
+                    <Affix offsetTop={80} style={{ 'zIndex': 1 ,marginTop:10}}>
                       <span>选择查看的时间：</span>
                       <DatePicker
                         defaultValue={moment(moment('2019-01-01'), 'YYYY-MM-DD')}
                         onChange={(_, date) => this.onDateChange(date)}
                       />
-                      <span>分析区间：</span>
+                      <span>  分析区间：</span>
                       <Select value={this.state.dateRange} style={{ width: 120 }} onChange={this.handleChangeRange}>
                         <Option key='one-week' value={7}>1周</Option>
                         <Option key='one-month' value={30}>1个月</Option>

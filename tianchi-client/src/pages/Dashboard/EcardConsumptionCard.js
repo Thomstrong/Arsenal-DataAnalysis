@@ -148,7 +148,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                 <Chart
                   height={400}
                   key='cost-summary-sex'
-                  padding="auto"
+                  padding={["auto","auto",80,"auto"]}
                   forceFit
                   scale={scale}
                 >
@@ -250,7 +250,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                   key='cost-summary-grade'
                   height={400}
                   data={gradeHourlyData}
-                  padding="auto"
+                  padding={["auto","auto",80,"auto"]}
                   title="不同年级不同时刻消费情况对比"
                   forceFit
                   scale={scale}
@@ -354,7 +354,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                   key='cost-summary-staySchool'
                   height={400} scale={scale}
                   data={stayHourlyData}
-                  padding="auto"
+                  padding={["auto","auto",80,"auto"]}
                   title="走读生/住校生不同时刻消费情况对比"
                   forceFit
                 >
