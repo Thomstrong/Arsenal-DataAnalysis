@@ -377,7 +377,7 @@ class Selection extends PureComponent {
                     key={'pie-chart'}
                     height={chartHeight}
                     forceFit
-                    padding={[20, 0, "auto", 0]}
+                    padding={[20, 0, "auto", 20]}
                   >
                     <Axis name="value"/>
                     <Tooltip showTitle={false}/>
@@ -424,7 +424,6 @@ class Selection extends PureComponent {
                       >
                         <Label
                           content="value*type"
-                          offset={-20}
                           textStyle={{
                             rotate: 0
                           }}
@@ -500,7 +499,8 @@ class Selection extends PureComponent {
                         content="name"
                         offset={0}
                         textStyle={{
-                          textBaseline: "middle"
+                          textBaseline: "middle",
+                          fill: '#fff'
                         }}
                         formatter={val => {
                           if (val !== "root") {

@@ -210,27 +210,38 @@ export default {
       }
 
       const { total, data } = payload;
-      const tree_data = {
-        name: "root",
-        children: []
-      };
-      const courseSelectionPie = [];
+      const sortedData = new DataSet.View().source(data).transform({
+        type: 'sort-by',
+        fields: ['value'], // 根据指定的字段集进行排序，与lodash的sortBy行为一致
+        order: 'DESC'        // 默认为 ASC，DESC 则为逆序
+      }).rows;
+      console.log(sortedData);
+      let children = [];
+      let courseSelectionPie = [];
       // other部分的数据
-      const courseSelectionPieOther = [];
+      let courseSelectionPieOther = [];
       let pieOtherSum = 0;
-      for (let selectionHash in data) {
+      let otherInOtherSum = 0;
+      let otherInOtherCount = 0;
+      for (let record of sortedData) {
+        const selectionHash = record.courses;
         const courses = selectionHash.split('#').map(id => COURSE_ALIAS[id]).join('');
-        const count = data[selectionHash];
-        tree_data.children.push({
+        const count = record.value;
+        children.push({
           name: courses,
           value: count
         });
-
-        if (count < 8) {
+        const radio = count / total;
+        if (radio < 0.03) {
+          if (otherInOtherCount > 6) {
+            otherInOtherSum += count;
+            continue;
+          }
           courseSelectionPieOther.push({
             otherType: courses,
             value: count
           });
+          otherInOtherCount += 1;
           pieOtherSum += count;
           continue;
         }
@@ -243,14 +254,21 @@ export default {
         type: '其他',
         value: pieOtherSum
       });
+      courseSelectionPieOther.push({
+        otherType: '其他',
+        value: otherInOtherSum
+      });
 
       //计算所有的数值和，以便求百分比
       const otherRatio = pieOtherSum / total; // 确定Other 的占比
       //  确定两条辅助线的位置
       const pieOtherOffsetAngle = otherRatio * Math.PI; // other 占的角度的一半
 
-
-      const dv = new DataSet.View().source(tree_data, {
+      const treeData = {
+        name: "root",
+        children
+      };
+      const dv = new DataSet.View().source(treeData, {
         type: "hierarchy"
       }).transform({
         field: "value",

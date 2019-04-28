@@ -166,7 +166,13 @@ class CourseRecordViewSet(viewsets.ModelViewSet):
                 selections = [str(record['course_id'])]
             selection = '#'.join(selections)
             counter[selection] += 1
+
+            counter_data = [{
+                'courses': key,
+                'value': counter[key]
+            } for key in counter]
+
             return Response({
                 'total': int(total / 3),
-                'data': counter
+                'data': counter_data
             })
