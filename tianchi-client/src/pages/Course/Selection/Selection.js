@@ -7,7 +7,7 @@ import React, { Fragment, PureComponent } from 'react';
 import { COURSE_FULLNAME_ALIAS, POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
 import { Button, Card, Col, Row, Select } from 'antd';
 import DataSet from "@antv/data-set";
-import { Axis, Chart, Coord, Geom, Guide, Label, Legend, Tooltip, View } from "bizcharts";
+import { Axis, Chart, Coord, G2, Geom, Guide, Label, Legend, Tooltip, View } from "bizcharts";
 import { connect } from "dva";
 
 const { Option } = Select;
@@ -29,7 +29,7 @@ class Selection extends PureComponent {
   constructor() {
     super();
     this.state = {
-      pieFront: false
+      pieFront: true
     };
   }
 
@@ -44,7 +44,6 @@ class Selection extends PureComponent {
         year: 2019
       }
     });
-    //todo
     dispatch({
       type: 'course/fetchArcCourse',
       payload: {
@@ -92,8 +91,9 @@ class Selection extends PureComponent {
   render() {
     const {
       distributions, coursePercents, totalStudents,
-      arcCourse, detailDistribution, courseSelectionPie,
-      courseSelectionPieOther, pieOtherOffsetAngle, pieSum,
+      arcCourse, detailDistribution,
+      courseSelectionPie, courseSelectionPieOther,
+      pieOtherOffsetAngle, pieSum,
       courseSelectionTree
     } = this.props;
 
@@ -107,7 +107,7 @@ class Selection extends PureComponent {
       // "2017_未知": "#80B2D3",
     };
     const chartWidth = window.innerWidth;
-    const chartHeight = 400;
+    const chartHeight = window.innerHeight / 2;
     // 定义 other 的图形，增加两条辅助线
     G2.Shape.registerShape("interval", "otherShape", {
       draw(cfg, container) {
@@ -123,9 +123,9 @@ class Selection extends PureComponent {
         const parsePoints = this.parsePoints(points);
         const linePath = [
           ["M", parsePoints[3].x, parsePoints[3].y],
-          ["L", chartWidth * 0.4, 20],
+          ["L", chartWidth * 0.4 + 50, 20],
           ["M", parsePoints[2].x, parsePoints[2].y],
-          ["L", chartWidth * 0.4, chartHeight - 70]
+          ["L", chartWidth * 0.4 + 50, chartHeight - 30]
         ];
 
         container.addShape("path", {
@@ -146,7 +146,7 @@ class Selection extends PureComponent {
     //矩形树图
     const scale = {
       value: {
-        nice: true
+        nice: false
       }
     };
     const arcCourseData = arcCourse.nodes ? new DataSet.View().source(arcCourse, {
@@ -363,7 +363,7 @@ class Selection extends PureComponent {
           {/*饼图柱状图显示分布比例,仅显示比例*/}
           {/*矩形树图,与饼图柱状图结合,做成卡片翻转样式,仅显示数值*/}
           <Row>
-            <Col offset={1} xs={24} xl={16}>
+            <Col offset={1} xs={24} xl={18}>
               <Select id='3in7-year' defaultValue="2019" style={{ width: 120, float: "center" }}
                       onChange={(year) => this.onDetailYearChanged(year)}
               >
@@ -375,13 +375,12 @@ class Selection extends PureComponent {
               <Card bordered={false}>
                 {this.state.pieFront ? <Chart
                     key={'pie-chart'}
-                    height={chartHeight}
                     forceFit
-                    padding={[20, 0, "auto", 20]}
+                    height={chartHeight}
+                    weight={chartWidth}
+                    padding={[20, 0, 20, 50]}
                   >
-                    <Axis name="value"/>
                     <Tooltip showTitle={false}/>
-                    <Legend/>
                     <View
                       data={courseSelectionPie}
                       start={{
@@ -405,7 +404,7 @@ class Selection extends PureComponent {
                         shape={[
                           "type",
                           function (type) {
-                            if (type === "Other") {
+                            if (type === "其他") {
                               return "otherShape";
                             }
 
@@ -453,12 +452,12 @@ class Selection extends PureComponent {
                       >
                         <Label
                           content="value*otherType"
-                          offset={-20}
+                          offset={-10}
                           textStyle={{
-                            rotate: 0
+                            fill: '#717171'
                           }}
                           formatter={(val, item) => {
-                            return item.point.otherType + ": " + (val / pieSum * 100).toFixed(3) + "%";
+                            return `${item.point.otherType}: ${val}人  ${(val / pieSum * 100).toFixed(3)}%`;
                           }}
                         />
                       </Geom>
@@ -513,7 +512,7 @@ class Selection extends PureComponent {
 
               </Card>
             </Col>
-            <Col pull={0.5} xs={24} xl={6}>
+            <Col pull={0.5} xs={24} xl={4}>
               <Card title='总结' bordered={false} hoverable={true}>
                 <p>选择xxx的学生最多</p>
                 <p>哪些组合基本没人考虑</p>

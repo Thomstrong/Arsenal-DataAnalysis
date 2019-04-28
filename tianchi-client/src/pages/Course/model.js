@@ -215,7 +215,6 @@ export default {
         fields: ['value'], // 根据指定的字段集进行排序，与lodash的sortBy行为一致
         order: 'DESC'        // 默认为 ASC，DESC 则为逆序
       }).rows;
-      console.log(sortedData);
       let children = [];
       let courseSelectionPie = [];
       // other部分的数据
@@ -232,9 +231,10 @@ export default {
           value: count
         });
         const radio = count / total;
-        if (radio < 0.03) {
-          if (otherInOtherCount > 6) {
+        if (radio < 0.02) {
+          if (otherInOtherCount > 13 || radio < 0.01) {
             otherInOtherSum += count;
+            pieOtherSum += count;
             continue;
           }
           courseSelectionPieOther.push({
