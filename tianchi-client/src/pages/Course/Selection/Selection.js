@@ -29,7 +29,7 @@ class Selection extends PureComponent {
   constructor() {
     super();
     this.state = {
-      pieFront: true
+      pieFront: false
     };
   }
 
@@ -371,7 +371,9 @@ class Selection extends PureComponent {
                 <Option key="bing20181" value="2018">2018年</Option>
                 <Option key="bing20191" value="2019">2019年</Option>
               </Select>
-              <Button onClick={() => this.setState({ pieFront: !this.state.pieFront })}> 切换视图</Button>
+              <Button onClick={() => this.setState({ pieFront: !this.state.pieFront })}>
+                {`${this.state.pieFront ? '查看人数详情' : '查看占比详情'}`}
+              </Button>
               <Card bordered={false}>
                 {this.state.pieFront ? <Chart
                     key={'pie-chart'}
