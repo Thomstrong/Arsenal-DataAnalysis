@@ -23,9 +23,11 @@ export default {
     classList: [],
     loading: false,
     radarData: [],
-
+    kaoqinData: [],
+    kaoqinSummary: [],
     totalTrend: [],
-    subTrends: []
+    subTrends: [],
+    termList: [],
   },
 
   effects: {
@@ -75,6 +77,15 @@ export default {
       yield put({
         type: 'saveTrendData',
         payload: response
+      });
+    },
+    //todo 修改为班级考勤信息
+    * fetchKaoqinData({ payload }, { call, put }) {
+      const response = yield call(getKaoqinData, 14554);
+      yield put({
+        type: 'saveKaoqinData',
+        payload: response,
+        termMap: payload.termMap
       });
     },
   },
@@ -177,6 +188,31 @@ export default {
         totalTrend,
         subTrends,
       };
+    },
+
+    //todo 班级考勤信息的修改
+    saveKaoqinData(state, action) {
+      if (!action.payload) {
+        return state;
+      }
+      const termList = {};
+      const { termMap } = action;
+      const { summary, records } = action.payload;
+      state.kaoqinSummary = summary.map((data) => {
+        return {
+          'name': EVENT_TYPE_ALIAS[data.event__type_id],
+          'count': data.count
+        };
+      });
+      state.kaoqinData = records.map((data) => {
+        termList[termMap[data.term]] = 1;
+        return {
+          'name': EVENT_TYPE_ALIAS[data.event__type_id],
+          [termMap[data.term]]: data.count,
+        };
+      });
+      state.termList = Object.keys(termList);
+      return state;
     },
     clear() {
       return {

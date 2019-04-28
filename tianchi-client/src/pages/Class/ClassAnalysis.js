@@ -11,6 +11,7 @@ import DataSet from "@antv/data-set";
 import moment from "moment";
 
 const ScoreTrendChart = React.lazy(() => import('./ScoreTrendChart'));
+const ClassAttendanceChart = React.lazy(() => import('./ClassAttendanceChart'));
 
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
@@ -21,6 +22,10 @@ const Line = Guide.Line;
   loading: loading.effects['stuClass/fetchBasic'],
   classListLoading: loading.effects['stuClass/fetchClassList'],
   radarLoading: loading.effects['stuClass/fetchRadarData'],
+  kaoqinLoading: loading.effects['stuClass/fetchKaoqinData'],
+  termList: stuClass.termList,
+  kaoqinData: stuClass.kaoqinData,
+  kaoqinSummary: stuClass.kaoqinSummary,
 }))
 class ClassAnalysis extends PureComponent {
 
@@ -111,6 +116,26 @@ class ClassAnalysis extends PureComponent {
     //todo
   };
 
+  formatKaoqinData = (kaoqinData, termList) => {
+    if (!kaoqinData.length) {
+      return [];
+    }
+    const data = new DataSet.View().source(kaoqinData).transform({
+      type: "fold",
+      fields: termList,
+      key: "term",
+      value: "count"
+    }).transform({
+      type: 'filter',
+      callback(row) {
+        return row.count;
+      }
+    });
+    data.rows.sort((a, b) => {
+      return (b.term > a.term) ? -1 : 1;
+    });
+    return data;
+  };
 
   onScoreTypeChange = (scoreType) => {
     this.setState({ scoreType });
@@ -133,7 +158,7 @@ class ClassAnalysis extends PureComponent {
 
   render() {
     const {
-      stuClass, classListLoading, loading, match, radarLoading
+      stuClass, classListLoading, loading, match, radarLoading, kaoqinLoading, termList, kaoqinSummary, kaoqinData
     } = this.props;
 
     const {
@@ -141,6 +166,8 @@ class ClassAnalysis extends PureComponent {
       classList, radarData, totalTrend,
       subTrends
     } = stuClass;
+
+    const kaoQinData = this.formatKaoqinData(kaoqinData, termList);
 
     const { boy, stay, total, local, policy } = distributionData;
     const isAtSchool = classInfo.start_year === 2018;
@@ -523,6 +550,7 @@ class ClassAnalysis extends PureComponent {
                             value={this.state.scoreType} style={{ width: 120 }}
                             onChange={this.onScoreTypeChange}
                           >
+                            {/*todo 修改为只有绝对分和排名*/}
                             <Option key="score" value="score">绝对分</Option>
                             <Option key="z_score" value="z_score">离均值(Z分)</Option>
                             <Option key="t_score" value="t_score">标准分(T分)</Option>
@@ -550,7 +578,7 @@ class ClassAnalysis extends PureComponent {
                     </Fragment> : <Empty description='请在左侧搜索框中搜索班级数据'/>
                   }
                 </TabPane>
-                <TabPane tab={<span><Icon type="credit-card"/>具体考试分析</span>} key="Specific">
+                <TabPane tab={<span><Icon type="copy" />具体考试分析</span>} key="Specific">
                   <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
                     <Select
                       showSearch
@@ -783,6 +811,16 @@ class ClassAnalysis extends PureComponent {
                       </Card>
                     </div> : <Empty description='请在左侧搜索框中搜索班级数据或选定考试'/>
                   }
+                </TabPane>
+                <TabPane tab={<span><i className={`fa fa-calendar-check-o`}/> 考勤情况显示</span>} key="Attendance">
+                  <Suspense fallback={<Spin className='center'/>}>
+                    <ClassAttendanceChart
+                      loading={kaoqinLoading}
+                      kaoqinData={kaoQinData}
+                      termList={termList}
+                      kaoqinSummary={kaoqinSummary}
+                    />
+                  </Suspense>
                 </TabPane>
               </Tabs>
             </Card>
