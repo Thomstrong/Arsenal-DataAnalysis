@@ -37,12 +37,6 @@
 }
 
 .tagsTitle,
-.teamTitle {
-  margin-bottom: 12px;
-  color: @heading-color;
-  font-weight: 500;
-}
-
 .tags {
   :global {
     .ant-tag {
@@ -51,23 +45,24 @@
   }
 }
 
-.team {
+.stuClass {
+  .stuClassTitle {
+    margin-bottom: 12px;
+    color: @heading-color;
+    font-weight: 500;
+    display: inline-flex;
+  }
   :global {
     .ant-avatar {
       margin-right: 12px;
     }
   }
-
-  a {
-    display: block;
-    margin-bottom: 24px;
-    color: @text-color;
-    transition: color 0.3s;
-    .textOverflow();
-
-    &:hover {
-      color: @primary-color;
-    }
+  .stuClassInfo {
+    margin-left: 20px;
+    display: inline;
+  }
+  .stuClassTeacher {
+    margin: 5px;
   }
 }
 

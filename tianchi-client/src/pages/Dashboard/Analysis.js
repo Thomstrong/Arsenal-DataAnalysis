@@ -13,7 +13,11 @@ const AttendanceCard = React.lazy(() => import('./AttendanceCard'));
 @connect(({ loading, dashboard, global }) => ({
   dashboard,
   totalHourlyAvgCost: global.totalHourlyAvgCost,
-  loading: loading.effects['dashboard/fetchCampusSummary'],
+  introLoading: loading.effects['dashboard/fetchYearCostSummary'],
+  sexDistriLoading: loading.effects['dashboard/fetchGradeSummary'] && loading.effects['dashboard/fetchStaySummary'],
+  locationLoading: loading.effects['dashboard/fetchNativePlaceSummary'] &&
+  loading.effects['dashboard/fetchNationSummary'] &&
+  loading.effects['dashboard/fetchPolicySummary'],
   sexHourlyLoading: loading.effects['dashboard/fetchSexHourlyCostSummary']
 }))
 class Analysis extends Component {
@@ -38,23 +42,12 @@ class Analysis extends Component {
 
   componentDidMount() {
     const { dispatch, totalHourlyAvgCost } = this.props;
+    // introducd row
     dispatch({
       type: 'dashboard/fetchCampusSummary',
     });
     dispatch({
       type: 'dashboard/fetchStaySummary',
-    });
-    dispatch({
-      type: 'dashboard/fetchGradeSummary',
-    });
-    dispatch({
-      type: 'dashboard/fetchNativePlaceSummary',
-    });
-    dispatch({
-      type: 'dashboard/fetchNationSummary',
-    });
-    dispatch({
-      type: 'dashboard/fetchPolicySummary',
     });
     dispatch({
       type: 'dashboard/fetchYearCostSummary',
@@ -68,6 +61,21 @@ class Analysis extends Component {
         year: this.state.year
       }
     });
+
+    dispatch({
+      type: 'dashboard/fetchGradeSummary',
+    });
+    dispatch({
+      type: 'dashboard/fetchNativePlaceSummary',
+    });
+    dispatch({
+      type: 'dashboard/fetchNationSummary',
+    });
+    dispatch({
+      type: 'dashboard/fetchPolicySummary',
+    });
+
+
     dispatch({
       type: 'dashboard/fetchKaoqinMixedSum',
     });
@@ -186,7 +194,10 @@ class Analysis extends Component {
 
   render() {
     const { sexType, studentType } = this.state;
-    const { loading, dashboard, totalHourlyAvgCost, sexHourlyLoading } = this.props;
+    const {
+      introLoading, sexDistriLoading, locationLoading,
+      dashboard, totalHourlyAvgCost, sexHourlyLoading
+    } = this.props;
 
     const {
       campusData, totalStudentCount, stayData,
@@ -196,34 +207,34 @@ class Analysis extends Component {
       kaoqinSummaryData, totalKaoqinCount,
       sexHourlyCostData, sexHourlyCountData,
       gradeCostData, gradeCostCountData,
-      stayCostData, stayCountData, enterSchoolData, kaoqinMixedData
+      stayCostData, stayCountData, enterSchoolData, kaoqinMixedData,
     } = dashboard;
-    this.addZeroForTotalAvg(totalHourlyAvgCost);
+    this.addZeroForTotalAvg(totalHourlyAvgCost || []);
     this.addZeroForTwoFieldData(sexHourlyCostData, 'sex', ['男生', '女生']);
     this.addZeroForTwoFieldData(stayCostData, 'stayType', ['走读', '住校']);
     this.addZeroForGradeData(gradeCostData);
-    const sexHourlyData = sexHourlyCostData.concat(totalHourlyAvgCost.map(data => {
+    const sexHourlyData = totalHourlyAvgCost ? sexHourlyCostData.concat(totalHourlyAvgCost.map(data => {
       return {
         hour: data.hour,
         cost: Number(data.total_avg.toFixed(2)),
         sex: '整体'
       };
-    }));
-    const stayHourlyData = stayCostData.concat(totalHourlyAvgCost.map(data => {
+    })) : sexHourlyCostData;
+    const stayHourlyData = totalHourlyAvgCost ? stayCostData.concat(totalHourlyAvgCost.map(data => {
       return {
         hour: data.hour,
         cost: Number(data.total_avg.toFixed(2)),
         stayType: '整体'
       };
-    }));
+    })) : stayCostData;
 
-    const gradeHourlyData = gradeCostData.concat(totalHourlyAvgCost.map(data => {
+    const gradeHourlyData = totalHourlyAvgCost ? gradeCostData.concat(totalHourlyAvgCost.map(data => {
       return {
         hour: data.hour,
         cost: Number(data.total_avg.toFixed(2)),
         grade: '整体'
       };
-    }));
+    })) : gradeCostData;
     //student表示人员分布的图表
     let studentPieData = [];
 
@@ -248,7 +259,7 @@ class Analysis extends Component {
       <GridContent>
         <Suspense fallback={<PageLoading/>}>
           <IntroduceRow
-            loading={loading}
+            loading={introLoading}
             year={this.state.year}
             data={{
               campusData,
@@ -266,6 +277,8 @@ class Analysis extends Component {
             studentType={studentType}
             sexType={sexType}
             data={{
+              sexDistriLoading,
+              locationLoading,
               totalStudentCount,
               studentPieData,
               sexPieData,
