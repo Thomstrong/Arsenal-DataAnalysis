@@ -5,7 +5,7 @@ import React, {memo} from "react";
 import {Card, Col, Empty, Row} from 'antd';
 import {Axis, Chart, Geom, Legend, Tooltip} from "bizcharts";
 import {OneTimelineChart} from '@/components/Charts';
-import {Typography, Divider} from 'antd';
+import {Typography} from 'antd';
 
 const { Paragraph, Text} = Typography;
 
@@ -14,9 +14,6 @@ let chartIns = null;
 //todo 由后端传入
 const money = 2000;
 const precent = "20%";
-const cishu = 7;
-const time = "8时";
-const timemoney = 20.6;
 
 const ConsumptionOverallLineChart = memo(
   ({hourlyAvgCost, dailySumCost, maxHourlyAvg}) => {
@@ -39,12 +36,10 @@ const ConsumptionOverallLineChart = memo(
        }
     }
 
-
-    console.log(hourlyAvgCost);
     return (
       <Card title="总体消费情况一览" bordered={false} style={{width: '100%'}}>
         <Card title="总体消费趋势" bordered={false} style={{width: '100%'}} hoverable={true}>
-          {dailySumCost.length ? <Row>
+          {dailySumCost.length ? <Row type="flex" align="middle">
             <Col span={20}>
               <OneTimelineChart
                 height={300}
@@ -63,14 +58,12 @@ const ConsumptionOverallLineChart = memo(
           </Row> : <Empty/>}
         </Card>
         <Card title="不同时间点平均消费对比" bordered={false} style={{width: '100%'}} hoverable={true}>
-          {dailySumCost.length ? <Row>
+          {dailySumCost.length ? <Row type="flex" align="middle">
             <Col span={3}>
               <Paragraph>共有<Text strong style={{color: "#cc4756"}}>{timeCount}</Text>个时间段产生过消费;</Paragraph>
-              <Paragraph>其中,平均消费最高的金额出现在<Text strong style={{color: "#cc4756"}}>{maxTime}时</Text>,平均消费为<Text strong
-                                                                                                         style={{color: "#cc4756"}}>¥{maxMoney}</Text></Paragraph>
+              <Paragraph>其中，平均消费最高出现在<Text strong style={{color: "#cc4756"}}>{maxTime}时</Text>,平均消费金额为<Text strong style={{color: "#cc4756"}}>¥{maxMoney}</Text></Paragraph>
             </Col>
             <Col span={20} offset={1}>
-
               <Chart
                 height={300}
                 data={hourlyAvgCost}

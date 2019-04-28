@@ -496,6 +496,7 @@ class Center extends PureComponent {
       }
     };
 
+
     //词云的处理
     function getTextAttrs(cfg) {
       return _.assign(
