@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from classes.api.serializers import ClassMiniSerializer
 from students.models.student import Student
 
 
@@ -10,7 +11,7 @@ class StudentMiniSerializer(serializers.ModelSerializer):
 
 
 class StudentBasicInfoSerializer(serializers.ModelSerializer):
-    class_id = serializers.SerializerMethodField()
+    stu_class = serializers.SerializerMethodField()
 
     class Meta:
         model = Student
@@ -19,10 +20,10 @@ class StudentBasicInfoSerializer(serializers.ModelSerializer):
             'nation', 'born_year',
             'native_place', 'policy',
             'is_left', 'is_stay_school',
-            'class_id'
+            'stu_class'
         )
 
-    def get_class_id(self, obj):
-        return obj.studentrecord_set.select_related('stu_class').order_by(
+    def get_stu_class(self, obj):
+        return ClassMiniSerializer(obj.studentrecord_set.select_related('stu_class').order_by(
             'term__start_year'
-        ).last().stu_class.id
+        ).last().stu_class).data

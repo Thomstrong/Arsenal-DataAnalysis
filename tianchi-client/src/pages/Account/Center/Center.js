@@ -751,14 +751,14 @@ class Center extends PureComponent {
                   </Fragment>}
                   <Divider style={{ marginTop: 16 }} dashed/>
                   {/*老师信息*/}
-                  <div className={styles.team}>
-                    <div className={styles.teamTitle}>班级信息</div>
-                    <Link to={`/class/analysis/?classId=${studentInfo.class_id}`}>
-                      查看详细
+                  <div className={styles.stuClass}>
+                    <div className={styles.stuClassTitle}>班级信息</div>
+                    <Link className={styles.stuClassInfo} to={`/class/analysis/?classId=${studentInfo.stu_class.id}`}>
+                      {`${studentInfo.stu_class.start_year}年-${studentInfo.stu_class.class_name}`}
                     </Link>
                     <Row gutter={36}>
                       {teacherInfo.map(item => (
-                        <Col key={item.id} lg={24} xl={12}>
+                        <Col className={styles.stuClassTeacher} key={item.id} md={22} lg={22} xl={10}>
                           <Avatar size={32}><b>{item.courseName}</b></Avatar>
                           {item.name}
                         </Col>

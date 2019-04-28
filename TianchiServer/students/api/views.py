@@ -77,7 +77,7 @@ class StudentViewSet(viewsets.ModelViewSet):
                 record_filter
             ).values('student__nation').annotate(
                 count=Count('student_id', distinct=True)
-            ).values('student__nation', 'count')
+            ).values('student__nation', 'count').order_by('-count')
             return Response(record)
 
         if base == 'policy':
@@ -85,7 +85,7 @@ class StudentViewSet(viewsets.ModelViewSet):
                 record_filter
             ).values('student__policy').annotate(
                 count=Count('student_id', distinct=True)
-            ).values('student__policy', 'count')
+            ).values('student__policy', 'count').order_by('-count')
             return Response(record)
 
         if base == 'native_place':
