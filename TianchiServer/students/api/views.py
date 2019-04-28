@@ -194,16 +194,16 @@ class StudentViewSet(viewsets.ModelViewSet):
         records = KaoqinRecord.objects.filter(
             student_id=pk,
             event_id__gte=9900100
-        ).values('event__type_id', 'term').annotate(
+        ).exclude(event_id=9900500).values('event__type_id', 'term').annotate(
             count=Count('id'),
         ).order_by('term__start_year').order_by('term__order')
 
         sumary = KaoqinRecord.objects.filter(
             student_id=pk,
             event_id__gte=9900100
-        ).values('event__type_id').annotate(
+        ).exclude(event_id=9900500).values('event__type_id').annotate(
             count=Count('id'),
-        )
+        ).order_by('-count')
 
         return Response({
             'records': records,
