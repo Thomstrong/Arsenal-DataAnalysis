@@ -3,16 +3,17 @@
  */
 //展示选课情况,包括各科目选课人数分布,及不同7选3的分布情况
 
-import React, { Fragment, PureComponent } from 'react';
-import { COURSE_FULLNAME_ALIAS, POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
-import { Button, Card, Col, Row, Select } from 'antd';
+import React, {Fragment, PureComponent} from 'react';
+import {COURSE_FULLNAME_ALIAS} from "@/constants";
+import {Button, Card, Col, Row, Select, Typography} from 'antd';
 import DataSet from "@antv/data-set";
-import { Axis, Chart, Coord, G2, Geom, Guide, Label, Legend, Tooltip, View } from "bizcharts";
-import { connect } from "dva";
+import {Axis, Chart, Coord, G2, Geom, Guide, Label, Legend, Tooltip, View} from "bizcharts";
+import {connect} from "dva";
 
-const { Option } = Select;
+const {Paragraph, Text:AntdText} = Typography;
+const {Option} = Select;
 
-@connect(({ loading, course }) => ({
+@connect(({loading, course}) => ({
   distributions: course.distributions,
   coursePercents: course.coursePercents,
   totalStudents: course.totalStudents,
@@ -34,7 +35,7 @@ class Selection extends PureComponent {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
     dispatch({
       type: 'course/fetchSelectionDistribution',
     });
@@ -62,7 +63,7 @@ class Selection extends PureComponent {
   }
 
   onYearChanged = (year, type1, type2) => {
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
     dispatch({
       type: `course/${type1}`,
       payload: {
@@ -78,7 +79,7 @@ class Selection extends PureComponent {
   };
 
   onDetailYearChanged = (year) => {
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
     dispatch({
       type: 'course/fetchDetailPercent',
       payload: {
@@ -97,14 +98,27 @@ class Selection extends PureComponent {
       courseSelectionTree
     } = this.props;
 
-    const { Text } = Guide;
+
+
+    console.log(courseSelectionTree);
+
+    const {Text} = Guide;
+
     //分组层叠图颜色
     const colorMap = {
       "2017_未知": "#36c0e1",
       "2019_男": "#0860BF",
       "2019_女": "#1581E6",
       "2018_未知": "#209BDD",
-      // "2017_未知": "#80B2D3",
+    };
+    const arcColorMap = {
+      "物理": "#668ed7",
+      "化学": "#23c2db",
+      "生物": "#63d5b2",
+      "地理": "#95c87e",
+      "历史": "#feb64e",
+      "技术": "#fa816d",
+      "政治": "#d15b7f",
     };
     const chartWidth = window.innerWidth;
     const chartHeight = window.innerHeight / 2;
@@ -158,11 +172,13 @@ class Selection extends PureComponent {
       targetWeight: e => e.targetWeight,
       weight: true,
       marginRatio: 0.3
-    }) : { edges: [], nodes: [] };
+    }) : {edges: [], nodes: []};
+
+
 
     return (
       <Fragment>
-        <Card title="高三各科目选课情况分布" bordered={true} style={{ width: '100%' }}>
+        <Card title="高三各科目选课情况分布" bordered={true} style={{width: '100%'}}>
           {/*分组堆叠*/}
           <Chart
             key='selection-total-distribute-chart'
@@ -211,7 +227,7 @@ class Selection extends PureComponent {
             <Select
               id='yujue-year'
               defaultValue="2019"
-              style={{ width: 180, float: "right", paddingRight: 60 }}
+              style={{width: 180, float: "right", paddingRight: 60}}
               onChange={(year) => this.onYearChanged(year, 'fetchCoursePercents', 'fetchArcCourse')}
             >
               <Option key={`course-percents-2017`} value="2017">2017年</Option>
@@ -224,7 +240,7 @@ class Selection extends PureComponent {
               {/*玉珏*/}
               <Chart
                 key='selection-jade-chart' height={400}
-                padding={{ top: 60, right: 40, bottom: 25 }}
+                padding={{top: 60, right: 40, bottom: 25}}
                 data={coursePercents}
                 scale={{
                   percent: {
@@ -290,7 +306,7 @@ class Selection extends PureComponent {
                     sync: true
                   }
                 }}
-                padding={{ top: 30, right: 40, bottom: 20 }}
+                padding={{top: 30, right: 40, bottom: 20}}
               >
                 <Tooltip showTitle={false}/>
                 <View data={arcCourseData.edges} axis={false}>
@@ -299,7 +315,9 @@ class Selection extends PureComponent {
                     type="edge"
                     position="x*y"
                     shape="arc"
-                    color="source"
+                    color={["source", function (source) {
+                      return arcColorMap[COURSE_FULLNAME_ALIAS[source]];
+                    }]}
                     opacity={0.5}
                     tooltip={[
                       "source*target*sourceWeight",
@@ -315,7 +333,19 @@ class Selection extends PureComponent {
                 </View>
                 <View data={arcCourseData.nodes} axis={false}>
                   <Coord type="polar" reflect="y"/>
-                  <Geom type="polygon" position="x*y" color="id">
+                  <Geom
+                    type="polygon"
+                    position="x*y"
+                    color={["id", function (id) {
+                      return arcColorMap[COURSE_FULLNAME_ALIAS[id]];
+                    }]}
+                    tooltip={["id", (id) => {
+                      return {
+                        name: COURSE_FULLNAME_ALIAS[id],
+                        value: id
+                      }
+                    }]}
+                  >
                     <Label
                       content="name"
                       labelEmit={true}
@@ -328,15 +358,19 @@ class Selection extends PureComponent {
               </Chart>
             </Col>
           </Row>
-          <Card title='总结' bordered={false} hoverable={true} style={{ marginLeft: 32, marginRight: 32 }}>
-            <p>1.
-              自2017年高考改革以来物理、化学、生物的人数一直居高不下，历史在七门学科中较为弱势。由于填报志愿时不同专业对选课要求的不同，物理化学在填报志愿时较有优势，其中选考物理后的可申报专业覆盖面高达93.5%，化学为85.5%</p>
-            <p>2.
-              2019年，男女生选课差异并不明显，女男比在理化生三个学科上依次增高，男女选课人数最不均衡的居然是政治接近1：5。其中，化学、地理的选课男女比接近1：1；物理、技术接近2：1；生物、历史接近1：2。</p>
-            <p>3. 分流情况，选物理的都同时选了什么呀</p>
-          </Card>
+          {distributions.length && coursePercents.length && arcCourseData.nodes &&
+          <Card title='总结' bordered={false} hoverable={true} style={{marginLeft: 32, marginRight: 32}}>
+            <Typography>
+              <Paragraph>1.
+                自2017年高考改革以来选修<AntdText type="danger">物理、化学、生物</AntdText>的人数一直居<AntdText type="danger">高</AntdText>不下。传统文科中<AntdText type="danger">地理</AntdText>最受<AntdText type="danger">欢迎</AntdText>，<AntdText type="danger">历史</AntdText>在七门学科中较为<AntdText type="danger">弱势</AntdText>。究其原因,可能是填报志愿时不同专业对选课要求的不同，物理化学在填报志愿时较有优势，其中选考物理后的可申报专业覆盖面高达93.5%，化学为85.5%;</Paragraph>
+              <Paragraph>2.
+                2019年,选课人数突增，但<AntdText type="danger">男女</AntdText>生选课<AntdText type="danger">差异并不明显</AntdText>，<AntdText type="danger">女男比</AntdText>在理化生三个学科上依次<AntdText type="danger">增高</AntdText>，男女选课人数最不均衡的居然是政治接近<AntdText type="danger">1：5</AntdText>。其中，化学、地理的选课男女比接近<AntdText type="danger">1：1</AntdText>；物理、技术接近<AntdText type="danger">2：1</AntdText>；生物、历史接近<AntdText type="danger">1：2</AntdText>；</Paragraph>
+              <Paragraph>3.
+                选课的重叠情况三年来没有什么显著的变化。选修了<AntdText type="danger">物理</AntdText>的同学还是有<AntdText type="danger">近6成</AntdText>同时选修了化学或生物；选修了<AntdText type="danger">化学、生物</AntdText>的同学有<AntdText type="danger">一半</AntdText>也进行了生物或物理，化学或物理的组合；选修政治的同学其他六门课程的选修概率基本相同。</Paragraph>
+            </Typography>
+          </Card>}
         </Card>
-        <Card title="七选三组合分布情况" bordered={true} style={{ width: '100%', marginTop: 32 }}>
+        <Card title="七选三组合分布情况" bordered={true} style={{width: '100%', marginTop: 32}}>
           {/*柱状图显示35种选择人数分布情况,分组柱状图*/}
           <Chart
             key='selection-3_in_7-chart'
@@ -363,15 +397,15 @@ class Selection extends PureComponent {
           {/*饼图柱状图显示分布比例,仅显示比例*/}
           {/*矩形树图,与饼图柱状图结合,做成卡片翻转样式,仅显示数值*/}
           <Row>
-            <Col offset={1} xs={24} xl={18}>
-              <Select id='3in7-year' defaultValue="2019" style={{ width: 120, float: "center" }}
+            <Col offset={1} xs={24} xl={22}>
+              <Select id='3in7-year' defaultValue="2019" style={{width: 120, float: "center"}}
                       onChange={(year) => this.onDetailYearChanged(year)}
               >
                 <Option key="bing20171" value="2017">2017年</Option>
                 <Option key="bing20181" value="2018">2018年</Option>
                 <Option key="bing20191" value="2019">2019年</Option>
               </Select>
-              <Button onClick={() => this.setState({ pieFront: !this.state.pieFront })}>
+              <Button onClick={() => this.setState({pieFront: !this.state.pieFront})}>
                 {`${this.state.pieFront ? '查看人数详情' : '查看占比详情'}`}
               </Button>
               <Card bordered={false}>
@@ -380,7 +414,7 @@ class Selection extends PureComponent {
                     forceFit
                     height={chartHeight}
                     weight={chartWidth}
-                    padding={[20, 0, 20, 50]}
+                    padding={[20, 0, 20, 120]}
                   >
                     <Tooltip showTitle={false}/>
                     <View
@@ -450,7 +484,7 @@ class Selection extends PureComponent {
                         type="intervalStack"
                         position="1*value"
                         boolean={true}
-                        color={["otherType", "#FCD7DE-#F04864"]}
+                        color={["otherType", "#b6e7ff-#6387c9"]}
                       >
                         <Label
                           content="value*otherType"
@@ -511,16 +545,18 @@ class Selection extends PureComponent {
                       />
                     </Geom>
                   </Chart>}
-
-              </Card>
-            </Col>
-            <Col pull={0.5} xs={24} xl={4}>
-              <Card title='总结' bordered={false} hoverable={true}>
-                <p>选择xxx的学生最多</p>
-                <p>哪些组合基本没人考虑</p>
               </Card>
             </Col>
           </Row>
+          {detailDistribution.length && courseSelectionPie.length && courseSelectionTree.length &&
+          <Row>
+              <Card title='总结' bordered={false} hoverable={true} style={{marginLeft: 32, marginRight: 32}}>
+                <Paragraph>1. 无论哪一年，<AntdText type="danger">物理化学、物理生物</AntdText>再加上其他一门学科的选课方案占据了整个选课方案的<AntdText type="danger">近一半</AntdText>;</Paragraph>
+                <Paragraph>2. <AntdText type="danger">物化生</AntdText>和<AntdText type="danger">物化地</AntdText>的组合方式最受欢迎的,选课比例都能达到两位数。2017年物化生选课人数达到32%,2018年物化地选课人数达到23%;</Paragraph>
+                <Paragraph>3. <AntdText type="danger">2019年</AntdText>的选课更<AntdText type="danger">多样化</AntdText>一些。2019年，仅史政技<AntdText type="danger">1种</AntdText>组合方式0人选择；2018年，生政技等<AntdText type="danger">4种</AntdText>选课组合无人问津；2017年更是多达<AntdText type="danger">5种</AntdText>。物史政、化政技、物史技、化史技、生政技等组合方式<AntdText type="danger">几乎没人</AntdText>选择;</Paragraph>
+                <Paragraph>4. 2019年选课人数增加，大部分7选3组合选课人数呈上升趋势，但历史政治、历史地理、化学地理等组合方式选课人数<AntdText type="danger">不增反降。</AntdText></Paragraph>
+              </Card>
+          </Row>}
         </Card>
       </Fragment>
     );
