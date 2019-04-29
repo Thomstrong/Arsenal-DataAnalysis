@@ -2,13 +2,14 @@
  * Created by 胡晓慧 on 2019/4/18.
  */
 import React, { memo } from 'react';
-import { Card, Col, Radio, Row } from 'antd';
+import {Card, Col, Radio, Row, Select, Typography} from 'antd';
 import styles from './LocationMap.less';
 import { Pie, TimelineChart } from '@/components/Charts';
 import numeral from 'numeral';
 import { Chart, Coord, Geom, Label, Legend, Tooltip, View, } from 'bizcharts';
 
 import DataSet from '@antv/data-set';
+const {Paragraph, Text} = Typography;
 
 const cols = {
   percent: {
@@ -179,9 +180,16 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
     {!!showAnalysis && !sexDistriLoading && !locationLoading && <Row gutter={24}>
       <Col xl={24} xs={24}>
         <Card title="人员分析" hoverable={true}>
-          <p>1. 高一高二高三人数递减，高一男生占全校学生数的1／4;各年级女生人数比较稳定都在16%左右，男生人数呈明显递减趋势，高三年级女生人数反超男生;</p>
-          <p>2. 当前学年，走读生占6成; 男生走读人数和住校人数持平，女生走读人数是住校人数的近3倍;住校生中男生人数也是女生的两倍有余;</p>
-          <p>3. 学校生源主要来自于浙江宁波(本地)，外地生源中以湖北省的生源最多。todo 待做</p>
+          <Paragraph>1. 高一高二高三人数递减，<Text type="danger">高一男生</Text>占全校学生数的<Text type="danger">1／4</Text>;
+            各年级女生人数比较稳定都在<Text type="danger">16%</Text>左右，男生人数呈明显递<Text type="danger">减</Text>趋势，
+            高三年级女生人数反超男生;</Paragraph>
+          <Paragraph>2. 当前学年，走读生占<Text type="danger">6成</Text>; 男生走读人数和住校人数持平，
+            女生走读人数是住校人数的<Text type="danger">近3倍</Text>;
+            住校生中男生人数也是女生的<Text type="danger">两倍</Text>有余;</Paragraph>
+          <Paragraph>3. 学校生源主要来自于<Text type="danger">浙江宁波</Text>(本地)，外地生源中以<Text type="danger">湖南省</Text>的生源最多。
+            其他省市生源比较分散。</Paragraph>
+          <Paragraph>4. 汉族是学生的主要民族，但仍有<Text type="danger">近1%</Text>的学生来自其他各个民族</Paragraph>
+          <Paragraph>5. 该校学生的主要政治面貌是<Text type="danger">共青团员</Text>，还有一位共产党员，一位民主党派人数。</Paragraph>
         </Card>
       </Col>
     </Row>}

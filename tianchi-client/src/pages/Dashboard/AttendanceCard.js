@@ -2,11 +2,12 @@
  * Created by 胡晓慧 on 2019/4/19.
  */
 import React, { memo } from 'react';
-import { Card, Col, Row } from 'antd';
+import {Card, Col, Row, Typography} from 'antd';
 import { Pie, TimelineChart } from '@/components/Charts';
 import styles from './EcardConsumptionCard.less';
 import numeral from 'numeral';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
+const {Paragraph, Text} = Typography;
 
 const cols = {
   weekday: {
@@ -51,17 +52,6 @@ const cols = {
     ]
   }
 };
-// const colorMap = {
-// //   "高三_迟到": "#1ea2c9",
-// //   "高二_迟到": "#21adac",
-// //   "高一_迟到": "#14dcdc",
-// //   "高一_早退": "#ff6271",
-// //   "高二_早退": "#cc4756",
-// //   "高三_早退": "#85343f",
-// //   "高一_校服违纪": "#FFD747",
-// //   "高二_校服违纪": "#bc9e31",
-// //   "高三_校服违纪": "#918f0c",
-// // };
 const colorMap = {
   "高三_迟到": "#2190d3",
   "高二_迟到": "#60acfc",
@@ -185,14 +175,15 @@ const AttendanceCard = memo(({ data }) => {
                     <span className={styles.rankingItemTitle} title={item.title}>
                           {item.title}
                         </span>
-                    <span>{numeral(item.total).format('0,0')}</span>
+                    <span>{numeral(item.total).format('0,0')}人次</span>
                   </li>
                 ))}
               </ul>
               <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
-                <p>1. 数据量有限不能代表所有学生的进离校情况;</p>
-                <p>2. 早上6点多是绝大多数学生的进校时间,7点会有部分学生姗姗来迟;</p>
-                <p>3. 周五下午3、4点是离校高峰，周日10点到12点住校生普遍返校</p>
+                <Paragraph>1. <Text type='danger'>数据量有限</Text>不能代表所有学生的进离校情况;</Paragraph>
+                <Paragraph>2. 早上<Text type='danger'>6点多</Text>是绝大多数学生的进校时间,7点会有部分学生姗姗来迟;</Paragraph>
+                <Paragraph>3. <Text type='danger'>周五</Text>下午<Text type='danger'>3、4点</Text>是离校高峰，
+                  <Text type='danger'>周日10点到12点</Text>住校生普遍返校</Paragraph>
               </Card>
             </div>
           </Col>
@@ -222,9 +213,11 @@ const AttendanceCard = memo(({ data }) => {
                 ))}
               </ul>
               <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
-                <p>1. 违纪情况呈递增趋势，2018年考勤不合格人数最多(18-19学年仅有一半数据);</p>
-                <p>2. 高一违纪情况在任一学年任一类型都是最少的，同时，高三几乎肩负起了一半的违纪指标;</p>
-                <p>3. 每一学年的高三学生都会有迟到和校服违纪的现象，但早退集中在17学年和18学年。</p>
+                <Paragraph>1. 违纪情况呈<Text type="danger">递增</Text>趋势，
+                  <Text type="danger">17-18学年</Text>考勤不合格人数最多(18-19学年仅有一半数据);</Paragraph>
+                <Paragraph>2. <Text type="danger">高一</Text>违纪情况在任一学年任一类型都是最<Text type="danger">少</Text>的，
+                  同时，<Text type="danger">高三</Text>几乎肩负起了<Text type="danger">一半</Text>的违纪指标;</Paragraph>
+                <Paragraph>3. 每一学年的高三学生都会有迟到和校服违纪的现象，但<Text type="danger">早退</Text>集中在17学年和18学年。</Paragraph>
               </Card>
             </div>
           </Col>
