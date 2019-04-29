@@ -200,7 +200,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                 </Chart>
               </div>
             </Col>
-            <Col span={7} offset={1}>
+            {sexHourlyData &&<Col span={7} offset={1}>
               <div className={styles.salesRank}>
                 <h4 className={styles.rankingTitle}>
                   每时段消费额排名
@@ -229,7 +229,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                     可以看出<Text type='danger'>非就餐时间的消费</Text>(零食等)占据部分学生<Text type='danger'>更多</Text>开销。</Paragraph>
                 </Card>
               </div>
-            </Col>
+            </Col>}
           </Row>
         </TabPane>
         <TabPane tab={<span><Icon type="line-chart"/>年级对比</span>} key="Grade">
@@ -309,7 +309,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                 </Chart>
               </div>
             </Col>
-            <Col span={7} offset={1}>
+            {gradeHourlyData && <Col span={7} offset={1}>
               <div className={styles.salesRank}>
                 <h4 className={styles.rankingTitle}>
                   每时段消费额排名
@@ -338,7 +338,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                     和<Text type='danger'>9时</Text>、<Text type='danger'>16</Text>时的额外消费情况。</Paragraph>
                 </Card>
               </div>
-            </Col>
+            </Col>}
           </Row>
         </TabPane>
         <TabPane tab={<span><Icon type="line-chart"/>走读住宿对比</span>} key="Leave">
@@ -417,7 +417,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                 </Chart>
               </div>
             </Col>
-            <Col span={7} offset={1}>
+            {stayHourlyData && <Col span={7} offset={1}>
               <div className={styles.salesRank}>
                 <h4 className={styles.rankingTitle}>
                   每时段消费额排名
@@ -444,14 +444,14 @@ const EcardConsumptionCard = memo(({ data }) => {
                   <Paragraph>3. 需要注意的是<Text type='danger'>0时</Text>，还有<Text type='danger'>14人次</Text>的走读生进行了消费。</Paragraph>
                 </Card>
               </div>
-            </Col>
+            </Col>}
           </Row>
         </TabPane>
       </Tabs>
     </Card>
     <Card title="总体消费趋势" bordered={true} style={{ width: '100%', marginTop: 32 }}>
       <Row>
-        <Col span={7}>
+        {yearCostData && <Col span={7}>
           <div className={styles.salesRank}>
             <h4 className={styles.rankingTitle}>
               消费总额排名
@@ -479,7 +479,7 @@ const EcardConsumptionCard = memo(({ data }) => {
               <Paragraph>3. 每日消费总额基本稳定在<Text type='danger'>4.1万元</Text>左右.</Paragraph>
             </Card>
           </div>
-        </Col>
+        </Col>}
         <Col span={16} offset={1}>
           <OneTimelineChart
             height={400}

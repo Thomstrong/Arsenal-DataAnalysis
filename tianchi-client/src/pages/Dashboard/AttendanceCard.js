@@ -159,7 +159,7 @@ const AttendanceCard = memo(({ data }) => {
               />
             </Chart>
           </Col>
-          <Col span={7} offset={1}>
+          {enterSchoolData && <Col span={7} offset={1}>
             <div className={styles.salesRank}>
               <h4 className={styles.rankingTitle}>
                 进离校时间排名
@@ -186,13 +186,13 @@ const AttendanceCard = memo(({ data }) => {
                   <Text type='danger'>周日10点到12点</Text>住校生普遍返校</Paragraph>
               </Card>
             </div>
-          </Col>
+          </Col>}
         </Row>
 
       </Card>
       <Card title="考勤情况一览" bordered={false} style={{ marginTop: 32 }}>
         <Row>
-          <Col span={7}>
+          {kaoqinMixedData && <Col span={7}>
             <div className={styles.salesRank}>
               <h4 className={styles.rankingTitle}>
                 违纪次数排名
@@ -220,7 +220,7 @@ const AttendanceCard = memo(({ data }) => {
                 <Paragraph>3. 每一学年的高三学生都会有迟到和校服违纪的现象，但<Text type="danger">早退</Text>集中在17学年和18学年。</Paragraph>
               </Card>
             </div>
-          </Col>
+          </Col>}
           <Col span={16} offset={1}>
             <Chart
               height={400}
