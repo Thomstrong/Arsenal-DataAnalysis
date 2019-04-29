@@ -133,9 +133,9 @@ class Selection extends PureComponent {
         const parsePoints = this.parsePoints(points);
         const linePath = [
           ["M", parsePoints[3].x, parsePoints[3].y],
-          ["L", chartWidth * 0.4 + 50, 20],
+          ["L", chartWidth * 0.4 + 150, 20],
           ["M", parsePoints[2].x, parsePoints[2].y],
-          ["L", chartWidth * 0.4 + 50, chartHeight - 30]
+          ["L", chartWidth * 0.4 + 150, chartHeight - 30]
         ];
 
         container.addShape("path", {
