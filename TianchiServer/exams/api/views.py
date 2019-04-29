@@ -33,6 +33,6 @@ class ClassExamViewSet(viewsets.ModelViewSet):
         ).prefetch_related(
             'sub_exam__exam',
             'stu_class'
-        ).order_by('stu_class__class_name')
+        ).order_by('sub_exam__started_at','stu_class__class_name')
         data = self.get_serializer_class()(records, many=True).data
         return Response(data)
