@@ -201,7 +201,7 @@ class Selection extends PureComponent {
                 (category, population) => {
                   return {
                     name: category,
-                    value: population
+                    value: population + "人"
                   };
                 }
               ]}
@@ -209,8 +209,7 @@ class Selection extends PureComponent {
                 {
                   type: "dodge",
                   dodgeBy: "year",
-                  // 按照 type 字段进行分组
-                  marginRatio: 0.1 // 分组中各个柱子之间不留空隙
+                  marginRatio: 0.1
                 },
                 {
                   type: "stack"
@@ -319,7 +318,7 @@ class Selection extends PureComponent {
                       (source, target, sourceWeight) => {
                         return {
                           name: COURSE_FULLNAME_ALIAS[source] + " <-> " + COURSE_FULLNAME_ALIAS[target] + "</span>",
-                          value: sourceWeight
+                          value: sourceWeight + "人"
 
                         };
                       }
@@ -397,6 +396,16 @@ class Selection extends PureComponent {
                   marginRatio: 1 / 32
                 }
               ]}
+              tooltip={[
+                "year*count",
+                (year,count) => {
+                  return {
+                    name: year,
+                    value: count+"人"
+                  };
+                }
+              ]}
+
             />
           </Chart>
           {/*饼图柱状图显示分布比例,仅显示比例*/}
@@ -457,7 +466,7 @@ class Selection extends PureComponent {
                           (type, value) => {
                             return {
                               name: type,
-                              value: value
+                              value: value+"人"
                             };
                           }
                         ]}
@@ -515,7 +524,7 @@ class Selection extends PureComponent {
                     <Tooltip showTitle={false} itemTpl={"<li data-index={index}>" +
                     '<span style="background-color:{color};" class="g2-tooltip-marker"></span>' +
                     "{name}<br/>" +
-                    '<span style="padding-left: 16px">选课人数：{count}</span><br/>' +
+                    '<span style="padding-left: 16px">选课人数：{count}人</span><br/>' +
                     "</li>"}/>
                     <Geom
                       type="polygon"
@@ -556,14 +565,18 @@ class Selection extends PureComponent {
           {detailDistribution.length && courseSelectionPie.length && courseSelectionTree.length &&
           <Row>
             <Card title='总结' bordered={false} hoverable={true} style={{marginLeft: 32, marginRight: 32}}>
-              <Paragraph>1. 无论哪一年，<AntdText type="danger">物理化学、物理生物</AntdText>再加上其他一门学科的选课方案占据了整个选课方案的<AntdText type="danger">近一半</AntdText>,
-                从另一方面说,即使开放自由选课，传统理综科目仍是选课热门组合;</Paragraph>
+              <Paragraph>1. 无论哪一年，<AntdText type="danger">物理化学、物理生物</AntdText>再加上其他一门学科的选课方案占据了整个选课方案的<AntdText
+                type="danger">近一半</AntdText>;
+                从另一角度来说,与人们设想的避难就易选课方式不同,即使开放自由选课，传统<AntdText type="danger">理综科目</AntdText>
+                仍是选课<AntdText type="danger">热门</AntdText>组合;</Paragraph>
               <Paragraph>2. <AntdText type="danger">物化生</AntdText>和<AntdText type="danger">物化地</AntdText>的组合方式最受欢迎的,选课比例都能达到两位数。
                 2017年物化生选课人数达到32%,2018年物化地选课人数达到23%;</Paragraph>
               <Paragraph>3. <AntdText type="danger">2019年</AntdText>的选课更<AntdText type="danger">多样化</AntdText>一些。
                 2019年，仅史政技<AntdText type="danger">1种</AntdText>组合方式0人选择；2018年，生政技等<AntdText type="danger">4种</AntdText>选课组合无人问津；
-                2017年更是多达<AntdText type="danger">5种</AntdText>。物史政、化政技、物史技、化史技、生政技等组合方式<AntdText type="danger">几乎没人</AntdText>选择;</Paragraph>
-              <Paragraph>4. 2019年选课人数增加，大部分7选3组合选课人数呈上升趋势，但历史政治、历史地理、化学地理等组合方式选课人数<AntdText type="danger">不增反降。</AntdText></Paragraph>
+                2017年更是多达<AntdText type="danger">5种</AntdText>。物史政、化政技、物史技、化史技、生政技等组合方式<AntdText
+                  type="danger">几乎没人</AntdText>选择;</Paragraph>
+              <Paragraph>4. 2019年选课人数增加，大部分7选3组合选课人数呈上升趋势，但历史政治、历史地理、化学地理等组合方式选课人数<AntdText
+                type="danger">不增反降。</AntdText></Paragraph>
             </Card>
           </Row>}
         </Card>
