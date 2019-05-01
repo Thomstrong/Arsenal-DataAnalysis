@@ -1,6 +1,6 @@
-import React, {Fragment, PureComponent, Suspense} from 'react';
-import {connect} from 'dva';
-import {CLASS_CAMPUS_CHOICE, SCORE_LEVEL_ALIAS} from "@/constants";
+import React, { Fragment, PureComponent, Suspense } from 'react';
+import { connect } from 'dva';
+import { CLASS_CAMPUS_CHOICE, COURSE_FULLNAME_ALIAS, SCORE_LEVEL_ALIAS } from "@/constants";
 import router from 'umi/router';
 import _ from 'lodash';
 import {
@@ -23,12 +23,10 @@ import {
 } from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './ClassAnalysis.less';
-import {Axis, Chart, Coord, Geom, Guide, Legend, Tooltip} from "bizcharts";
+import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
 import DataSet from "@antv/data-set";
 import moment from "moment";
 import Highlighter from 'react-highlight-words';
-import numeral from "numeral";
-import CoverCardList from "../List/Projects";
 
 const ScoreTrendChart = React.lazy(() => import('./ScoreTrendChart'));
 const ClassAttendanceChart = React.lazy(() => import('./ClassAttendanceChart'));
@@ -38,7 +36,7 @@ const Option = Select.Option;
 const Line = Guide.Line;
 
 
-@connect(({loading, stuClass, global}) => ({
+@connect(({ loading, stuClass, global }) => ({
   stuClass,
   loading: loading.effects['stuClass/fetchBasic'],
   classListLoading: loading.effects['stuClass/fetchClassList'],
@@ -51,7 +49,6 @@ const Line = Guide.Line;
   examCompareData: stuClass.examData.examCompareData,
   examDistributeData: stuClass.examData.examDistributeData,
   studentsList: stuClass.studentsList,
-  classExamList: stuClass.classExamList
 }))
 class ClassAnalysis extends PureComponent {
 
@@ -63,22 +60,23 @@ class ClassAnalysis extends PureComponent {
       dateRange: 7,
       pickedDate: moment().format('YYYY-MM-DD'),
       searchText: '',
-      subjectType: 'count'
+      courseId: -1,
+      examId: '',
     };
     this.getClassList = _.debounce(this.getClassList, 800);
 
   }
 
   componentDidMount() {
-    const {classInfo} = this.props.stuClass;
-    const {query} = this.props.location;
+    const { classInfo } = this.props.stuClass;
+    const { query } = this.props.location;
     if (query && query.classId && Number(query.classId) !== classInfo.id) {
       this.getClassInfo(query.classId);
     }
   }
 
   onTabChange = key => {
-    const {match} = this.props;
+    const { match } = this.props;
     switch (key) {
       case 'Trend':
         router.push(`${match.path}/Trend`);
@@ -92,7 +90,7 @@ class ClassAnalysis extends PureComponent {
   };
 
   getClassInfo = (classId) => {
-    const {dispatch, termMap} = this.props;
+    const { dispatch, termMap } = this.props;
     dispatch({
       type: 'stuClass/fetchBasic',
       payload: {
@@ -130,12 +128,17 @@ class ClassAnalysis extends PureComponent {
         termMap
       }
     });
+    dispatch({
+      type: 'stuClass/fetchClassExamList',
+      payload: {
+        classId,
+      }
+    });
     // todo 获取选定考试的所有信息 payload为考试id
     dispatch({
       type: 'stuClass/fetchExamData',
       payload: {
         classId,
-        termMap
       }
     });
     // TODO class分析第一页最近一次考试的学生排名情况
@@ -143,27 +146,17 @@ class ClassAnalysis extends PureComponent {
       type: 'stuClass/fetchStudentsListData',
       payload: {
         classId,
-        termMap
-      }
-    });
-    // TODO 获取该班级相关的考试列表
-    dispatch({
-      type: 'stuClass/fetchClassExamList',
-      payload: {
-        classId,
-        termMap
       }
     });
 
-
-    this.setState({classId});
+    this.setState({ classId, examId: '' });
   };
 
   getClassList = (input) => {
     if (!input) {
       return;
     }
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'stuClass/fetchClassList',
       payload: {
@@ -194,42 +187,29 @@ class ClassAnalysis extends PureComponent {
   };
 
   onScoreTypeChange = (scoreType) => {
-    this.setState({scoreType});
+    this.setState({ scoreType });
   };
 
   // 更改考试选项后的重新rander
-  handleChangeExam= (value) => {
-    const {dispatch} = this.props;
-    // todo payload修改为考试的id
+  onExamChanged = (examId) => {
+    if (!examId) {
+      return;
+    }
+    const { dispatch, stuClass } = this.props;
     dispatch({
-      type: 'stuClass/fetchExamData',
+      type: 'stuClass/fetchExamRank',
       payload: {
-        classId,
-        termMap
+        classId: stuClass.classInfo.id,
+        examId
       }
     });
-  }
-
-  //更改对比成绩的维度，总分／语文／数学后数据重新rander
-  handleChangeSubject= (value) => {
-    const {dispatch} = this.props;
-    this.state.subjectType = value;
-    // todo payload修改为考试的id和subject的选择值
-    dispatch({
-      type: 'stuClass/fetchExamData',
-      payload: {
-        classId,
-        termMap
-      }
-    });
-  }
+    this.setState({ examId });
+  };
 
   //table姓名可搜索部分相关代码
   getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({
-                       setSelectedKeys, selectedKeys, confirm, clearFilters,
-                     }) => (
-      <div style={{padding: 8}}>
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, }) => (
+      <div style={{ padding: 8 }}>
         <Input
           ref={node => {
             this.searchInput = node;
@@ -238,27 +218,27 @@ class ClassAnalysis extends PureComponent {
           value={selectedKeys[0]}
           onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => this.handleSearch(selectedKeys, confirm)}
-          style={{width: 188, marginBottom: 8, display: 'block'}}
+          style={{ width: 188, marginBottom: 8, display: 'block' }}
         />
         <Button
           type="primary"
           onClick={() => this.handleSearch(selectedKeys, confirm)}
           icon="search"
           size="small"
-          style={{width: 90, marginRight: 8}}
+          style={{ width: 90, marginRight: 8 }}
         >
           搜索
         </Button>
         <Button
           onClick={() => this.handleReset(clearFilters)}
           size="small"
-          style={{width: 90}}
+          style={{ width: 90 }}
         >
           重置
         </Button>
       </div>
     ),
-    filterIcon: filtered => <Icon type="search" style={{color: filtered ? '#1890ff' : undefined}}/>,
+    filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }}/>,
     onFilter: (value, record) => record[dataIndex].toString().includes(value),
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
@@ -267,7 +247,7 @@ class ClassAnalysis extends PureComponent {
     },
     render: (text) => (
       <Highlighter
-        highlightStyle={{backgroundColor: '#ffc069', padding: 0}}
+        highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
         searchWords={[this.state.searchText]}
         autoEscape
         textToHighlight={text.toString()}
@@ -276,11 +256,11 @@ class ClassAnalysis extends PureComponent {
   });
   handleSearch = (selectedKeys, confirm) => {
     confirm();
-    this.setState({searchText: selectedKeys[0]});
+    this.setState({ searchText: selectedKeys[0] });
   };
   handleReset = (clearFilters) => {
     clearFilters();
-    this.setState({searchText: ''});
+    this.setState({ searchText: '' });
   };
 
 
@@ -288,18 +268,26 @@ class ClassAnalysis extends PureComponent {
     const {
       stuClass, classListLoading, loading, match, radarLoading, kaoqinLoading,
       termList, examRank, examStudentList, examCompareData, examDistributeData,
-      studentsList, classExamList
+      studentsList
     } = this.props;
 
     const {
       distributionData, classInfo, teachers,
       classList, radarData, totalTrend,
-      subTrends, kaoqinSummary, kaoqinData
+      subTrends, kaoqinSummary, kaoqinData, classExamList,
+      courseRankData, scoreData, classMap
     } = stuClass;
 
+    const { courseId, examId } = this.state;
+    const showedScoreData = scoreData[Number(courseId)] ? scoreData[Number(courseId)].map(data => {
+      return {
+        name: classMap[Number(data.classId)],
+        score: Number(data.score.toFixed(3))
+      };
+    }) : [];
     const kaoQinData = this.formatKaoqinData(kaoqinData, termList);
 
-    const {boy, stay, total, local, policy} = distributionData;
+    const { boy, stay, total, local, policy } = distributionData;
     const isAtSchool = classInfo.start_year === 2018;
     const defaultTab = _.difference(location.pathname.split('/'), match.path.split('/'))[0] || 'Trend';
 
@@ -422,11 +410,11 @@ class ClassAnalysis extends PureComponent {
       <GridContent className={styles.userCenter}>
         <Row gutter={24}>
           <Col lg={7} md={24}>
-            <Card bordered={false} style={{marginBottom: 24}} loading={loading}>
-              <Affix offsetTop={10} style={{'zIndex': 1}}>
+            <Card bordered={false} style={{ marginBottom: 24 }} loading={loading}>
+              <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
                 {/*todo classListLoading*/}
                 <Select
-                  style={{width: '100%', display: 'block'}}
+                  style={{ width: '100%', display: 'block' }}
                   showSearch
                   notFoundContent={classListLoading ? <Spin size="small"/> :
                     <Empty description={this.state.classId ? '未找到包含该信息数据' : '请输入班级名或序列号查询'}/>
@@ -435,7 +423,7 @@ class ClassAnalysis extends PureComponent {
                   value={classInfo.id ? `${classInfo.id}-${classInfo.start_year}-${classInfo.class_name}` : this.state.classId}
                   filterOption={false}
                   onSearch={(value) => this.getClassList(value)}
-                  onChange={(classId) => this.setState({classId})}
+                  onChange={(classId) => this.setState({ classId })}
                 >
                   {classList.map((stuClass) => (
                     <Option
@@ -450,7 +438,7 @@ class ClassAnalysis extends PureComponent {
               </Affix>
               {classInfo && classInfo.id ? (
                 <Fragment>
-                  <Divider style={{marginTop: 16}} dashed/>
+                  <Divider style={{ marginTop: 16 }} dashed/>
                   <div className={styles.avatarHolder}>
                     <div className={styles.name}>{classInfo.class_name}</div>
                     {isAtSchool ? <Tag color="#2db7f5">在校班级</Tag> :
@@ -464,15 +452,15 @@ class ClassAnalysis extends PureComponent {
                     <p><i className={`fa fa fa-archive ${styles.iconStyle}`}/>
                       {`${classInfo.start_year}-${classInfo.start_year + 1} 学年`}
                     </p>
-                    <Divider style={{marginTop: 16}} dashed/>
+                    <Divider style={{ marginTop: 16 }} dashed/>
                     <div className={styles.teamTitle}>学生分布</div>
                     <Row type="flex" justify="start">
                       <Col>
-                        <Statistic title="共有学生" value={`${total}人`} valueStyle={{color: '#cf1322'}}/>
+                        <Statistic title="共有学生" value={`${total}人`} valueStyle={{ color: '#cf1322' }}/>
                       </Col>
                     </Row>
                     {isAtSchool ?
-                      <Row type="flex" justify="space-between" style={{marginTop: 10}}>
+                      <Row type="flex" justify="space-between" style={{ marginTop: 10 }}>
                         <Col span={6}><Statistic title="男生" value={boy} suffix={`/${total}`}/></Col>
                         <Col span={6}><Statistic title="女生" value={total - boy} suffix={`/${total}`}/></Col>
                         <Col span={6}><Statistic title="走读生" value={total - stay} suffix={`/${total}`}/></Col>
@@ -541,7 +529,7 @@ class ClassAnalysis extends PureComponent {
                       />
                     </Chart>
                   </Fragment>}
-                  <Divider style={{marginTop: 16}} dashed/>
+                  <Divider style={{ marginTop: 16 }} dashed/>
                   {/*老师信息*/}
                   <div className={styles.teacherInfo}>
                     <div className={styles.infoTitle}>教师信息</div>
@@ -570,9 +558,9 @@ class ClassAnalysis extends PureComponent {
                   {classInfo && classInfo.id ?
                     <Fragment>
                       <Card title={`${classInfo.class_name}考试得分趋势变化`} bordered={false}>
-                        <Affix offsetTop={10} style={{'zIndex': 1}}>
+                        <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
                           <Select
-                            value={this.state.scoreType} style={{width: 120}}
+                            value={this.state.scoreType} style={{ width: 120 }}
                             onChange={this.onScoreTypeChange}
                           >
                             <Option key="score" value="score">绝对分</Option>
@@ -591,9 +579,9 @@ class ClassAnalysis extends PureComponent {
                         rowKey={record => record.index}
                         columns={tableColumns}
                         dataSource={studentsList}
-                        scroll={{x: 1500}}
+                        scroll={{ x: 1500 }}
                         pagination={{
-                          style: {marginBottom: 0, marginTop: 24},
+                          style: { marginBottom: 0, marginTop: 24 },
                           pageSize: 5,
                         }}
                       />
@@ -602,86 +590,96 @@ class ClassAnalysis extends PureComponent {
                 </TabPane>
                 {/*某次具体考试的具体情况*/}
                 <TabPane tab={<span><Icon type="copy"/>具体考试分析</span>} key="Specific">
-                  {classInfo && classInfo.id && classExamList.length && <Affix offsetTop={10} style={{'zIndex': 1}}>
+                  {classInfo && classInfo.id && <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
                     <Select
                       showSearch
                       optionFilterProp="children"
-                      style={{width: 200}}
-                      onChange={this.handleChangeExam}
+                      style={{ width: 200 }}
+                      onChange={this.onExamChanged}
                       filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                       placeholder="请选择该班级参与的考试"
                     >
                       {classExamList.map((item) => (
-                        <Option key={item.id} value={item.id}>{item.name}</Option>
+                        <Option key={`classExam-${item.id}`} value={item.id}>{item.name}</Option>
                       ))}
                     </Select>
                   </Affix>}
-                  {classInfo && classInfo.id ?
+                  {examId ?
                     <div>
-                      {examRank.allRank && <Card title="本次考试排名一览" style={{marginTop: 12}}>
-                        <Row style={{marginBottom: 10}}>
-                          <Statistic title="本次排名" value={examRank.allRank} suffix={`/${examRank.totalClassNum}`}
-                                     valueStyle={{color: '#cf1322'}}/>
+                      {examRank.allRank && <Card title="本次考试排名一览" style={{ marginTop: 12 }}>
+                        <Row style={{ marginBottom: 10 }}>
+                          <Statistic
+                            title="本次排名" value={courseRankData.classNum - courseRankData.totalRank}
+                            suffix={`/${courseRankData.classNum}`}
+                            valueStyle={{ color: '#cf1322' }}
+                          />
                         </Row>
-                        <Row gutter={16} type="flex" justify="start" style={{marginBottom: 10}}>
+                        <Row gutter={16} type="flex" justify="start" style={{ marginBottom: 10 }}>
                           {examRank.studentCrossNum.map((item) => (
                             <Col key={item.title}>
                               <Statistic title={item.lineName} value={item.studentNum}/>
                             </Col>))}
                         </Row>
                         <Row type="flex" justify="space-between">
-                          {examRank.allSubjectRank.map((item) => (
-                            <Col key={item.title}>
-                              <Statistic title={item.subjectName} value={item.subjectRank}/>
+                          {courseRankData.rankData.map((item) => (
+                            <Col key={`examrank-${item.course}`}>
+                              <Statistic title={item.course} value={courseRankData.classNum - item.rank}/>
                             </Col>))}
                         </Row>
                       </Card>}
-                      {examStudentList && examStudentList.length && <Card title="本次考试该班学生成绩与排名" style={{marginTop: 12}}>
+                      {examStudentList && examStudentList.length &&
+                      <Card title="本次考试该班学生成绩与排名" style={{ marginTop: 12 }}>
                         <Table
                           rowKey={record => record.index}
                           columns={tableColumns}
                           dataSource={examStudentList}
-                          scroll={{x: 1500}}
+                          scroll={{ x: 1500 }}
                           pagination={{
-                            style: {marginBottom: 0, marginTop: 24},
+                            style: { marginBottom: 0, marginTop: 24 },
                             pageSize: 5,
                           }}
                         />
                       </Card>}
-                      {/*TODO 这个部分的数据（examCompareData和examDistribute）是否需要单独请求，这样进行刷新的时候就不需要刷新整个页面了*/}
-                      {examCompareData && examDistributeData && <Card title="年级其他班成绩对比分析" style={{marginTop: 12}}>
+                      {examCompareData && examDistributeData && <Card title="年级其他班成绩对比分析" style={{ marginTop: 12 }}>
                         <Row type='flex' justify="end">
                           <Affix offsetTop={10}>
                             <Select
-                              defaultValue={this.state.subjectType} style={{width: "100%"}}
-                              onChange={this.handleChangeSubject}>
-                              <Option key="count" value="count">总分</Option>
-                              <Option key="chinese" value="chinese">语文</Option>
-                              <Option key="math" value="math">数学</Option>
-                              <Option key="english" value="english">英语</Option>
-                              <Option key="political" value="political">政治</Option>
-                              <Option key="history" value="history">历史</Option>
-                              <Option key="geography" value="geography">地理</Option>
-                              <Option key="physical" value="physical">物理</Option>
-                              <Option key="chemistry" value="chemistry">化学</Option>
-                              <Option key="biological" value="biological">生物</Option>
-                              <Option key="technology" value="technology">技术</Option>
+                              value={String(courseId)} style={{ width: "100%" }}
+                              onChange={(courseId) => this.setState({ courseId })}>
+                              {Object.keys(scoreData).map((id) => <Option
+                                key={`course-selection-${id}`}
+                                value={id}
+                              >
+                                {COURSE_FULLNAME_ALIAS[id] ? COURSE_FULLNAME_ALIAS[id] : '总分'}
+                              </Option>)}
                             </Select>
                           </Affix>
                         </Row>
-                        <Chart height={400} data={examCompareData} forceFit>
+                        <Chart
+                          height={400}
+                          data={showedScoreData}
+                          forceFit
+                        >
                           <Coord transpose/>
                           <Axis
-                            name="className"
+                            name="name"
                             label={{
                               offset: 12
                             }}
                           />
                           <Axis name="score"/>
                           <Tooltip/>
-                          <Legend/>
-                          <Geom type="interval" position="className*score"/>
-                          {this.state.subjectType === "count" && <Guide>
+                          <Geom
+                            type="interval"
+                            position="name*score"
+                            color={['name', (name) => {
+                              if (name === classInfo.class_name)
+                                return '#fbd436';
+                              else
+                                return '#39a1ff';
+                            }]}
+                          />
+                          {courseId === -1 && <Guide>
                             <Line
                               top={true}
                               start={[-1, 588]} // 辅助线起始位置，值为原始数据值，支持 callback
@@ -804,7 +802,7 @@ class ClassAnalysis extends PureComponent {
                           />
                         </Chart>
                       </Card>}
-                    </div> : <Empty description='请在左侧搜索框中搜索班级数据或选定考试'/>
+                    </div> : <Empty description={classInfo.id ? `请选择需要分析的考试名称` : `请在左侧搜索班级信息`}/>
                   }
                 </TabPane>
                 {/*考勤情况*/}

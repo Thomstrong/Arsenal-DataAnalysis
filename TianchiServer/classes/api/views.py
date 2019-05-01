@@ -174,3 +174,63 @@ class ClassViewSet(viewsets.ModelViewSet):
             'records': records,
             'summary': sumary,
         })
+
+    @required_params(params=['exam_id'])
+    @detail_route(
+        methods=['GET']
+    )
+    def rank(self, request, pk):
+        exam_id = request.query_params.get('exam_id', '')
+        if not exam_id:
+            return Response('exam_id 输入有误', status=400)
+
+        records = ClassExamRecord.objects.filter(
+            sub_exam__exam_id=exam_id,
+            attend_count__gt=0,
+            stu_class_id__isnull=False
+        ).select_related(
+            'stu_class',
+            'sub_exam'
+        ).values(
+            'sub_exam_id',
+            'stu_class_id',
+            'stu_class__class_name',
+            'sub_exam__course_id',
+            'total_score',
+            'attend_count',
+        ).order_by(
+            'sub_exam__course_id',
+            'stu_class_id'
+        )
+        formatted_data = {}
+        for record in records:
+            course_id = record['sub_exam__course_id']
+            if course_id not in formatted_data:
+                formatted_data[course_id] = []
+            formatted_data[course_id].append({
+                'class_id': record['stu_class_id'],
+                'class_name': record['stu_class__class_name'],
+                'average': record['total_score'] / record['attend_count'],
+            })
+
+        result = {}
+
+        for course_id in formatted_data:
+            result[course_id] = sorted(
+                formatted_data[course_id],
+                key=lambda d: d['average'],
+                reverse=False
+            )
+        return Response(result)
+
+    @detail_route(
+        methods=['GET'],
+    )
+    def exams(self, request, pk):
+        exams = ClassExamRecord.objects.filter(
+            stu_class_id=pk
+        ).values(
+            'sub_exam__exam__name',
+            'sub_exam__exam_id',
+        ).distinct('sub_exam__exam_id')
+        return Response(exams)

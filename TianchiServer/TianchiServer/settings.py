@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'django_filters',
-    'graphene_django',
+    # 'graphene_django',
     'corsheaders',
 
     # models
@@ -52,9 +52,9 @@ INSTALLED_APPS = [
     'terms',
 ]
 
-GRAPHENE = {
-    # 'SCHEMA': 'app.schema.schema'  # Where your Graphene schema lives
-}
+# GRAPHENE = {
+#     # 'SCHEMA': 'app.schema.schema'  # Where your Graphene schema lives
+# }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -71,6 +71,8 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
+    ] if DEBUG else [
+        'rest_framework.renderers.JSONRenderer',
     ],
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
@@ -96,12 +98,7 @@ TEMPLATES = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_METHODS = [
-    'DELETE',
     'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT'
 ]
 
 WSGI_APPLICATION = 'TianchiServer.wsgi.application'

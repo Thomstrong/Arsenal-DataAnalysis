@@ -129,7 +129,7 @@ export default class GlobalHeaderRight extends PureComponent {
             <Icon type="question-circle-o" />
           </a>
         </Tooltip> */}
-        <NoticeIcon
+       {/* <NoticeIcon
           className={styles.action}
           count={currentUser.unreadCount}
           onItemClick={(item, tabProps) => {
@@ -189,7 +189,7 @@ export default class GlobalHeaderRight extends PureComponent {
           </HeaderDropdown>
         ) : (
           <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
-        )}
+        )}*/}
         {/* <SelectLang className={styles.action} /> */}
       </div>
     );

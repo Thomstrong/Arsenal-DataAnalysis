@@ -1,12 +1,14 @@
 import {
   getClassBasic,
+  getClassExamList,
   getClassGrade,
+  getClassKaoqinData,
   getClassList,
   getClassTeachers,
   getDistribution,
-  getClassKaoqinData
+  getExamRank,
 } from '@/services/api';
-import {COURSE_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, WEEKDAY_ALIAS} from "@/constants";
+import { COURSE_ALIAS, COURSE_FULLNAME_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, WEEKDAY_ALIAS } from "@/constants";
 import DataSet from "@antv/data-set";
 
 
@@ -35,49 +37,56 @@ export default {
     kaoqinSummary: [],
     totalTrend: [],
     subTrends: [],
-    studentsList:[],
+    studentsList: [],
     termList: [],
     //选定的某一场考试的情况，包括考试各科成绩和分数段分布，以及各个科目的排名，一批等的过线人数，所有学生的排名情况
+    courseRankData: {
+      totalScore: 0,
+      rankData: [],
+      classNum: 0,
+    },
     examData: {
       examRank: {},
       examStudentList: [],
       examCompareData: [],
       examDistributeData: [],
     },
+    scoreData: [],
+    classMap: {},
     //某一班级对应的所有考试名称和id
-    classExamList:[],
+    classExamList: [],
   },
 
   effects: {
-    * fetchBasic({payload}, {call, put}) {
+    * fetchBasic({ payload }, { call, put }) {
       const response = yield call(getClassBasic, payload);
       yield put({
         type: 'saveClassBasic',
         payload: response
       });
     },
-    * fetchDistribution({payload}, {call, put}) {
+    * fetchDistribution({ payload }, { call, put }) {
       const response = yield call(getDistribution, payload);
       yield put({
         type: 'saveDistributionData',
         payload: response
       });
     },
-    * fetchTeacher({payload}, {call, put}) {
+    * fetchTeacher({ payload }, { call, put }) {
       const response = yield call(getClassTeachers, payload);
       yield put({
         type: 'saveTeachers',
         payload: response
       });
     },
-    * fetchClassList({payload}, {call, put}) {
+    * fetchClassList({ payload }, { call, put }) {
       const response = yield call(getClassList, payload);
       yield put({
         type: 'saveClassList',
         payload: response
       });
     },
-    * fetchRadarData({payload}, {call, put}) {
+    * fetchRadarData({ payload }, { call, put }) {
       const response = yield call(getClassGrade, {
         ...payload,
         type: 'radar'
@@ -87,7 +96,7 @@ export default {
         payload: response
       });
     },
-    * fetchTrendData({payload}, {call, put}) {
+    * fetchTrendData({ payload }, { call, put }) {
       const response = yield call(getClassGrade, {
         ...payload,
         type: 'trend'
@@ -97,7 +106,8 @@ export default {
         payload: response
       });
     },
-    * fetchKaoqinData({payload}, {call, put}) {
+    //todo 修改为班级考勤信息
+    * fetchKaoqinData({ payload }, { call, put }) {
       const response = yield call(getClassKaoqinData, {
         ...payload
       });
@@ -108,7 +118,17 @@ export default {
       });
     },
     //todo 针对班级某场考试而言的相关信息
-    * fetchExamData({payload}, {call, put}) {
+    * fetchExamRank({ payload }, { call, put }) {
+      const response = yield call(getExamRank, {
+        ...payload
+      });
+
+      yield put({
+        type: 'saveExamRank',
+        payload: response,
+      });
+    },
+    * fetchExamData({ payload }, { call, put }) {
       const response = yield call(getClassKaoqinData, {
         ...payload
       });
@@ -117,7 +137,7 @@ export default {
         payload: response,
       });
     },
-    * fetchStudentsListData({payload}, {call, put}) {
+    * fetchStudentsListData({ payload }, { call, put }) {
       const response = yield call(getClassKaoqinData, {
         ...payload
       });
@@ -126,8 +146,8 @@ export default {
         payload: response,
       });
     },
-    * fetchClassExamList({payload}, {call, put}) {
-      const response = yield call(getClassKaoqinData, {
+    * fetchClassExamList({ payload }, { call, put }) {
+      const response = yield call(getClassExamList, {
         ...payload
       });
       yield put({
@@ -140,13 +160,13 @@ export default {
   },
 
   reducers: {
-    save(state, {payload}) {
+    save(state, { payload }) {
       return {
         ...state,
         ...payload,
       };
     },
-    saveClassBasic(state, {payload}) {
+    saveClassBasic(state, { payload }) {
       if (!payload) {
         return state;
       }
@@ -157,7 +177,7 @@ export default {
         },
       };
     },
-    saveDistributionData(state, {payload}) {
+    saveDistributionData(state, { payload }) {
       if (!payload) {
         return state;
       }
@@ -168,7 +188,7 @@ export default {
         },
       };
     },
-    saveClassList(state, {payload}) {
+    saveClassList(state, { payload }) {
       if (!payload) {
         return state;
       }
@@ -177,7 +197,7 @@ export default {
         classList: payload,
       };
     },
-    saveTeachers(state, {payload}) {
+    saveTeachers(state, { payload }) {
       if (!payload) {
         return state;
       }
@@ -192,7 +212,7 @@ export default {
         })
       };
     },
-    saveRadarData(state, {payload}) {
+    saveRadarData(state, { payload }) {
       if (!payload) {
         return state;
       }
@@ -208,7 +228,7 @@ export default {
         })
       };
     },
-    saveTrendData(state, {payload}) {
+    saveTrendData(state, { payload }) {
       if (!payload) {
         return state;
       }
@@ -243,8 +263,8 @@ export default {
         return state;
       }
       const termList = {};
-      const {termMap} = action;
-      const {summary, records} = action.payload;
+      const { termMap } = action;
+      const { summary, records } = action.payload;
       state.kaoqinSummary = summary.map((data) => {
         return {
           'name': EVENT_TYPE_ALIAS[data.event__type_id],
@@ -418,75 +438,134 @@ export default {
         ...state,
       };
     },
+    //todo 某一场exam信息的赋值
+    saveExamRank(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+
+      const curClass = state.classInfo.id;
+      const rankData = [];
+      let totalScoreData = {};
+      let classList = {};
+      let subScore = {};
+      let classMap = {};
+      for (let courseId in payload) {
+        if (!subScore[courseId]) {
+          subScore[courseId] = [];
+        }
+
+        const records = payload[courseId];
+        for (let index in records) {
+          const classId = records[index].class_id;
+          classMap[classId] = records[index].class_name;
+          classList[classId] = 1;
+          if (classId === curClass) {
+            rankData.push({
+              course: `${COURSE_FULLNAME_ALIAS[courseId]}排名`,
+              rank: Number(index)
+            });
+          }
+
+          subScore[courseId].push({
+            classId: classId,
+            score: records[index].average
+          });
+
+          if (!totalScoreData[classId]) {
+            totalScoreData[classId] = 0;
+          }
+          totalScoreData[classId] += records[index].average;
+        }
+      }
+      classList = Object.keys(classList);
+      totalScoreData = new DataSet.View().source([totalScoreData]).transform({
+        type: "fold",
+        fields: classList,
+        // 展开字段集
+        key: 'classId',
+        // key字段
+        value: 'score',
+      }).rows;
+      totalScoreData = totalScoreData.sort((a, b) => a.score - b.score);
+      const classNum = Object.keys(classMap).length;
+      let totalRank = 0;
+      for (let index in totalScoreData) {
+        if (Number(totalScoreData[index].classId) === curClass) {
+          totalRank = Number(index);
+          break;
+        }
+      }
+      const scoreData = {
+        '-1': totalScoreData,
+        ...subScore,
+      };
+      state.courseRankData = rankData;
+      return {
+        ...state,
+        courseRankData: {
+          totalRank,
+          classNum,
+          rankData
+        },
+        scoreData,
+        classMap
+      };
+    },
 
     // todo 最近一次考试的学生排名情况
-    saveStudentsList(state,action){
-      return{
+    saveStudentsList(state, action) {
+      return {
         ...state,
-        studentsList:[
-        {
-          index: 1,
-          name: "李四",
-          count: 678,
-          chinese: 125,
-          math: 110,
-          english: 134,
-          physical: 98,
-          chemistry: 88,
-          biological: 77,
-          political: 33,
-          history: 89,
-          geography: 66,
-          technology: 98
-        },
-        {
-          index: 2,
-          name: "张三",
-          count: 678,
-          chinese: 125,
-          math: 110,
-          english: 134,
-          physical: 98,
-          chemistry: 88,
-          biological: 77,
-          political: 33,
-          history: 89,
-          geography: 66,
-          technology: 98
-        }
-      ],
-      }
+        studentsList: [
+          {
+            index: 1,
+            name: "李四",
+            count: 678,
+            chinese: 125,
+            math: 110,
+            english: 134,
+            physical: 98,
+            chemistry: 88,
+            biological: 77,
+            political: 33,
+            history: 89,
+            geography: 66,
+            technology: 98
+          },
+          {
+            index: 2,
+            name: "张三",
+            count: 678,
+            chinese: 125,
+            math: 110,
+            english: 134,
+            physical: 98,
+            chemistry: 88,
+            biological: 77,
+            political: 33,
+            history: 89,
+            geography: 66,
+            technology: 98
+          }
+        ],
+      };
     },
 
     // todo 该班对应的考试列表
-    saveClassExamList(state,action){
-      return{
-        ...state,
-        classExamList:[
-        {
-          id:"XXX考试ID",
-          name:"考试1"
-        },{
-          id:"XXX考试ID2",
-          name:"考试2"
-        },{
-          id:"XXX考试ID3",
-          name:"考试3"
-        },{
-          id:"XXX考试ID4",
-          name:"考试4"
-        },{
-          id:"XXX考试ID5",
-          name:"考试5"
-        },{
-          id:"XXX考试ID6",
-          name:"考试6"
-        },{
-          id:"XXX考试ID7",
-          name:"考试7"
-        }
-      ],
+    saveClassExamList(state, { payload }) {
+      if (!payload) {
+        return state;
       }
+      return {
+        ...state,
+        classExamList: payload.map(data => {
+          return {
+            id: data.sub_exam__exam_id,
+            name: data.sub_exam__exam__name,
+          };
+        }),
+      };
     },
 
 

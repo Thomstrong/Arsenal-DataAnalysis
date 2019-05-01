@@ -9,7 +9,7 @@ const FooterView = () => (
       copyright={
         <Fragment>
           Copyright <Icon type="copyright" /> 2019 I Am Groot 团队出品<br/>
-          感谢蚂蚁金服 Ant Design Pro 提供脚手架
+          感谢蚂蚁金服 <a target='_blank' href='http://pro.ant.design/index-cn'>Ant Design Pro</a> 提供脚手架
         </Fragment>
       }
     />
