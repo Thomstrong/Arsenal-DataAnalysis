@@ -1,17 +1,17 @@
 version: "3.5"
 
 services:
-  ant-design-pro_build:
+  tianchi-client_build:
     build: ../
-    container_name: "ant-design-pro_build"
+    container_name: "tianchi-client_build"
     volumes:
       - dist:/usr/src/app/dist
 
-  ant-design-pro_web:
+  tianchi-client_web:
     image: nginx
     ports:
       - 80:80
-    container_name: "ant-design-pro_web"
+    container_name: "tianchi-client_web"
     restart: unless-stopped
     volumes:
       - dist:/usr/share/nginx/html:ro

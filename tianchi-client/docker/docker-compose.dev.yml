@@ -7,7 +7,7 @@ services:
     build:
       context: ../
       dockerfile: Dockerfile.dev
-    container_name: "ant-design-pro_dev"
+    container_name: "tianchi-client-dev"
     volumes:
       - ../src:/usr/src/app/src
       - ../config:/usr/src/app/config

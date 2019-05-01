@@ -7,6 +7,6 @@ RUN yarn
 
 COPY ./ ./
 
-RUN npm run test:all
+#RUN npm run test:all
 
 CMD ["npm", "run", "build"]

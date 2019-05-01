@@ -1,12 +1,12 @@
 {
   "name": "tianchi-client",
-  "version": "2.3.1",
+  "version": "0.0.1",
   "private": true,
-  "description": "tianchi data view front end",
+  "description": "tianchi data view frontend",
   "scripts": {
     "analyze": "cross-env ANALYZE=1 umi build",
-    "build": "umi build && npm run functions:build",
-    "docker-hub:build": "docker build  -f Dockerfile.hub -t  ant-design-pro ./",
+    "build": "umi build",
+    "docker-hub:build": "docker build  -f Dockerfile.hub -t  tianchi-client ./",
     "docker-prod:build": "docker-compose -f ./docker/docker-compose.yml build",
     "docker-prod:dev": "docker-compose -f ./docker/docker-compose.yml up",
     "docker:build": "docker-compose -f ./docker/docker-compose.dev.yml build",
