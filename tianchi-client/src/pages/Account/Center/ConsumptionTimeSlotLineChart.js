@@ -81,10 +81,10 @@ const ConsumptionTimeSlotLineChart = memo(
     return (
       <Card title={`${date} 各时期消费情况一览`} bordered={false} style={{width: '100%'}}>
         <Card title={`${date}起往后${DATE_REANGE_ALIAS[dateRange]}，每日消费总额、上一周期消费对比及下一周期消费预测`}
-              bordered={false} style={{width: '100%'}} hoverable={true}
+              bordered={false} style={{width: '100%',cursor:"auto"}} hoverable={true}
         >
           {hourlyCost.length ? <Row type="flex" align="middle">
-            <Col span={4}>
+            <Col xl={4} xs={24}>
               {attention ? <Title style={{color: "#c04b4f"}} code level={4}>告警</Title> :
                 <Paragraph>
                   <Text strong code>消费稳定</Text>
@@ -107,7 +107,7 @@ const ConsumptionTimeSlotLineChart = memo(
                 消费金额为<Text strong style={{color: "#cc4756"}}>¥{maxNowCost.toFixed(2)}</Text>
               </Paragraph>
             </Col>
-            <Col span={20}>
+            <Col xl={20} xs={24}>
               <Chart
                 height={400}
                 scale={{
@@ -268,10 +268,10 @@ const ConsumptionTimeSlotLineChart = memo(
             </Col>
           </Row> : <Empty/>}
         </Card>
-        <Card title={`${date}起过去${DATE_REANGE_ALIAS[dateRange]}各时段平均消费情况`} bordered={false} style={{width: '100%'}}
+        <Card title={`${date}起过去${DATE_REANGE_ALIAS[dateRange]}各时段平均消费情况`} bordered={false} style={{width: '100%',cursor:"auto"}}
               hoverable={true}>
           {hourlyCost.length ? <Row type="flex" align="middle">
-            <Col span={20}>
+            <Col xl={20} xs={24}>
               <Chart
                 height={400}
                 data={hourlyCost}
@@ -339,7 +339,7 @@ const ConsumptionTimeSlotLineChart = memo(
                 />
               </Chart>
             </Col>
-            <Col span={4}>
+            <Col xl={4} xs={24}>
               <Paragraph>
                 该同学本周期的消费分布在
                 <Text strong style={{color: "#cc4756"}}>{costTimeList}</Text>

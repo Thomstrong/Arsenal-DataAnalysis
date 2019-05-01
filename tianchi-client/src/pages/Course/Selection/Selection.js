@@ -353,7 +353,7 @@ class Selection extends PureComponent {
             </Col>
           </Row>
           {distributions.length && coursePercents.length && arcCourseData.nodes &&
-          <Card title='总结' bordered={false} hoverable={true} style={{marginLeft: 32, marginRight: 32}}>
+          <Card title='总结' bordered={false} hoverable={true} style={{marginLeft: 32, marginRight: 32,cursor:"auto"}}>
             <Typography>
               <Paragraph>1.
                 自2017年高考改革以来选修<AntdText type="danger">物理、化学、生物</AntdText>的人数一直居<AntdText type="danger">高</AntdText>不下。传统文科中
@@ -564,7 +564,7 @@ class Selection extends PureComponent {
           </Row>
           {detailDistribution.length && courseSelectionPie.length && courseSelectionTree.length &&
           <Row>
-            <Card title='总结' bordered={false} hoverable={true} style={{marginLeft: 32, marginRight: 32}}>
+            <Card title='总结' bordered={false} hoverable={true} style={{marginLeft: 32, marginRight: 32,cursor:"auto"}}>
               <Paragraph>1. 无论哪一年，<AntdText type="danger">物理化学、物理生物</AntdText>再加上其他一门学科的选课方案占据了整个选课方案的<AntdText
                 type="danger">近一半</AntdText>;
                 从另一角度来说,与人们设想的避难就易选课方式不同,即使开放自由选课，传统<AntdText type="danger">理综科目</AntdText>

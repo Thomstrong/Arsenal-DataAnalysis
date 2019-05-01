@@ -38,9 +38,9 @@ const ConsumptionOverallLineChart = memo(
 
     return (
       <Card title="总体消费情况一览" bordered={false} style={{width: '100%'}}>
-        <Card title="总体消费趋势" bordered={false} style={{width: '100%'}} hoverable={true}>
+        <Card title="总体消费趋势" bordered={false} style={{width: '100%',cursor:"auto"}} hoverable={true}>
           {dailySumCost.length ? <Row type="flex" align="middle">
-            <Col span={20}>
+            <Col xl={20} xs={24}>
               <OneTimelineChart
                 height={300}
                 data={dailySumCost.map((data) => {
@@ -51,20 +51,20 @@ const ConsumptionOverallLineChart = memo(
                 })}
               />
             </Col>
-            <Col span={3} offset={1}>
+            <Col xl={4} xs={24} >
               <Paragraph>该学生平均日消费为<Text strong style={{color: "#cc4756"}}>¥{money}</Text>元</Paragraph>
               <Paragraph>超过<Text strong style={{color: "#cc4756"}}>{precent}</Text>的学生</Paragraph>
             </Col>
           </Row> : <Empty/>}
         </Card>
-        <Card title="不同时间点平均消费对比" bordered={false} style={{width: '100%'}} hoverable={true}>
+        <Card title="不同时间点平均消费对比" bordered={false} style={{width: '100%',cursor:"auto"}} hoverable={true}>
           {dailySumCost.length ? <Row type="flex" align="middle">
-            <Col span={3}>
+            <Col xl={4} xs={24}>
               <Paragraph>共有<Text strong style={{color: "#cc4756"}}>{timeCount}</Text>个时间段产生过消费;</Paragraph>
               <Paragraph>其中，平均消费最高出现在<Text strong style={{color: "#cc4756"}}>{maxTime}时</Text>,平均消费金额为<Text strong
                                                                                                             style={{color: "#cc4756"}}>¥{maxMoney}</Text></Paragraph>
             </Col>
-            <Col span={20} offset={1}>
+            <Col xl={20}  xs={24}>
               <Chart
                 height={300}
                 data={hourlyAvgCost}

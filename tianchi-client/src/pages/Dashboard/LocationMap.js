@@ -179,7 +179,7 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
     </Row>
     {!!showAnalysis && !sexDistriLoading && !locationLoading && <Row gutter={24}>
       <Col xl={24} xs={24}>
-        <Card title="人员分析" hoverable={true}>
+        <Card title="人员分析" hoverable={true} style={{cursor:"auto"}}>
           <Paragraph>1. 高一高二高三人数递减，<Text type="danger">高一男生</Text>占全校学生数的<Text type="danger">1／4</Text>;
             各年级女生人数比较稳定都在<Text type="danger">16%</Text>左右，男生人数呈明显递<Text type="danger">减</Text>趋势，
             高三年级女生人数反超男生;</Paragraph>

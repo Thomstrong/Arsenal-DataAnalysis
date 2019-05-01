@@ -124,12 +124,7 @@ const EcardConsumptionCard = memo(({data}) => {
     yearCostData
   } = data;
   return <React.Fragment>
-    {/*<Card title="一卡通消费情况一览" bordered={false} style={{marginTop: 32}}>*/}
-    {/*两个部分，分别是每天的总消费变化趋势和某时刻平均消费情况*/}
-    {/*DataMarker可以后续有图表后进行补充*/}
-    {/*第一部分，每天总消费变化趋势*/}
-    {/*todo 消费对比的分析，等到添加完人数分布后*/}
-    <Card loading={sexHourlyLoading} className={styles.tabsCard} style={{marginTop: 32}}>
+    <Card loading={sexHourlyLoading} className={styles.tabsCard} style={{marginTop: 32,cursor:"auto"}}>
       <Tabs defaultActiveKey={"Sex"}>
         <TabPane tab={<span><Icon type="line-chart"/>性别对比</span>} key="Sex">
           <Row>
@@ -235,7 +230,7 @@ const EcardConsumptionCard = memo(({data}) => {
                     </li>
                   ))}
                 </ul>
-                <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
+                <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20,cursor:"auto"}}>
                   <Paragraph>1. 消费主要发生在<Text type='danger'>6、7</Text>时,<Text type='danger'>11、12</Text>时
                     和<Text type='danger'>17</Text>时三个时间段;</Paragraph>
                   <Paragraph>2.由于总体人数的差异，男生的消费人次明显比女生多，
@@ -356,7 +351,7 @@ const EcardConsumptionCard = memo(({data}) => {
                     </li>
                   ))}
                 </ul>
-                <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
+                <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20,cursor:"auto"}}>
                   <Paragraph>1. 高一、高二、高三同学的消费水平呈明显<Text type='danger'>递增</Text>趋势。
                     由于食堂就餐金额相似,三餐饭点时的消费几乎没有差别,消费差异集中在<Text type='danger'>非就餐时刻</Text>;</Paragraph>
                   <Paragraph>2. 高一的消费集中在<Text type='danger'>饭点</Text>,高二高三尤其<Text type='danger'>不</Text>喜欢在校吃早饭,
@@ -476,7 +471,7 @@ const EcardConsumptionCard = memo(({data}) => {
                     </li>
                   ))}
                 </ul>
-                <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
+                <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20,cursor:"auto"}}>
                   <Paragraph>1. <Text type='danger'>走读生</Text>消费水平明显<Text type='danger'>高</Text>于住校生,
                     中午和晚上的就餐情况也占据这人次的优势.由于早饭可以在家吃,仅有极少走读生选择在校吃早饭;</Paragraph>
                   <Paragraph>2. 走读生<Text type='danger'>晚饭</Text>时段消费人次<Text
@@ -512,7 +507,7 @@ const EcardConsumptionCard = memo(({data}) => {
                 </li>
               ))}
             </ul>
-            <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
+            <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20,cursor:"auto"}}>
               <Paragraph>1. 呈<Text type='danger'>周期性</Text>变化符合逻辑,周一二三四水平相当，
                 <Text type='danger'>周五</Text>由于学生准备离校消费<Text type='danger'>减半</Text>，周六周日几乎没有消费;</Paragraph>
               <Paragraph>2. <Text type='danger'>2018年11月中旬</Text>，由于期中考试和运动会的原因，

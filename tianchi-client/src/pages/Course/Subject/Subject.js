@@ -201,7 +201,7 @@ class Subject extends PureComponent {
               </Card>
             </Col>
             <Col offset={1} xl={5} xs={23}>
-              <Card bordered={false} hoverable={true}>
+              <Card bordered={false} hoverable={true} style={{cursor:"auto"}}>
                 <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
                   type="danger">高{this.state.grade}</Text>
                   <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>
@@ -212,7 +212,7 @@ class Subject extends PureComponent {
           </Row>
           <Row style={{padding: 10}} type="flex" align="middle">
             <Col xl={5} xs={24}>
-              <Card bordered={false} hoverable={true}>
+              <Card bordered={false} hoverable={true} style={{cursor:"auto"}}>
                 <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
                   type="danger">高{this.state.grade}</Text>
                   <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>
@@ -329,7 +329,7 @@ class Subject extends PureComponent {
               </Card>
             </Col>
             <Col xl={5} xs={23} offset={1}>
-              <Card bordered={false} hoverable={true}>
+              <Card bordered={false} hoverable={true} style={{cursor:"auto"}}>
                 <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
                   type="danger">高{this.state.grade}</Text>
                   <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>

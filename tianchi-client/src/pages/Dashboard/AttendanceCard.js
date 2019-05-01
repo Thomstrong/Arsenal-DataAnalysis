@@ -178,7 +178,7 @@ const AttendanceCard = memo(({data}) => {
                   </li>
                 ))}
               </ul>
-              <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
+              <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20,cursor:"auto"}}>
                 <Paragraph>1. <Text type='danger'>数据量有限</Text>不能代表所有学生的进离校情况;</Paragraph>
                 <Paragraph>2. 早上<Text type='danger'>6点多</Text>是绝大多数学生的进校时间,7点会有部分学生姗姗来迟;</Paragraph>
                 <Paragraph>3. <Text type='danger'>周五</Text>下午<Text type='danger'>3、4点</Text>是离校高峰，
@@ -211,7 +211,7 @@ const AttendanceCard = memo(({data}) => {
                   </li>
                 ))}
               </ul>
-              <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
+              <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20,cursor:"auto"}}>
                 <Paragraph>1. 违纪情况呈<Text type="danger">递增</Text>趋势，
                   <Text type="danger">17-18学年</Text>考勤不合格人数最多(18-19学年仅有一半数据);</Paragraph>
                 <Paragraph>2. <Text type="danger">高一</Text>违纪情况在任一学年任一类型都是最<Text type="danger">少</Text>的，
