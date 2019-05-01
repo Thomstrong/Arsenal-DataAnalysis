@@ -44,15 +44,15 @@ export const COURSE_FULLNAME_ALIAS = {
 
 export const GAOKAO_COURSES = [1, 2, 3, 4, 5, 6, 7, 8, 17, 59];
 
-export const WEEKDAY_ALIAS = {
-  7: '星期日',
-  6: '星期六',
-  5: '星期五',
-  4: '星期四',
-  3: '星期三',
-  2: '星期二',
-  1: '星期一',
-};
+export const WEEKDAY_ALIAS = [
+  '周一',
+  '周二',
+  '周三',
+  '周四',
+  '周五',
+  '周六',
+  '周日',
+];
 
 export const EVENT_TYPE_ALIAS = {
   100000: '作弊',

@@ -106,7 +106,13 @@ class TimelineChart extends React.Component {
             <Axis name="x" />
             <Tooltip />
             <Legend name="key" position="bottom" />
-            <Geom type="line" position="x*value" size={borderWidth} color="key" />
+            <Geom type="line" position="x*value" size={borderWidth} color="key"
+            tooltip={['value*key', (value, key) => {
+              return {
+                name: key + "单天消费",
+                value: value + "元"
+              };
+            }]}/>
           </Chart>
           <div style={{ marginRight: -20 }}>
             <SliderGen />

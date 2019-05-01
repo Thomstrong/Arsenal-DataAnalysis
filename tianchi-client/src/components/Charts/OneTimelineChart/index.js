@@ -1,5 +1,5 @@
 import React from 'react';
-import { Chart, Tooltip, Geom, Legend, Axis } from 'bizcharts';
+import {Chart, Tooltip, Geom, Legend, Axis} from 'bizcharts';
 import DataSet from '@antv/data-set';
 import Slider from 'bizcharts-plugin-slider';
 import autoHeight from '../autoHeight';
@@ -19,7 +19,7 @@ class OneTimelineChart extends React.Component {
       data: sourceData,
     } = this.props;
 
-    const data = Array.isArray(sourceData) && sourceData.length ? sourceData : [{ x: 0, y: 0}];
+    const data = Array.isArray(sourceData) && sourceData.length ? sourceData : [{x: 0, y: 0}];
 
     data.sort((a, b) => a.x - b.x);
 
@@ -49,7 +49,7 @@ class OneTimelineChart extends React.Component {
       .transform({
         type: 'map',
         callback(row) {
-          const newRow = { ...row };
+          const newRow = {...row};
           newRow[titleMap.y] = row.y;
           return newRow;
         },
@@ -74,7 +74,7 @@ class OneTimelineChart extends React.Component {
         max,
         min: 0,
       },
-      y: {tickCount:5}
+      y: {tickCount: 5}
     };
 
     const SliderGen = () => (
@@ -84,12 +84,12 @@ class OneTimelineChart extends React.Component {
         height={26}
         xAxis="x"
         yAxis="y"
-        scales={{ x: timeScale }}
+        scales={{x: timeScale}}
         data={data}
         start={ds.state.start}
         end={ds.state.end}
-        backgroundChart={{ type: 'line' }}
-        onChange={({ startValue, endValue }) => {
+        backgroundChart={{type: 'line'}}
+        onChange={({startValue, endValue}) => {
           ds.setState('start', startValue);
           ds.setState('end', endValue);
         }}
@@ -97,22 +97,29 @@ class OneTimelineChart extends React.Component {
     );
 
     return (
-      <div className={styles.timelineChart} style={{ height: height + 30 }}>
+      <div className={styles.timelineChart} style={{height: height + 30}}>
         <div>
           {title && <h4>{title}</h4>}
           <Chart height={height} padding={padding} data={dv} scale={cols} forceFit>
-            <Axis name="x" />
+            <Axis name="x"/>
             {/*todo 下钻数据*/}
             <Tooltip
-            crosshairs={{
-              type: "y"
-            }}
-          />
-            <Geom type="line" position="x*value" size={borderWidth} color="key" />
+              crosshairs={{
+                type: "y"
+              }}
+            />
+            <Geom type="line" position="x*value" size={borderWidth} color="key"
+              tooltip={['value', (value) => {
+                return {
+                  name: "单天消费额",
+                  value: value + "元"
+                };
+              }]}
+            />
             {/*<Geom type="point" position="x*value" size={3} shape={"circle"} style={{stroke: "#fff", lineWidth: 1}}/>*/}
           </Chart>
-          <div style={{ marginRight: -20 }}>
-            <SliderGen />
+          <div style={{marginRight: -20}}>
+            <SliderGen/>
           </div>
         </div>
       </div>

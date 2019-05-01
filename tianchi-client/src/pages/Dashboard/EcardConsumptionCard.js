@@ -1,12 +1,13 @@
 /**
  * Created by 胡晓慧 on 2019/4/19.
  */
-import React, { memo } from 'react';
+import React, {memo} from 'react';
 import {Card, Col, Icon, Row, Tabs, Typography} from 'antd';
-import { OneTimelineChart, Pie } from '@/components/Charts';
+import {OneTimelineChart, Pie} from '@/components/Charts';
 import styles from './EcardConsumptionCard.less';
 import numeral from 'numeral';
-import { Axis, Chart, Geom, Legend, Tooltip, View } from "bizcharts";
+import {Axis, Chart, Geom, Legend, Tooltip, View} from "bizcharts";
+
 const {Paragraph, Text} = Typography;
 const TabPane = Tabs.TabPane;
 
@@ -104,14 +105,18 @@ const scale = {
   count: {
     min: 0, max: 60000,
     tickCount: 11,
+    alias: "就餐人数"
   }
 };
+
+
+
 const getColor = (category) => {
   return {
     "整体": "#ea87e4",
   }[category];
 };
-const EcardConsumptionCard = memo(({ data }) => {
+const EcardConsumptionCard = memo(({data}) => {
   const {
     sexHourlyData, sexHourlyCountData, sexHourlyLoading,
     gradeHourlyData, gradeCostCountData,
@@ -124,7 +129,7 @@ const EcardConsumptionCard = memo(({ data }) => {
     {/*DataMarker可以后续有图表后进行补充*/}
     {/*第一部分，每天总消费变化趋势*/}
     {/*todo 消费对比的分析，等到添加完人数分布后*/}
-    <Card loading={sexHourlyLoading} className={styles.tabsCard} style={{ marginTop: 32 }}>
+    <Card loading={sexHourlyLoading} className={styles.tabsCard} style={{marginTop: 32}}>
       <Tabs defaultActiveKey={"Sex"}>
         <TabPane tab={<span><Icon type="line-chart"/>性别对比</span>} key="Sex">
           <Row>
@@ -133,18 +138,16 @@ const EcardConsumptionCard = memo(({ data }) => {
                 <Chart
                   height={400}
                   key='cost-summary-sex'
-                  padding={["auto","auto",80,"auto"]}
+                  padding={["auto", "auto", 80, "auto"]}
                   forceFit
                   scale={scale}
                 >
-                  <h4 className={styles.rankingTitle}>不同性别不同时刻消费情况对比</h4>
+                  <h4 className={styles.rankingTitle}>不同性别不同时刻平均消费情况对比</h4>
                   <Legend/>
                   <Tooltip/>
                   <View data={sexHourlyData} scale={scale}>
                     <Axis name="hour"/>
-                    <Axis
-                      name="cost"
-                    />
+                    <Axis name="cost"/>
                     <Geom
                       type="line"
                       position="hour*cost"
@@ -155,6 +158,12 @@ const EcardConsumptionCard = memo(({ data }) => {
                           return getColor(category);
                         }
                       ]}
+                      tooltip={['hour*cost*sex', (hour, cost, sex) => {
+                        return {
+                          name: sex + '平均消费',
+                          value: cost + "元"
+                        };
+                      }]}
                     />
                     <Geom
                       type="point"
@@ -171,6 +180,12 @@ const EcardConsumptionCard = memo(({ data }) => {
                         stroke: "#fff",
                         lineWidth: 1
                       }}
+                      tooltip={['hour*cost*sex', (hour, cost, sex) => {
+                        return {
+                          name: sex + "平均消费",
+                          value: cost + "元"
+                        };
+                      }]}
                     />
                   </View>
                   <View data={sexHourlyCountData} scale={scale}>
@@ -200,7 +215,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                 </Chart>
               </div>
             </Col>
-            {sexHourlyData &&<Col span={7} offset={1}>
+            {sexHourlyData && <Col span={7} offset={1}>
               <div className={styles.salesRank}>
                 <h4 className={styles.rankingTitle}>
                   每时段消费额排名
@@ -220,7 +235,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                     </li>
                   ))}
                 </ul>
-                <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
+                <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
                   <Paragraph>1. 消费主要发生在<Text type='danger'>6、7</Text>时,<Text type='danger'>11、12</Text>时
                     和<Text type='danger'>17</Text>时三个时间段;</Paragraph>
                   <Paragraph>2.由于总体人数的差异，男生的消费人次明显比女生多，
@@ -240,12 +255,12 @@ const EcardConsumptionCard = memo(({ data }) => {
                   key='cost-summary-grade'
                   height={400}
                   data={gradeHourlyData}
-                  padding={["auto","auto",80,"auto"]}
-                  title="不同年级不同时刻消费情况对比"
+                  padding={["auto", "auto", 80, "auto"]}
+                  title="不同年级不同时刻平均消费情况对比"
                   forceFit
                   scale={scale}
                 >
-                  <h4 className={styles.rankingTitle}>不同年级不同时刻消费情况对比</h4>
+                  <h4 className={styles.rankingTitle}>不同年级不同时刻平均消费情况对比</h4>
                   <Legend/>
                   <Axis name="hour"/>
                   <Axis name="cost"/>
@@ -264,6 +279,12 @@ const EcardConsumptionCard = memo(({ data }) => {
                         return getColor(category);
                       }
                     ]}
+                    tooltip={['hour*cost*grade', (hour, cost, grade) => {
+                        return {
+                          name: grade + "平均消费",
+                          value: cost + "元"
+                        };
+                      }]}
                   />
                   <Geom
                     type="point"
@@ -280,6 +301,12 @@ const EcardConsumptionCard = memo(({ data }) => {
                       stroke: "#fff",
                       lineWidth: 1
                     }}
+                    tooltip={['hour*cost*grade', (hour, cost, grade) => {
+                        return {
+                          name: grade + "平均消费",
+                          value: cost + "元"
+                        };
+                      }]}
                   />
                   <View data={gradeCostCountData} scale={scale}>
                     <Axis name="hour" visible={false}/>
@@ -329,7 +356,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                     </li>
                   ))}
                 </ul>
-                <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
+                <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
                   <Paragraph>1. 高一、高二、高三同学的消费水平呈明显<Text type='danger'>递增</Text>趋势。
                     由于食堂就餐金额相似,三餐饭点时的消费几乎没有差别,消费差异集中在<Text type='danger'>非就餐时刻</Text>;</Paragraph>
                   <Paragraph>2. 高一的消费集中在<Text type='danger'>饭点</Text>,高二高三尤其<Text type='danger'>不</Text>喜欢在校吃早饭,
@@ -349,11 +376,11 @@ const EcardConsumptionCard = memo(({ data }) => {
                   key='cost-summary-staySchool'
                   height={400} scale={scale}
                   data={stayHourlyData}
-                  padding={["auto","auto",80,"auto"]}
-                  title="走读生/住校生不同时刻消费情况对比"
+                  padding={["auto", "auto", 80, "auto"]}
+                  title="走读生/住校生不同时刻平均消费情况对比"
                   forceFit
                 >
-                  <h4 className={styles.rankingTitle}>走读生/住校生不同时刻消费情况对比</h4>
+                  <h4 className={styles.rankingTitle}>走读生/住校生不同时刻平均消费情况对比</h4>
                   <Legend/>
                   <Axis name="hour"/>
                   <Axis
@@ -374,6 +401,12 @@ const EcardConsumptionCard = memo(({ data }) => {
                         return getColor(category);
                       }
                     ]}
+                    tooltip={['hour*cost*stayType', (hour, cost, stayType) => {
+                        return {
+                          name: stayType + "平均消费",
+                          value: cost + "元"
+                        };
+                      }]}
                   />
                   <Geom
                     type="point"
@@ -390,6 +423,12 @@ const EcardConsumptionCard = memo(({ data }) => {
                       stroke: "#fff",
                       lineWidth: 1
                     }}
+                    tooltip={['hour*cost*stayType', (hour, cost, stayType) => {
+                        return {
+                          name: stayType + "平均消费",
+                          value: cost + "元"
+                        };
+                      }]}
                   />
                   <View data={stayCountData} scale={scale}>
                     <Axis name="hour" visible={false}/>
@@ -437,11 +476,13 @@ const EcardConsumptionCard = memo(({ data }) => {
                     </li>
                   ))}
                 </ul>
-                <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
+                <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
                   <Paragraph>1. <Text type='danger'>走读生</Text>消费水平明显<Text type='danger'>高</Text>于住校生,
                     中午和晚上的就餐情况也占据这人次的优势.由于早饭可以在家吃,仅有极少走读生选择在校吃早饭;</Paragraph>
-                  <Paragraph>2. 走读生<Text type='danger'>晚饭</Text>时段消费人次<Text type='danger'>下降</Text>明显,不吃晚饭极易影响晚自修效率;</Paragraph>
-                  <Paragraph>3. 需要注意的是<Text type='danger'>0时</Text>，还有<Text type='danger'>14人次</Text>的走读生进行了消费。</Paragraph>
+                  <Paragraph>2. 走读生<Text type='danger'>晚饭</Text>时段消费人次<Text
+                    type='danger'>下降</Text>明显,不吃晚饭极易影响晚自修效率;</Paragraph>
+                  <Paragraph>3. 需要注意的是<Text type='danger'>0时</Text>，还有<Text
+                    type='danger'>14人次</Text>的走读生进行了消费。</Paragraph>
                 </Card>
               </div>
             </Col>}
@@ -449,7 +490,7 @@ const EcardConsumptionCard = memo(({ data }) => {
         </TabPane>
       </Tabs>
     </Card>
-    <Card title="总体消费趋势" bordered={true} style={{ width: '100%', marginTop: 32 }}>
+    <Card title="总体消费趋势" bordered={true} style={{width: '100%', marginTop: 32}}>
       <Row>
         {yearCostData && <Col span={7}>
           <div className={styles.salesRank}>
@@ -471,7 +512,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                 </li>
               ))}
             </ul>
-            <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
+            <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
               <Paragraph>1. 呈<Text type='danger'>周期性</Text>变化符合逻辑,周一二三四水平相当，
                 <Text type='danger'>周五</Text>由于学生准备离校消费<Text type='danger'>减半</Text>，周六周日几乎没有消费;</Paragraph>
               <Paragraph>2. <Text type='danger'>2018年11月中旬</Text>，由于期中考试和运动会的原因，

@@ -1,26 +1,20 @@
 /**
  * Created by 胡晓慧 on 2019/4/19.
  */
-import React, { memo } from 'react';
+import React, {memo} from 'react';
 import {Card, Col, Row, Typography} from 'antd';
-import { Pie, TimelineChart } from '@/components/Charts';
+import {WEEKDAY_ALIAS} from '@/constants';
+import {Pie, TimelineChart} from '@/components/Charts';
 import styles from './EcardConsumptionCard.less';
 import numeral from 'numeral';
-import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
+import {Axis, Chart, Geom, Legend, Tooltip} from "bizcharts";
+
 const {Paragraph, Text} = Typography;
 
 const cols = {
   weekday: {
     type: "cat",
-    values: [
-      "周一",
-      "周二",
-      "周三",
-      "周四",
-      "周五",
-      "周六",
-      "周日"
-    ]
+    values: Object.values(WEEKDAY_ALIAS)
   },
   hour: {
     type: "cat",
@@ -111,10 +105,10 @@ const violationRankingData = [
 ];
 
 
-const AttendanceCard = memo(({ data }) => {
-    const { enterSchoolData, kaoqinMixedData } = data;
+const AttendanceCard = memo(({data}) => {
+    const {enterSchoolData, kaoqinMixedData} = data;
     return <React.Fragment>
-      <Card title="2018-2019学年进离校时间概况" bordered={false} style={{ marginTop: 32 }}>
+      <Card title="2018-2019学年进离校时间概况" bordered={false} style={{marginTop: 32}}>
         <Row>
           <Col span={16}>
             <Chart
@@ -154,7 +148,12 @@ const AttendanceCard = memo(({ data }) => {
                 color="#bfbfbf"
                 shape="circle"
                 size={["count", [2, (window.innerWidth - 120) / 48]]}
-                tooltip="x*y*z"
+                tooltip={['hour*weekday*count', (hour, weekday, count) => {
+                  return {
+                    name: `${WEEKDAY_ALIAS[weekday]} ${hour}时`,
+                    value: count + "人次"
+                  };
+                }]}
                 opacity={0.5}
               />
             </Chart>
@@ -179,7 +178,7 @@ const AttendanceCard = memo(({ data }) => {
                   </li>
                 ))}
               </ul>
-              <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
+              <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
                 <Paragraph>1. <Text type='danger'>数据量有限</Text>不能代表所有学生的进离校情况;</Paragraph>
                 <Paragraph>2. 早上<Text type='danger'>6点多</Text>是绝大多数学生的进校时间,7点会有部分学生姗姗来迟;</Paragraph>
                 <Paragraph>3. <Text type='danger'>周五</Text>下午<Text type='danger'>3、4点</Text>是离校高峰，
@@ -190,7 +189,7 @@ const AttendanceCard = memo(({ data }) => {
         </Row>
 
       </Card>
-      <Card title="考勤情况一览" bordered={false} style={{ marginTop: 32 }}>
+      <Card title="考勤情况一览" bordered={false} style={{marginTop: 32}}>
         <Row>
           {kaoqinMixedData && <Col span={7}>
             <div className={styles.salesRank}>
@@ -208,11 +207,11 @@ const AttendanceCard = memo(({ data }) => {
                     <span className={styles.rankingItemTitle} title={item.title}>
                           {item.title}
                         </span>
-                    <span>{numeral(item.total).format('0,0')}</span>
+                    <span>{numeral(item.total).format('0,0')}人次</span>
                   </li>
                 ))}
               </ul>
-              <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20 }}>
+              <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20}}>
                 <Paragraph>1. 违纪情况呈<Text type="danger">递增</Text>趋势，
                   <Text type="danger">17-18学年</Text>考勤不合格人数最多(18-19学年仅有一半数据);</Paragraph>
                 <Paragraph>2. <Text type="danger">高一</Text>违纪情况在任一学年任一类型都是最<Text type="danger">少</Text>的，
@@ -247,7 +246,7 @@ const AttendanceCard = memo(({ data }) => {
                   (category, population) => {
                     return {
                       name: category,
-                      value: population
+                      value: population + "人次"
                     };
                   }
                 ]}

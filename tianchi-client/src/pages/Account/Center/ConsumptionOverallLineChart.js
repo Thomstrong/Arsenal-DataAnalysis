@@ -7,7 +7,7 @@ import {Axis, Chart, Geom, Legend, Tooltip} from "bizcharts";
 import {OneTimelineChart} from '@/components/Charts';
 import {Typography} from 'antd';
 
-const { Paragraph, Text} = Typography;
+const {Paragraph, Text} = Typography;
 
 let chartIns = null;
 
@@ -23,17 +23,17 @@ const ConsumptionOverallLineChart = memo(
         geom && geom.show();
       }
     }
-    let timeCount =0;
+    let timeCount = 0;
     let maxTime = 0;
     let maxMoney = 0;
     for (let i = 0; i < hourlyAvgCost.length; i++) {
-       if (hourlyAvgCost[i].avg_cost !== 0){
-         timeCount =timeCount+1;
-         if (hourlyAvgCost[i].avg_cost>=maxMoney) {
-           maxMoney = hourlyAvgCost[i].avg_cost;
-           maxTime = i
-         }
-       }
+      if (hourlyAvgCost[i].avg_cost !== 0) {
+        timeCount = timeCount + 1;
+        if (hourlyAvgCost[i].avg_cost >= maxMoney) {
+          maxMoney = hourlyAvgCost[i].avg_cost;
+          maxTime = i
+        }
+      }
     }
 
     return (
@@ -61,18 +61,43 @@ const ConsumptionOverallLineChart = memo(
           {dailySumCost.length ? <Row type="flex" align="middle">
             <Col span={3}>
               <Paragraph>共有<Text strong style={{color: "#cc4756"}}>{timeCount}</Text>个时间段产生过消费;</Paragraph>
-              <Paragraph>其中，平均消费最高出现在<Text strong style={{color: "#cc4756"}}>{maxTime}时</Text>,平均消费金额为<Text strong style={{color: "#cc4756"}}>¥{maxMoney}</Text></Paragraph>
+              <Paragraph>其中，平均消费最高出现在<Text strong style={{color: "#cc4756"}}>{maxTime}时</Text>,平均消费金额为<Text strong
+                                                                                                            style={{color: "#cc4756"}}>¥{maxMoney}</Text></Paragraph>
             </Col>
             <Col span={20} offset={1}>
               <Chart
                 height={300}
                 data={hourlyAvgCost}
-                padding={[10, "auto", 20, "auto"]}
+                padding={[10, "auto", 40, "auto"]}
                 scale={{
                   hour: {
-                    min: 0,
-                    max: 23,
-                    tickInterval: 1
+                    type: "cat",
+                    values: [
+                      "0时",
+                      "1时",
+                      "2时",
+                      "3时",
+                      "4时",
+                      "5时",
+                      "6时",
+                      "7时",
+                      "8时",
+                      "9时",
+                      "10时",
+                      "11时",
+                      "12时",
+                      "13时",
+                      "14时",
+                      "15时",
+                      "16时",
+                      "17时",
+                      "18时",
+                      "19时",
+                      "20时",
+                      "21时",
+                      "22时",
+                      "23时"
+                    ]
                   },
                   avg_cost: {
                     min: 0,
@@ -131,9 +156,27 @@ const ConsumptionOverallLineChart = memo(
                 <Axis name="hour"/>
                 <Axis name="total_avg" visible={false}/>
                 <Tooltip/>
-                <Geom type="interval" position="hour*avg_cost" color="#0099CC"/>
-                <Geom type="line" position="hour*total_avg" color="#FF9900" size={2} shape="smooth"/>
-                <Geom type="point" position="hour*total_avg" color="#FF9900" size={3} shape="circle"/>
+                <Geom type="interval" position="hour*avg_cost" color="#0099CC"
+                      tooltip={['avg_cost', (avgCost) => {
+                        return {
+                          name: "该同学平均消费",
+                          value: avgCost + "元"
+                        };
+                      }]}/>
+                <Geom type="line" position="hour*total_avg" color="#FF9900" size={2} shape="smooth"
+                      tooltip={['total_avg', (totalAvg) => {
+                        return {
+                          name: "全校同学平均消费",
+                          value: totalAvg + "元"
+                        };
+                      }]}/>
+                <Geom type="point" position="hour*total_avg" color="#FF9900" size={3} shape="circle"
+                      tooltip={['total_avg', (totalAvg) => {
+                        return {
+                          name: "全校同学平均消费",
+                          value: totalAvg + "元"
+                        };
+                      }]}/>
               </Chart>
             </Col>
           </Row> : <Empty/>}
