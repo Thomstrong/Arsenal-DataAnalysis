@@ -17,45 +17,35 @@ import { COURSE_ALIAS, COURSE_FULLNAME_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIA
 let data =
   [
     {
-      "x": "China",
+      "name": "China",
       "value": 2,
-      "category": "asia"
     }, {
-    "x": "India",
+    "name": "India",
     "value": 3,
-    "category": "asia"
   }, {
-    "x": "United States",
+    "name": "United States",
     "value": 4,
-    "category": "america"
   }, {
-    "x": "Indonesia",
+    "name": "Indonesia",
     "value": 2,
-    "category": "asia"
   }, {
-    "x": "Brazil",
+    "name": "Brazil",
     "value": 5,
-    "category": "america"
   }, {
-    "x": "Pakistan",
+    "name": "Pakistan",
     "value": 2,
-    "category": "asia"
   }, {
-    "x": "Nigeria",
+    "name": "Nigeria",
     "value": 1,
-    "category": "africa"
   }, {
-    "x": "Bangladesh",
+    "name": "Bangladesh",
     "value": 2,
-    "category": "asia"
   }, {
-    "x": "Russia",
+    "name": "Russia",
     "value": 3,
-    "category": "europe"
   }, {
-    "x": "Japan",
+    "name": "Japan",
     "value": 2,
-    "category": "asia"
   }
   ];
 
