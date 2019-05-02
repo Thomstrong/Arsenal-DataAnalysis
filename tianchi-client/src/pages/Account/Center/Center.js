@@ -53,7 +53,6 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
   hourlyAvgCost: student.hourlyAvgCost,
   dailySumCost: student.dailySumCost,
-  dailySumPredict: student.dailySumPredict,
   studentListLoading: loading.effects['student/fetchStudentList'],
   vsStudentListLoading: loading.effects['student/fetchVsStudentList'],
   costLoading: loading.effects['student/fetchHourlyAvgCost'],
@@ -469,7 +468,6 @@ class Center extends PureComponent {
       vsDailySumCost,
       hourlyAvgCost,
       dailySumCost,
-      dailySumPredict,
       loading,
       match,
       kaoqinVsData,
@@ -806,7 +804,6 @@ class Center extends PureComponent {
                     <ConsumptionOverallLineChart
                       hourlyAvgCost={hourlyAvgData}
                       dailySumCost={dailySumCost}
-                      dailySumPredict={dailySumPredict}
                       maxHourlyAvg={maxHourlyAvg}
                     />
                   </Suspense>

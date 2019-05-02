@@ -88,7 +88,6 @@ export default {
     radarData: [],
     hourlyAvgCost: [],
     dailySumCost: [],
-    dailySumPredict: {},
     dailyPredictData: {
       date: '',
       dateRange: 0,
@@ -396,8 +395,7 @@ export default {
       }
       return {
         ...state,
-        dailySumCost: payload.slice(0, payload.length - 1),
-        dailySumPredict: payload[payload.length - 1]
+        dailySumCost: payload,
       };
     },
     saveVsDailySumCost(state, { payload }) {

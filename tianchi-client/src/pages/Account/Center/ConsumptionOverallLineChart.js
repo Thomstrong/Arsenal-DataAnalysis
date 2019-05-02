@@ -16,7 +16,7 @@ const money = 2000;
 const precent = "20%";
 
 const ConsumptionOverallLineChart = memo(
-  ({ hourlyAvgCost, dailySumCost, dailySumPredict, maxHourlyAvg }) => {
+  ({ hourlyAvgCost, dailySumCost, maxHourlyAvg }) => {
     if (chartIns) {
       const geoms = chartIns.getAllGeoms();
       for (let geom of geoms) {
@@ -42,7 +42,7 @@ const ConsumptionOverallLineChart = memo(
           {dailySumCost.length ? <Row type="flex" align="middle">
             <Col xl={20} xs={24}>
               <OneTimelineChart
-                predict={dailySumPredict}
+                showPredict={true}
                 height={300}
                 data={dailySumCost.map((data) => {
                   return {
