@@ -107,7 +107,7 @@ class TagCloud extends Component {
         },
         fontSize(d) {
           // eslint-disable-next-line
-          return Math.pow((d.value - min) / (max - min), 2) * (17.5 - 5) + 5;
+          return Math.pow((d.value - min) / (max - min), 2) * (17.5 - 5) + 20;
         },
       });
 
@@ -154,19 +154,12 @@ class TagCloud extends Component {
               y: { nice: false },
             }}
           >
-            <Tooltip showTitle={false} />
             <Coord reflect="y" />
             <Geom
               type="point"
               position="x*y"
               color="text"
               shape="cloud"
-              tooltip={[
-                'text*value',
-                function trans(text, value) {
-                  return { name: text, value };
-                },
-              ]}
             />
           </Chart>
         )}

@@ -21,6 +21,7 @@ import {
   BackTop
 } from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
+import TagCloud from '@/components/Charts/TagCloud';
 import styles from './Center.less';
 import { Axis, Chart, Coord, Geom, Legend, Shape, Tooltip } from "bizcharts";
 import DataSet from "@antv/data-set";
@@ -28,7 +29,6 @@ import moment from "moment";
 import Link from 'umi/link';
 
 const ScoreLineChart = React.lazy(() => import('./ScoreLineChart'));
-const WordCloud = React.lazy(() => import('./WordCloud'));
 const ConsumptionOverallLineChart = React.lazy(() => import('./ConsumptionOverallLineChart'));
 const ConsumptionTimeSlotLineChart = React.lazy(() => import('./ConsumptionTimeSlotLineChart'));
 const AttendanceChart = React.lazy(() => import('./AttendanceChart'));
@@ -266,11 +266,6 @@ class Center extends PureComponent {
     return data;
   };
 
-  handleComparedStuChange = (value) => {
-    //todo
-  };
-
-
   onScoreTypeChange = (scoreType) => {
     const { dispatch, studentInfo } = this.props;
     const studentId = studentInfo.id;
@@ -494,74 +489,6 @@ class Center extends PureComponent {
     };
 
 
-    //词云的处理
-    function getTextAttrs(cfg) {
-      return _.assign(
-        {},
-        cfg.style,
-        {
-          fillOpacity: cfg.opacity,
-          fontSize: cfg.origin._origin.size,
-          rotate: cfg.origin._origin.rotate,
-          text: cfg.origin._origin.text,
-          textAlign: "center",
-          fontFamily: cfg.origin._origin.font,
-          fill: cfg.color,
-          textBaseline: "Alphabetic"
-        }
-      );
-    } // 给point注册一个词云的shape
-    Shape.registerShape("point", "cloud", {
-      drawShape(cfg, container) {
-        const attrs = getTextAttrs(cfg);
-        return container.addShape("text", {
-          attrs: _.assign(attrs, {
-            x: cfg.x,
-            y: cfg.y
-          })
-        });
-      }
-    });
-    const dv = new DataSet.View().source(wordCloudData);
-    const range = dv.range("value");
-    const min = range[0];
-    const max = range[1];
-    dv.transform({
-      type: "tag-cloud",
-      fields: ["x", "value"],
-      size: [window.innerWidth, window.innerHeight],
-      font: "Verdana",
-      padding: 0,
-      timeInterval: 5000,
-
-      // max execute time
-      rotate() {
-        let random = ~~(Math.random() * 4) % 4;
-
-        if (random === 2) {
-          random = 0;
-        }
-
-        return random * 90; // 0, 90, 270
-      },
-
-      fontSize(d) {
-        if (d.value) {
-          const divisor = (max - min) !== 0 ? (max - min) : 1;
-          return ((d.value - min) / divisor) * (20 - 6) + 8;
-        }
-
-        return 0;
-      }
-    });
-    const scale = {
-      x: {
-        nice: false
-      },
-      y: {
-        nice: false
-      }
-    };
     //tab相关
     const TabPane = Tabs.TabPane;
     //成绩相关,linedata表示总成绩,subData表示每个学科的成绩列表
@@ -595,42 +522,6 @@ class Center extends PureComponent {
       key: "student",
       value: "cost"
     });
-
-    //考勤对比数据
-    const AttendData = [
-      {
-        name: "李晓明",
-        '迟到': 3,
-        '早退': 6,
-        '校服违纪': 12,
-        '作弊': 2
-      },
-      {
-        name: "黎莉莉",
-        '迟到': 12,
-        '早退': 0,
-        '校服违纪': 6,
-        '作弊': 0
-      }
-    ];
-    const compAdata = new DataSet.View().source(AttendData);
-    compAdata.transform({
-      type: "fold",
-      fields: ["迟到", "早退", "校服违纪", "作弊"],
-      // 展开字段集
-      key: "考勤类型",
-      // key字段
-      value: "次数" // value字段
-    });
-    //待对比学生的基本信息
-    const comparedStu = {
-      id: 12354,
-      Name: "李明明",
-      Nation: "汉族",
-      ClassName: "高一6班",
-      BornDate: "2003-12-9",
-      NativePlace: "山西省太原市"
-    };
 
     const defaultTab = _.difference(location.pathname.split('/'), match.path.split('/'))[0] || 'Score';
     return (
@@ -668,12 +559,10 @@ class Center extends PureComponent {
                   <Divider style={{ marginTop: 16 }} dashed/>
                   <div className={styles.avatarHolder}>
                     {/*词云*/}
-                    <Suspense fallback={null}>
-                      <WordCloud
-                        wordData={dv}
-                        scale={scale}
-                      />
-                    </Suspense>
+                    <TagCloud
+                      data={wordCloudData}
+                      height={200}
+                    />
                     <div className={styles.name}>{studentInfo.name}</div>
                     {studentInfo.is_left ? <Tag color="#f50">已离校</Tag> :
                       <Tag color="#2db7f5">在校生</Tag>}
@@ -876,12 +765,10 @@ class Center extends PureComponent {
                       <Card title="基本信息对比" bordered={false} style={{ width: '100%' }}>
                         <Row>
                           <Col span={8}>
-                            <Suspense fallback={null}>
-                              <WordCloud
-                                wordData={dv}
-                                scale={scale}
-                              />
-                            </Suspense>
+                            <TagCloud
+                              data={wordCloudData}
+                              height={400}
+                            />
                           </Col>
                           <Col span={16} push={2}>
                             <Card
