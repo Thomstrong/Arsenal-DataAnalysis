@@ -1,6 +1,7 @@
 from django.db.models import Count, Q, Sum
 from progress.bar import Bar
 
+from classes.constants import Grade
 from consumptions.models import HourlyConsumption, Consumption, DailyConsumption
 from exams.models.exam_record import StudentExamRecord
 from students.models.student import Student
@@ -261,7 +262,7 @@ def run():
 
         # 模范学生
         tag_in_db, _ = WordCloudTag.objects.get_or_create(
-            title='勤俭节约'
+            title='模范学生'
         )
 
         students = Student.objects.all().exclude(
@@ -284,11 +285,12 @@ def run():
 
         # 萌新入校
         tag_in_db, _ = WordCloudTag.objects.get_or_create(
-            title='初生牛犊'
+            title='萌新入校'
         )
 
         students = StudentRecord.objects.filter(
             term__start_year=2018,
+            stu_class__grade_name=Grade.One,
             student_id__isnull=False
         ).values_list('student_id', flat=True)
         bar = Bar('New student record:', max=len(students))
