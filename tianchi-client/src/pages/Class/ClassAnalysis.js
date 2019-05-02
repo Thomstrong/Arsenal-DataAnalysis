@@ -1,6 +1,14 @@
 import React, { Fragment, PureComponent, Suspense } from 'react';
 import { connect } from 'dva';
-import { CLASS_CAMPUS_CHOICE, COURSE_FULLNAME_ALIAS, SCORE_LEVEL_ALIAS } from "@/constants";
+import {
+  CLASS_CAMPUS_CHOICE,
+  COURSE_FULLNAME_ALIAS,
+  GAOKAO_COURSES,
+  LINE_INDEX_ALIAS,
+  LINE_SCORE,
+  RANGE_ALIAS,
+  SCORE_LEVEL_ALIAS
+} from "@/constants";
 import router from 'umi/router';
 import _ from 'lodash';
 import {
@@ -44,10 +52,6 @@ const Line = Guide.Line;
   kaoqinLoading: loading.effects['stuClass/fetchKaoqinData'],
   termMap: global.termMap,
   termList: stuClass.termList,
-  examRank: stuClass.examData.examRank,
-  examStudentList: stuClass.examData.examStudentList,
-  examCompareData: stuClass.examData.examCompareData,
-  examDistributeData: stuClass.examData.examDistributeData,
   studentsList: stuClass.studentsList,
 }))
 class ClassAnalysis extends PureComponent {
@@ -134,22 +138,10 @@ class ClassAnalysis extends PureComponent {
         classId,
       }
     });
-    // todo 获取选定考试的所有信息 payload为考试id
-    dispatch({
-      type: 'stuClass/fetchExamData',
-      payload: {
-        classId,
-      }
+    this.setState({
+      classId,
+      examId: ''
     });
-    // TODO class分析第一页最近一次考试的学生排名情况
-    dispatch({
-      type: 'stuClass/fetchStudentsListData',
-      payload: {
-        classId,
-      }
-    });
-
-    this.setState({ classId, examId: '' });
   };
 
   getClassList = (input) => {
@@ -198,6 +190,20 @@ class ClassAnalysis extends PureComponent {
     const { dispatch, stuClass } = this.props;
     dispatch({
       type: 'stuClass/fetchExamRank',
+      payload: {
+        classId: stuClass.classInfo.id,
+        examId
+      }
+    });
+    dispatch({
+      type: 'stuClass/fetchExamRecords',
+      payload: {
+        classId: stuClass.classInfo.id,
+        examId
+      }
+    });
+    dispatch({
+      type: 'stuClass/fetchScoreDistribution',
       payload: {
         classId: stuClass.classInfo.id,
         examId
@@ -254,10 +260,12 @@ class ClassAnalysis extends PureComponent {
       />
     ),
   });
+
   handleSearch = (selectedKeys, confirm) => {
     confirm();
     this.setState({ searchText: selectedKeys[0] });
   };
+
   handleReset = (clearFilters) => {
     clearFilters();
     this.setState({ searchText: '' });
@@ -266,23 +274,30 @@ class ClassAnalysis extends PureComponent {
 
   render() {
     const {
-      stuClass, classListLoading, loading, match, radarLoading, kaoqinLoading,
-      termList, examRank, examStudentList, examCompareData, examDistributeData,
-      studentsList
+      stuClass, classListLoading, loading,
+      match, radarLoading, kaoqinLoading,
+      termList, studentsList
     } = this.props;
 
     const {
       distributionData, classInfo, teachers,
       classList, radarData, totalTrend,
       subTrends, kaoqinSummary, kaoqinData, classExamList,
-      courseRankData, scoreData, classMap
+      courseRankData, scoreData, classMap,
+      examRecords, overLineCounter, scoreDistributionData,
     } = stuClass;
-
     const { courseId, examId } = this.state;
     const showedScoreData = scoreData[Number(courseId)] ? scoreData[Number(courseId)].map(data => {
       return {
         name: classMap[Number(data.classId)],
         score: Number(data.score.toFixed(3))
+      };
+    }) : [];
+    const showedDistributeData = scoreDistributionData[Number(courseId)] ? scoreDistributionData[Number(courseId)].map(data => {
+      return {
+        name: classMap[Number(data.classId)],
+        range: RANGE_ALIAS[data.maxScore],
+        count: Number(data.count)
       };
     }) : [];
     const kaoQinData = this.formatKaoqinData(kaoqinData, termList);
@@ -311,95 +326,36 @@ class ClassAnalysis extends PureComponent {
     const tableColumns = [
       {
         title: '最新排名',
-        dataIndex: 'index',
-        key: 'index',
-        sorter: (a, b) => a.index - b.index,
-        width: 120,
-        fixed: 'left'
+        dataIndex: 'rank',
+        key: 'rank',
+        sorter: (a, b) => a.rank - b.rank,
+        width: 100,
+        fixed: 'left',
+        align: 'center',
       },
       {
         title: '学生姓名',
         dataIndex: 'name',
         key: 'name',
-        width: 110,
+        width: 150,
         fixed: 'left',
         ...this.getColumnSearchProps('name'),
-        // render: text => <a href="/">{text}</a>,
       },
-      {
-        title: '语文成绩',
-        dataIndex: 'chinese',
-        key: 'chinese',
-        sorter: (a, b) => a.chinese - b.chinese,
-        align: 'center',
-      },
-      {
-        title: '数学成绩',
-        dataIndex: 'math',
-        key: 'math',
-        sorter: (a, b) => a.math - b.math,
-        align: 'center',
-      },
-      {
-        title: '英语成绩',
-        dataIndex: 'english',
-        key: 'english',
-        sorter: (a, b) => a.english - b.english,
-        align: 'center',
-      },
-      {
-        title: '物理成绩',
-        dataIndex: 'physical',
-        key: 'physical',
-        sorter: (a, b) => a.physical - b.physical,
-        align: 'center',
-      },
-      {
-        title: '化学成绩',
-        dataIndex: 'chemistry',
-        key: 'chemistry',
-        sorter: (a, b) => a.chemistry - b.chemistry,
-        align: 'center',
-      },
-      {
-        title: '生物成绩',
-        dataIndex: 'biological',
-        key: 'biological',
-        sorter: (a, b) => a.biological - b.biological,
-        align: 'center',
-      }, {
-        title: '政治成绩',
-        dataIndex: 'political',
-        key: 'political',
-        sorter: (a, b) => a.political - b.political,
-        align: 'center',
-      },
-      {
-        title: '历史成绩',
-        dataIndex: 'history',
-        key: 'history',
-        sorter: (a, b) => a.history - b.history,
-        align: 'center',
-      },
-      {
-        title: '地理成绩',
-        dataIndex: 'geography',
-        key: 'geography',
-        sorter: (a, b) => a.geography - b.geography,
-        align: 'center',
-      },
-      {
-        title: '技术成绩',
-        dataIndex: 'technology',
-        key: 'technology',
-        sorter: (a, b) => a.technology - b.technology,
-        align: 'center',
-      },
+      ...GAOKAO_COURSES.map((courseId) => {
+        return {
+          title: `${COURSE_FULLNAME_ALIAS[courseId]}成绩`,
+          dataIndex: courseId,
+          key: courseId,
+          sorter: (a, b) => a[courseId] - b[courseId],
+          width: 120,
+          align: 'center',
+        };
+      }),
       {
         title: '总分',
-        dataIndex: 'count',
+        dataIndex: 'total',
         key: 'count',
-        sorter: (a, b) => a.count - b.count,
+        sorter: (a, b) => a.total - b.total,
         className: styles.alignRight,
         width: 100,
         fixed: 'right'
@@ -595,6 +551,7 @@ class ClassAnalysis extends PureComponent {
                       showSearch
                       optionFilterProp="children"
                       style={{ width: 200 }}
+                      value={this.state.examId}
                       onChange={this.onExamChanged}
                       filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                       placeholder="请选择该班级参与的考试"
@@ -605,8 +562,8 @@ class ClassAnalysis extends PureComponent {
                     </Select>
                   </Affix>}
                   {examId ?
-                    <div>
-                      {examRank.allRank && <Card title="本次考试排名一览" style={{ marginTop: 12 }}>
+                    <Fragment>
+                      {courseRankData.totalRank && <Card title="本次考试排名一览" style={{ marginTop: 12 }}>
                         <Row style={{ marginBottom: 10 }}>
                           <Statistic
                             title="本次排名" value={courseRankData.classNum - courseRankData.totalRank}
@@ -615,32 +572,30 @@ class ClassAnalysis extends PureComponent {
                           />
                         </Row>
                         <Row gutter={16} type="flex" justify="start" style={{ marginBottom: 10 }}>
-                          {examRank.studentCrossNum.map((item) => (
-                            <Col key={item.title}>
-                              <Statistic title={item.lineName} value={item.studentNum}/>
+                          {overLineCounter.map((count, index) => (
+                            <Col key={LINE_INDEX_ALIAS[index]}>
+                              <Statistic title={`超过${LINE_INDEX_ALIAS[index]}(${LINE_SCORE[index]})人数`} value={count}/>
                             </Col>))}
                         </Row>
                         <Row type="flex" justify="space-between">
-                          {courseRankData.rankData.map((item) => (
-                            <Col key={`examrank-${item.course}`}>
-                              <Statistic title={item.course} value={courseRankData.classNum - item.rank}/>
+                          {courseRankData.rankData.map((data) => (
+                            <Col key={`examrank-${data.course}`}>
+                              <Statistic title={data.course} value={courseRankData.classNum - data.rank}/>
                             </Col>))}
                         </Row>
                       </Card>}
-                      {examStudentList && examStudentList.length &&
+                      {examRecords && !!examRecords.length &&
                       <Card title="本次考试该班学生成绩与排名" style={{ marginTop: 12 }}>
                         <Table
+                          bordered
                           rowKey={record => record.index}
                           columns={tableColumns}
-                          dataSource={examStudentList}
-                          scroll={{ x: 1500 }}
-                          pagination={{
-                            style: { marginBottom: 0, marginTop: 24 },
-                            pageSize: 5,
-                          }}
+                          dataSource={examRecords}
+                          scroll={{ x: 1550, y: 300 }}
+                          pagination={false}
                         />
                       </Card>}
-                      {examCompareData && examDistributeData && <Card title="年级其他班成绩对比分析" style={{ marginTop: 12 }}>
+                      {showedScoreData && <Card title="年级其他班成绩对比分析" style={{ marginTop: 12 }}>
                         <Row type='flex' justify="end">
                           <Affix offsetTop={10}>
                             <Select
@@ -784,25 +739,25 @@ class ClassAnalysis extends PureComponent {
                             />
                           </Guide>}
                         </Chart>
-                        <Chart height={400} data={examDistributeData} forceFit>
+                        {this.state.courseId !== -1 && <Chart height={400} data={showedDistributeData} forceFit>
                           <Legend/>
                           <Coord transpose/>
                           <Axis
-                            name="State"
+                            name="name"
                             label={{
                               offset: 12
                             }}
                           />
-                          <Axis name="人数"/>
+                          <Axis name="count"/>
                           <Tooltip/>
                           <Geom
                             type="intervalStack"
-                            position="State*人数"
-                            color={"分数段"}
+                            position="name*count"
+                            color={"range"}
                           />
-                        </Chart>
+                        </Chart>}
                       </Card>}
-                    </div> : <Empty description={classInfo.id ? `请选择需要分析的考试名称` : `请在左侧搜索班级信息`}/>
+                    </Fragment> : <Empty description={classInfo.id ? `请选择需要分析的考试名称` : `请在左侧搜索班级信息`}/>
                   }
                 </TabPane>
                 {/*考勤情况*/}

@@ -132,3 +132,23 @@ export const GRADE_ALIAS = {
   2: '高二',
   3: '高三',
 };
+
+export const LINE_INDEX_ALIAS = {
+  0: '2018年一段线',
+  1: '2018年二段线',
+  2: '2018年三段线',
+};
+
+export const LINE_SCORE = [
+  588,
+  490,
+  344,
+];
+
+export const RANGE_ALIAS = {
+  "59": "<60",
+  "79": "60-79",
+  "99": "80-99",
+  "129": "100-129",
+  "150": "130-150",
+};

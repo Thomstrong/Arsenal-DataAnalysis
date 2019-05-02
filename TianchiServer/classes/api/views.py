@@ -5,13 +5,14 @@ from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
 from classes.api.serializers import ClassBasicSerializer, ClassMiniSerializer
+from classes.constants import EXAM_RANGES
 from classes.models import Class
 from exams.models.exam_record import StudentExamRecord, ClassExamRecord
 from kaoqins.models.kaoqin_record import KaoqinRecord
 from students.constants import SexType, PolicyType
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
-from utils.decorators import required_params
+from utils.decorators import required_params, performance_analysis
 
 gaokao_courses = [1, 2, 3, 4, 5, 6, 7, 8, 17, 59]
 
@@ -234,3 +235,68 @@ class ClassViewSet(viewsets.ModelViewSet):
             'sub_exam__exam_id',
         ).distinct('sub_exam__exam_id')
         return Response(exams)
+
+    @required_params(params=['exam_id'])
+    @detail_route(
+        methods=['GET'],
+    )
+    def student_exam_list(self, request, pk):
+        exam_id = request.query_params.get('exam_id', '')
+        if not exam_id:
+            return Response('exam_id 输入有误', status=400)
+        students = StudentRecord.objects.filter(
+            stu_class_id=pk
+        ).values_list('student_id', flat=True)
+        records = StudentExamRecord.objects.filter(
+            student_id__in=students,
+            sub_exam__exam_id=exam_id,
+            score__gte=0
+        ).values(
+            'student_id',
+            'student__name',
+            'sub_exam__course_id',
+            'score'
+        )
+
+        formated_data = {}
+        for record in records:
+            student = "{}-{}".format(record['student_id'], record['student__name'])
+            if student not in formated_data:
+                formated_data[student] = {}
+            formated_data[student][
+                record['sub_exam__course_id']
+            ] = record['score']
+
+        return Response(formated_data)
+
+    @performance_analysis(False)
+    @required_params(params=['exam_id'])
+    @detail_route(
+        methods=['GET'],
+    )
+    def score_distribution(self, request, pk):
+        exam_id = request.query_params.get('exam_id', '')
+        class_ids = ClassExamRecord.objects.filter(
+            sub_exam__exam_id=exam_id,
+            stu_class_id__isnull=False,
+        ).values_list('stu_class_id', flat=True).order_by(
+            'stu_class_id'
+        )
+
+        records = {}
+        for class_id in class_ids:
+            studnts = StudentRecord.objects.filter(
+                stu_class_id=class_id,
+                student_id__isnull=False,
+            ).values_list('student_id', flat=True)
+            records[class_id] = {}
+            for exam_range in EXAM_RANGES:
+                records[class_id][exam_range[1]] = StudentExamRecord.objects.filter(
+                    student_id__in=studnts,
+                    sub_exam__exam_id=exam_id,
+                    score__gte=exam_range[0],
+                    score__lte=exam_range[1],
+                ).values('sub_exam__course_id').annotate(
+                    count=Count('id')
+                )
+        return Response(records)

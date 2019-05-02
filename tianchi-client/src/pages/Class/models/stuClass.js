@@ -6,9 +6,18 @@ import {
   getClassList,
   getClassTeachers,
   getDistribution,
+  getScoreDistribution,
   getExamRank,
+  getExamRecords,
 } from '@/services/api';
-import { COURSE_ALIAS, COURSE_FULLNAME_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, WEEKDAY_ALIAS } from "@/constants";
+import {
+  COURSE_ALIAS,
+  COURSE_FULLNAME_ALIAS,
+  EVENT_TYPE_ALIAS,
+  LINE_SCORE,
+  SCORE_LEVEL_ALIAS,
+  WEEKDAY_ALIAS
+} from "@/constants";
 import DataSet from "@antv/data-set";
 
 
@@ -39,21 +48,17 @@ export default {
     subTrends: [],
     studentsList: [],
     termList: [],
-    //选定的某一场考试的情况，包括考试各科成绩和分数段分布，以及各个科目的排名，一批等的过线人数，所有学生的排名情况
+
     courseRankData: {
-      totalScore: 0,
+      totalRank: 0,
       rankData: [],
       classNum: 0,
     },
-    examData: {
-      examRank: {},
-      examStudentList: [],
-      examCompareData: [],
-      examDistributeData: [],
-    },
     scoreData: [],
     classMap: {},
-    //某一班级对应的所有考试名称和id
+    examRecords: [],
+    overLineCounter: [0, 0, 0],
+    scoreDistributionData: [],
     classExamList: [],
   },
 
@@ -106,7 +111,6 @@ export default {
         payload: response
       });
     },
-    //todo 修改为班级考勤信息
     * fetchKaoqinData({ payload }, { call, put }) {
       const response = yield call(getClassKaoqinData, {
         ...payload
@@ -117,7 +121,6 @@ export default {
         termMap: payload.termMap
       });
     },
-    //todo 针对班级某场考试而言的相关信息
     * fetchExamRank({ payload }, { call, put }) {
       const response = yield call(getExamRank, {
         ...payload
@@ -128,21 +131,21 @@ export default {
         payload: response,
       });
     },
-    * fetchExamData({ payload }, { call, put }) {
-      const response = yield call(getClassKaoqinData, {
+    * fetchExamRecords({ payload }, { call, put }) {
+      const response = yield call(getExamRecords, {
         ...payload
       });
       yield put({
-        type: 'saveExamData',
+        type: 'saveExamRecords',
         payload: response,
       });
     },
-    * fetchStudentsListData({ payload }, { call, put }) {
-      const response = yield call(getClassKaoqinData, {
+    * fetchScoreDistribution({ payload }, { call, put }) {
+      const response = yield call(getScoreDistribution, {
         ...payload
       });
       yield put({
-        type: 'saveStudentsList',
+        type: 'saveScoreDistribution',
         payload: response,
       });
     },
@@ -281,161 +284,42 @@ export default {
       state.termList = Object.keys(termList);
       return state;
     },
-    //todo 某一场exam信息的赋值
-    saveExamData(state, action) {
-      state.examData.examRank = {
-        //总分的排名
-        allRank: 5,
-        //年级段的班级数
-        totalClassNum: 12,
-        //不同的班级参与的考试不一样，不同考试含有的科目不一样，因此subject是可变的
-        allSubjectRank: [
-          {
-            subjectName: "语文排名",
-            subjectRank: 2,
-          },
-          {
-            subjectName: "数学排名",
-            subjectRank: 3,
-          },
-          {
-            subjectName: "英语排名",
-            subjectRank: 4,
-          }, {
-            subjectName: "历史排名",
-            subjectRank: 1,
-          }, {
-            subjectName: "物理排名",
-            subjectRank: 10,
-          },
-        ],
-        studentCrossNum: [
-          {
-            lineName: "2018年一段线过线人数(588)",
-            studentNum: 10,
-          },
-          {
-            lineName: "2018年二段线过线人数(490)",
-            studentNum: 30,
-          },
-          {
-            lineName: "2018年三段线过线人数(344)",
-            studentNum: 40,
-          },
-        ],
-      };
-      //学生列表数据
-      state.examData.examStudentList = [
-        {
-          index: 1,
-          name: "李四",
-          count: 678,
-          chinese: 125,
-          math: 110,
-          english: 134,
-          physical: 98,
-          chemistry: 88,
-          biological: 77,
-          political: 33,
-          history: 89,
-          geography: 66,
-          technology: 98
-        },
-        {
-          index: 2,
-          name: "张三",
-          count: 678,
-          chinese: 125,
-          math: 110,
-          english: 134,
-          physical: 98,
-          chemistry: 88,
-          biological: 77,
-          political: 33,
-          history: 89,
-          geography: 66,
-          technology: 98
+    saveExamRecords(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      let overLineCounter = [0, 0, 0];
+
+      const examRecords = [];
+
+      for (let student in payload) {
+        const records = payload[student];
+        let totalScore = 0;
+        for (let courseId in records) {
+          const score = records[courseId];
+          totalScore += score;
         }
-      ];
-      // 各科目与其他班的对比数据
-      //基本条状data，展示该班在对应年级平均分的排名情况
-      //因为bizchart的高亮是针对于整个图表而言的，所以计划把选中的这个班级的成绩放在第一位，剩下的班级从大到小排列
-      //todo 注意传入数据的顺序,最后一个数据显示在第一位
-      state.examData.examCompareData = [
+        totalScore += 320;
+        for (let lineIndex in overLineCounter) {
+          if (totalScore > LINE_SCORE[lineIndex]) {
+            overLineCounter[lineIndex] += 1;
+            break;
+          }
+        }
+        examRecords.push({
+          name: student,
+          ...records,
+          total: totalScore
+        });
+      }
 
-        {
-          className: "高一13班",
-          score: 300
-        },
-        {
-          className: "高一12班",
-          score: 400
-        },
-        {
-          className: "高一10班",
-          score: 600
-        },
-        {
-          className: "高一二班",
-          score: 700
-        },
-        //todo 注意最后一个数据显示在第一位
-        {
-          className: "高一3班",
-          score: 500
-        },
-      ];
-      //层叠条状data，该班不同分数段的同学的占比
-      // 因为bizchart的高亮是针对于整个图表而言的，所以计划把选中的这个班级的成绩放在第一位，剩下的班级按序排列
-      //todo 注意传入数据的顺序,最后一个数据显示在第一位
-      const cdata = [
-        {
-          State: "高一1班",
-          不及格: 30352,
-          "60-80": 20439,
-          "80-100": 10225
-        },
-        {
-          State: "高一2班",
-          不及格: 38253,
-          "60-80": 42538,
-          "80-100": 15757
-        },
-        {
-          State: "高一4班",
-          不及格: 51896,
-          "60-80": 67358,
-          "80-100": 18794
-        },
-        {
-          State: "高一5班",
-          不及格: 72083,
-          "60-80": 85640,
-          "80-100": 22153
-        },
-        {
-          State: "高一3班",
-          不及格: 25635,
-          "60-80": 1890,
-          "80-100": 9314
-        },
-      ];
-      const cds = new DataSet();
-      const cdv = cds.createView().source(cdata);
-      cdv.transform({
-        type: "fold",
-        fields: ["不及格", "60-80", "80-100"],
-        // 展开字段集
-        key: "分数段",
-        // key字段
-        value: "人数",
-        // value字段
-        retains: ["State"] // 保留字段集，默认为除fields以外的所有字段
-      });
-      state.examData.examDistributeData = cdv;
-
+      examRecords.sort((a, b) => b.total - a.total);
       return {
         ...state,
+        examRecords: examRecords.map((data, index) => {
+          return { ...data, rank: index + 1 };
+        }),
+        overLineCounter
       };
     },
     //todo 某一场exam信息的赋值
@@ -500,7 +384,6 @@ export default {
         '-1': totalScoreData,
         ...subScore,
       };
-      state.courseRankData = rankData;
       return {
         ...state,
         courseRankData: {
@@ -509,50 +392,76 @@ export default {
           rankData
         },
         scoreData,
-        classMap
+        classMap,
       };
     },
-
-    // todo 最近一次考试的学生排名情况
-    saveStudentsList(state, action) {
+    saveScoreDistribution(state, {payload}) {
+      if (!payload) {
+        return state
+      }
+      let scoreDistributionData = {};
+      for (let classId in payload) {
+        for (let maxScore in payload[classId]) {
+          for(let record of payload[classId][maxScore]) {
+            const courseId = record.sub_exam__course_id;
+            if (!scoreDistributionData[courseId]) {
+              scoreDistributionData[courseId] = []
+            }
+            scoreDistributionData[courseId].push({
+              classId,
+              maxScore,
+              count: record.count
+            })
+          }
+        }
+      }
+      // const cdata = [
+      //   {
+      //     State: "高一1班",
+      //     不及格: 30352,
+      //     "60-80": 20439,
+      //     "80-100": 10225
+      //   },
+      //   {
+      //     State: "高一2班",
+      //     不及格: 38253,
+      //     "60-80": 42538,
+      //     "80-100": 15757
+      //   },
+      //   {
+      //     State: "高一4班",
+      //     不及格: 51896,
+      //     "60-80": 67358,
+      //     "80-100": 18794
+      //   },
+      //   {
+      //     State: "高一5班",
+      //     不及格: 72083,
+      //     "60-80": 85640,
+      //     "80-100": 22153
+      //   },
+      //   {
+      //     State: "高一3班",
+      //     不及格: 25635,
+      //     "60-80": 1890,
+      //     "80-100": 9314
+      //   },
+      // ];
+      // scoreDistributionData = new DataSet.View().source(cdata).transform({
+      //   type: "fold",
+      //   fields: ["不及格", "60-80", "80-100"],
+      //   // 展开字段集
+      //   key: "分数段",
+      //   // key字段
+      //   value: "人数",
+      //   // value字段
+      //   retains: ["State"] // 保留字段集，默认为除fields以外的所有字段
+      // }).rows;
       return {
         ...state,
-        studentsList: [
-          {
-            index: 1,
-            name: "李四",
-            count: 678,
-            chinese: 125,
-            math: 110,
-            english: 134,
-            physical: 98,
-            chemistry: 88,
-            biological: 77,
-            political: 33,
-            history: 89,
-            geography: 66,
-            technology: 98
-          },
-          {
-            index: 2,
-            name: "张三",
-            count: 678,
-            chinese: 125,
-            math: 110,
-            english: 134,
-            physical: 98,
-            chemistry: 88,
-            biological: 77,
-            political: 33,
-            history: 89,
-            geography: 66,
-            technology: 98
-          }
-        ],
+        scoreDistributionData,
       };
     },
-
-    // todo 该班对应的考试列表
     saveClassExamList(state, { payload }) {
       if (!payload) {
         return state;
