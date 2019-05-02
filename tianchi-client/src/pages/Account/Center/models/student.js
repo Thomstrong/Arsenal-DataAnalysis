@@ -15,40 +15,6 @@ import {
 } from '@/services/api';
 import { COURSE_ALIAS, COURSE_FULLNAME_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, WEEKDAY_ALIAS } from "@/constants";
 
-let data =
-  [
-    {
-      "name": "China",
-      "value": 2,
-    }, {
-    "name": "India",
-    "value": 3,
-  }, {
-    "name": "United States",
-    "value": 4,
-  }, {
-    "name": "Indonesia",
-    "value": 2,
-  }, {
-    "name": "Brazil",
-    "value": 5,
-  }, {
-    "name": "Pakistan",
-    "value": 2,
-  }, {
-    "name": "Nigeria",
-    "value": 1,
-  }, {
-    "name": "Bangladesh",
-    "value": 2,
-  }, {
-    "name": "Russia",
-    "value": 3,
-  }, {
-    "name": "Japan",
-    "value": 2,
-  }
-  ];
 
 export default {
   namespace: 'student',
