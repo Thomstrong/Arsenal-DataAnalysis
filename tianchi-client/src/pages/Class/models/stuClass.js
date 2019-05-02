@@ -299,7 +299,6 @@ export default {
           const score = records[courseId];
           totalScore += score;
         }
-        totalScore += 320;
         for (let lineIndex in overLineCounter) {
           if (totalScore > LINE_SCORE[lineIndex]) {
             overLineCounter[lineIndex] += 1;

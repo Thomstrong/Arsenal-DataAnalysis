@@ -12,7 +12,7 @@ from kaoqins.models.kaoqin_record import KaoqinRecord
 from students.constants import SexType, PolicyType
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
-from utils.decorators import required_params, performance_analysis
+from utils.decorators import required_params
 
 gaokao_courses = [1, 2, 3, 4, 5, 6, 7, 8, 17, 59]
 
@@ -185,7 +185,9 @@ class ClassViewSet(viewsets.ModelViewSet):
         if not exam_id:
             return Response('exam_id 输入有误', status=400)
 
+        stu_class = self.get_object()
         records = ClassExamRecord.objects.filter(
+            stu_class__grade_name=stu_class.grade_name,
             sub_exam__exam_id=exam_id,
             attend_count__gt=0,
             stu_class_id__isnull=False
@@ -269,7 +271,6 @@ class ClassViewSet(viewsets.ModelViewSet):
 
         return Response(formated_data)
 
-    @performance_analysis(False)
     @required_params(params=['exam_id'])
     @detail_route(
         methods=['GET'],

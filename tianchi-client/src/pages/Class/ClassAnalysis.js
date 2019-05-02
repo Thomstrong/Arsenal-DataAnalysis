@@ -287,6 +287,7 @@ class ClassAnalysis extends PureComponent {
       examRecords, overLineCounter, scoreDistributionData,
     } = stuClass;
     const { courseId, examId } = this.state;
+    console.log(scoreData)
     const showedScoreData = scoreData[Number(courseId)] ? scoreData[Number(courseId)].map(data => {
       return {
         name: classMap[Number(data.classId)],
@@ -329,7 +330,7 @@ class ClassAnalysis extends PureComponent {
         dataIndex: 'rank',
         key: 'rank',
         sorter: (a, b) => a.rank - b.rank,
-        width: 100,
+        width: 150,
         fixed: 'left',
         align: 'center',
       },
@@ -339,6 +340,7 @@ class ClassAnalysis extends PureComponent {
         key: 'name',
         width: 150,
         fixed: 'left',
+        align: 'center',
         ...this.getColumnSearchProps('name'),
       },
       ...GAOKAO_COURSES.map((courseId) => {
@@ -591,7 +593,7 @@ class ClassAnalysis extends PureComponent {
                           rowKey={record => record.index}
                           columns={tableColumns}
                           dataSource={examRecords}
-                          scroll={{ x: 1550, y: 300 }}
+                          scroll={{ x: 1600, y: 300 }}
                           pagination={false}
                         />
                       </Card>}
@@ -601,7 +603,7 @@ class ClassAnalysis extends PureComponent {
                             <Select
                               value={String(courseId)} style={{ width: "100%" }}
                               onChange={(courseId) => this.setState({ courseId })}>
-                              {Object.keys(scoreData).map((id) => <Option
+                              {Object.keys(scoreData).sort().map((id) => <Option
                                 key={`course-selection-${id}`}
                                 value={id}
                               >
