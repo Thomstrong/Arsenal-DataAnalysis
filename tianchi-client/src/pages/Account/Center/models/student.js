@@ -385,7 +385,7 @@ export default {
       }
       return {
         ...state,
-        dailySumCost: payload
+        dailySumCost: payload,
       };
     },
     saveVsDailySumCost(state, { payload }) {
@@ -444,14 +444,6 @@ export default {
           'now': -data.total_cost
         };
       });
-      dailyPredictData.predictData = payload.this_cycle_data.map((data) => {
-        return {
-          date: data.date,
-          offset: data.offset,
-          'future': -data.total_cost
-        };
-      });
-
       return {
         ...state,
         dailyPredictData

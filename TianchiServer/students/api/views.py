@@ -17,6 +17,7 @@ from students.models.student import Student
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
 from utils.decorators import required_params
+from utils.pridictions import Predictor
 
 gaokao_courses = [1, 2, 3, 4, 5, 6, 7, 8, 17, 59]
 
@@ -215,31 +216,49 @@ class StudentViewSet(viewsets.ModelViewSet):
         methods=['GET'],
     )
     def consumptions(self, request, pk):
-        type = request.query_params.get('type', '')
-        if not type:
+        info_type = request.query_params.get('type', '')
+        if not info_type:
             return Response(status=400)
 
-        if type == 'hourly_avg':
+        if info_type == 'hourly_avg':
             records = HourlyConsumption.objects.filter(
                 student_id=pk,
             ).order_by('hour').values('hour').annotate(
                 avg_cost=-Avg('total_cost')
             )
             return Response(records)
-        if type == 'daily_sum':
+        if info_type == 'daily_sum':
             records = DailyConsumption.objects.filter(
                 student_id=pk,
             ).order_by('date').values('date').annotate(
                 total=-Sum('total_cost')
             )
 
-            return Response(records)
+            i = 1
+            info_pairs = []
+            costs = []
+            while i < len(records):
+                last_day_record = records[i - 1]
+                info_pairs.append([
+                    last_day_record['total'],
+                    last_day_record['date'].weekday()
+                ])
+                costs.append(records[i]['total'])
+                i += 1
+            tomorrow_date = records[i - 1]['date'] + timedelta(days=1)
+            predict_data = [records[i - 1]['total'], tomorrow_date.weekday()]
+            predict_cost = Predictor.bayes_predict(info_pairs, costs, predict_data)
+
+            return Response([record for record in records] + [{
+                'date': tomorrow_date,
+                'total': float('%.1f' % predict_cost)
+            }])
         date_range = request.query_params.get('date_range', None)
         if not date_range or not date_range.isdigit():
             return Response('range error')
         date_range = int(date_range)
 
-        if type == 'hourly':
+        if info_type == 'hourly':
             date = parse_date(request.query_params['date']).date()
             records = HourlyConsumption.objects.filter(
                 student_id=pk,
@@ -264,7 +283,7 @@ class StudentViewSet(viewsets.ModelViewSet):
                 'global_data': global_records,
             })
 
-        if type == 'predict':
+        if info_type == 'predict':
             date = parse_date(request.query_params['date']).date()
             daily_data = DailyConsumption.objects.filter(
                 student_id=pk,
@@ -300,15 +319,15 @@ class StudentViewSet(viewsets.ModelViewSet):
         methods=['GET'],
     )
     def compare(self, request, pk):
-        type = request.query_params.get('type', '')
-        if not type:
+        info_type = request.query_params.get('type', '')
+        if not info_type:
             return Response(status=400)
 
         another_id = request.query_params.get('with', '')
         if not another_id:
             return Response(status=400)
 
-        if type == 'grade':
+        if info_type == 'grade':
             exam_records = StudentExamRecord.objects.filter(
                 student_id__in=[pk, another_id],
                 sub_exam__course_id__in=gaokao_courses,
@@ -327,7 +346,7 @@ class StudentViewSet(viewsets.ModelViewSet):
                     'average': float('%.2f' % record['average']),
                 })
             return Response(formatted_records)
-        if type == 'kaoqin':
+        if info_type == 'kaoqin':
             records = KaoqinRecord.objects.filter(
                 student_id__in=[pk, another_id],
                 event_id__gte=9900100

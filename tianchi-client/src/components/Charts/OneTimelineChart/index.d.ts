@@ -4,6 +4,7 @@ export interface IOneTimelineChartProps {
     x: number;
     y: number;
   }>;
+  showPredict: boolean;
   titleMap: { y: string;};
   padding?: [number, number, number, number];
   height?: number;

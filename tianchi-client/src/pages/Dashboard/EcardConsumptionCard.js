@@ -518,6 +518,7 @@ const EcardConsumptionCard = memo(({data}) => {
         </Col>}
         <Col span={16} offset={1}>
           <OneTimelineChart
+            showPredict={false}
             height={400}
             data={yearCostData.map((data) => {
               return {

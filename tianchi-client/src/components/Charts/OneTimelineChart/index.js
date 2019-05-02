@@ -17,9 +17,14 @@ class OneTimelineChart extends React.Component {
       },
       borderWidth = 2,
       data: sourceData,
+      showPredict: showPredict
     } = this.props;
 
+    console.log(sourceData);
+
     const data = Array.isArray(sourceData) && sourceData.length ? sourceData : [{x: 0, y: 0}];
+    const lastTime = data[data.length-1].x;
+    console.log(lastTime);
 
     data.sort((a, b) => a.x - b.x);
 
@@ -102,21 +107,43 @@ class OneTimelineChart extends React.Component {
           {title && <h4>{title}</h4>}
           <Chart height={height} padding={padding} data={dv} scale={cols} forceFit>
             <Axis name="x"/>
-            {/*todo 下钻数据*/}
             <Tooltip
               crosshairs={{
                 type: "y"
               }}
             />
             <Geom type="line" position="x*value" size={borderWidth} color="key"
-              tooltip={['value', (value) => {
-                return {
-                  name: "单天消费额",
-                  value: value + "元"
-                };
-              }]}
+                  tooltip={['value', (value) => {
+                    return {
+                      name: "单天消费额",
+                      value: value + "元"
+                    };
+                  }]}
             />
-            {/*<Geom type="point" position="x*value" size={3} shape={"circle"} style={{stroke: "#fff", lineWidth: 1}}/>*/}
+            {showPredict && <Geom type="point" position="x*value" shape={"circle"}
+                  size={['x', (x) => {
+                    if (x >= lastTime) {
+                      return 4;
+                    }
+                    else{
+                      return 0;
+                    }
+                  }]}
+                  color={['x', (x) => {
+                    if (x >= lastTime) {
+                      return '#ff0000';
+                    }
+                    else{
+                      return "#1890ff";
+                    }
+                  }]}
+                  tooltip={['value', (value) => {
+                    return {
+                      name: "预测值",
+                      value: value + "元"
+                    };
+                  }]}
+            />}
           </Chart>
           <div style={{marginRight: -20}}>
             <SliderGen/>
