@@ -5,7 +5,7 @@
 
 import React, {Fragment, PureComponent} from 'react';
 import {COURSE_FULLNAME_ALIAS} from "@/constants";
-import {Button, Card, Col, Row, Select, Typography} from 'antd';
+import {BackTop, Button, Card, Col, Row, Select, Typography} from 'antd';
 import DataSet from "@antv/data-set";
 import {Axis, Chart, Coord, G2, Geom, Guide, Label, Legend, Tooltip, View} from "bizcharts";
 import {connect} from "dva";
@@ -173,6 +173,7 @@ class Selection extends PureComponent {
 
     return (
       <Fragment>
+        <BackTop/>
         <Card title="高三各科目选课情况分布" bordered={true} style={{width: '100%'}}>
           {/*分组堆叠*/}
           <Chart
@@ -353,7 +354,7 @@ class Selection extends PureComponent {
             </Col>
           </Row>
           {distributions.length && coursePercents.length && arcCourseData.nodes &&
-          <Card title='总结' bordered={false} hoverable={true} style={{marginLeft: 32, marginRight: 32,cursor:"auto"}}>
+          <Card title='总结' bordered={false} hoverable={true} style={{marginLeft: 32, marginRight: 32, cursor: "auto"}}>
             <Typography>
               <Paragraph>1.
                 自2017年高考改革以来选修<AntdText type="danger">物理、化学、生物</AntdText>的人数一直居<AntdText type="danger">高</AntdText>不下。传统文科中
@@ -398,10 +399,10 @@ class Selection extends PureComponent {
               ]}
               tooltip={[
                 "year*count",
-                (year,count) => {
+                (year, count) => {
                   return {
                     name: year,
-                    value: count+"人"
+                    value: count + "人"
                   };
                 }
               ]}
@@ -466,7 +467,7 @@ class Selection extends PureComponent {
                           (type, value) => {
                             return {
                               name: type,
-                              value: value+"人"
+                              value: value + "人"
                             };
                           }
                         ]}
@@ -564,7 +565,8 @@ class Selection extends PureComponent {
           </Row>
           {detailDistribution.length && courseSelectionPie.length && courseSelectionTree.length &&
           <Row>
-            <Card title='总结' bordered={false} hoverable={true} style={{marginLeft: 32, marginRight: 32,cursor:"auto"}}>
+            <Card title='总结' bordered={false} hoverable={true}
+                  style={{marginLeft: 32, marginRight: 32, cursor: "auto"}}>
               <Paragraph>1. 无论哪一年，<AntdText type="danger">物理化学、物理生物</AntdText>再加上其他一门学科的选课方案占据了整个选课方案的<AntdText
                 type="danger">近一半</AntdText>;
                 从另一角度来说,与人们设想的避难就易选课方式不同,即使开放自由选课，传统<AntdText type="danger">理综科目</AntdText>

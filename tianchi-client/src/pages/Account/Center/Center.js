@@ -17,7 +17,8 @@ import {
   Select,
   Spin,
   Tabs,
-  Tag
+  Tag,
+  BackTop
 } from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './Center.less';
@@ -631,6 +632,7 @@ class Center extends PureComponent {
     const defaultTab = _.difference(location.pathname.split('/'), match.path.split('/'))[0] || 'Score';
     return (
       <GridContent className={styles.userCenter}>
+        <BackTop/>
         <Row gutter={24}>
           <Col lg={7} md={24}>
             <Card bordered={false} style={{marginBottom: 24}} loading={loading}>
@@ -806,7 +808,7 @@ class Center extends PureComponent {
                   </Suspense>
                   <Suspense fallback={<div>Loading...</div>}>
                     <Affix offsetTop={80} style={{'zIndex': 1, marginTop: 10}}>
-                      <Card bordered={false} bodyStyle={{ padding: 5}}>
+                      <Card bordered={false} bodyStyle={{padding: 5}}>
                         <span>选择查看的时间：</span>
                         <DatePicker
                           defaultValue={moment(moment('2019-01-01'), 'YYYY-MM-DD')}
@@ -927,7 +929,8 @@ class Center extends PureComponent {
                           }}
                           kaoqinVsData={kaoqinVsData}
                         />
-                      </Suspense></div> : <Empty description={this.state.vsStudentId ? '未找到包含该信息数据' : '请输入待比对学生姓名或学号'}/>}
+                      </Suspense></div> :
+                    <Empty description={this.state.vsStudentId ? '未找到包含该信息数据' : '请输入待比对学生姓名或学号'}/>}
                 </TabPane>
               </Tabs>
             </Card>
