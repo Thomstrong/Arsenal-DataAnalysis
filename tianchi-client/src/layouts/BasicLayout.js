@@ -59,6 +59,9 @@ class BasicLayout extends React.Component {
     dispatch({
       type: 'global/fetchTermMap',
     });
+    dispatch({
+      type: 'global/fetchWordCloudMap',
+    });
   }
 
   getContext() {

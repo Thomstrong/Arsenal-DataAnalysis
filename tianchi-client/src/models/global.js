@@ -1,4 +1,4 @@
-import { getTermMap, getTotalHourlyAvgCost, queryNotices } from '@/services/api';
+import { getTermMap, getTotalHourlyAvgCost, getWordCloudMap, queryNotices } from '@/services/api';
 
 export default {
   namespace: 'global',
@@ -7,7 +7,8 @@ export default {
     collapsed: false,
     notices: [],
     termMap: null,
-    totalHourlyAvgCost:[],
+    wordCloudMap: null,
+    totalHourlyAvgCost: [],
   },
 
   effects: {
@@ -74,6 +75,13 @@ export default {
         payload: response
       });
     },
+    * fetchWordCloudMap({ payload }, { call, put }) {
+      const response = yield call(getWordCloudMap);
+      yield put({
+        type: 'saveWordCloudMap',
+        payload: response
+      });
+    },
     * fetchTotalHourlyAvgCost({ payload }, { call, put }) {
       const response = yield call(getTotalHourlyAvgCost);
       yield put({
@@ -110,6 +118,19 @@ export default {
       return {
         ...state,
         termMap,
+      };
+    },
+    saveWordCloudMap(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      let wordCloudMap = {};
+      payload.map((data) => {
+        wordCloudMap[data.id] = data.title;
+      });
+      return {
+        ...state,
+        wordCloudMap,
       };
     },
     saveClearedNotices(state, { payload }) {

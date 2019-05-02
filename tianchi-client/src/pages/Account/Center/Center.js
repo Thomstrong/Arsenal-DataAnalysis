@@ -6,6 +6,7 @@ import _ from 'lodash';
 import {
   Affix,
   Avatar,
+  BackTop,
   Card,
   Col,
   DatePicker,
@@ -17,13 +18,12 @@ import {
   Select,
   Spin,
   Tabs,
-  Tag,
-  BackTop
+  Tag
 } from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import TagCloud from '@/components/Charts/TagCloud';
 import styles from './Center.less';
-import { Axis, Chart, Coord, Geom, Legend, Shape, Tooltip } from "bizcharts";
+import { Axis, Chart, Coord, Geom, Legend, Tooltip } from "bizcharts";
 import DataSet from "@antv/data-set";
 import moment from "moment";
 import Link from 'umi/link';
@@ -43,6 +43,7 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   gradeVsData: student.gradeVsData,
   termList: student.termList,
   termMap: global.termMap,
+  wordCloudMap: global.wordCloudMap,
   totalHourlyAvgCost: global.totalHourlyAvgCost,
   dailyPredictData: student.dailyPredictData,
   hourlyCost: student.hourlyCost,
@@ -50,6 +51,7 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   kaoqinVsData: student.kaoqinVsData,
   vsDailySumCost: student.vsDailySumCost,
   wordCloudData: student.wordCloudData,
+  vsWordCloudData: student.vsWordCloudData,
   loading: loading.effects['student/fetchBasic'] && loading.effects['student/fetchRadarData'],
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
   hourlyAvgCost: student.hourlyAvgCost,
@@ -103,6 +105,15 @@ class Center extends PureComponent {
       type: `student/fetchVsBasic`,
       payload: {
         studentId: studentId
+      }
+    });
+
+
+    dispatch({
+      type: 'student/fetchVsWordCloudData',
+      payload: {
+        studentId: studentId,
+        wordCloudMap: this.props.wordCloudMap
       }
     });
 
@@ -171,6 +182,14 @@ class Center extends PureComponent {
       type: 'student/fetchTeacher',
       payload: {
         studentId: studentId,
+      }
+    });
+
+    dispatch({
+      type: 'student/fetchWordCloudData',
+      payload: {
+        studentId: studentId,
+        wordCloudMap: this.props.wordCloudMap
       }
     });
 
@@ -451,6 +470,7 @@ class Center extends PureComponent {
       studentInfo,
       vsStudentInfo,
       wordCloudData,
+      vsWordCloudData,
       studentList,
       vsStudentList,
       studentListLoading,
@@ -468,7 +488,7 @@ class Center extends PureComponent {
       match,
       kaoqinVsData,
       location,
-      kaoqinLoading
+      kaoqinLoading,
     } = this.props;
     const { hourlyAvgData, maxHourlyAvg } = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
     const { hourlyAvgData: vsAverageData } = this.formatHourlyAvgCost(hourlyAvgCost, costVsData);
@@ -766,7 +786,7 @@ class Center extends PureComponent {
                         <Row>
                           <Col span={8}>
                             <TagCloud
-                              data={wordCloudData}
+                              data={vsWordCloudData}
                               height={400}
                             />
                           </Col>

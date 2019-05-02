@@ -55,6 +55,10 @@ export async function getStudentTeachers(studentId) {
   return request(`/api/students/${studentId}/teachers/`);
 }
 
+export async function getWordCloudData(studentId) {
+  return request(`/api/students/${studentId}/tags/`);
+}
+
 export async function getStudentList(query) {
   return request(`/api/students/?query=${query}`);
 }
@@ -92,6 +96,10 @@ export async function getTotalHourlyAvgCost() {
 
 export async function getTermMap() {
   return request(`/api/terms/`);
+}
+
+export async function getWordCloudMap() {
+  return request(`/api/word_cloud_tag/`);
 }
 
 // course
