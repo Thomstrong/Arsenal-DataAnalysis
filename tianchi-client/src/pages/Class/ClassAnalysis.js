@@ -541,7 +541,7 @@ class ClassAnalysis extends PureComponent {
                     <Select
                       showSearch
                       optionFilterProp="children"
-                      style={{ width: 200 }}
+                      style={{ width: 300 }}
                       value={this.state.examId}
                       onChange={this.onExamChanged}
                       filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
