@@ -26,6 +26,22 @@ export async function getClassKaoqinData({ classId }) {
   return request(`/api/classes/${classId}/kaoqin/`);
 }
 
+export async function getClassExamList({ classId }) {
+  return request(`/api/classes/${classId}/exams/`);
+}
+
+export async function getExamRank({ classId, examId }) {
+  return request(`/api/classes/${classId}/rank/?exam_id=${examId}`);
+}
+
+export async function getExamRecords({ classId, examId }) {
+  return request(`/api/classes/${classId}/student_exam_list/?exam_id=${examId}`);
+}
+
+export async function getScoreDistribution({ classId, examId }) {
+  return request(`/api/classes/${classId}/score_distribution/?exam_id=${examId}`);
+}
+
 // student
 export async function getStudentBasic(studentId) {
   return request(`/api/students/${studentId}/`);
