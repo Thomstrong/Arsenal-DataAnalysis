@@ -5,7 +5,7 @@
 
 import React, {PureComponent} from 'react';
 import {COURSE_FULLNAME_ALIAS, GAOKAO_COURSES, POLICY_TYPE_ALIAS, SEX_MAP} from "@/constants";
-import {Affix, Card, Col, Row, Select, Typography} from 'antd';
+import {Affix, Card, Col, Row, Select, Typography,BackTop} from 'antd';
 import {Axis, Chart, Geom, Legend, Tooltip} from "bizcharts";
 import {connect} from "dva";
 
@@ -112,8 +112,8 @@ class Subject extends PureComponent {
 
 
     return (
-      <div>
         <Card title="各班某年某科目成绩统计" bordered={true} style={{width: '100%'}}>
+          <BackTop/>
           <Row type="flex" justify="end" style={{padding: 10}}>
             <Affix offsetTop={80} style={{'zIndex': 1}}>
               <Col span={10} style={{display: 'inline-flex'}}>
@@ -340,7 +340,6 @@ class Subject extends PureComponent {
             </Col>
           </Row>
         </Card>
-      </div>
     );
   }
 }

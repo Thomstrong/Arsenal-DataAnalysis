@@ -17,7 +17,8 @@ import {
   Select,
   Spin,
   Tabs,
-  Tag
+  Tag,
+  BackTop
 } from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './Center.less';
@@ -634,6 +635,7 @@ class Center extends PureComponent {
     const defaultTab = _.difference(location.pathname.split('/'), match.path.split('/'))[0] || 'Score';
     return (
       <GridContent className={styles.userCenter}>
+        <BackTop/>
         <Row gutter={24}>
           <Col lg={7} md={24}>
             <Card bordered={false} style={{ marginBottom: 24 }} loading={loading}>
