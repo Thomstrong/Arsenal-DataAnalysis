@@ -12,7 +12,7 @@ from kaoqins.models.kaoqin_record import KaoqinRecord
 from students.constants import SexType, PolicyType
 from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
-from utils.decorators import required_params, performance_analysis
+from utils.decorators import required_params
 
 gaokao_courses = [1, 2, 3, 4, 5, 6, 7, 8, 17, 59]
 
@@ -238,7 +238,6 @@ class ClassViewSet(viewsets.ModelViewSet):
         ).distinct('sub_exam__exam_id')
         return Response(exams)
 
-    @performance_analysis()
     @required_params(params=['exam_id'])
     @detail_route(
         methods=['GET'],
