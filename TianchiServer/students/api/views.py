@@ -18,6 +18,7 @@ from students.models.student_record import StudentRecord
 from teachers.models.teach_record import TeachRecord
 from utils.decorators import required_params
 from utils.pridictions import Predictor
+from wordcloud.models.tag_record import TagRecord
 
 gaokao_courses = [1, 2, 3, 4, 5, 6, 7, 8, 17, 59]
 
@@ -378,3 +379,15 @@ class StudentViewSet(viewsets.ModelViewSet):
                 })
 
             return Response(formatted_records)
+
+    @detail_route(
+        methods=['GET'],
+    )
+    def tags(self, request, pk):
+        records = TagRecord.objects.filter(
+            student_id=pk
+        ).values(
+            'tag_id',
+            'value'
+        )
+        return Response(records)

@@ -55,6 +55,10 @@ export async function getStudentTeachers(studentId) {
   return request(`/api/students/${studentId}/teachers/`);
 }
 
+export async function getWordCloudData(studentId) {
+  return request(`/api/students/${studentId}/tags/`);
+}
+
 export async function getStudentList(query) {
   return request(`/api/students/?query=${query}`);
 }

@@ -11,6 +11,7 @@ import {
   getStudentBasic,
   getStudentList,
   getStudentTeachers,
+  getWordCloudData,
 } from '@/services/api';
 import { COURSE_ALIAS, COURSE_FULLNAME_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, WEEKDAY_ALIAS } from "@/constants";
 
@@ -74,7 +75,8 @@ export default {
     termList: [],
     studentList: [],
     vsStudentList: [],
-    wordCloudData: data,
+    wordCloudData: [],
+    vsWordCloudData: [],
     radarData: [],
     hourlyAvgCost: [],
     dailySumCost: [],
@@ -123,6 +125,22 @@ export default {
       yield put({
         type: 'saveStudentTeachers',
         payload: response
+      });
+    },
+    * fetchWordCloudData({ payload }, { call, put }) {
+      const response = yield call(getWordCloudData, payload.studentId);
+      yield put({
+        type: 'saveWordCloudData',
+        payload: response,
+        wordCloudMap: payload.wordCloudMap
+      });
+    },
+    * fetchVsWordCloudData({ payload }, { call, put }) {
+      const response = yield call(getWordCloudData, payload.studentId);
+      yield put({
+        type: 'saveVsWordCloudData',
+        payload: response,
+        wordCloudMap: payload.wordCloudMap
       });
     },
     * fetchStudentList({ payload }, { call, put }) {
@@ -369,6 +387,34 @@ export default {
       });
       state.termList = Object.keys(termList);
       return state;
+    },
+    saveWordCloudData(state, { payload, wordCloudMap }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        wordCloudData: payload.map(data => {
+          return {
+            name: wordCloudMap[data.tag_id],
+            value: Number(data.value)
+          };
+        })
+      };
+    },
+    saveVsWordCloudData(state, { payload, wordCloudMap }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        vsWordCloudData: payload.map(data => {
+          return {
+            name: wordCloudMap[data.tag_id],
+            value: Number(data.value)
+          };
+        })
+      };
     },
     saveHourlyAvgCost(state, { payload }) {
       if (!payload) {
