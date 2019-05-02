@@ -287,7 +287,6 @@ class ClassAnalysis extends PureComponent {
       examRecords, overLineCounter, scoreDistributionData,
     } = stuClass;
     const { courseId, examId } = this.state;
-    console.log(scoreData)
     const showedScoreData = scoreData[Number(courseId)] ? scoreData[Number(courseId)].map(data => {
       return {
         name: classMap[Number(data.classId)],
@@ -522,7 +521,7 @@ class ClassAnalysis extends PureComponent {
                             onChange={this.onScoreTypeChange}
                           >
                             <Option key="score" value="score">绝对分</Option>
-                            <Option key="rank" value="rank">排名</Option>
+                            <Option key="rank" value="rank">排名(todo)</Option>
                           </Select>
                         </Affix>
                         <Suspense fallback={<div>Loading...</div>}>
@@ -533,16 +532,6 @@ class ClassAnalysis extends PureComponent {
                           />
                         </Suspense>
                       </Card>
-                      <Table
-                        rowKey={record => record.index}
-                        columns={tableColumns}
-                        dataSource={studentsList}
-                        scroll={{ x: 1500 }}
-                        pagination={{
-                          style: { marginBottom: 0, marginTop: 24 },
-                          pageSize: 5,
-                        }}
-                      />
                     </Fragment> : <Empty description='请在左侧搜索框中搜索班级数据'/>
                   }
                 </TabPane>

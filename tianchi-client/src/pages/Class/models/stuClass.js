@@ -6,9 +6,9 @@ import {
   getClassList,
   getClassTeachers,
   getDistribution,
-  getScoreDistribution,
   getExamRank,
   getExamRecords,
+  getScoreDistribution,
 } from '@/services/api';
 import {
   COURSE_ALIAS,
@@ -321,7 +321,6 @@ export default {
         overLineCounter
       };
     },
-    //todo 某一场exam信息的赋值
     saveExamRank(state, { payload }) {
       if (!payload) {
         return state;
@@ -394,23 +393,23 @@ export default {
         classMap,
       };
     },
-    saveScoreDistribution(state, {payload}) {
+    saveScoreDistribution(state, { payload }) {
       if (!payload) {
-        return state
+        return state;
       }
       let scoreDistributionData = {};
       for (let classId in payload) {
         for (let maxScore in payload[classId]) {
-          for(let record of payload[classId][maxScore]) {
+          for (let record of payload[classId][maxScore]) {
             const courseId = record.sub_exam__course_id;
             if (!scoreDistributionData[courseId]) {
-              scoreDistributionData[courseId] = []
+              scoreDistributionData[courseId] = [];
             }
             scoreDistributionData[courseId].push({
               classId,
               maxScore,
               count: record.count
-            })
+            });
           }
         }
       }
