@@ -1,13 +1,13 @@
 /**
  * Created by 胡晓慧 on 2019/4/13.
  */
-import React, {memo} from "react";
-import {Card, Col, Empty, Row} from 'antd';
-import {Axis, Chart, Geom, Legend, Tooltip} from "bizcharts";
-import {OneTimelineChart} from '@/components/Charts';
-import {Typography} from 'antd';
+import React, { memo } from "react";
+import { Card, Col, Empty, Row } from 'antd';
+import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
+import { OneTimelineChart } from '@/components/Charts';
+import { Typography } from 'antd';
 
-const {Paragraph, Text} = Typography;
+const { Paragraph, Text } = Typography;
 
 let chartIns = null;
 
@@ -16,7 +16,7 @@ const money = 2000;
 const precent = "20%";
 
 const ConsumptionOverallLineChart = memo(
-  ({hourlyAvgCost, dailySumCost, maxHourlyAvg}) => {
+  ({ hourlyAvgCost, dailySumCost, dailySumPredict, maxHourlyAvg }) => {
     if (chartIns) {
       const geoms = chartIns.getAllGeoms();
       for (let geom of geoms) {
@@ -31,17 +31,18 @@ const ConsumptionOverallLineChart = memo(
         timeCount = timeCount + 1;
         if (hourlyAvgCost[i].avg_cost >= maxMoney) {
           maxMoney = hourlyAvgCost[i].avg_cost;
-          maxTime = i
+          maxTime = i;
         }
       }
     }
 
     return (
-      <Card title="总体消费情况一览" bordered={false} style={{width: '100%'}}>
-        <Card title="总体消费趋势" bordered={false} style={{width: '100%',cursor:"auto"}} hoverable={true}>
+      <Card title="总体消费情况一览" bordered={false} style={{ width: '100%' }}>
+        <Card title="总体消费趋势" bordered={false} style={{ width: '100%', cursor: "auto" }} hoverable={true}>
           {dailySumCost.length ? <Row type="flex" align="middle">
             <Col xl={20} xs={24}>
               <OneTimelineChart
+                predict={dailySumPredict}
                 height={300}
                 data={dailySumCost.map((data) => {
                   return {
@@ -51,20 +52,20 @@ const ConsumptionOverallLineChart = memo(
                 })}
               />
             </Col>
-            <Col xl={4} xs={24} >
-              <Paragraph>该学生平均日消费为<Text strong style={{color: "#cc4756"}}>¥{money}</Text>元</Paragraph>
-              <Paragraph>超过<Text strong style={{color: "#cc4756"}}>{precent}</Text>的学生</Paragraph>
+            <Col xl={4} xs={24}>
+              <Paragraph>该学生平均日消费为<Text strong style={{ color: "#cc4756" }}>¥{money}</Text>元</Paragraph>
+              <Paragraph>超过<Text strong style={{ color: "#cc4756" }}>{precent}</Text>的学生</Paragraph>
             </Col>
           </Row> : <Empty/>}
         </Card>
-        <Card title="不同时间点平均消费对比" bordered={false} style={{width: '100%',cursor:"auto"}} hoverable={true}>
+        <Card title="不同时间点平均消费对比" bordered={false} style={{ width: '100%', cursor: "auto" }} hoverable={true}>
           {dailySumCost.length ? <Row type="flex" align="middle">
             <Col xl={4} xs={24}>
-              <Paragraph>共有<Text strong style={{color: "#cc4756"}}>{timeCount}</Text>个时间段产生过消费;</Paragraph>
-              <Paragraph>其中，平均消费最高出现在<Text strong style={{color: "#cc4756"}}>{maxTime}时</Text>,平均消费金额为<Text strong
-                                                                                                            style={{color: "#cc4756"}}>¥{maxMoney}</Text></Paragraph>
+              <Paragraph>共有<Text strong style={{ color: "#cc4756" }}>{timeCount}</Text>个时间段产生过消费;</Paragraph>
+              <Paragraph>其中，平均消费最高出现在<Text strong style={{ color: "#cc4756" }}>{maxTime}时</Text>,平均消费金额为<Text strong
+                                                                                                              style={{ color: "#cc4756" }}>¥{maxMoney}</Text></Paragraph>
             </Col>
-            <Col xl={20}  xs={24}>
+            <Col xl={20} xs={24}>
               <Chart
                 height={300}
                 data={hourlyAvgCost}
@@ -139,8 +140,8 @@ const ConsumptionOverallLineChart = memo(
                       }
                     }
                   ]}
-                  onClick={({item, checked}) => {
-                    const {value} = item;
+                  onClick={({ item, checked }) => {
+                    const { value } = item;
                     const geoms = chartIns.getAllGeoms();
                     for (let geom of geoms) {
                       if (geom.getYScale().alias === value) {

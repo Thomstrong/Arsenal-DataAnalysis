@@ -1,6 +1,6 @@
-import React, {Fragment, PureComponent, Suspense} from 'react';
-import {connect} from 'dva';
-import {POLICY_TYPE_ALIAS, SCORE_LEVEL_ALIAS, SEX_MAP} from "@/constants";
+import React, { Fragment, PureComponent, Suspense } from 'react';
+import { connect } from 'dva';
+import { POLICY_TYPE_ALIAS, SCORE_LEVEL_ALIAS, SEX_MAP } from "@/constants";
 import router from 'umi/router';
 import _ from 'lodash';
 import {
@@ -21,7 +21,7 @@ import {
 } from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './Center.less';
-import {Axis, Chart, Coord, Geom, Legend, Shape, Tooltip} from "bizcharts";
+import { Axis, Chart, Coord, Geom, Legend, Shape, Tooltip } from "bizcharts";
 import DataSet from "@antv/data-set";
 import moment from "moment";
 import Link from 'umi/link';
@@ -34,7 +34,7 @@ const AttendanceChart = React.lazy(() => import('./AttendanceChart'));
 const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
 
 
-@connect(({loading, student, global}) => ({
+@connect(({ loading, student, global }) => ({
   studentList: student.studentList,
   vsStudentList: student.vsStudentList,
   studentInfo: student.studentInfo,
@@ -53,6 +53,7 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
   hourlyAvgCost: student.hourlyAvgCost,
   dailySumCost: student.dailySumCost,
+  dailySumPredict: student.dailySumPredict,
   studentListLoading: loading.effects['student/fetchStudentList'],
   vsStudentListLoading: loading.effects['student/fetchVsStudentList'],
   costLoading: loading.effects['student/fetchHourlyAvgCost'],
@@ -71,7 +72,7 @@ class Center extends PureComponent {
   }
 
   onTabChange = key => {
-    const {match} = this.props;
+    const { match } = this.props;
     switch (key) {
       case 'Score':
         router.push(`${match.path}/Score`);
@@ -93,11 +94,11 @@ class Center extends PureComponent {
   getCompareInfo = (studentId) => {
     if (studentId === this.state.studentId) {
       message.warning('同一个学生对比可没有意义哦～😅', 5);
-      this.setState({vsStudentId: ''});
+      this.setState({ vsStudentId: '' });
       return;
     }
 
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: `student/fetchVsBasic`,
       payload: {
@@ -137,7 +138,7 @@ class Center extends PureComponent {
   };
 
   getStudentInfo = (studentId) => {
-    const {dispatch, totalHourlyAvgCost} = this.props;
+    const { dispatch, totalHourlyAvgCost } = this.props;
     dispatch({
       type: `student/fetchBasic`,
       payload: {
@@ -225,7 +226,7 @@ class Center extends PureComponent {
     if (!input) {
       return;
     }
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     if (type === 'compare') {
       dispatch({
         type: 'student/fetchVsStudentList',
@@ -271,7 +272,7 @@ class Center extends PureComponent {
 
 
   onScoreTypeChange = (scoreType) => {
-    const {dispatch, studentInfo} = this.props;
+    const { dispatch, studentInfo } = this.props;
     const studentId = studentInfo.id;
     dispatch({
       type: 'student/fetchTotalTrend',
@@ -287,14 +288,14 @@ class Center extends PureComponent {
         scoreType: scoreType
       }
     });
-    this.setState({scoreType});
+    this.setState({ scoreType });
   };
 
   onDateChange = (pickedDate) => {
     if (!pickedDate) {
       return;
     }
-    const {dispatch, studentInfo} = this.props;
+    const { dispatch, studentInfo } = this.props;
     dispatch({
       type: 'student/fetchDailyPredictData',
       payload: {
@@ -311,11 +312,11 @@ class Center extends PureComponent {
         date: pickedDate,
       }
     });
-    this.setState({pickedDate});
+    this.setState({ pickedDate });
   };
 
   handleChangeRange = (dateRange) => {
-    const {dispatch, studentInfo} = this.props;
+    const { dispatch, studentInfo } = this.props;
     dispatch({
       type: 'student/fetchDailyPredictData',
       payload: {
@@ -332,12 +333,12 @@ class Center extends PureComponent {
         date: this.state.pickedDate,
       }
     });
-    this.setState({dateRange});
+    this.setState({ dateRange });
   };
 
   formatDailyPredictData = (dailyPredictData) => {
-    const {lastCycleData, thisCycleData, predictData, dateRange} = dailyPredictData;
-    const mergedData = new DataSet.View().source(lastCycleData.concat(thisCycleData).concat(predictData)).transform({
+    const { lastCycleData, thisCycleData, dateRange } = dailyPredictData;
+    const mergedData = new DataSet.View().source(lastCycleData.concat(thisCycleData)).transform({
       type: 'partition',
       groupBy: ['offset'],
       orderBy: ['offset']
@@ -363,6 +364,9 @@ class Center extends PureComponent {
           ...item
         };
       }
+      const nowCost = Number(data.now);
+      const lastCost = Number(data.last);
+      data.future = Number((0.1 * (nowCost - lastCost) + (lastCost + nowCost) / 2).toFixed(2));
       maxCost = maxCost > data.future ? maxCost : data.future;
       maxCost = maxCost > data.now ? maxCost : data.now;
       maxCost = maxCost > data.last ? maxCost : data.last;
@@ -465,16 +469,17 @@ class Center extends PureComponent {
       vsDailySumCost,
       hourlyAvgCost,
       dailySumCost,
+      dailySumPredict,
       loading,
       match,
       kaoqinVsData,
       location,
       kaoqinLoading
     } = this.props;
-    const {hourlyAvgData, maxHourlyAvg} = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
-    const {hourlyAvgData: vsAverageData} = this.formatHourlyAvgCost(hourlyAvgCost, costVsData);
-    const {formatedData: predictData, maxCost} = this.formatDailyPredictData(dailyPredictData);
-    const {vsDailyCostData} = this.mergeDailyCost(dailySumCost, vsDailySumCost);
+    const { hourlyAvgData, maxHourlyAvg } = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
+    const { hourlyAvgData: vsAverageData } = this.formatHourlyAvgCost(hourlyAvgCost, costVsData);
+    const { formatedData: predictData, maxCost } = this.formatDailyPredictData(dailyPredictData);
+    const { vsDailyCostData } = this.mergeDailyCost(dailySumCost, vsDailySumCost);
     const radarViewData = new DataSet.View().source(studentInfo.radarData).transform({
       type: "fold",
       fields: Object.values(SCORE_LEVEL_ALIAS),
@@ -580,7 +585,7 @@ class Center extends PureComponent {
     const hourlyVsCostData = new DataSet.View().source(vsAverageData).transform({
       type: 'map',
       callback(row) {
-        const newRow = {...row};
+        const newRow = { ...row };
         newRow[`${vsStudentInfo.id}-${vsStudentInfo.name}`] = row.total_avg;
         newRow[`${studentInfo.id}-${studentInfo.name}`] = row.avg_cost;
         return newRow;
@@ -633,10 +638,10 @@ class Center extends PureComponent {
       <GridContent className={styles.userCenter}>
         <Row gutter={24}>
           <Col lg={7} md={24}>
-            <Card bordered={false} style={{marginBottom: 24}} loading={loading}>
-              <Affix offsetTop={80} style={{'zIndex': 1}}>
+            <Card bordered={false} style={{ marginBottom: 24 }} loading={loading}>
+              <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
                 <Select
-                  style={{width: '100%', display: 'block'}}
+                  style={{ width: '100%', display: 'block' }}
                   showSearch
                   notFoundContent={studentListLoading ? <Spin size="small"/> :
                     <Empty description={this.state.studentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
@@ -645,7 +650,7 @@ class Center extends PureComponent {
                   value={studentInfo.id || this.state.studentId}
                   filterOption={false}
                   onSearch={(value) => this.getStudentList(value)}
-                  onChange={(studentId) => this.setState({studentId})}
+                  onChange={(studentId) => this.setState({ studentId })}
                 >
                   {studentList.map((student) => (
                     <Option
@@ -660,7 +665,7 @@ class Center extends PureComponent {
               </Affix>
               {studentInfo && studentInfo.name ? (
                 <Fragment>
-                  <Divider style={{marginTop: 16}} dashed/>
+                  <Divider style={{ marginTop: 16 }} dashed/>
                   <div className={styles.avatarHolder}>
                     {/*词云*/}
                     <Suspense fallback={null}>
@@ -746,7 +751,7 @@ class Center extends PureComponent {
                       />
                     </Chart>
                   </Fragment>}
-                  <Divider style={{marginTop: 16}} dashed/>
+                  <Divider style={{ marginTop: 16 }} dashed/>
                   {/*老师信息*/}
                   <div className={styles.stuClass}>
                     <div className={styles.stuClassTitle}>班级信息</div>
@@ -776,9 +781,9 @@ class Center extends PureComponent {
                   {studentInfo && studentInfo.name ?
                     <Suspense fallback={<div>Loading...</div>}>
                       <Row type='flex' justify='start'>
-                        <Affix offsetTop={80} style={{'zIndex': 1}}>
+                        <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
                           <Select
-                            value={this.state.scoreType} style={{width: 120}}
+                            value={this.state.scoreType} style={{ width: 120 }}
                             onChange={this.onScoreTypeChange}
                           >
                             <Option key="score" value="score">绝对分</Option>
@@ -801,19 +806,20 @@ class Center extends PureComponent {
                     <ConsumptionOverallLineChart
                       hourlyAvgCost={hourlyAvgData}
                       dailySumCost={dailySumCost}
+                      dailySumPredict={dailySumPredict}
                       maxHourlyAvg={maxHourlyAvg}
                     />
                   </Suspense>
                   <Suspense fallback={<div>Loading...</div>}>
-                    <Affix offsetTop={80} style={{'zIndex': 1, marginTop: 10}}>
-                      <Card bordered={false} bodyStyle={{ padding: 5}}>
+                    <Affix offsetTop={80} style={{ 'zIndex': 1, marginTop: 10 }}>
+                      <Card bordered={false} bodyStyle={{ padding: 5 }}>
                         <span>选择查看的时间：</span>
                         <DatePicker
                           defaultValue={moment(moment('2019-01-01'), 'YYYY-MM-DD')}
                           onChange={(_, date) => this.onDateChange(date)}
                         />
                         <span>  分析区间：</span>
-                        <Select value={this.state.dateRange} style={{width: 120}} onChange={this.handleChangeRange}>
+                        <Select value={this.state.dateRange} style={{ width: 120 }} onChange={this.handleChangeRange}>
                           <Option key='one-week' value={7}>1周</Option>
                           <Option key='one-month' value={30}>1个月</Option>
                           <Option key='three-month' value={90}>3个月</Option>
@@ -842,9 +848,9 @@ class Center extends PureComponent {
                   </Suspense>
                 </TabPane>
                 <TabPane tab={<span><i className="fa fa-window-restore"/> 对比分析</span>} key="Compare">
-                  <Affix offsetTop={80} style={{'zIndex': 1}}>
+                  <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
                     <Select
-                      style={{width: '100%', display: 'block'}}
+                      style={{ width: '100%', display: 'block' }}
                       showSearch
                       notFoundContent={vsStudentListLoading ? <Spin size="small"/> :
                         <Empty description={this.state.vsStudentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
@@ -853,7 +859,7 @@ class Center extends PureComponent {
                       value={vsStudentInfo.id || this.state.vsStudentId}
                       filterOption={false}
                       onSearch={(value) => this.getStudentList(value, 'compare')}
-                      onChange={(vsStudentId) => this.setState({vsStudentId})}
+                      onChange={(vsStudentId) => this.setState({ vsStudentId })}
                     >
                       {vsStudentList.map((student) => (
                         <Option
@@ -868,7 +874,7 @@ class Center extends PureComponent {
                   </Affix>
                   {vsStudentInfo.id ?
                     <div>
-                      <Card title="基本信息对比" bordered={false} style={{width: '100%'}}>
+                      <Card title="基本信息对比" bordered={false} style={{ width: '100%' }}>
                         <Row>
                           <Col span={8}>
                             <Suspense fallback={null}>
@@ -927,7 +933,8 @@ class Center extends PureComponent {
                           }}
                           kaoqinVsData={kaoqinVsData}
                         />
-                      </Suspense></div> : <Empty description={this.state.vsStudentId ? '未找到包含该信息数据' : '请输入待比对学生姓名或学号'}/>}
+                      </Suspense></div> :
+                    <Empty description={this.state.vsStudentId ? '未找到包含该信息数据' : '请输入待比对学生姓名或学号'}/>}
                 </TabPane>
               </Tabs>
             </Card>
