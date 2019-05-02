@@ -283,8 +283,12 @@ class ClassViewSet(viewsets.ModelViewSet):
     )
     def score_distribution(self, request, pk):
         exam_id = request.query_params.get('exam_id', '')
+        if not exam_id:
+            return Response('exam_id 错误!', 404)
+        grade = self.get_object().grade_name
         class_ids = ClassExamRecord.objects.filter(
             sub_exam__exam_id=exam_id,
+            stu_class__grade_name=grade,
             stu_class_id__isnull=False,
         ).values_list('stu_class_id', flat=True).order_by(
             'stu_class_id'

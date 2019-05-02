@@ -1,5 +1,5 @@
 import React from 'react';
-import {Chart, Tooltip, Geom, Legend, Axis} from 'bizcharts';
+import { Axis, Chart, Geom, Tooltip } from 'bizcharts';
 import DataSet from '@antv/data-set';
 import Slider from 'bizcharts-plugin-slider';
 import autoHeight from '../autoHeight';
@@ -20,11 +20,8 @@ class OneTimelineChart extends React.Component {
       showPredict: showPredict
     } = this.props;
 
-    console.log(sourceData);
-
-    const data = Array.isArray(sourceData) && sourceData.length ? sourceData : [{x: 0, y: 0}];
-    const lastTime = data[data.length-1].x;
-    console.log(lastTime);
+    const data = Array.isArray(sourceData) && sourceData.length ? sourceData : [{ x: 0, y: 0 }];
+    const lastTime = data[data.length - 1].x;
 
     data.sort((a, b) => a.x - b.x);
 
@@ -54,7 +51,7 @@ class OneTimelineChart extends React.Component {
       .transform({
         type: 'map',
         callback(row) {
-          const newRow = {...row};
+          const newRow = { ...row };
           newRow[titleMap.y] = row.y;
           return newRow;
         },
@@ -79,7 +76,7 @@ class OneTimelineChart extends React.Component {
         max,
         min: 0,
       },
-      y: {tickCount: 5}
+      y: { tickCount: 5 }
     };
 
     const SliderGen = () => (
@@ -89,12 +86,12 @@ class OneTimelineChart extends React.Component {
         height={26}
         xAxis="x"
         yAxis="y"
-        scales={{x: timeScale}}
+        scales={{ x: timeScale }}
         data={data}
         start={ds.state.start}
         end={ds.state.end}
-        backgroundChart={{type: 'line'}}
-        onChange={({startValue, endValue}) => {
+        backgroundChart={{ type: 'line' }}
+        onChange={({ startValue, endValue }) => {
           ds.setState('start', startValue);
           ds.setState('end', endValue);
         }}
@@ -102,7 +99,7 @@ class OneTimelineChart extends React.Component {
     );
 
     return (
-      <div className={styles.timelineChart} style={{height: height + 30}}>
+      <div className={styles.timelineChart} style={{ height: height + 30 }}>
         <div>
           {title && <h4>{title}</h4>}
           <Chart height={height} padding={padding} data={dv} scale={cols} forceFit>
@@ -112,40 +109,48 @@ class OneTimelineChart extends React.Component {
                 type: "y"
               }}
             />
-            <Geom type="line" position="x*value" size={borderWidth} color="key"
-                  tooltip={['value', (value) => {
+            <Geom type="line" position="x*value" size={borderWidth}
+                  color={['x', (x) => {
+                    if (showPredict && x >= lastTime) {
+                      return '#ff0000';
+                    }
+                    return "#1890ff";
+                  }]}
+                  tooltip={['value*x', (value, x) => {
+                    if (showPredict && x >= lastTime) {
+                      return {
+                        name: "预测值",
+                        value: value + "元"
+                      };
+                    }
                     return {
                       name: "单天消费额",
                       value: value + "元"
                     };
                   }]}
             />
-            {showPredict && <Geom type="point" position="x*value" shape={"circle"}
-                  size={['x', (x) => {
-                    if (x >= lastTime) {
-                      return 4;
-                    }
-                    else{
-                      return 0;
-                    }
-                  }]}
-                  color={['x', (x) => {
-                    if (x >= lastTime) {
-                      return '#ff0000';
-                    }
-                    else{
-                      return "#1890ff";
-                    }
-                  }]}
-                  tooltip={['value', (value) => {
-                    return {
-                      name: "预测值",
-                      value: value + "元"
-                    };
-                  }]}
+            {showPredict && <Geom
+              type="point" position="x*value"
+              shape={"circle"}
+              active={[false]}
+              size={['x', (x) => {
+                if (x >= lastTime) {
+                  return 5;
+                }
+                return 0;
+              }]}
+              color={['x', (x) => {
+                return '#ff0000';
+              }]}
+              tooltip={['value', (value) => {
+                return {
+                  name: "预测值",
+                  value: value + "元"
+                };
+              }]}
             />}
           </Chart>
-          <div style={{marginRight: -20}}>
+          <div style={{ marginRight: -20 }}>
             <SliderGen/>
           </div>
         </div>

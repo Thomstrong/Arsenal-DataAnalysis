@@ -61,10 +61,10 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   costLoading: loading.effects['student/fetchHourlyAvgCost'],
 }))
 class Center extends PureComponent {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      studentId: '',
+      studentId: props.studentInfo.id || '',
       vsStudentId: '',
       scoreType: 'score',
       dateRange: 7,
@@ -107,7 +107,6 @@ class Center extends PureComponent {
         studentId: studentId
       }
     });
-
 
     dispatch({
       type: 'student/fetchVsWordCloudData',
@@ -838,6 +837,10 @@ class Center extends PureComponent {
                             }
                           }}
                           kaoqinVsData={kaoqinVsData}
+                          colorMap={{
+                            [`${studentInfo.id}-${studentInfo.name}`]:'#3898ff',
+                            [`${vsStudentInfo.id}-${vsStudentInfo.name}`]:'#4ac46a',
+                          }}
                         />
                       </Suspense></div> :
                     <Empty description={this.state.vsStudentId ? '未找到包含该信息数据' : '请输入待比对学生姓名或学号'}/>}

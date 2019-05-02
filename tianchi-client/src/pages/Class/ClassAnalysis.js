@@ -593,7 +593,7 @@ class ClassAnalysis extends PureComponent {
                           <Affix offsetTop={10}>
                             <Select
                               value={String(courseId)} style={{ width: "100%" }}
-                              onChange={(courseId) => this.setState({ courseId })}>
+                              onChange={(courseId) => this.setState({ courseId: Number(courseId) })}>
                               {Object.keys(scoreData).sort().map((id) => <Option
                                 key={`course-selection-${id}`}
                                 value={id}
@@ -604,6 +604,7 @@ class ClassAnalysis extends PureComponent {
                           </Affix>
                         </Row>
                         <Chart
+                          key={'class-score-rank'}
                           height={400}
                           data={showedScoreData}
                           forceFit
@@ -732,7 +733,11 @@ class ClassAnalysis extends PureComponent {
                             />
                           </Guide>}
                         </Chart>
-                        {this.state.courseId !== -1 && <Chart height={400} data={showedDistributeData} forceFit>
+                        {this.state.courseId !== -1 && <Chart
+                          key={'class-score-distribution'}
+                          height={400} data={showedDistributeData}
+                          forceFit
+                        >
                           <Legend/>
                           <Coord transpose/>
                           <Axis
