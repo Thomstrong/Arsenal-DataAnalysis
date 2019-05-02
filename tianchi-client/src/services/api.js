@@ -94,6 +94,10 @@ export async function getTermMap() {
   return request(`/api/terms/`);
 }
 
+export async function getWordCloudMap() {
+  return request(`/api/word_cloud_tag/`);
+}
+
 // course
 export async function getCourseSelectionDistribution({ year, type }) {
   return request(`/api/course_record/distribution/?type=${type}&year=${year || ''}`);
