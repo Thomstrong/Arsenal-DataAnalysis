@@ -23,9 +23,9 @@ class ClassExamViewSet(viewsets.ModelViewSet):
         if not start_year or not start_year.isdigit():
             return Response('start_year 输入有误', status=400)
         if not grade or not grade.isdigit():
-            return Response('start_year 输入有误', status=400)
+            return Response('grade 输入有误', status=400)
         if not course or not course.isdigit():
-            return Response('start_year 输入有误', status=400)
+            return Response('course 输入有误', status=400)
         records = ClassExamRecord.objects.filter(
             sub_exam__exam__term__start_year=start_year,
             stu_class__grade_name=grade,
