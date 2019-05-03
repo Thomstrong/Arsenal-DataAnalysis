@@ -134,6 +134,7 @@ export default [
             routes: [
               { path: '/class/analysis/Trend' },
               { path: '/class/analysis/Specific' },
+              { path: '/class/analysis/Attendance' },
             ]
           },
 

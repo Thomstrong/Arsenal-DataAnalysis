@@ -12,12 +12,12 @@ import {
 } from '@/services/api';
 import {
   COURSE_ALIAS,
+  COURSE_COLOR,
   COURSE_FULLNAME_ALIAS,
   EVENT_TYPE_ALIAS,
   LINE_SCORE,
   SCORE_LEVEL_ALIAS,
-  WEEKDAY_ALIAS,
-  COURSE_COLOR
+  WEEKDAY_ALIAS
 } from "@/constants";
 import DataSet from "@antv/data-set";
 
@@ -44,6 +44,7 @@ export default {
     loading: false,
     radarData: [],
     kaoqinData: [],
+    kaoqinDetail: {},
     kaoqinSummary: [],
     totalTrend: [],
     subTrends: [],
@@ -267,24 +268,62 @@ export default {
       if (!action.payload) {
         return state;
       }
-      const termList = {};
+      let termList = {};
       const { termMap } = action;
-      const { summary, records } = action.payload;
+      const { summary, records, details } = action.payload;
       state.kaoqinSummary = summary.map((data) => {
         return {
           'name': EVENT_TYPE_ALIAS[data.event__type_id],
           'count': data.count
         };
       });
-      state.kaoqinData = records.map((data) => {
+      const kaoqinData = records.map((data) => {
         termList[termMap[data.term]] = 1;
         return {
           'name': EVENT_TYPE_ALIAS[data.event__type_id],
           [termMap[data.term]]: data.count,
         };
       });
-      state.termList = Object.keys(termList);
-      return state;
+
+      termList = Object.keys(termList);
+      const data = new DataSet.View().source(kaoqinData).transform({
+        type: "fold",
+        fields: termList,
+        key: "term",
+        value: "count"
+      }).transform({
+        type: 'filter',
+        callback(row) {
+          return row.count;
+        }
+      });
+
+      data.rows.sort((a, b) => {
+        return (b.term > a.term) ? -1 : 1;
+      });
+
+
+      const kaoqinDetail = {};
+      let studentList = {};
+      details.map(data => {
+        if (!kaoqinDetail[termMap[data.term]]) {
+          kaoqinDetail[termMap[data.term]] = [];
+        }
+        studentList[data.name] = 1;
+        kaoqinDetail[termMap[data.term]].push({
+          'name': EVENT_TYPE_ALIAS[data.event_id],
+          [data.name]: data.count,
+        });
+      });
+      studentList = Object.keys(studentList);
+
+      return {
+        ...state,
+        kaoqinData: data.rows,
+        termList,
+        kaoqinDetail,
+        studentList
+      };
     },
     saveExamRecords(state, { payload }) {
       if (!payload) {

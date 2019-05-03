@@ -157,23 +157,47 @@ class ClassViewSet(viewsets.ModelViewSet):
         students = StudentRecord.objects.filter(
             stu_class_id=pk
         ).values_list('student_id', flat=True)
+
         records = KaoqinRecord.objects.filter(
             student_id__in=students,
-            event_id__gte=9900100
-        ).exclude(event_id=9900500).values('event__type_id', 'term').annotate(
+            event_id__gte=9900100,
+            event_id__lte=9900300,
+        ).values('event__type_id', 'term').annotate(
             count=Count('id'),
         ).order_by('term__start_year').order_by('term__order')
 
         sumary = KaoqinRecord.objects.filter(
             student_id__in=students,
-            event_id__gte=9900100
-        ).exclude(event_id=9900500).values('event__type_id').annotate(
+            event_id__gte=9900100,
+            event_id__lte=9900300,
+        ).values('event__type_id').annotate(
             count=Count('id'),
         ).order_by('-count')
 
+        details = KaoqinRecord.objects.filter(
+            student_id__in=students,
+            event_id__gte=9900100,
+            event_id__lte=9900300,
+        ).values(
+            'student_id', 'student__name',
+            'event__type_id', 'term'
+        ).annotate(
+            count=Count('id'),
+        ).order_by('-count')
+
+        formated_details = []
+        for detail in details:
+            formated_details.append({
+                'event_id': detail['event__type_id'],
+                'term': detail['term'],
+                'count': detail['count'],
+                'name': '{}-{}'.format(detail['student_id'], detail['student__name']),
+
+            })
         return Response({
             'records': records,
             'summary': sumary,
+            'details': formated_details,
         })
 
     @required_params(params=['exam_id'])

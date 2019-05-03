@@ -53,7 +53,6 @@ const Line = Guide.Line;
   kaoqinLoading: loading.effects['stuClass/fetchKaoqinData'],
   termMap: global.termMap,
   termList: stuClass.termList,
-  studentsList: stuClass.studentsList,
 }))
 class ClassAnalysis extends PureComponent {
 
@@ -67,6 +66,8 @@ class ClassAnalysis extends PureComponent {
       searchText: '',
       courseId: -1,
       examId: '',
+      digMode: false,
+      digTerm: '',
     };
     this.getClassList = _.debounce(this.getClassList, 800);
 
@@ -88,6 +89,9 @@ class ClassAnalysis extends PureComponent {
         break;
       case 'Specific':
         router.push(`${match.path}/Specific`);
+        break;
+      case 'Attendance':
+        router.push(`${match.path}/Attendance`);
         break;
       default:
         break;
@@ -141,7 +145,9 @@ class ClassAnalysis extends PureComponent {
     });
     this.setState({
       classId,
-      examId: ''
+      examId: '',
+      digMode: false,
+      digTerm: '',
     });
   };
 
@@ -158,14 +164,14 @@ class ClassAnalysis extends PureComponent {
     });
   };
 
-  formatKaoqinData = (kaoqinData, termList) => {
+  formatKaoqinData = (kaoqinData, studentList) => {
     if (!kaoqinData.length) {
       return [];
     }
     const data = new DataSet.View().source(kaoqinData).transform({
       type: "fold",
-      fields: termList,
-      key: "term",
+      fields: studentList,
+      key: "student",
       value: "count"
     }).transform({
       type: 'filter',
@@ -173,10 +179,7 @@ class ClassAnalysis extends PureComponent {
         return row.count;
       }
     });
-    data.rows.sort((a, b) => {
-      return (b.term > a.term) ? -1 : 1;
-    });
-    return data;
+    return data.rows;
   };
 
   onScoreTypeChange = (scoreType) => {
@@ -275,21 +278,41 @@ class ClassAnalysis extends PureComponent {
     this.setState({ searchText: '' });
   };
 
+  toggleKaoQinDig = (term = '') => {
+    if (!term) {
+      this.setState({
+        digMode: false,
+        digTerm: ''
+      });
+      return;
+    }
+    this.setState({
+      digMode: true,
+      digTerm: term
+    });
+  };
+
 
   render() {
     const {
       stuClass, classListLoading, loading,
       match, radarLoading, kaoqinLoading,
-      termList, studentsList
+      termList
     } = this.props;
 
     const {
       distributionData, classInfo, teachers,
       classList, radarData, totalTrend,
-      subTrends, kaoqinSummary, kaoqinData, classExamList,
+      subTrends, kaoqinSummary, kaoqinData,
+      kaoqinDetail, studentList, classExamList,
       courseRankData, scoreData, classMap,
       examRecords, overLineCounter, scoreDistributionData,
     } = stuClass;
+
+    let kaoqinDetailData = kaoqinDetail;
+    if (this.state.digTerm) {
+      kaoqinDetailData = this.formatKaoqinData(kaoqinDetailData[this.state.digTerm], studentList);
+    }
     const { courseId, examId } = this.state;
     const showedScoreData = scoreData[Number(courseId)] ? scoreData[Number(courseId)].map(data => {
       return {
@@ -304,7 +327,6 @@ class ClassAnalysis extends PureComponent {
         count: Number(data.count)
       };
     }) : [];
-    const kaoQinData = this.formatKaoqinData(kaoqinData, termList);
 
     const { boy, stay, total, local, policy } = distributionData;
     const isAtSchool = classInfo.start_year === 2018;
@@ -772,8 +794,12 @@ class ClassAnalysis extends PureComponent {
                   <Suspense fallback={<Spin className='center'/>}>
                     <ClassAttendanceChart
                       loading={kaoqinLoading}
-                      kaoqinData={kaoQinData}
-                      termList={termList}
+                      toggleDig={this.toggleKaoQinDig}
+                      digMode={this.state.digMode}
+                      term={this.state.digTerm}
+                      kaoqinData={kaoqinData}
+                      kaoqinDetail={kaoqinDetailData}
+                      termList={this.state.digMode ? studentList : termList}
                       kaoqinSummary={kaoqinSummary}
                     />
                   </Suspense>
