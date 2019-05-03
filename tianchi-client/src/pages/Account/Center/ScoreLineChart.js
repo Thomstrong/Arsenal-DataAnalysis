@@ -2,7 +2,7 @@
  * Created by 胡晓慧 on 2019/4/13.
  */
 import React, { memo } from "react";
-import { Col, Empty, List, Row, Spin } from 'antd';
+import { Col, Empty, List, Row } from 'antd';
 import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
 import { COURSE_FULLNAME_ALIAS, getDengDi } from "@/constants";
 
@@ -23,10 +23,10 @@ const normalScale = {
   score: {}
 };
 const ScoreLineChart = memo(
-  ({ lineData, radarViewData, subData, scoreType, loading }) => {
+  ({ lineData, radarViewData, subData, scoreType }) => {
     const showDengDi = scoreType === 'deng_di';
     const scale = showDengDi ? dengDiScale : normalScale;
-    return (lineData && !!lineData.length) ? (loading ? <Spin/> : <React.Fragment>
+    return (lineData && !!lineData.length) ? <React.Fragment>
       <Row>
         <Col span={8}>
           <Chart
@@ -150,8 +150,9 @@ const ScoreLineChart = memo(
                 }
               ]}
             />
-            {scoreType === 'score' && <Guide>
+            {scoreType === 'score' && <Guide key='student-score-lines'>
               <Line
+                key='student-score-line1'
                 top={true}
                 start={[-1, 588]}
                 end={['max', 588]}
@@ -171,6 +172,7 @@ const ScoreLineChart = memo(
                 }}
               />
               <Line
+                key='student-score-line2'
                 top={true}
                 start={[-1, 490]}
                 end={['max', 490]}
@@ -190,6 +192,7 @@ const ScoreLineChart = memo(
                 }}
               />
               <Line
+                key='student-score-line3'
                 top={true}
                 start={[-1, 344]}
                 end={['max', 344]}
@@ -209,6 +212,7 @@ const ScoreLineChart = memo(
                 }}
               />
               <Line
+                key='student-score-line4'
                 top={true}
                 start={[-1, 577]}
                 end={['max', 577]}
@@ -228,6 +232,7 @@ const ScoreLineChart = memo(
                 }}
               />
               <Line
+                key='student-score-line5'
                 top={true}
                 start={[-1, 480]}
                 end={['max', 480]}
@@ -247,6 +252,7 @@ const ScoreLineChart = memo(
                 }}
               />
               <Line
+                key='student-score-line6'
                 top={true}
                 start={[-1, 359]}
                 end={['max', 359]}
@@ -343,7 +349,7 @@ const ScoreLineChart = memo(
           </List.Item>
         )}
       />
-    </React.Fragment>) : <Empty description='暂无考试数据'/>;
+    </React.Fragment> : <Empty description='暂无考试数据'/>;
   }
 );
 
