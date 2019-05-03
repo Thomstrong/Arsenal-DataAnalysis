@@ -546,7 +546,7 @@ class Center extends PureComponent {
     return (
       <GridContent className={styles.userCenter}>
         <BackTop/>
-        <Row gutter={24}>
+        <Row gutter={16}>
           <Col lg={7} md={24}>
             <Card bordered={false} style={{ marginBottom: 24 }} loading={loading}>
               <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
@@ -583,82 +583,86 @@ class Center extends PureComponent {
                       height={200}
                     />
                     <div className={styles.name}>{studentInfo.name}</div>
-                    {studentInfo.is_left ? <Tag color="#f50">已离校</Tag> :
-                      <Tag color="#2db7f5">在校生</Tag>}
+                    {studentInfo.is_left ? <Tag style={{cursor:"default"}} color="#f50">已离校</Tag> :
+                      <Tag style={{cursor:"default"}} color="#2db7f5">在校生</Tag>}
                   </div>
-                  {/*学生详细信息*/}
-                  <div className={styles.detail}>
-                    <p><i className={`fa fa-group ${styles.iconStyle}`}/>
-                      {studentInfo.nation}
-                    </p>
-                    <p><i className={`fa fa fa-archive ${styles.iconStyle}`}/>
-                      {POLICY_TYPE_ALIAS[studentInfo.policy]}
-                    </p>
-                    <p><i className={`fa fa-birthday-cake ${styles.iconStyle}`}/>
-                      {studentInfo.born_year > 0 ? studentInfo.born_year : '未知'} 年
-                    </p>
-                    <p><i className={`fa fa-home ${styles.iconStyle}`}/>
-                      {studentInfo.native_place}
-                    </p>
-                    <p><i className={`fa ${studentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
-                      {SEX_MAP[studentInfo.sex]}
-                    </p>
-                    <p><i className={`fa fa-bed ${styles.iconStyle}`}/>
-                      {studentInfo.is_stay_school ? `住校-${studentInfo.room_num}室` : '走读'}
-                    </p>
-                  </div>
-
-                  {defaultTab !== 'Score' && <Fragment>
-                    <Divider dashed/>
-                    <Chart
-                      height={400}
-                      data={radarViewData}
-                      padding={[20, 20, 95, 20]}
-                      scale={cols}
-                      forceFit
-                      loading={loading}
-                    >
-                      <Coord type="polar" radius={0.8}/>
-                      <Axis
-                        name="item"
-                        line={null}
-                        tickLine={null}
-                        grid={{
-                          lineStyle: {
-                            lineDash: null
-                          },
-                          hideFirstLine: false
-                        }}
-                      />
-                      <Tooltip/>
-                      <Axis
-                        name="score"
-                        line={null}
-                        tickLine={null}
-                        grid={{
-                          type: "polygon",
-                          lineStyle: {
-                            lineDash: null
-                          },
-                          alternateColor: "rgba(0, 0, 0, 0.04)"
-                        }}
-                      />
-                      <Legend name="user" marker="circle" offset={30}/>
-                      <Geom type="line" position="item*score" color="user" size={2}/>
-                      <Geom
-                        type="point"
-                        position="item*score"
-                        color="user"
-                        shape="circle"
-                        size={4}
-                        style={{
-                          stroke: "#fff",
-                          lineWidth: 1,
-                          fillOpacity: 1
-                        }}
-                      />
-                    </Chart>
-                  </Fragment>}
+                  <Row type="flex" align="middle">
+                    {/*学生详细信息*/}
+                    <Col md={12} lg={24} sm={12} xs={12} xl={24}>
+                      <div className={styles.detail}>
+                        <p><i className={`fa fa-group ${styles.iconStyle}`}/>
+                          {studentInfo.nation}
+                        </p>
+                        <p><i className={`fa fa fa-archive ${styles.iconStyle}`}/>
+                          {POLICY_TYPE_ALIAS[studentInfo.policy]}
+                        </p>
+                        <p><i className={`fa fa-birthday-cake ${styles.iconStyle}`}/>
+                          {studentInfo.born_year > 0 ? studentInfo.born_year : '未知'} 年
+                        </p>
+                        <p><i className={`fa fa-home ${styles.iconStyle}`}/>
+                          {studentInfo.native_place}
+                        </p>
+                        <p><i className={`fa ${studentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
+                          {SEX_MAP[studentInfo.sex]}
+                        </p>
+                        <p><i className={`fa fa-bed ${styles.iconStyle}`}/>
+                          {studentInfo.is_stay_school ? `住校-${studentInfo.room_num}室` : '走读'}
+                        </p>
+                      </div>
+                    </Col>
+                    {/*雷达图*/}
+                    {defaultTab !== 'Score' &&
+                    <Col md={12} lg={24} sm={12} xs={12} xl={24}><Fragment>
+                      <Chart
+                        height={350}
+                        data={radarViewData}
+                        padding={[20, 20, 95, 20]}
+                        scale={cols}
+                        forceFit
+                        loading={loading}
+                      >
+                        <Coord type="polar" radius={0.8}/>
+                        <Axis
+                          name="item"
+                          line={null}
+                          tickLine={null}
+                          grid={{
+                            lineStyle: {
+                              lineDash: null
+                            },
+                            hideFirstLine: false
+                          }}
+                        />
+                        <Tooltip/>
+                        <Axis
+                          name="score"
+                          line={null}
+                          tickLine={null}
+                          grid={{
+                            type: "polygon",
+                            lineStyle: {
+                              lineDash: null
+                            },
+                            alternateColor: "rgba(0, 0, 0, 0.04)"
+                          }}
+                        />
+                        <Legend name="user" marker="circle" offset={30}/>
+                        <Geom type="line" position="item*score" color="user" size={2}/>
+                        <Geom
+                          type="point"
+                          position="item*score"
+                          color="user"
+                          shape="circle"
+                          size={4}
+                          style={{
+                            stroke: "#fff",
+                            lineWidth: 1,
+                            fillOpacity: 1
+                          }}
+                        />
+                      </Chart>
+                    </Fragment></Col>}
+                  </Row>
                   <Divider style={{ marginTop: 16 }} dashed/>
                   {/*老师信息*/}
                   <div className={styles.stuClass}>
@@ -666,10 +670,10 @@ class Center extends PureComponent {
                     <Link className={styles.stuClassInfo} to={`/class/analysis/?classId=${studentInfo.stu_class.id}`}>
                       {`${studentInfo.stu_class.start_year}年-${studentInfo.stu_class.class_name}`}
                     </Link>
-                    <Row gutter={36}>
+                    <Row gutter={8}>
                       {teacherInfo.map(item => (
-                        <Col className={styles.stuClassTeacher} key={item.id} md={22} lg={22} xl={10}>
-                          <Avatar size={32}><b>{item.courseName}</b></Avatar>
+                        <Col className={styles.stuClassTeacher} key={item.id} md={6} lg={20} sm={6} xs={6} xl={10}>
+                          <Avatar size={26}><b>{item.courseName}</b></Avatar>
                           {item.name}
                         </Col>
                       ))}
@@ -838,8 +842,8 @@ class Center extends PureComponent {
                           }}
                           kaoqinVsData={kaoqinVsData}
                           colorMap={{
-                            [`${studentInfo.id}-${studentInfo.name}`]:'#3898ff',
-                            [`${vsStudentInfo.id}-${vsStudentInfo.name}`]:'#4ac46a',
+                            [`${studentInfo.id}-${studentInfo.name}`]: '#3898ff',
+                            [`${vsStudentInfo.id}-${vsStudentInfo.name}`]: '#4ac46a',
                           }}
                         />
                       </Suspense></div> :

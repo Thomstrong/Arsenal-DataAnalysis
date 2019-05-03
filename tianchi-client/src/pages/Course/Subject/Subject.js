@@ -200,7 +200,7 @@ class Subject extends PureComponent {
                 </Chart>
               </Card>
             </Col>
-            <Col offset={1} xl={5} xs={23}>
+            <Col xl={{span:5, offset:1}} xs={24}>
               <Card bordered={false} hoverable={true} style={{cursor:"auto"}}>
                 <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
                   type="danger">高{this.state.grade}</Text>
@@ -224,7 +224,7 @@ class Subject extends PureComponent {
                   为<Text type="danger">{averageLowScore}</Text>分</Paragraph>
               </Card>
             </Col>
-            <Col xl={18} xs={23} offset={1}>
+            <Col xl={{span:18, offset:1}} xs={24}>
               <Card type="inner" title="各班某年某科目平均分统计" bordered={true} style={{width: '100%'}} hoverable={true}>
                 <Chart height={400} data={classExamData.average} padding="auto" forceFit>
                   <Legend/>
@@ -328,7 +328,7 @@ class Subject extends PureComponent {
                 </Chart>
               </Card>
             </Col>
-            <Col xl={5} xs={23} offset={1}>
+            <Col xl={{span:5, offset:1}} xs={24}>
               <Card bordered={false} hoverable={true} style={{cursor:"auto"}}>
                 <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
                   type="danger">高{this.state.grade}</Text>

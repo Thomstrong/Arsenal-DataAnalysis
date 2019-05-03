@@ -110,7 +110,7 @@ const AttendanceCard = memo(({data}) => {
     return <React.Fragment>
       <Card title="2018-2019学年进离校时间概况" bordered={false} style={{marginTop: 32}}>
         <Row>
-          <Col span={16}>
+          <Col xl={16} lg={24} md={24} sm={24} xm={24}>
             <Chart
               height={400}
               data={enterSchoolData}
@@ -158,7 +158,7 @@ const AttendanceCard = memo(({data}) => {
               />
             </Chart>
           </Col>
-          {enterSchoolData && <Col span={7} offset={1}>
+          {enterSchoolData && <Col xl={8} lg={24} md={24} sm={24} xm={24}>
             <div className={styles.salesRank}>
               <h4 className={styles.rankingTitle}>
                 进离校时间排名
@@ -191,7 +191,7 @@ const AttendanceCard = memo(({data}) => {
       </Card>
       <Card title="考勤情况一览" bordered={false} style={{marginTop: 32}}>
         <Row>
-          {kaoqinMixedData && <Col span={7}>
+          {kaoqinMixedData && <Col xl={8} lg={24} md={24} sm={24} xm={24}>
             <div className={styles.salesRank}>
               <h4 className={styles.rankingTitle}>
                 违纪次数排名
@@ -220,9 +220,9 @@ const AttendanceCard = memo(({data}) => {
               </Card>
             </div>
           </Col>}
-          <Col span={16} offset={1}>
+          <Col xl={16} lg={24} md={24} sm={24} xm={24}>
             <Chart
-              height={400}
+              height={420}
               data={kaoqinMixedData}
               padding={[20, 160, 80, 60]}
               forceFit

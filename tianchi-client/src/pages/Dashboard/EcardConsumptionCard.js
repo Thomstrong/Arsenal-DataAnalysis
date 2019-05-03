@@ -128,10 +128,10 @@ const EcardConsumptionCard = memo(({data}) => {
       <Tabs defaultActiveKey={"Sex"}>
         <TabPane tab={<span><Icon type="line-chart"/>性别对比</span>} key="Sex">
           <Row>
-            <Col span={16}>
+            <Col xl={16} lg={24} md={24} sm={24} xm={24}>
               <div className={styles.salesBar}>
                 <Chart
-                  height={400}
+                  height={410}
                   key='cost-summary-sex'
                   padding={["auto", "auto", 80, "auto"]}
                   forceFit
@@ -210,7 +210,7 @@ const EcardConsumptionCard = memo(({data}) => {
                 </Chart>
               </div>
             </Col>
-            {sexHourlyData && <Col span={7} offset={1}>
+            {sexHourlyData && <Col xl={{ span: 7, offset: 1 }} lg={24} md={24} sm={24} xm={24}>
               <div className={styles.salesRank}>
                 <h4 className={styles.rankingTitle}>
                   每时段消费额排名
@@ -244,7 +244,7 @@ const EcardConsumptionCard = memo(({data}) => {
         </TabPane>
         <TabPane tab={<span><Icon type="line-chart"/>年级对比</span>} key="Grade">
           <Row>
-            <Col span={16}>
+            <Col xl={16} lg={24} md={24} sm={24} xm={24}>
               <div className={styles.salesBar}>
                 <Chart
                   key='cost-summary-grade'
@@ -331,7 +331,7 @@ const EcardConsumptionCard = memo(({data}) => {
                 </Chart>
               </div>
             </Col>
-            {gradeHourlyData && <Col span={7} offset={1}>
+            {gradeHourlyData && <Col xl={{ span: 7, offset: 1 }} lg={24} md={24} sm={24} xm={24}>
               <div className={styles.salesRank}>
                 <h4 className={styles.rankingTitle}>
                   每时段消费额排名
@@ -365,7 +365,7 @@ const EcardConsumptionCard = memo(({data}) => {
         </TabPane>
         <TabPane tab={<span><Icon type="line-chart"/>走读住宿对比</span>} key="Leave">
           <Row>
-            <Col span={16}>
+            <Col xl={16} lg={24} md={24} sm={24} xm={24}>
               <div className={styles.salesBar}>
                 <Chart
                   key='cost-summary-staySchool'
@@ -451,7 +451,7 @@ const EcardConsumptionCard = memo(({data}) => {
                 </Chart>
               </div>
             </Col>
-            {stayHourlyData && <Col span={7} offset={1}>
+            {stayHourlyData && <Col xl={{ span: 7, offset: 1 }} lg={24} md={24} sm={24} xm={24}>
               <div className={styles.salesRank}>
                 <h4 className={styles.rankingTitle}>
                   每时段消费额排名
@@ -487,7 +487,7 @@ const EcardConsumptionCard = memo(({data}) => {
     </Card>
     <Card title="总体消费趋势" bordered={true} style={{width: '100%', marginTop: 32}}>
       <Row>
-        {yearCostData && <Col span={7}>
+        {yearCostData && <Col xl={7} lg={24} md={24} sm={24} xm={24}>
           <div className={styles.salesRank}>
             <h4 className={styles.rankingTitle}>
               消费总额排名
@@ -516,7 +516,7 @@ const EcardConsumptionCard = memo(({data}) => {
             </Card>
           </div>
         </Col>}
-        <Col span={16} offset={1}>
+        <Col xl={16} lg={24} md={24} sm={24} xm={24}>
           <OneTimelineChart
             showPredict={false}
             height={400}
