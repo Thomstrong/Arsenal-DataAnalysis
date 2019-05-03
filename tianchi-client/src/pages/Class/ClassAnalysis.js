@@ -210,7 +210,10 @@ class ClassAnalysis extends PureComponent {
         examId
       }
     });
-    this.setState({ examId });
+    this.setState({
+      examId,
+      courseId: -1
+    });
   };
 
   //table姓名可搜索部分相关代码
@@ -498,7 +501,12 @@ class ClassAnalysis extends PureComponent {
                       {teachers.map(item => (
                         <Col className={styles.infoItem} key={`teacher-${item.id}`} md={6} lg={20} sm={6} xs={6}
                              xl={10}>
-                          <Avatar size={26}><b>{item.courseName}</b></Avatar>
+                          <Avatar
+                            style={{ backgroundColor: item.color }}
+                            size={26}
+                          >
+                            <b>{item.courseName}</b>
+                          </Avatar>
                           {item.name}
                         </Col>
                       ))}
@@ -529,7 +537,7 @@ class ClassAnalysis extends PureComponent {
                             <Option key="rank" value="rank">排名(todo)</Option>
                           </Select>
                         </Affix>
-                        <Suspense fallback={<div>Loading...</div>}>
+                        <Suspense fallback={<Spin/>}>
                           <ScoreTrendChart
                             lineData={totalTrend}
                             radarViewData={radarViewData}

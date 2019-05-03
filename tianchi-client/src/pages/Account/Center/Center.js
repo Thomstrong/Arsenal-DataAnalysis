@@ -34,6 +34,8 @@ const ConsumptionTimeSlotLineChart = React.lazy(() => import('./ConsumptionTimeS
 const AttendanceChart = React.lazy(() => import('./AttendanceChart'));
 const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
 
+const TabPane = Tabs.TabPane;
+const Option = Select.Option;
 
 @connect(({ loading, student, global }) => ({
   studentList: student.studentList,
@@ -59,6 +61,8 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
   studentListLoading: loading.effects['student/fetchStudentList'],
   vsStudentListLoading: loading.effects['student/fetchVsStudentList'],
   costLoading: loading.effects['student/fetchHourlyAvgCost'],
+  scoreLoading: loading.effects['student/fetchTotalTrend'] && loading.effects['student/fetchSubTrends'],
+  eCardLoading: loading.effects['student/fetchDailySumCost'] && loading.effects['student/fetchDailyPredictData'],
 }))
 class Center extends PureComponent {
   constructor(props) {
@@ -93,10 +97,12 @@ class Center extends PureComponent {
     }
   };
 
-  getCompareInfo = (studentId) => {
-    if (studentId === this.state.studentId) {
+  getCompareInfo = (vsStudentId, studentId) => {
+    if (vsStudentId === studentId) {
       message.warning('同一个学生对比可没有意义哦～😅', 5);
-      this.setState({ vsStudentId: '' });
+      this.setState({
+        vsStudentId: ''
+      });
       return;
     }
 
@@ -104,47 +110,44 @@ class Center extends PureComponent {
     dispatch({
       type: `student/fetchVsBasic`,
       payload: {
-        studentId: studentId
+        studentId: vsStudentId
       }
     });
 
     dispatch({
       type: 'student/fetchVsWordCloudData',
       payload: {
-        studentId: studentId,
+        studentId: vsStudentId,
         wordCloudMap: this.props.wordCloudMap
       }
     });
 
-    if (this.state.studentId) {
-      dispatch({
-        type: 'student/fetchGradeCompare',
-        payload: {
-          studentId: this.state.studentId,
-          compareId: studentId,
-        }
-      });
-      dispatch({
-        type: 'student/fetchCostCompare',
-        payload: {
-          studentId: studentId,
-        }
-      });
-      dispatch({
-        type: 'student/fetchVsDailySumCost',
-        payload: {
-          studentId: studentId,
-        }
-      });
-      dispatch({
-        type: 'student/fetchKaoqinVsData',
-        payload: {
-          studentId: this.state.studentId,
-          compareId: studentId,
-        }
-      });
-
-    }
+    dispatch({
+      type: 'student/fetchGradeCompare',
+      payload: {
+        studentId: studentId,
+        compareId: vsStudentId,
+      }
+    });
+    dispatch({
+      type: 'student/fetchCostCompare',
+      payload: {
+        studentId: vsStudentId,
+      }
+    });
+    dispatch({
+      type: 'student/fetchVsDailySumCost',
+      payload: {
+        studentId: vsStudentId,
+      }
+    });
+    dispatch({
+      type: 'student/fetchKaoqinVsData',
+      payload: {
+        studentId: studentId,
+        compareId: vsStudentId,
+      }
+    });
   };
 
   getStudentInfo = (studentId) => {
@@ -236,7 +239,17 @@ class Center extends PureComponent {
     });
 
     if (this.state.vsStudentId) {
-      this.getCompareInfo(this.state.vsStudentId);
+      if (this.state.vsStudentId === studentId) {
+        dispatch({
+          type: 'student/clearCompare',
+        });
+        this.setState({
+          vsStudentId: ''
+        });
+
+        return;
+      }
+      this.getCompareInfo(this.state.vsStudentId, studentId);
     }
   };
 
@@ -488,6 +501,8 @@ class Center extends PureComponent {
       kaoqinVsData,
       location,
       kaoqinLoading,
+      eCardLoading,
+      scoreLoading
     } = this.props;
     const { hourlyAvgData, maxHourlyAvg } = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
     const { hourlyAvgData: vsAverageData } = this.formatHourlyAvgCost(hourlyAvgCost, costVsData);
@@ -498,7 +513,7 @@ class Center extends PureComponent {
       fields: Object.values(SCORE_LEVEL_ALIAS),
       key: "user",
       value: "score" // value字段
-    });
+    }).rows;
     const teacherInfo = studentInfo.teacherInfo;
     const cols = {
       score: {
@@ -508,21 +523,14 @@ class Center extends PureComponent {
     };
 
 
-    //tab相关
-    const TabPane = Tabs.TabPane;
     //成绩相关,linedata表示总成绩,subData表示每个学科的成绩列表
-    const linedata = studentInfo ? studentInfo.totalTrend : [];
-    const subData = studentInfo ? new DataSet.View().source([studentInfo.subTrends]).transform({
+    const totalTrendData = studentInfo ? studentInfo.totalTrend : [];
+    const subTrendData = studentInfo ? new DataSet.View().source([studentInfo.subTrends]).transform({
       type: "fold",
       fields: Object.keys(studentInfo.subTrends),
-      // 展开字段集
       key: "title",
-      // key字段
-      value: "lineData" // value字段
+      value: "lineData"
     }).rows : [];
-    //呈现成绩信息的筛选
-    const Option = Select.Option;
-
     //考勤的相关数据
     const kaoqinData = this.formatKaoqinData(studentInfo.kaoqinData, termList);
     const kaoqinSummary = studentInfo.kaoqinSummary;
@@ -544,7 +552,7 @@ class Center extends PureComponent {
 
     const defaultTab = _.difference(location.pathname.split('/'), match.path.split('/'))[0] || 'Score';
     return (
-      <GridContent className={styles.userCenter}>
+      <GridContent>
         <BackTop/>
         <Row gutter={16}>
           <Col lg={7} md={24}>
@@ -554,7 +562,7 @@ class Center extends PureComponent {
                   style={{ width: '100%', display: 'block' }}
                   showSearch
                   notFoundContent={studentListLoading ? <Spin size="small"/> :
-                    <Empty description={this.state.studentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
+                    <Empty description={this.state.studentId ? '未找到包含该信息学生数据' : '请输入学生姓名或学号查询'}/>
                   }
                   size="large"
                   value={studentInfo.id || this.state.studentId}
@@ -673,7 +681,12 @@ class Center extends PureComponent {
                     <Row gutter={8}>
                       {teacherInfo.map(item => (
                         <Col className={styles.stuClassTeacher} key={item.id} md={6} lg={20} sm={6} xs={6} xl={10}>
-                          <Avatar size={26}><b>{item.courseName}</b></Avatar>
+                          <Avatar
+                            style={{ backgroundColor: item.color }}
+                            size={26}
+                          >
+                            <b>{item.courseName}</b>
+                          </Avatar>
                           {item.name}
                         </Col>
                       ))}
@@ -690,9 +703,9 @@ class Center extends PureComponent {
             >
               <Tabs defaultActiveKey={defaultTab} onChange={this.onTabChange}>
                 <TabPane tab={<span><Icon type="line-chart"/>成绩</span>} key="Score">
-                  {studentInfo && studentInfo.name ?
-                    <Suspense fallback={<div>Loading...</div>}>
-                      <Row type='flex' justify='start'>
+                  {studentInfo && studentInfo.id ?
+                    <Suspense fallback={<Spin/>}>
+                      {totalTrendData && !!totalTrendData.length && <Row type='flex' justify='start'>
                         <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
                           <Select
                             value={this.state.scoreType} style={{ width: 120 }}
@@ -704,49 +717,54 @@ class Center extends PureComponent {
                             <Option key="deng_di" value="deng_di">等第</Option>
                           </Select>
                         </Affix>
-                      </Row>
-                      <ScoreLineChart
-                        lineData={linedata}
+                      </Row>}
+                      {!scoreLoading ? <ScoreLineChart
+                        lineData={totalTrendData}
                         radarViewData={radarViewData}
-                        subData={subData}
-                      />
+                        subData={subTrendData}
+                        scoreType={this.state.scoreType}
+                      /> : <Card loading={true} bordered={false}/>}
                     </Suspense> : <Empty description='请在左侧搜索框中搜索学生数据'/>
                   }
                 </TabPane>
                 <TabPane tab={<span><Icon type="credit-card"/>一卡通</span>} key="ECard">
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <ConsumptionOverallLineChart
-                      hourlyAvgCost={hourlyAvgData}
-                      dailySumCost={dailySumCost}
-                      maxHourlyAvg={maxHourlyAvg}
-                    />
-                  </Suspense>
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <Affix offsetTop={80} style={{ 'zIndex': 1, marginTop: 10 }}>
-                      <Card bordered={false} bodyStyle={{ padding: 5 }}>
-                        <span>选择查看的时间：</span>
-                        <DatePicker
-                          defaultValue={moment(moment('2019-01-01'), 'YYYY-MM-DD')}
-                          onChange={(_, date) => this.onDateChange(date)}
+                  {dailySumCost && !!dailySumCost.length ? eCardLoading ? <Card loading={true} bordered={false}/> :
+                    <Fragment>
+                      <Suspense fallback={<Spin/>}>
+                        <ConsumptionOverallLineChart
+                          hourlyAvgCost={hourlyAvgData}
+                          dailySumCost={dailySumCost}
+                          maxHourlyAvg={maxHourlyAvg}
                         />
-                        <span>  分析区间：</span>
-                        <Select value={this.state.dateRange} style={{ width: 120 }} onChange={this.handleChangeRange}>
-                          <Option key='one-week' value={7}>1周</Option>
-                          <Option key='one-month' value={30}>1个月</Option>
-                          <Option key='three-month' value={90}>3个月</Option>
-                          <Option key='six-month' value={180}>6个月</Option>
-                          <Option key='one-year' value={365}>1年</Option>
-                        </Select>
-                      </Card>
-                    </Affix>
-                    <ConsumptionTimeSlotLineChart
-                      hourlyCost={hourlyCost}
-                      dailyPredictData={predictData}
-                      maxCost={maxCost}
-                      date={dailyPredictData.date}
-                      dateRange={dailyPredictData.dateRange}
-                    />
-                  </Suspense>
+                      </Suspense>
+                      <Suspense fallback={<Spin/>}>
+                        <Affix offsetTop={80} style={{ 'zIndex': 1, marginTop: 10 }}>
+                          <Card bordered={false} bodyStyle={{ padding: 5 }}>
+                            <span>选择查看的时间：</span>
+                            <DatePicker
+                              defaultValue={moment(moment('2019-01-01'), 'YYYY-MM-DD')}
+                              onChange={(_, date) => this.onDateChange(date)}
+                            />
+                            <span style={{ marginLeft: '20px' }}>分析区间：</span>
+                            <Select value={this.state.dateRange} style={{ width: 120 }}
+                                    onChange={this.handleChangeRange}>
+                              <Option key='one-week' value={7}>1周</Option>
+                              <Option key='one-month' value={30}>1个月</Option>
+                              <Option key='three-month' value={90}>3个月</Option>
+                              <Option key='six-month' value={180}>6个月</Option>
+                              <Option key='one-year' value={365}>1年</Option>
+                            </Select>
+                          </Card>
+                        </Affix>
+                        <ConsumptionTimeSlotLineChart
+                          hourlyCost={hourlyCost}
+                          dailyPredictData={predictData}
+                          maxCost={maxCost}
+                          date={dailyPredictData.date}
+                          dateRange={dailyPredictData.dateRange}
+                        />
+                      </Suspense>
+                    </Fragment> : <Empty description='暂无一卡通消费数据'/>}
                 </TabPane>
                 <TabPane tab={<span><i className={`fa fa-calendar-check-o`}/> 考勤</span>} key="Attendance">
                   <Suspense fallback={<Spin className='center'/>}>
@@ -759,12 +777,12 @@ class Center extends PureComponent {
                   </Suspense>
                 </TabPane>
                 <TabPane tab={<span><i className="fa fa-window-restore"/> 对比分析</span>} key="Compare">
-                  <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
+                  {!!studentInfo.id && <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
                     <Select
                       style={{ width: '100%', display: 'block' }}
                       showSearch
                       notFoundContent={vsStudentListLoading ? <Spin size="small"/> :
-                        <Empty description={this.state.vsStudentId ? '未找到包含该信息数据' : '请输入学生姓名或学号查询'}/>
+                        <Empty description={this.state.vsStudentId ? '未找到包含该信息的学生' : '请输入学生姓名或学号查询'}/>
                       }
                       size="large"
                       value={vsStudentInfo.id || this.state.vsStudentId}
@@ -774,7 +792,7 @@ class Center extends PureComponent {
                     >
                       {vsStudentList.map((student) => (
                         <Option
-                          onClick={(value) => this.getCompareInfo(value.key, 'Vs')}
+                          onClick={(value) => this.getCompareInfo(value.key, studentInfo.id)}
                           value={student.id}
                           key={`vsStudent-${student.id}`}
                         >
@@ -782,9 +800,9 @@ class Center extends PureComponent {
                         </Option>
                       ))}
                     </Select>
-                  </Affix>
-                  {vsStudentInfo.id ?
-                    <div>
+                  </Affix>}
+                  {studentInfo.id ? (vsStudentInfo.id ?
+                    <Fragment>
                       <Card title="基本信息对比" bordered={false} style={{ width: '100%' }}>
                         <Row>
                           <Col span={8}>
@@ -797,11 +815,12 @@ class Center extends PureComponent {
                             <Card
                               title={<Fragment>
                                 {vsStudentInfo.name}
-                                {studentInfo.is_left ? <Tag color="#f50">已离校</Tag> :
-                                  <Tag color="#2db7f5">在校生</Tag>}
+                                {studentInfo.is_left ? <Tag style={{ marginLeft: '10px' }} color="#f50">已离校</Tag> :
+                                  <Tag style={{ marginLeft: '10px' }} color="#2db7f5">在校生</Tag>}
                               </Fragment>}
                               bordered={false}
                               hoverable={true}
+                              className={styles.vsDetail}
                             >
                               <p><i className={`fa fa-group ${styles.iconStyle}`}/>
                                 {vsStudentInfo.nation}
@@ -829,7 +848,7 @@ class Center extends PureComponent {
                           </Col>
                         </Row>
                       </Card>
-                      <Suspense fallback={<div>Loading...</div>}>
+                      <Suspense fallback={<Spin/>}>
                         <StuComparedChart
                           comparedScoreData={gradeVsData}
                           hourlyVsCostData={hourlyVsCostData}
@@ -846,8 +865,9 @@ class Center extends PureComponent {
                             [`${vsStudentInfo.id}-${vsStudentInfo.name}`]: '#4ac46a',
                           }}
                         />
-                      </Suspense></div> :
-                    <Empty description={this.state.vsStudentId ? '未找到包含该信息数据' : '请输入待比对学生姓名或学号'}/>}
+                      </Suspense>
+                    </Fragment> : <Empty description={this.state.vsStudentId ? '未找到包含该信息数据' : '请输入待比对学生姓名或学号'}/>) :
+                    <Empty description='请在左侧搜索框中搜索学生数据'/>}
                 </TabPane>
               </Tabs>
             </Card>
