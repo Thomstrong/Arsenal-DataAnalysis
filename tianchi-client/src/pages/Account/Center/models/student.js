@@ -13,7 +13,15 @@ import {
   getStudentTeachers,
   getWordCloudData,
 } from '@/services/api';
-import { COURSE_ALIAS, COURSE_FULLNAME_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, WEEKDAY_ALIAS } from "@/constants";
+
+import {
+  COURSE_ALIAS,
+  COURSE_COLOR,
+  COURSE_FULLNAME_ALIAS,
+  EVENT_TYPE_ALIAS,
+  SCORE_LEVEL_ALIAS,
+  WEEKDAY_ALIAS
+} from "@/constants";
 
 
 export default {
@@ -230,6 +238,11 @@ export default {
         type: 'saveCostVsData',
         payload: response,
       });
+    },
+    * clearCompare({ payload }, { call, put }) {
+      yield put({
+        type: 'clearCompareData',
+      });
     }
   },
 
@@ -310,6 +323,7 @@ export default {
               id: data.teacher_id,
               name: data.teacher__name,
               courseName: COURSE_ALIAS[data.course_id],
+              color: COURSE_COLOR[data.course_id],
             };
           })
         } : state.studentInfo,
@@ -504,11 +518,24 @@ export default {
         })
       };
     },
+    clearCompareData(state) {
+      return {
+        ...state,
+        vsStudentInfo: {
+          id: '',
+          name: ''
+        },
+        gradeVsData: [],
+        costVsData: [],
+        vsDailySumCost: [],
+        kaoqinVsData: [],
+        vsWordCloudData: [],
+      };
+    },
     clear() {
       return {
         radarData: [],
       };
-    }
-    ,
+    },
   },
 };
