@@ -98,10 +98,6 @@ class Center extends PureComponent {
   };
 
   getCompareInfo = (vsStudentId, studentId) => {
-    if (vsStudentId === this.props.vsStudentInfo.id) {
-      return;
-    }
-
     if (vsStudentId === studentId) {
       message.warning('同一个学生对比可没有意义哦～😅', 5);
       this.setState({
@@ -111,6 +107,25 @@ class Center extends PureComponent {
     }
 
     const { dispatch } = this.props;
+    dispatch({
+      type: 'student/fetchGradeCompare',
+      payload: {
+        studentId: studentId,
+        compareId: vsStudentId,
+      }
+    });
+
+    dispatch({
+      type: 'student/fetchKaoqinVsData',
+      payload: {
+        studentId: studentId,
+        compareId: vsStudentId,
+      }
+    });
+
+    if (vsStudentId === this.props.vsStudentInfo.id) {
+      return;
+    }
     dispatch({
       type: `student/fetchVsBasic`,
       payload: {
@@ -127,13 +142,6 @@ class Center extends PureComponent {
     });
 
     dispatch({
-      type: 'student/fetchGradeCompare',
-      payload: {
-        studentId: studentId,
-        compareId: vsStudentId,
-      }
-    });
-    dispatch({
       type: 'student/fetchCostCompare',
       payload: {
         studentId: vsStudentId,
@@ -143,13 +151,6 @@ class Center extends PureComponent {
       type: 'student/fetchVsDailySumCost',
       payload: {
         studentId: vsStudentId,
-      }
-    });
-    dispatch({
-      type: 'student/fetchKaoqinVsData',
-      payload: {
-        studentId: studentId,
-        compareId: vsStudentId,
       }
     });
   };
