@@ -98,6 +98,10 @@ class Center extends PureComponent {
   };
 
   getCompareInfo = (vsStudentId, studentId) => {
+    if (vsStudentId === this.props.vsStudentInfo.id) {
+      return;
+    }
+
     if (vsStudentId === studentId) {
       message.warning('同一个学生对比可没有意义哦～😅', 5);
       this.setState({
@@ -151,6 +155,9 @@ class Center extends PureComponent {
   };
 
   getStudentInfo = (studentId) => {
+    if (studentId === this.props.studentInfo.id) {
+      return;
+    }
     const { dispatch, totalHourlyAvgCost } = this.props;
     dispatch({
       type: `student/fetchBasic`,
@@ -591,8 +598,8 @@ class Center extends PureComponent {
                       height={200}
                     />
                     <div className={styles.name}>{studentInfo.name}</div>
-                    {studentInfo.is_left ? <Tag style={{cursor:"default"}} color="#f50">已离校</Tag> :
-                      <Tag style={{cursor:"default"}} color="#2db7f5">在校生</Tag>}
+                    {studentInfo.is_left ? <Tag style={{ cursor: "default" }} color="#f50">已离校</Tag> :
+                      <Tag style={{ cursor: "default" }} color="#2db7f5">在校生</Tag>}
                   </div>
                   <Row type="flex" align="middle">
                     {/*学生详细信息*/}

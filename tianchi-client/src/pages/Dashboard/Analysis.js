@@ -1,24 +1,25 @@
-import React, {Component, Suspense} from 'react';
-import {connect} from 'dva';
+import React, { Component, Suspense } from 'react';
+import { connect } from 'dva';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
-import {getTimeDistance} from '@/utils/utils';
+import { getTimeDistance } from '@/utils/utils';
 import PageLoading from '@/components/PageLoading';
 import DataSet from "@antv/data-set";
-import {BackTop} from "antd";
+import { BackTop } from "antd";
 
 const IntroduceRow = React.lazy(() => import('./IntroduceRow'));
 const LocationMap = React.lazy(() => import('./LocationMap'));
 const EcardConsumptionCard = React.lazy(() => import('./EcardConsumptionCard'));
 const AttendanceCard = React.lazy(() => import('./AttendanceCard'));
 
-@connect(({loading, dashboard, global}) => ({
+@connect(({ loading, dashboard, global }) => ({
   dashboard,
+  hasInit: dashboard.hasInit,
   totalHourlyAvgCost: global.totalHourlyAvgCost,
   introLoading: loading.effects['dashboard/fetchYearCostSummary'],
   sexDistriLoading: loading.effects['dashboard/fetchGradeSummary'] && loading.effects['dashboard/fetchStaySummary'],
-  locationLoading: loading.effects['dashboard/fetchNativePlaceSummary'] &&
+  locationLoading: (loading.effects['dashboard/fetchNativePlaceSummary'] &&
     loading.effects['dashboard/fetchNationSummary'] &&
-    loading.effects['dashboard/fetchPolicySummary'],
+    loading.effects['dashboard/fetchPolicySummary']),
   sexHourlyLoading: loading.effects['dashboard/fetchSexHourlyCostSummary']
 }))
 class Analysis extends Component {
@@ -42,7 +43,10 @@ class Analysis extends Component {
   };
 
   componentDidMount() {
-    const {dispatch, totalHourlyAvgCost} = this.props;
+    const { dispatch, totalHourlyAvgCost, hasInit } = this.props;
+    if (hasInit) {
+      return;
+    }
     // introducd row
     dispatch({
       type: 'dashboard/fetchCampusSummary',
@@ -194,7 +198,7 @@ class Analysis extends Component {
 
 
   render() {
-    const {sexType, studentType} = this.state;
+    const { sexType, studentType } = this.state;
     const {
       introLoading, sexDistriLoading, locationLoading,
       dashboard, totalHourlyAvgCost, sexHourlyLoading

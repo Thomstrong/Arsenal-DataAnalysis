@@ -33,6 +33,7 @@ export default {
     gradeCostCountData: [],
     enterSchoolData: [],
     kaoqinMixedData: [],
+    hasInit: false,
   },
 
   effects: {
@@ -233,6 +234,7 @@ export default {
       let count = 0;
       return {
         ...state,
+        hasInit: true,
         yearCostData: payload.map(data => {
           totalYearCost += data.total_cost;
           count += 1;

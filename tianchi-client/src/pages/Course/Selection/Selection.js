@@ -3,19 +3,21 @@
  */
 //展示选课情况,包括各科目选课人数分布,及不同7选3的分布情况
 
-import React, {Fragment, PureComponent} from 'react';
-import {COURSE_FULLNAME_ALIAS} from "@/constants";
-import {BackTop, Button, Card, Col, Row, Select, Typography} from 'antd';
+import React, { Fragment, PureComponent } from 'react';
+import { COURSE_FULLNAME_ALIAS } from "@/constants";
+import { BackTop, Button, Card, Col, Row, Select, Typography } from 'antd';
 import DataSet from "@antv/data-set";
-import {Axis, Chart, Coord, G2, Geom, Guide, Label, Legend, Tooltip, View} from "bizcharts";
-import {connect} from "dva";
+import { Axis, Chart, Coord, G2, Geom, Guide, Label, Legend, Tooltip, View } from "bizcharts";
+import { connect } from "dva";
 
-const {Paragraph, Text: AntdText} = Typography;
-const {Option} = Select;
+const { Paragraph, Text: AntdText } = Typography;
+const { Option } = Select;
 
-@connect(({loading, course}) => ({
+@connect(({ loading, course }) => ({
   distributions: course.distributions,
   coursePercents: course.coursePercents,
+  coursePercentYear: course.coursePercentYear,
+  pieTreeYear: course.pieTreeYear,
   totalStudents: course.totalStudents,
   arcCourse: course.arcCourse,
   detailDistribution: course.detailDistribution,
@@ -35,35 +37,49 @@ class Selection extends PureComponent {
   }
 
   componentDidMount() {
-    const {dispatch} = this.props;
-    dispatch({
-      type: 'course/fetchSelectionDistribution',
-    });
-    dispatch({
-      type: `course/fetchCoursePercents`,
-      payload: {
-        year: 2019
-      }
-    });
-    dispatch({
-      type: 'course/fetchArcCourse',
-      payload: {
-        year: 2019
-      }
-    });
-    dispatch({
-      type: 'course/fetchDetailDistribution',
-    });
-    dispatch({
-      type: 'course/fetchDetailPercent',
-      payload: {
-        year: 2019
-      }
-    });
+    const {
+      dispatch, distributions, coursePercents,
+      arcCourse, detailDistribution, courseSelectionPie
+    } = this.props;
+    if (!distributions.length) {
+      dispatch({
+        type: 'course/fetchSelectionDistribution',
+      });
+    }
+
+    if (!coursePercents.length) {
+      dispatch({
+        type: `course/fetchCoursePercents`,
+        payload: {
+          year: 2019
+        }
+      });
+    }
+    if (!arcCourse.nodes) {
+      dispatch({
+        type: 'course/fetchArcCourse',
+        payload: {
+          year: 2019
+        }
+      });
+    }
+    if (!detailDistribution.length) {
+      dispatch({
+        type: 'course/fetchDetailDistribution',
+      });
+    }
+    if (!courseSelectionPie.length) {
+      dispatch({
+        type: 'course/fetchDetailPercent',
+        payload: {
+          year: 2019
+        }
+      });
+    }
   }
 
   onYearChanged = (year, type1, type2) => {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: `course/${type1}`,
       payload: {
@@ -79,7 +95,7 @@ class Selection extends PureComponent {
   };
 
   onDetailYearChanged = (year) => {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'course/fetchDetailPercent',
       payload: {
@@ -94,11 +110,11 @@ class Selection extends PureComponent {
       distributions, coursePercents, totalStudents,
       arcCourse, detailDistribution,
       courseSelectionPie, courseSelectionPieOther,
-      pieOtherOffsetAngle, pieSum,
-      courseSelectionTree
+      pieOtherOffsetAngle, pieSum, coursePercentYear,
+      courseSelectionTree, pieTreeYear
     } = this.props;
 
-    const {Text} = Guide;
+    const { Text } = Guide;
 
     //分组层叠图颜色
     const colorMap = {
@@ -168,13 +184,13 @@ class Selection extends PureComponent {
       targetWeight: e => e.targetWeight,
       weight: true,
       marginRatio: 0.3
-    }) : {edges: [], nodes: []};
+    }) : { edges: [], nodes: [] };
 
 
     return (
       <Fragment>
         <BackTop/>
-        <Card title="高三各科目选课情况分布" bordered={true} style={{width: '100%'}}>
+        <Card title="高三各科目选课情况分布" bordered={true} style={{ width: '100%' }}>
           {/*分组堆叠*/}
           <Chart
             key='selection-total-distribute-chart'
@@ -220,14 +236,14 @@ class Selection extends PureComponent {
           </Chart>
           <Row>
             <Select
-              id='yujue-year'
-              defaultValue="2019"
-              style={{width: 180, float: "right", paddingRight: 60}}
+              id='yujue-year-selection'
+              defaultValue={coursePercentYear || 2019}
+              style={{ width: 180, float: "right", paddingRight: 60 }}
               onChange={(year) => this.onYearChanged(year, 'fetchCoursePercents', 'fetchArcCourse')}
             >
-              <Option key={`course-percents-2017`} value="2017">2017年</Option>
-              <Option key={`course-percents-2018`} value="2018">2018年</Option>
-              <Option key={`course-percents-2019`} value="2019">2019年</Option>
+              <Option key={`course-percents-2017`} value={2017}>2017年</Option>
+              <Option key={`course-percents-2018`} value={2018}>2018年</Option>
+              <Option key={`course-percents-2019`} value={2019}>2019年</Option>
             </Select>
           </Row>
           <Row>
@@ -235,7 +251,7 @@ class Selection extends PureComponent {
               {/*玉珏*/}
               <Chart
                 key='selection-jade-chart' height={400}
-                padding={{top: 60, right: 40, bottom: 25}}
+                padding={{ top: 60, right: 40, bottom: 25 }}
                 data={coursePercents}
                 scale={{
                   percent: {
@@ -301,7 +317,7 @@ class Selection extends PureComponent {
                     sync: true
                   }
                 }}
-                padding={{top: 30, right: 40, bottom: 20}}
+                padding={{ top: 30, right: 40, bottom: 20 }}
               >
                 <Tooltip showTitle={false}/>
                 <View data={arcCourseData.edges} axis={false}>
@@ -337,8 +353,7 @@ class Selection extends PureComponent {
                     tooltip={["id", (id) => {
                       return {
                         name: COURSE_FULLNAME_ALIAS[id],
-                        value: id
-                      }
+                      };
                     }]}
                   >
                     <Label
@@ -354,7 +369,8 @@ class Selection extends PureComponent {
             </Col>
           </Row>
           {distributions.length && coursePercents.length && arcCourseData.nodes &&
-          <Card title='总结' bordered={false} hoverable={true} style={{marginLeft: 32, marginRight: 32, cursor: "auto"}}>
+          <Card title='总结' bordered={false} hoverable={true}
+                style={{ marginLeft: 32, marginRight: 32, cursor: "auto" }}>
             <Typography>
               <Paragraph>1.
                 自2017年高考改革以来选修<AntdText type="danger">物理、化学、生物</AntdText>的人数一直居<AntdText type="danger">高</AntdText>不下。传统文科中
@@ -375,7 +391,7 @@ class Selection extends PureComponent {
             </Typography>
           </Card>}
         </Card>
-        <Card title="七选三组合分布情况" bordered={true} style={{width: '100%', marginTop: 32}}>
+        <Card title="七选三组合分布情况" bordered={true} style={{ width: '100%', marginTop: 32 }}>
           {/*柱状图显示35种选择人数分布情况,分组柱状图*/}
           <Chart
             key='selection-3_in_7-chart'
@@ -413,14 +429,19 @@ class Selection extends PureComponent {
           {/*矩形树图,与饼图柱状图结合,做成卡片翻转样式,仅显示数值*/}
           <Row>
             <Col offset={1} xs={24} xl={22}>
-              <Select id='3in7-year' defaultValue="2019" style={{width: 120, float: "center"}}
+              <Select id='3in7-selection' defaultValue={pieTreeYear || 2019} style={{ width: 120, float: "center" }}
                       onChange={(year) => this.onDetailYearChanged(year)}
               >
-                <Option key="bing20171" value="2017">2017年</Option>
-                <Option key="bing20181" value="2018">2018年</Option>
-                <Option key="bing20191" value="2019">2019年</Option>
+                <Option key="pie-tree-option-2017" value={2017}>2017年</Option>
+                <Option key="pie-tree-option-2018" value={2018}>2018年</Option>
+                <Option key="pie-tree-option-2019" value={2019}>2019年</Option>
               </Select>
-              <Button onClick={() => this.setState({pieFront: !this.state.pieFront})}>
+              <Button
+                style={{
+                  marginLeft: '20px'
+                }}
+                onClick={() => this.setState({ pieFront: !this.state.pieFront })}
+              >
                 {`${this.state.pieFront ? '查看人数详情' : '查看占比详情'}`}
               </Button>
               <Card bordered={false}>
@@ -566,7 +587,7 @@ class Selection extends PureComponent {
           {detailDistribution.length && courseSelectionPie.length && courseSelectionTree.length &&
           <Row>
             <Card title='总结' bordered={false} hoverable={true}
-                  style={{marginLeft: 32, marginRight: 32, cursor: "auto"}}>
+                  style={{ marginLeft: 32, marginRight: 32, cursor: "auto" }}>
               <Paragraph>1. 无论哪一年，<AntdText type="danger">物理化学、物理生物</AntdText>再加上其他一门学科的选课方案占据了整个选课方案的<AntdText
                 type="danger">近一半</AntdText>;
                 从另一角度来说,与人们设想的避难就易选课方式不同,即使开放自由选课，传统<AntdText type="danger">理综科目</AntdText>

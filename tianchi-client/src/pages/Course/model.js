@@ -12,12 +12,14 @@ export default {
   state: {
     distributions: [],
     coursePercents: [],
+    coursePercentYear: 0,
     arcCourse: {},
     detailDistribution: [],
     courseSelectionTree: {},
     courseSelectionPie: [],
     courseSelectionPieOther: [],
     pieOtherOffsetAngle: 0,
+    pieTreeYear: 0,
     pieSum: 0,
     totalStudents: 0,
     classExamData: {
@@ -45,7 +47,8 @@ export default {
       });
       yield put({
         type: 'saveCoursePercents',
-        payload: response
+        payload: response,
+        year: payload.year,
       });
     },
     * fetchClassExamData({ payload }, { call, put }) {
@@ -55,7 +58,6 @@ export default {
         payload: response
       });
     },
-    //todo 待修改payload表示选择的年份，与玉珏图的年份选择相同
     * fetchArcCourse({ payload }, { call, put }) {
       const response = yield call(getCourseSelectionDistribution, {
         ...payload,
@@ -82,7 +84,8 @@ export default {
       });
       yield put({
         type: 'saveDetailPercent',
-        payload: response
+        payload: response,
+        year: payload.year,
       });
     }
   },
@@ -123,6 +126,7 @@ export default {
         ...state,
         coursePercents,
         totalStudents: maxCount * 1.2,
+        coursePercentYear: action.year
       };
     },
     saveClassExamData(state, { payload }) {
@@ -204,7 +208,7 @@ export default {
         detailDistribution
       };
     },
-    saveDetailPercent(state, { payload }) {
+    saveDetailPercent(state, { payload, year }) {
       if (!payload) {
         return state;
       }
@@ -289,6 +293,7 @@ export default {
         courseSelectionPieOther,
         pieOtherOffsetAngle,
         pieSum: total,
+        pieTreeYear: year,
       };
     },
 

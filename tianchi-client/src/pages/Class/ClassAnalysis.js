@@ -99,6 +99,9 @@ class ClassAnalysis extends PureComponent {
   };
 
   getClassInfo = (classId) => {
+    if (Number(classId) === this.props.stuClass.classInfo.id) {
+      return;
+    }
     const { dispatch, termMap } = this.props;
     dispatch({
       type: 'stuClass/fetchBasic',
@@ -372,7 +375,7 @@ class ClassAnalysis extends PureComponent {
         return {
           title: `${COURSE_FULLNAME_ALIAS[courseId]}成绩`,
           dataIndex: courseId,
-          key: courseId,
+          key: `record-${courseId}`,
           sorter: (a, b) => a[courseId] - b[courseId],
           width: 120,
           align: 'center',
