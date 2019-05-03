@@ -20,6 +20,28 @@ export const COURSE_ALIAS = {
   1: '语',
 };
 
+export const COURSE_COLOR = {
+  59: '#F44336',
+  58: '#2196F3',
+  57: '#8BC34A',
+  53: '#FF5722',
+  38: '#E91E63',
+  31: '#03A9F4',
+  17: '#CDDC39',
+  13: '#795548',
+  12: '#9C27B0',
+  11: '#FFEB3B',
+  9: '#9E9E9E',
+  8: '#673AB7',
+  7: '#009688',
+  6: '#FFC107',
+  5: '#3F51B5',
+  4: '#4CAF50',
+  3: '#FF9800',
+  2: '#607D8B',
+  1: '#00BCD4',
+};
+
 export const COURSE_FULLNAME_ALIAS = {
   59: '技术',
   58: '英语2',
@@ -152,4 +174,24 @@ export const RANGE_ALIAS = {
   "99": "90-99",
   "129": "100-129",
   "150": "130-150",
+};
+
+export const getDengDi = (dengdi) => {
+  if (dengdi <= 0.15) {
+    return 4;
+  }
+
+  if (dengdi <= 0.45) {
+    return 3;
+  }
+
+  if (dengdi <= 0.75) {
+    return 2;
+  }
+
+  if (dengdi <= 0.95) {
+    return 1;
+  }
+
+  return 0;
 };

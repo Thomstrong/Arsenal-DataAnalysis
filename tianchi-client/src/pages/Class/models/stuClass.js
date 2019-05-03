@@ -16,7 +16,8 @@ import {
   EVENT_TYPE_ALIAS,
   LINE_SCORE,
   SCORE_LEVEL_ALIAS,
-  WEEKDAY_ALIAS
+  WEEKDAY_ALIAS,
+  COURSE_COLOR
 } from "@/constants";
 import DataSet from "@antv/data-set";
 
@@ -211,6 +212,7 @@ export default {
             id: data.teacher_id,
             name: data.teacher__name,
             courseName: COURSE_ALIAS[data.course_id],
+            color: COURSE_COLOR[data.course_id],
           };
         })
       };
