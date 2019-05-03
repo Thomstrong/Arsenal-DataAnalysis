@@ -240,7 +240,6 @@ export default {
       });
     },
     * clearCompare({ payload }, { call, put }) {
-      yield;
       yield put({
         type: 'clearCompareData',
       });
