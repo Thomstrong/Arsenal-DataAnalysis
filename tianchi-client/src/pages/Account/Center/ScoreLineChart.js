@@ -97,7 +97,8 @@ const ScoreLineChart = memo(
             scale={{
               ...scale,
               exam: {
-                tickCount: 8
+                tickCount:4
+
               }
             }}
           >
@@ -120,7 +121,15 @@ const ScoreLineChart = memo(
                 type: "y"
               }}
             />
-            <Geom type="line" position="exam*score" size={2}/>
+            <Geom type="line" position="exam*score" size={2} tooltip={[
+                  "score",
+                  (score) => {
+                    return {
+                      name: "分数",
+                      value: score
+                    };
+                  }
+                ]}/>
             <Geom
               type="point"
               position="exam*score"
@@ -130,6 +139,15 @@ const ScoreLineChart = memo(
                 stroke: "#fff",
                 lineWidth: 1
               }}
+              tooltip={[
+                  "score",
+                  (score) => {
+                    return {
+                      name: "分数",
+                      value: score
+                    };
+                  }
+                ]}
             />
               <Guide>
                 <Line
@@ -268,7 +286,7 @@ const ScoreLineChart = memo(
               scale={{
                 ...scale,
                 exam: {
-                  tickCount: 6
+                  tickCount: 3
                 }
               }}
               forceFit
@@ -310,6 +328,15 @@ const ScoreLineChart = memo(
                   stroke: "#fff",
                   lineWidth: 1
                 }}
+                tooltip={[
+                  "score",
+                  (score) => {
+                    return {
+                      name: "分数",
+                      value: score
+                    };
+                  }
+                ]}
               />
             </Chart>
           </List.Item>
