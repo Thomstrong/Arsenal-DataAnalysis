@@ -6,9 +6,6 @@ import {Col, List, Row} from 'antd';
 import {Axis, Chart, Coord, Geom, Legend,Guide,Tooltip} from "bizcharts";
 import {COURSE_FULLNAME_ALIAS} from "@/constants";
 
-
-// const SingleLineChart  =  React.lazy(()=> import ('@/components/Charts'));
-
 const { Line } = Guide;
 const ScoreLineChart = memo(
   ({lineData, radarViewData, subData}) => (
@@ -98,7 +95,16 @@ const ScoreLineChart = memo(
                   type: "y"
                 }}
               />
-              <Geom type="line" position="exam*score" size={2}/>
+              <Geom type="line" position="exam*score" size={2}
+              tooltip={[
+                  "score",
+                  (score) => {
+                    return {
+                      name: "平均分数",
+                      value: score.toFixed(3)
+                    };
+                  }
+                ]}/>
               <Geom
                 type="point"
                 position="exam*score"
@@ -109,121 +115,127 @@ const ScoreLineChart = memo(
                   lineWidth: 1
                 }}
               />
-              {/*todo 判断是不是绝对分已确定显示辅助线*/}
               <Guide>
                 <Line
                   top={true}
-                  start={[-1, 588]} // 辅助线起始位置，值为原始数据值，支持 callback
+                  start={[-1, 588]}
                   end={['max', 588]}
                   lineStyle={{
-                    stroke: '#999', // 线的颜色
+                    stroke: '#99203e',
                     lineDash: [0, 2, 2],
-                    lineWidth: 2
+                    lineWidth: 2,
+                    opacity:0.3,
                   }}
                   text={{
-                    position: 'start',
-                    content: "2018 一段线 588", // 文本的内容
+                    position: '5%',
+                    content: "2018 一段线 588",
                     style: {
-                      Rotate: 90,
+                      opacity:0.3,
+                      fill:"#99203e",
                     }
                   }}
                 />
                 <Line
                   top={true}
-                  start={[-1, 490]} // 辅助线起始位置，值为原始数据值，支持 callback
+                  start={[-1, 490]}
                   end={['max', 490]}
                   lineStyle={{
-                    stroke: '#999', // 线的颜色
-                    lineDash: [0, 2, 2], // 虚线的设置
-                    lineWidth: 2 // 线的宽度
+                    stroke: '#99203e',
+                    lineDash: [0, 2, 2],
+                    lineWidth: 2,
+                    opacity:0.3,
                   }} // 图形样式配置
                   text={{
-                    position: 'start',
-                    content: "2018 二段线 490", // 文本的内容
+                    position: '5%',
+                    content: "2018 二段线 490",
                     style: {
-                      Rotate: 90,
+                      opacity:0.3,
+                      fill:"#99203e",
                     }
                   }}
                 />
                 <Line
                   top={true}
-                  start={[-1, 344]} // 辅助线起始位置，值为原始数据值，支持 callback
+                  start={[-1, 344]}
                   end={['max', 344]}
                   lineStyle={{
-                    stroke: '#999', // 线的颜色
-                    lineDash: [0, 2, 2], // 虚线的设置
-                    lineWidth: 2 // 线的宽度
-                  }} // 图形样式配置
+                    stroke: '#99203e',
+                    lineDash: [0, 2, 2],
+                    lineWidth: 2,
+                    opacity:0.3,
+                  }}
                   text={{
-                    position: 'start',
-                    content: "2018 三段线 344", // 文本的内容
+                    position: '5%',
+                    content: "2018 三段线 344",
                     style: {
-                      Rotate: 90,
+                      fill:"#99203e",
+                      opacity:0.3,
                     }
                   }}
                 />
                 <Line
                   top={true}
-                  start={[-1, 577]} // 辅助线起始位置，值为原始数据值，支持 callback
+                  start={[-1, 577]}
                   end={['max', 577]}
                   lineStyle={{
-                    stroke: '#999', // 线的颜色
-                    lineDash: [0, 2, 2], // 虚线的设置
-                    lineWidth: 1 // 线的宽度
+                    stroke: '#6b561e',
+                    lineDash: [0, 2, 2],
+                    lineWidth: 2,
+                    opacity:0.3,
                   }} // 图形样式配置
                   text={{
-                    position: 'start',
-                    content: "2017 一段线 577", // 文本的内容
+                    position: '75%',
+                    content: "2017 一段线 577",
                     style: {
-                      Rotate: 90,
+                      fill:"#6b561e",
+                      opacity:0.3,
                     }
                   }}
                 />
                 <Line
                   top={true}
-                  start={[-1, 480]} // 辅助线起始位置，值为原始数据值，支持 callback
+                  start={[-1, 480]}
                   end={['max', 480]}
                   lineStyle={{
-                    stroke: '#999', // 线的颜色
-                    lineDash: [0, 2, 2], // 虚线的设置
-                    lineWidth: 1 // 线的宽度
-                  }} // 图形样式配置
+                    stroke: '#6b561e',
+                    lineDash: [0, 2, 2],
+                    lineWidth: 2,
+                    opacity:0.3,
+                  }}
                   text={{
-                    position: 'start',
-                    content: "2017 二段线 480", // 文本的内容
+                    position: '75%',
+                    content: "2017 二段线 480",
                     style: {
-                      Rotate: 90,//todo 旋转角度，没变化
+                      fill:"#6b561e",
+                      opacity:0.3,
                     }
                   }}
                 />
                 <Line
                   top={true}
-                  start={[-1, 359]} // 辅助线起始位置，值为原始数据值，支持 callback
+                  start={[-1, 359]}
                   end={['max', 359]}
                   lineStyle={{
-                    stroke: '#999', // 线的颜色
-                    lineDash: [0, 2, 2], // 虚线的设置
-                    lineWidth: 1 // 线的宽度
-                  }} // 图形样式配置
+                    stroke: '#6b561e',
+                    lineDash: [0, 2, 2],
+                    lineWidth: 2,
+                    opacity:0.3,
+                  }}
                   text={{
-                    position: 'start',
-                    content: "2017 三段线 359", // 文本的内容
+                    position: '75%',
+                    content: "2017 三段线 359",
                     style: {
-                      Rotate: 90,
+                      fill:"#6b561e",
+                      opacity:0.3,
                     }
                   }}
                 />
               </Guide>
             </Chart>
-            {/*todo 企图把单折线图变成component,但是后来觉得似乎没有必要*/}
-            {/*<SingleLineChart*/}
-            {/*data = {lineData}*/}
-            {/*/>*/}
           </Col>
         </Row>
-        {/*利用list进行布局*/}
         <List
-          grid={{gutter: 16, column: 2}}
+          grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 1, xl: 2, xxl: 2 }}
           dataSource={subData}
           renderItem={item => (
             <List.Item>
@@ -255,7 +267,15 @@ const ScoreLineChart = memo(
                     type: "y"
                   }}
                 />
-                <Geom type="line" position="exam*score" size={2}/>
+                <Geom type="line" position="exam*score" size={2}tooltip={[
+                  "score",
+                  (score) => {
+                    return {
+                      name: "平均分数",
+                      value: score.toFixed(3)
+                    };
+                  }
+                ]}/>
                 <Geom
                   type="point"
                   position="exam*score"

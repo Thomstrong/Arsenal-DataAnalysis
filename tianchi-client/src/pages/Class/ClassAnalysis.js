@@ -403,8 +403,8 @@ class ClassAnalysis extends PureComponent {
                   <Divider style={{ marginTop: 16 }} dashed/>
                   <div className={styles.avatarHolder}>
                     <div className={styles.name}>{classInfo.class_name}</div>
-                    {isAtSchool ? <Tag color="#2db7f5">在校班级</Tag> :
-                      <Tag color="#f50">过往班级</Tag>}
+                    {isAtSchool ? <Tag style={{ cursor: "default" }} color="#2db7f5">在校班级</Tag> :
+                      <Tag style={{ cursor: "default" }} color="#f50">过往班级</Tag>}
                   </div>
                   {/*班级详细信息，拟计划有校区，所处学年，共有学生人数，及分布情况*/}
                   <div className={styles.detail}>
@@ -423,14 +423,16 @@ class ClassAnalysis extends PureComponent {
                     </Row>
                     {isAtSchool ?
                       <Row type="flex" justify="space-between" style={{ marginTop: 10 }}>
-                        <Col span={6}><Statistic title="男生" value={boy} suffix={`/${total}`}/></Col>
-                        <Col span={6}><Statistic title="女生" value={total - boy} suffix={`/${total}`}/></Col>
-                        <Col span={6}><Statistic title="走读生" value={total - stay} suffix={`/${total}`}/></Col>
-                        <Col span={6}><Statistic title="住校生" value={stay} suffix={`/${total}`}/></Col>
-                        <Col span={6}><Statistic title="本地生源" value={local} suffix={`/${total}`}/></Col>
-                        <Col span={6}><Statistic title="外地生源" value={total - local} suffix={`/${total}`}/></Col>
-                        <Col span={6}><Statistic title="团员/党员" value={policy} suffix={`/${total}`}/></Col>
-                        <Col span={6}><Statistic title="其他面貌" value={total - policy} suffix={`/${total}`}/></Col>
+                        <Col xl={8} lg={12} md={6}><Statistic title="男生" value={boy} suffix={`/${total}`}/></Col>
+                        <Col xl={8} lg={12} md={6}><Statistic title="女生" value={total - boy}
+                                                              suffix={`/${total}`}/></Col>
+                        <Col xl={8} lg={12} md={6}><Statistic title="走读生" value={total - stay}
+                                                              suffix={`/${total}`}/></Col>
+                        <Col xl={8} lg={12} md={6}><Statistic title="住校生" value={stay} suffix={`/${total}`}/></Col>
+                        <Col xl={8} lg={12} md={6}><Statistic title="本地生源" value={local} suffix={`/${total}`}/></Col>
+                        <Col xl={8} lg={12} md={6}><Statistic title="外地生源" value={total - local} suffix={`/${total}`}/></Col>
+                        <Col xl={8} lg={12} md={6}><Statistic title="团员/党员" value={policy} suffix={`/${total}`}/></Col>
+                        <Col xl={8} lg={12} md={6}><Statistic title="其他面貌" value={total - policy} suffix={`/${total}`}/></Col>
                       </Row> : <Empty description='班级学生分布数据缺失'/>
                     }
                   </div>
@@ -495,12 +497,13 @@ class ClassAnalysis extends PureComponent {
                   {/*老师信息*/}
                   <div className={styles.teacherInfo}>
                     <div className={styles.infoTitle}>教师信息</div>
-                    <Row gutter={36}>
+                    <Row gutter={8}>
                       {teachers.map(item => (
-                        <Col className={styles.infoItem} key={`teacher-${item.id}`} lg={22} xl={10}>
+                        <Col className={styles.infoItem} key={`teacher-${item.id}`} md={6} lg={20} sm={6} xs={6}
+                             xl={10}>
                           <Avatar
                             style={{ backgroundColor: item.color }}
-                            size={32}
+                            size={26}
                           >
                             <b>{item.courseName}</b>
                           </Avatar>
@@ -565,19 +568,21 @@ class ClassAnalysis extends PureComponent {
                   {examId ?
                     <Fragment>
                       {courseRankData.totalRank && <Card title="本次考试排名一览" style={{ marginTop: 12 }}>
-                        <Row style={{ marginBottom: 10 }}>
+                        <Row style={{ marginBottom: 8 }}>
                           <Statistic
                             title="本次排名" value={courseRankData.classNum - courseRankData.totalRank}
                             suffix={`/${courseRankData.classNum}`}
                             valueStyle={{ color: '#cf1322' }}
                           />
                         </Row>
-                        <Row gutter={16} type="flex" justify="start" style={{ marginBottom: 10 }}>
+                        <Divider style={{ marginTop: 8 }} dashed/>
+                        <Row gutter={16} type="flex" justify="start" style={{ marginBottom: 8 }}>
                           {overLineCounter.map((count, index) => (
                             <Col key={LINE_INDEX_ALIAS[index]}>
-                              <Statistic title={`超过${LINE_INDEX_ALIAS[index]}(${LINE_SCORE[index]})人数`} value={count}/>
+                              <Statistic title={`超${LINE_INDEX_ALIAS[index]}(${LINE_SCORE[index]})人数`} value={count}/>
                             </Col>))}
                         </Row>
+                        <Divider style={{ marginTop: 8 }} dashed/>
                         <Row type="flex" justify="space-between">
                           {courseRankData.rankData.map((data) => (
                             <Col key={`examrank-${data.course}`}>
@@ -586,13 +591,13 @@ class ClassAnalysis extends PureComponent {
                         </Row>
                       </Card>}
                       {examRecords && !!examRecords.length &&
-                      <Card title="本次考试该班学生成绩与排名" style={{ marginTop: 12 }}>
+                      <Card title="本次考试该班学生成绩与排名" style={{ marginTop: 12 }} bodyStyle={{ padding: 10 }}>
                         <Table
                           bordered
                           rowKey={record => record.index}
                           columns={tableColumns}
                           dataSource={examRecords}
-                          scroll={{ x: 1600, y: 300 }}
+                          scroll={{ x: 1600, y: 255 }}
                           pagination={false}
                         />
                       </Card>}
@@ -639,103 +644,115 @@ class ClassAnalysis extends PureComponent {
                           {courseId === -1 && <Guide>
                             <Line
                               top={true}
-                              start={[-1, 588]} // 辅助线起始位置，值为原始数据值，支持 callback
+                              start={[-1, 588]}
                               end={['max', 588]}
                               lineStyle={{
-                                stroke: '#999', // 线的颜色
+                                stroke: '#99203e',
                                 lineDash: [0, 2, 2],
-                                lineWidth: 2
+                                lineWidth: 2,
+                                opacity: 0.5,
                               }}
                               text={{
-                                position: 'start',
-                                content: "2018 一段线 588", // 文本的内容
+                                position: '1%',
+                                content: "2018 一段线 588",
                                 style: {
-                                  Rotate: 90,
+                                  opacity: 0.5,
+                                  fill: "#99203e",
                                 }
                               }}
                             />
                             <Line
                               top={true}
-                              start={[-1, 490]} // 辅助线起始位置，值为原始数据值，支持 callback
+                              start={[-1, 490]}
                               end={['max', 490]}
                               lineStyle={{
-                                stroke: '#999', // 线的颜色
-                                lineDash: [0, 2, 2], // 虚线的设置
-                                lineWidth: 2 // 线的宽度
+                                stroke: '#99203e',
+                                lineDash: [0, 2, 2],
+                                lineWidth: 2,
+                                opacity: 0.5,
                               }} // 图形样式配置
                               text={{
-                                position: 'start',
-                                content: "2018 二段线 490", // 文本的内容
+                                position: '1%',
+                                content: "2018 二段线 490",
                                 style: {
-                                  Rotate: 90,
+                                  opacity: 0.5,
+                                  fill: "#99203e",
                                 }
                               }}
                             />
                             <Line
                               top={true}
-                              start={[-1, 344]} // 辅助线起始位置，值为原始数据值，支持 callback
+                              start={[-1, 344]}
                               end={['max', 344]}
                               lineStyle={{
-                                stroke: '#999', // 线的颜色
-                                lineDash: [0, 2, 2], // 虚线的设置
-                                lineWidth: 2 // 线的宽度
-                              }} // 图形样式配置
+                                stroke: '#99203e',
+                                lineDash: [0, 2, 2],
+                                lineWidth: 2,
+                                opacity: 0.5,
+                              }}
                               text={{
-                                position: 'start',
-                                content: "2018 三段线 344", // 文本的内容
+                                position: '1%',
+                                content: "2018 三段线 344",
                                 style: {
-                                  Rotate: 90,
+                                  fill: "#99203e",
+                                  opacity: 0.3,
                                 }
                               }}
                             />
                             <Line
                               top={true}
-                              start={[-1, 577]} // 辅助线起始位置，值为原始数据值，支持 callback
+                              start={[-1, 577]}
                               end={['max', 577]}
                               lineStyle={{
-                                stroke: '#999', // 线的颜色
-                                lineDash: [0, 2, 2], // 虚线的设置
-                                lineWidth: 1 // 线的宽度
+                                stroke: '#6b561e',
+                                lineDash: [0, 2, 2],
+                                lineWidth: 2,
+                                opacity: 0.5,
                               }} // 图形样式配置
                               text={{
-                                position: 'start',
-                                content: "2017 一段线 577", // 文本的内容
+                                position: '70%',
+                                content: "2017 一段线 577",
                                 style: {
-                                  Rotate: 90,
+                                  fill: "#6b561e",
+                                  opacity: 0.3,
                                 }
                               }}
                             />
                             <Line
                               top={true}
-                              start={[-1, 480]} // 辅助线起始位置，值为原始数据值，支持 callback
+                              start={[-1, 480]}
                               end={['max', 480]}
                               lineStyle={{
-                                stroke: '#999', // 线的颜色
-                                lineDash: [0, 2, 2], // 虚线的设置
-                                lineWidth: 1 // 线的宽度
-                              }} // 图形样式配置
+                                stroke: '#6b561e',
+                                lineDash: [0, 2, 2],
+                                lineWidth: 2,
+                                opacity: 0.5,
+                              }}
                               text={{
-                                position: 'start',
-                                content: "2017 二段线 480", // 文本的内容
+                                position: '70%',
+                                content: "2017 二段线 480",
                                 style: {
-                                  Rotate: 90,//todo 旋转角度，没变化
+                                  fill: "#6b561e",
+                                  opacity: 0.3,
                                 }
                               }}
                             />
                             <Line
                               top={true}
-                              start={[-1, 359]} // 辅助线起始位置，值为原始数据值，支持 callback
+                              start={[-1, 359]}
                               end={['max', 359]}
                               lineStyle={{
-                                stroke: '#999', // 线的颜色
-                                lineDash: [0, 2, 2], // 虚线的设置
-                                lineWidth: 1 // 线的宽度
-                              }} // 图形样式配置
+                                stroke: '#6b561e',
+                                lineDash: [0, 2, 2],
+                                lineWidth: 2,
+                                opacity: 0.5,
+                              }}
                               text={{
-                                position: 'start',
-                                content: "2017 三段线 359", // 文本的内容
+                                position: '70%',
+                                content: "2017 三段线 359",
                                 style: {
-                                  Rotate: 90,
+                                  fill: "#6b561e",
+                                  opacity: 0.3,
                                 }
                               }}
                             />
