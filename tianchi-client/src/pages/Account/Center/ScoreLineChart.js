@@ -3,7 +3,7 @@
  */
 import React, { memo } from "react";
 import { Col, Empty, List, Row, Spin } from 'antd';
-import { Axis, Chart, Coord, Geom, Legend, Tooltip } from "bizcharts";
+import { Axis, Chart, Coord, Geom, Legend, Tooltip,Guide } from "bizcharts";
 import { COURSE_FULLNAME_ALIAS, getDengDi } from "@/constants";
 const { Line } = Guide;
 const dengDiScale = {
