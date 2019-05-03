@@ -235,6 +235,9 @@ class StudentViewSet(viewsets.ModelViewSet):
                 total=-Sum('total_cost')
             )
 
+            if not records:
+                return Response([])
+
             i = 1
             info_pairs = []
             costs = []
