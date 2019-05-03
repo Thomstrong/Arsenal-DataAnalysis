@@ -3,8 +3,9 @@
  */
 import React, { memo } from "react";
 import { Col, Empty, List, Row, Spin } from 'antd';
-import { Axis, Chart, Coord, Geom, Legend, Tooltip,Guide } from "bizcharts";
+import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
 import { COURSE_FULLNAME_ALIAS, getDengDi } from "@/constants";
+
 const { Line } = Guide;
 const dengDiScale = {
   score: {
@@ -97,7 +98,7 @@ const ScoreLineChart = memo(
             scale={{
               ...scale,
               exam: {
-                tickCount:4
+                tickCount: 4
 
               }
             }}
@@ -122,14 +123,14 @@ const ScoreLineChart = memo(
               }}
             />
             <Geom type="line" position="exam*score" size={2} tooltip={[
-                  "score",
-                  (score) => {
-                    return {
-                      name: "分数",
-                      value: score
-                    };
-                  }
-                ]}/>
+              "score",
+              (score) => {
+                return {
+                  name: "分数",
+                  value: score
+                };
+              }
+            ]}/>
             <Geom
               type="point"
               position="exam*score"
@@ -140,131 +141,131 @@ const ScoreLineChart = memo(
                 lineWidth: 1
               }}
               tooltip={[
-                  "score",
-                  (score) => {
-                    return {
-                      name: "分数",
-                      value: score
-                    };
-                  }
-                ]}
+                "score",
+                (score) => {
+                  return {
+                    name: "分数",
+                    value: score
+                  };
+                }
+              ]}
             />
-              <Guide>
-                <Line
-                  top={true}
-                  start={[-1, 588]}
-                  end={['max', 588]}
-                  lineStyle={{
-                    stroke: '#99203e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity:0.3,
-                  }}
-                  text={{
-                    position: '1%',
-                    content: "2018 一段线 588",
-                    style: {
-                      opacity:0.3,
-                      fill:"#99203e",
-                    }
-                  }}
-                />
-                <Line
-                  top={true}
-                  start={[-1, 490]}
-                  end={['max', 490]}
-                  lineStyle={{
-                    stroke: '#99203e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity:0.3,
-                  }}
-                  text={{
-                    position: '1%',
-                    content: "2018 二段线 490",
-                    style: {
-                      opacity:0.3,
-                      fill:"#99203e",
-                    }
-                  }}
-                />
-                <Line
-                  top={true}
-                  start={[-1, 344]}
-                  end={['max', 344]}
-                  lineStyle={{
-                    stroke: '#99203e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity:0.3,
-                  }}
-                  text={{
-                    position: '1%',
-                    content: "2018 三段线 344",
-                    style: {
-                      fill:"#99203e",
-                      opacity:0.3,
-                    }
-                  }}
-                />
-                <Line
-                  top={true}
-                  start={[-1, 577]}
-                  end={['max', 577]}
-                  lineStyle={{
-                    stroke: '#6b561e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity:0.3,
-                  }} // 图形样式配置
-                  text={{
-                    position: '70%',
-                    content: "2017 一段线 577",
-                    style: {
-                      fill:"#6b561e",
-                      opacity:0.3,
-                    }
-                  }}
-                />
-                <Line
-                  top={true}
-                  start={[-1, 480]}
-                  end={['max', 480]}
-                  lineStyle={{
-                    stroke: '#6b561e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity:0.3,
-                  }}
-                  text={{
-                    position: '70%',
-                    content: "2017 二段线 480",
-                    style: {
-                      fill:"#6b561e",
-                      opacity:0.3,
-                    }
-                  }}
-                />
-                <Line
-                  top={true}
-                  start={[-1, 359]}
-                  end={['max', 359]}
-                  lineStyle={{
-                    stroke: '#6b561e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity:0.3,
-                  }}
-                  text={{
-                    position: '70%',
-                    content: "2017 三段线 359",
-                    style: {
-                      fill:"#6b561e",
-                      opacity:0.3,
-                    }
-                  }}
-                />
-              </Guide>
+            {scoreType === 'score' && <Guide>
+              <Line
+                top={true}
+                start={[-1, 588]}
+                end={['max', 588]}
+                lineStyle={{
+                  stroke: '#99203e',
+                  lineDash: [0, 2, 2],
+                  lineWidth: 2,
+                  opacity: 0.4,
+                }}
+                text={{
+                  position: '1%',
+                  content: "2018 一段线 588",
+                  style: {
+                    opacity: 0.5,
+                    fill: "#99203e",
+                  }
+                }}
+              />
+              <Line
+                top={true}
+                start={[-1, 490]}
+                end={['max', 490]}
+                lineStyle={{
+                  stroke: '#99203e',
+                  lineDash: [0, 2, 2],
+                  lineWidth: 2,
+                  opacity: 0.4,
+                }}
+                text={{
+                  position: '1%',
+                  content: "2018 二段线 490",
+                  style: {
+                    opacity: 0.5,
+                    fill: "#99203e",
+                  }
+                }}
+              />
+              <Line
+                top={true}
+                start={[-1, 344]}
+                end={['max', 344]}
+                lineStyle={{
+                  stroke: '#99203e',
+                  lineDash: [0, 2, 2],
+                  lineWidth: 2,
+                  opacity: 0.4,
+                }}
+                text={{
+                  position: '1%',
+                  content: "2018 三段线 344",
+                  style: {
+                    fill: "#99203e",
+                    opacity: 0.5,
+                  }
+                }}
+              />
+              <Line
+                top={true}
+                start={[-1, 577]}
+                end={['max', 577]}
+                lineStyle={{
+                  stroke: '#6b561e',
+                  lineDash: [0, 2, -1],
+                  lineWidth: 2,
+                  opacity: 0.2,
+                }} // 图形样式配置
+                text={{
+                  position: '70%',
+                  content: "2017 一段线 577",
+                  style: {
+                    fill: "#6b561e",
+                    opacity: 0.5,
+                  }
+                }}
+              />
+              <Line
+                top={true}
+                start={[-1, 480]}
+                end={['max', 480]}
+                lineStyle={{
+                  stroke: '#6b561e',
+                  lineDash: [0, 2, -1],
+                  lineWidth: 2,
+                  opacity: 0.2,
+                }}
+                text={{
+                  position: '70%',
+                  content: "2017 二段线 480",
+                  style: {
+                    fill: "#6b561e",
+                    opacity: 0.5,
+                  }
+                }}
+              />
+              <Line
+                top={true}
+                start={[-1, 359]}
+                end={['max', 359]}
+                lineStyle={{
+                  stroke: '#6b561e',
+                  lineDash: [0, 2, -1],
+                  lineWidth: 2,
+                  opacity: 0.2,
+                }}
+                text={{
+                  position: '70%',
+                  content: "2017 三段线 359",
+                  style: {
+                    fill: "#6b561e",
+                    opacity: 0.5,
+                  }
+                }}
+              />
+            </Guide>}
           </Chart>
         </Col>
       </Row>
@@ -311,14 +312,14 @@ const ScoreLineChart = memo(
                 }}
               />
               <Geom type="line" position="exam*score" size={2} tooltip={[
-                  "score",
-                  (score) => {
-                    return {
-                      name: "分数",
-                      value: score
-                    };
-                  }
-                ]}/>
+                "score",
+                (score) => {
+                  return {
+                    name: "分数",
+                    value: score
+                  };
+                }
+              ]}/>
               <Geom
                 type="point"
                 position="exam*score"
