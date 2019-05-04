@@ -27,6 +27,8 @@ import { Axis, Chart, Coord, Geom, Legend, Tooltip } from "bizcharts";
 import DataSet from "@antv/data-set";
 import moment from "moment";
 import Link from 'umi/link';
+import imgUrl from './light.jpeg';
+import stuImg from './rectangular.jpeg';
 
 const ScoreLineChart = React.lazy(() => import('./ScoreLineChart'));
 const ConsumptionOverallLineChart = React.lazy(() => import('./ConsumptionOverallLineChart'));
@@ -602,11 +604,12 @@ class Center extends PureComponent {
                     {/*词云*/}
                     <TagCloud
                       data={wordCloudData}
-                      height={200}
+                      height={120}
+                      imgUrl={stuImg}
                     />
-                    <div className={styles.name}>{studentInfo.name}</div>
-                    {studentInfo.is_left ? <Tag style={{ cursor: "default" }} color="#f50">已离校</Tag> :
-                      <Tag style={{ cursor: "default" }} color="#2db7f5">在校生</Tag>}
+                    <div className={styles.name} style={{paddingTop:7}}>{studentInfo.name}</div>
+                    {studentInfo.is_left ? <Tag style={{cursor:"default"}} color="#f50">已离校</Tag> :
+                      <Tag style={{cursor:"default"}} color="#2db7f5">在校生</Tag>}
                   </div>
                   <Row type="flex" align="middle">
                     {/*学生详细信息*/}
@@ -822,14 +825,15 @@ class Center extends PureComponent {
                   {studentInfo.id ? (vsStudentInfo.id ?
                     <Fragment>
                       <Card title="基本信息对比" bordered={false} style={{ width: '100%' }}>
-                        <Row>
-                          <Col span={8}>
+                        <Row type="flex" align="middle">
+                          <Col span={10}>
                             <TagCloud
                               data={vsWordCloudData}
-                              height={400}
+                              height={300}
+                              imgUrl={imgUrl}
                             />
                           </Col>
-                          <Col span={16} push={2}>
+                          <Col span={13} offset={1}>
                             <Card
                               title={<Fragment>
                                 {vsStudentInfo.name}

@@ -10,7 +10,9 @@ import styles from './index.less';
 /* eslint no-underscore-dangle: 0 */
 /* eslint no-param-reassign: 0 */
 
-const imgUrl = 'https://gw.alipayobjects.com/zos/rmsportal/gWyeGLCdFFRavBGIDzWk.png';
+// const imgUrl = 'https://zos.alipayobjects.com/rmsportal/EEFqYWuloqIHRnh.jpg';
+// import imgUrl from './WechatIMG6.jpeg';
+// const imgUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/20180602_FIFA_Friendly_Match_Austria_vs._Germany_Mesut_%C3%96zil_850_0704.jpg/440px-20180602_FIFA_Friendly_Match_Austria_vs._Germany_Mesut_%C3%96zil_850_0704.jpg';
 
 @autoHeight()
 class TagCloud extends Component {
@@ -59,7 +61,7 @@ class TagCloud extends Component {
         textAlign: 'center',
         fontFamily: cfg.origin._origin.font,
         fill: cfg.color,
-        textBaseline: 'Alphabetic',
+        textBaseline: 'Rectangular',
       });
     }
 
@@ -81,7 +83,7 @@ class TagCloud extends Component {
   @Debounce(500)
   renderChart(nextProps) {
     // const colors = ['#1890FF', '#41D9C7', '#2FC25B', '#FACC14', '#9AE65C'];
-    const { data, height } = nextProps || this.props;
+    const { data, height,imgUrl } = nextProps || this.props;
 
     if (data.length < 1 || !this.root) {
       return;
@@ -91,23 +93,44 @@ class TagCloud extends Component {
     const w = this.root.offsetWidth;
 
     const onload = () => {
-      const dv = new DataSet.View().source(data);
+      const dv = new DataSet.View().source(data.concat(data.map(data=>{
+        return {
+          ...data,
+          value:1,
+        };
+      })).concat(data.map(data=>{
+        return {
+          ...data,
+          value:7,
+        };
+      })).concat(data.map(data=>{
+        return {
+          ...data,
+          value:Math.random() * 10 % 10,
+        };
+      })));
       const range = dv.range('value');
       const [min, max] = range;
       dv.transform({
         type: 'tag-cloud',
         fields: ['name', 'value'],
         imageMask: this.imageMask,
-        font: 'Verdana',
+        font: 'serif',
         size: [w, h], // 宽高设置最好根据 imageMask 做调整
         padding: 0,
         timeInterval: 5000, // max execute time
         rotate() {
-          return 0;
+          let random = ~~(Math.random() * 4) % 4;
+
+          if (random === 3 || random === 1) {
+           return random * 90; // 0, 90, 270
+          }
+
+          return 0
         },
         fontSize(d) {
           // eslint-disable-next-line
-          return Math.pow((d.value - min) / (max - min), 2) * (17.5 - 5) + 20;
+          return Math.pow(d.value*1.2 - min/ (max - min),1/6)*6  + 6;
         },
       });
 
@@ -126,7 +149,6 @@ class TagCloud extends Component {
       this.imageMask = new Image();
       this.imageMask.crossOrigin = '';
       this.imageMask.src = imgUrl;
-
       this.imageMask.onload = onload;
     } else {
       onload();
