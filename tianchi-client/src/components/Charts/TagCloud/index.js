@@ -101,12 +101,7 @@ class TagCloud extends Component {
       })).concat(data.map(data=>{
         return {
           ...data,
-          value:7,
-        };
-      })).concat(data.map(data=>{
-        return {
-          ...data,
-          value:Math.random() * 10 % 10,
+          value:2,
         };
       })));
       const range = dv.range('value');
@@ -130,7 +125,7 @@ class TagCloud extends Component {
         },
         fontSize(d) {
           // eslint-disable-next-line
-          return Math.pow(d.value*1.2 - min/ (max - min),1/6)*6  + 6;
+          return Math.pow(d.value*1.2 - min/ (max - min),1/4)*6  + 6;
         },
       });
 
