@@ -27,8 +27,8 @@ import { Axis, Chart, Coord, Geom, Legend, Tooltip } from "bizcharts";
 import DataSet from "@antv/data-set";
 import moment from "moment";
 import Link from 'umi/link';
-import imgUrl from './light.jpeg';
-import stuImg from './rectangular.jpeg';
+import imgUrl from '../../../../public/tagcloud/light.jpeg';
+import stuImg from '../../../../public/tagcloud/Rectangular.jpeg';
 
 const ScoreLineChart = React.lazy(() => import('./ScoreLineChart'));
 const ConsumptionOverallLineChart = React.lazy(() => import('./ConsumptionOverallLineChart'));
