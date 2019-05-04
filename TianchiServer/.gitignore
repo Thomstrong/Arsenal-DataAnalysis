@@ -14,3 +14,4 @@ __pycache__/*
 evn/*
 scripts/data/*_err.csv
 local_settings.py
+server.log
