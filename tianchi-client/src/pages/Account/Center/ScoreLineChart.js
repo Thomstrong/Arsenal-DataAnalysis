@@ -2,10 +2,11 @@
  * Created by 胡晓慧 on 2019/4/13.
  */
 import React, { memo } from "react";
-import { Col, Empty, List, Row } from 'antd';
+import { Card, Col, Empty, List, Row, Typography } from 'antd';
 import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
 import { COURSE_FULLNAME_ALIAS, getDengDi } from "@/constants";
-
+import Divider from "antd/es/divider";
+const { Paragraph, Text } = Typography;
 const { Line } = Guide;
 const dengDiScale = {
   score: {
@@ -275,6 +276,18 @@ const ScoreLineChart = memo(
           </Chart>
         </Col>
       </Row>
+      <Divider style={{ marginTop: 0 ,marginBottom: 5}} dashed/>
+      {/*todo 薄弱学科等的确定方式待确定*/}
+      <Card bordered={false} hoverable={true} type="inner"
+                style={{ marginLeft: 12, marginRight: 12,  marginBottom: 0, cursor: "auto" }}>
+        <Paragraph>
+          该生的优势学科是<Text type="danger" strong>数学</Text>，
+          薄弱学科为<Text type="danger">技术</Text>，
+          不稳定学科为<Text type="danger">英语</Text></Paragraph>
+        <Paragraph>
+          以下是<Text type="danger">各科目</Text>具体成绩趋势走向图:</Paragraph>
+      </Card>
+      <Divider style={{ marginBottom: 24,marginTop:5 }} dashed/>
       {/*利用list进行布局*/}
       <List
         grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 1, xl: 2, xxl: 2 }}
