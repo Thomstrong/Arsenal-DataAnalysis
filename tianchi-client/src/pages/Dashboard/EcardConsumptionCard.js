@@ -124,7 +124,7 @@ const EcardConsumptionCard = memo(({data}) => {
     yearCostData
   } = data;
   return <React.Fragment>
-    <Card loading={sexHourlyLoading} className={styles.tabsCard} style={{marginTop: 32,cursor:"auto"}}>
+    <Card loading={sexHourlyLoading} style={{marginTop: 24,cursor:"auto"}}>
       <Tabs defaultActiveKey={"Sex"}>
         <TabPane tab={<span><Icon type="line-chart"/>性别对比</span>} key="Sex">
           <Row>
@@ -485,7 +485,7 @@ const EcardConsumptionCard = memo(({data}) => {
         </TabPane>
       </Tabs>
     </Card>
-    <Card title="总体消费趋势" bordered={true} style={{width: '100%', marginTop: 32}}>
+    <Card title="总体消费趋势" bordered={true} style={{width: '100%', marginTop: 24}}>
       <Row>
         {yearCostData && <Col xl={7} lg={24} md={24} sm={24} xm={24}>
           <div className={styles.salesRank}>
