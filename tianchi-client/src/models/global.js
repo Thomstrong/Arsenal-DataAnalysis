@@ -105,6 +105,28 @@ export default {
       };
     },
     saveTotalHourlyAvgCost(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      let i = 0;
+      const len = payload.length;
+      if (!len) {
+        return;
+      }
+      const template = {
+        ...payload[0],
+        total_avg: 0,
+      };
+      for (let hour = 0; hour < 24 && i < len; hour++) {
+        if (payload[i].hour === hour) {
+          i += 1;
+          continue;
+        }
+        payload.push({
+          ...template,
+          hour
+        });
+      }
       return {
         ...state,
         totalHourlyAvgCost: payload,

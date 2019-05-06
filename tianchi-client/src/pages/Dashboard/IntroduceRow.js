@@ -15,7 +15,7 @@ const topColResponsiveProps = {
 
 const IntroduceRow = memo(({ loading, data, year }) => {
     const {
-      campusData, totalStudentCount, totalStayCount, dailyAvgCost,
+      campusData, totalStudentCount, totalStayCount,totalStudentInDb, dailyAvgCost,
       yearCostData, totalYearCost, kaoqinSummaryData, totalKaoqinCount
     } = data;
     return <Row gutter={24}>
@@ -29,7 +29,7 @@ const IntroduceRow = memo(({ loading, data, year }) => {
           footer={
             <Field
               label="2013年起就学人次达"
-              value={`${numeral(10000).format('0,0')}`}
+              value={`${numeral(totalStudentInDb).format('0,0')}`}
             />
           }
           contentHeight={46}

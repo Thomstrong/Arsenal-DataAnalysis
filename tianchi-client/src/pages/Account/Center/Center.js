@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { POLICY_TYPE_ALIAS, SCORE_LEVEL_ALIAS, SEX_MAP } from "@/constants";
 import router from 'umi/router';
 import _ from 'lodash';
+import PageLoading from '@/components/PageLoading';
 import {
   Affix,
   Avatar,
@@ -608,9 +609,9 @@ class Center extends PureComponent {
                       height={120}
                       imgUrl={stuImg}
                     />
-                    <div className={styles.name} style={{paddingTop:7}}>{studentInfo.name}</div>
-                    {studentInfo.is_left ? <Tag style={{cursor:"default"}} color="#f50">已离校</Tag> :
-                      <Tag style={{cursor:"default"}} color="#2db7f5">在校生</Tag>}
+                    <div className={styles.name} style={{ paddingTop: 7 }}>{studentInfo.name}</div>
+                    {studentInfo.is_left ? <Tag style={{ cursor: "default" }} color="#f50">已离校</Tag> :
+                      <Tag style={{ cursor: "default" }} color="#2db7f5">在校生</Tag>}
                   </div>
                   <Row type="flex" align="middle">
                     {/*学生详细信息*/}
@@ -736,7 +737,7 @@ class Center extends PureComponent {
                           </Select>
                         </Affix>
                       </Row>}
-                      {!scoreLoading ? <Suspense fallback={<Spin/>}>
+                      {!scoreLoading ? <Suspense fallback={<PageLoading/>}>
                         <ScoreLineChart
                           lineData={totalTrendData}
                           lineSummary={lineSummary}
@@ -751,7 +752,7 @@ class Center extends PureComponent {
                 <TabPane tab={<span><Icon type="credit-card"/>一卡通</span>} key="ECard">
                   {dailySumCost && !!dailySumCost.length ? eCardLoading ? <Card loading={true} bordered={false}/> :
                     <Fragment>
-                      <Suspense fallback={<Spin/>}>
+                      <Suspense fallback={<PageLoading/>}>
                         <ConsumptionOverallLineChart
                           hourlyAvgCost={hourlyAvgData}
                           dailySumCost={dailySumCost}
@@ -778,7 +779,7 @@ class Center extends PureComponent {
                           </Select>
                         </Card>
                       </Affix>
-                      <Suspense fallback={<Spin/>}>
+                      <Suspense fallback={<PageLoading/>}>
                         <ConsumptionTimeSlotLineChart
                           hourlyCost={hourlyCost}
                           dailyPredictData={predictData}
@@ -790,7 +791,7 @@ class Center extends PureComponent {
                     </Fragment> : <Empty description='暂无一卡通消费数据'/>}
                 </TabPane>
                 <TabPane tab={<span><i className={`fa fa-calendar-check-o`}/> 考勤</span>} key="Attendance">
-                  <Suspense fallback={<Spin/>}>
+                  <Suspense fallback={<PageLoading/>}>
                     <AttendanceChart
                       loading={kaoqinLoading}
                       kaoqinData={kaoqinData}
@@ -872,7 +873,7 @@ class Center extends PureComponent {
                           </Col>
                         </Row>
                       </Card>
-                      <Suspense fallback={<Spin/>}>
+                      <Suspense fallback={<PageLoading/>}>
                         <StuComparedChart
                           comparedScoreData={gradeVsData}
                           hourlyVsCostData={hourlyVsCostData}

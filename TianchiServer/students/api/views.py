@@ -51,12 +51,21 @@ class StudentViewSet(viewsets.ModelViewSet):
             return Response('type 输入有误', status=400)
         record_filter = (Q(term__end_year=2019) | Q(term__start_year=2019)) & Q(student__is_left=False)
         if base == 'campus':
-            record = StudentRecord.objects.filter(
+            records = StudentRecord.objects.filter(
                 record_filter
             ).values('stu_class__campus_name').annotate(
                 count=Count('student_id', distinct=True)
             ).values('stu_class__campus_name', 'count')
-            return Response(record)
+
+            total = Student.objects.all().count()
+            result = [{
+                'campus_name': record['stu_class__campus_name'],
+                'count': record['count']
+            } for record in records]
+            return Response({
+                'result': result,
+                'total': total
+            })
 
         if base == 'stay_school':
             record = StudentRecord.objects.filter(

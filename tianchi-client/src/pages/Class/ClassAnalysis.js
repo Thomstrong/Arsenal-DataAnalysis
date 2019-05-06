@@ -9,6 +9,7 @@ import {
   RANGE_ALIAS,
   SCORE_LEVEL_ALIAS
 } from "@/constants";
+import PageLoading from '@/components/PageLoading';
 import router from 'umi/router';
 import _ from 'lodash';
 import {
@@ -562,7 +563,7 @@ class ClassAnalysis extends PureComponent {
                             <Option key="rank" value="rank">排名(todo)</Option>
                           </Select>
                         </Affix>
-                        <Suspense fallback={<Spin/>}>
+                        <Suspense fallback={<PageLoading/>}>
                           <ScoreTrendChart
                             lineData={totalTrend}
                             radarViewData={radarViewData}
@@ -596,24 +597,24 @@ class ClassAnalysis extends PureComponent {
                         <Row gutter={16} type="flex" justify="start" align="bottom" style={{ marginBottom: 8 }}>
                           <Col span={4}>
                             <Statistic
-                            title="参与考试" value={-100}
-                            suffix="人"
+                              title="参与考试" value={-100}
+                              suffix="人"
                             /></Col>
                           <Col span={4}>
                             <Statistic
-                            title="缺考" value={-100}
-                            suffix="人"
+                              title="缺考" value={-100}
+                              suffix="人"
                             /></Col>
                           <Col span={4}>
                             <Statistic
-                            title="免考" value={-100}
-                            suffix="人"
+                              title="免考" value={-100}
+                              suffix="人"
                             /></Col>
                           <Col span={4} offset={8}>
                             <Statistic
-                            title="本次排名" value={courseRankData.classNum - courseRankData.totalRank}
-                            suffix={`/${courseRankData.classNum}`}
-                            valueStyle={{ color: '#cf1322',fontSize:"48px"}}
+                              title="本次排名" value={courseRankData.classNum - courseRankData.totalRank}
+                              suffix={`/${courseRankData.classNum}`}
+                              valueStyle={{ color: '#cf1322', fontSize: "48px" }}
                             />
                           </Col>
                         </Row>
@@ -628,7 +629,8 @@ class ClassAnalysis extends PureComponent {
                         <Row gutter={16} type="flex" justify="start" style={{ marginBottom: 8 }}>
                           {overLineCounter.map((count, index) => (
                             <Col key={LINE_INDEX_ALIAS[index]}>
-                              <Statistic title={`超${LINE_INDEX_ALIAS[index]}(${LINE_SCORE[index]})人数`} value={count} suffix="人"/>
+                              <Statistic title={`超${LINE_INDEX_ALIAS[index]}(${LINE_SCORE[index]})人数`} value={count}
+                                         suffix="人"/>
                             </Col>))}
                         </Row>
                       </Card>}
@@ -828,7 +830,7 @@ class ClassAnalysis extends PureComponent {
                 {/*考勤情况*/}
                 {/*todo 文字分析部分加上该班级违纪最多的同学，及具体信息*/}
                 <TabPane tab={<span><i className={`fa fa-calendar-check-o`}/> 考勤情况显示</span>} key="Attendance">
-                  <Suspense fallback={<Spin className='center'/>}>
+                  <Suspense fallback={<PageLoading/>}>
                     <ClassAttendanceChart
                       loading={kaoqinLoading}
                       toggleDig={this.toggleKaoQinDig}

@@ -7,6 +7,78 @@ import {
   SEX_FULL_MAP,
   STAY_ALIAS,
 } from "@/constants";
+import DataSet from "@antv/data-set";
+
+// shit code...
+const addZeroForTwoFieldData = (costData, fieldName, biFilds) => {
+  const partitionData = new DataSet.View().source(costData).transform({
+    type: 'partition',
+    groupBy: ['hour'],
+  }).rows;
+
+  for (let hour = 0; hour < 24; hour++) {
+    if (partitionData[`_${hour}`]) {
+      if (hour === 5 && fieldName === 'stayType') {
+        costData.push({
+          cost: 0,
+          hour: hour,
+          [fieldName]: '走读',
+        });
+      }
+      continue;
+    }
+    costData.push({
+      cost: 0,
+      hour: hour,
+      [fieldName]: biFilds[0],
+    });
+    costData.push({
+      cost: 0,
+      hour: hour,
+      [fieldName]: biFilds[1],
+    });
+  }
+};
+
+const addZeroForGradeData = (costData) => {
+  const partitionData = new DataSet.View().source(costData).transform({
+    type: 'partition',
+    groupBy: ['hour'],
+  }).rows;
+
+  for (let hour = 0; hour < 24; hour++) {
+    if (partitionData[`_${hour}`]) {
+      if (hour === 5) {
+        costData.push({
+          cost: 0,
+          hour: hour,
+          grade: '高二',
+        });
+        costData.push({
+          cost: 0,
+          hour: hour,
+          grade: '高三',
+        });
+      }
+      continue;
+    }
+    costData.push({
+      cost: 0,
+      hour: hour,
+      grade: '高一',
+    });
+    costData.push({
+      cost: 0,
+      hour: hour,
+      grade: '高二',
+    });
+    costData.push({
+      cost: 0,
+      hour: hour,
+      grade: '高三',
+    });
+  }
+};
 
 export default {
   namespace: 'dashboard',
@@ -16,6 +88,7 @@ export default {
     totalStudentCount: 0,
     stayData: [],
     totalStayCount: 0,
+    totalStudentInDb: 0,
     gradeData: [],
     nationData: [],
     nativePlaceData: [],
@@ -167,13 +240,14 @@ export default {
       let totalStudentCount = 0;
       return {
         ...state,
-        campusData: payload.map(data => {
+        campusData: payload.result.map(data => {
           totalStudentCount += data.count;
           return {
-            campus: CLASS_CAMPUS_CHOICE[data.stu_class__campus_name],
+            campus: CLASS_CAMPUS_CHOICE[data.campus_name],
             count: data.count
           };
         }),
+        totalStudentInDb: payload.total,
         totalStudentCount
       };
     },
@@ -196,6 +270,7 @@ export default {
         });
 
       });
+      addZeroForTwoFieldData(sexHourlyCostData, 'sex', ['男生', '女生']);
       return {
         ...state,
         sexHourlyCostData,
@@ -220,6 +295,7 @@ export default {
           count: data.count
         });
       });
+      addZeroForTwoFieldData(stayCostData, 'stayType', ['走读', '住校']);
       return {
         ...state,
         stayCostData,
@@ -370,6 +446,7 @@ export default {
           });
         });
       }
+      addZeroForGradeData(gradeCostData);
       return {
         ...state,
         gradeCostData,
