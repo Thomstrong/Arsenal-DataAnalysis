@@ -391,7 +391,7 @@ class Selection extends PureComponent {
             </Typography>
           </Card>}
         </Card>
-        <Card title="七选三组合分布情况" bordered={true} style={{ width: '100%', marginTop: 32 }}>
+        <Card title="七选三组合分布情况" bordered={true} style={{ width: '100%', marginTop: 24 }}>
           {/*柱状图显示35种选择人数分布情况,分组柱状图*/}
           <Chart
             key='selection-3_in_7-chart'

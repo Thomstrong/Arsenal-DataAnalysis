@@ -1,7 +1,7 @@
 /**
  * Created by 胡晓慧 on 2019/4/18.
  */
-import React, { memo } from 'react';
+import React, { Fragment, memo } from 'react';
 import {Card, Col, Radio, Row, Select, Typography} from 'antd';
 import styles from './LocationMap.less';
 import { Pie, TimelineChart } from '@/components/Charts';
@@ -24,8 +24,9 @@ const cols = {
 const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, handleChangeStudentType }) => {
   const { sexPieData, studentPieData, totalStudentCount, sexDistriLoading, locationLoading } = data;
   const showAnalysis = sexPieData.length + studentPieData.length + totalStudentCount;
-  return <div className={styles.twoColLayout}>
-    <Row gutter={24}>
+  return(
+    <Fragment>
+    <Row gutter={24} type="flex" justify="space-between">
       <Col xl={12} lg={24} md={24} sm={24} xs={24}>
         <Card
           height={400}
@@ -33,7 +34,6 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
           className={styles.salesCard}
           bordered={false}
           title='性别分布一览'
-          padding="auto"
           extra={
             <div className={styles.salesCardExtra}>
               <div className={styles.salesTypeRadio}>
@@ -144,7 +144,6 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
           className={styles.salesCard}
           bordered={false}
           title='人员分布情况'
-          padding="auto"
           extra={
             <div className={styles.salesCardExtra}>
               <div className={styles.salesTypeRadio}>
@@ -170,16 +169,15 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
             total={totalStudentCount}
             data={studentPieData}
             valueFormat={value => `${numeral(value).format('0,0')}人`}
-            height={270}
+            height={253.8}
             lineWidth={4}
             style={{ padding: '8px 0' }}
           />
         </Card>
       </Col>
     </Row>
-    {!!showAnalysis && !sexDistriLoading && !locationLoading && <Row gutter={24}>
-      <Col xl={24} xs={24}>
-        <Card title="人员分析" hoverable={true} style={{cursor:"auto"}}>
+    {!!showAnalysis && !sexDistriLoading && !locationLoading &&
+        <Card title="人员分析" hoverable={true} style={{cursor:"auto", marginTop:24}}>
           <Paragraph>1. 高一高二高三人数递减，<Text type="danger">高一男生</Text>占全校学生数的<Text type="danger">1／4</Text>;
             各年级女生人数比较稳定都在<Text type="danger">16%</Text>左右，男生人数呈明显递<Text type="danger">减</Text>趋势，
             高三年级女生人数反超男生;</Paragraph>
@@ -190,10 +188,8 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
             其他省市生源比较分散。</Paragraph>
           <Paragraph>4. 汉族是学生的主要民族，但仍有<Text type="danger">近1%</Text>的学生来自其他各个民族</Paragraph>
           <Paragraph>5. 该校学生的主要政治面貌是<Text type="danger">共青团员</Text>，还有一位共产党员，一位民主党派人数。</Paragraph>
-        </Card>
-      </Col>
-    </Row>}
-  </div>;
+        </Card>}
+    </Fragment>);
 
 });
 

@@ -443,7 +443,7 @@ class ClassAnalysis extends PureComponent {
                     <div className={styles.teamTitle}>学生分布</div>
                     <Row type="flex" justify="start">
                       <Col>
-                        <Statistic title="共有学生" value={`${total}人`} valueStyle={{ color: '#cf1322' }}/>
+                        <Statistic title="共有学生" value={total} suffix="人" valueStyle={{ color: '#cf1322' }}/>
                       </Col>
                     </Row>
                     {isAtSchool ?
@@ -593,25 +593,42 @@ class ClassAnalysis extends PureComponent {
                   {examId ?
                     <Fragment>
                       {courseRankData.totalRank && <Card title="本次考试排名一览" style={{ marginTop: 12 }}>
-                        <Row style={{ marginBottom: 8 }}>
-                          <Statistic
+                        <Row gutter={16} type="flex" justify="start" align="bottom" style={{ marginBottom: 8 }}>
+                          <Col span={4}>
+                            <Statistic
+                            title="参与考试" value={-100}
+                            suffix="人"
+                            /></Col>
+                          <Col span={4}>
+                            <Statistic
+                            title="缺考" value={-100}
+                            suffix="人"
+                            /></Col>
+                          <Col span={4}>
+                            <Statistic
+                            title="免考" value={-100}
+                            suffix="人"
+                            /></Col>
+                          <Col span={4} offset={8}>
+                            <Statistic
                             title="本次排名" value={courseRankData.classNum - courseRankData.totalRank}
                             suffix={`/${courseRankData.classNum}`}
-                            valueStyle={{ color: '#cf1322' }}
-                          />
+                            valueStyle={{ color: '#cf1322',fontSize:"48px"}}
+                            />
+                          </Col>
+                        </Row>
+                        <Divider style={{ marginTop: 8 }} dashed/>
+                        <Row type="flex" justify="start" gutter={24}>
+                          {courseRankData.rankData.map((data) => (
+                            <Col key={`examrank-${data.course}`}>
+                              <Statistic title={data.course} value={courseRankData.classNum - data.rank} suffix="名"/>
+                            </Col>))}
                         </Row>
                         <Divider style={{ marginTop: 8 }} dashed/>
                         <Row gutter={16} type="flex" justify="start" style={{ marginBottom: 8 }}>
                           {overLineCounter.map((count, index) => (
                             <Col key={LINE_INDEX_ALIAS[index]}>
-                              <Statistic title={`超${LINE_INDEX_ALIAS[index]}(${LINE_SCORE[index]})人数`} value={count}/>
-                            </Col>))}
-                        </Row>
-                        <Divider style={{ marginTop: 8 }} dashed/>
-                        <Row type="flex" justify="space-between">
-                          {courseRankData.rankData.map((data) => (
-                            <Col key={`examrank-${data.course}`}>
-                              <Statistic title={data.course} value={courseRankData.classNum - data.rank}/>
+                              <Statistic title={`超${LINE_INDEX_ALIAS[index]}(${LINE_SCORE[index]})人数`} value={count} suffix="人"/>
                             </Col>))}
                         </Row>
                       </Card>}

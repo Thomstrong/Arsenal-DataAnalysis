@@ -108,7 +108,7 @@ const violationRankingData = [
 const AttendanceCard = memo(({data}) => {
     const {enterSchoolData, kaoqinMixedData} = data;
     return <React.Fragment>
-      <Card title="2018-2019学年进离校时间概况" bordered={false} style={{marginTop: 32}}>
+      <Card title="2018-2019学年进离校时间概况" bordered={false} style={{marginTop: 24}}>
         <Row>
           <Col xl={16} lg={24} md={24} sm={24} xm={24}>
             <Chart
@@ -189,7 +189,7 @@ const AttendanceCard = memo(({data}) => {
         </Row>
 
       </Card>
-      <Card title="考勤情况一览" bordered={false} style={{marginTop: 32}}>
+      <Card title="考勤情况一览" bordered={false} style={{marginTop: 24}}>
         <Row>
           {kaoqinMixedData && <Col xl={8} lg={24} md={24} sm={24} xm={24}>
             <div className={styles.salesRank}>
