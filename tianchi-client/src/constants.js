@@ -20,7 +20,6 @@ export const COURSE_ALIAS = {
   1: '语',
 };
 
-
 export const COURSE_COLOR = {
   59: '#b89876',
   58: '#81abcc',

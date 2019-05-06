@@ -330,6 +330,9 @@ export default {
       };
     },
     saveRadarData(state, action) {
+      if (!action.payload) {
+        return state;
+      }
       let adSubject = [];
       let disadSubject = [];
       let unstableSubject = [];
@@ -356,23 +359,22 @@ export default {
           [SCORE_LEVEL_ALIAS.average]: Number(data.average.toFixed(0)),
         })
       });
-      if(action.payload){
-        unstableSubject.sort(function (a, b) {
-          return b.score - a.score
-        });
-        adSubject.sort(function (a, b) {
-          return b.score - a.score
-        });
-        disadSubject.sort(function (a, b) {
-          return a.score - b.score
-        });
+      unstableSubject.sort(function (a, b) {
+        return b.score - a.score
+      });
+      adSubject.sort(function (a, b) {
+        return b.score - a.score
+      });
+      disadSubject.sort(function (a, b) {
+        return a.score - b.score
+      });
 
+      if(unstableSubject.length){
         lineSummary = {
-          unstable: unstableSubject[0].name,
-          advantage: adSubject[0].name === unstableSubject[0].name ? adSubject[1].name : adSubject[0].name,
-          disadvantage: disadSubject[0].name === unstableSubject[0].name ? disadSubject[1].name : disadSubject[0].name,
-        };
-      }
+        unstable: unstableSubject[0].name,
+        advantage: adSubject[0].name === unstableSubject[0].name && adSubject.length>1? adSubject[1].name : adSubject[0].name,
+        disadvantage: disadSubject[0].name === unstableSubject[0].name ? disadSubject[1].name : disadSubject[0].name,
+      };}
 
       return {
         ...state,
