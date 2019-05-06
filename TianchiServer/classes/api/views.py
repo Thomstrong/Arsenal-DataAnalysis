@@ -109,46 +109,78 @@ class ClassViewSet(viewsets.ModelViewSet):
             return Response(exam_records)
 
         if type == 'trend':
-            records = ClassExamRecord.objects.filter(
-                stu_class_id=pk,
-                sub_exam__course_id__in=gaokao_courses,
-            ).order_by('sub_exam__started_at').values(
-                'sub_exam__exam__name'
-            ).values(
-                'sub_exam__course_id',
-                'sub_exam__exam__name',
-                'total_score',
-                'attend_count'
-            )
+            score_type = request.query_params.get('score_type', '')
+            if not score_type:
+                return Response('score_type 输入有误', status=400)
 
-            formated_records = {}
-            total = 0
-            exam_name = ''
-            for record in records:
-                if not exam_name:
-                    exam_name = record['sub_exam__exam__name']
-                    formated_records[exam_name] = []
-                if not exam_name == record['sub_exam__exam__name']:
+            if score_type == 'rank':
+                records = ClassExamRecord.objects.filter(
+                    stu_class_id=pk,
+                    sub_exam__course_id__in=gaokao_courses,
+                ).order_by('sub_exam__started_at').values(
+                    'sub_exam__exam__name'
+                ).values(
+                    'sub_exam__course_id',
+                    'sub_exam__exam__name',
+                    'order',
+                )
+
+                formated_records = {}
+                exam_name = ''
+                for record in records:
+                    if not exam_name:
+                        exam_name = record['sub_exam__exam__name']
+                        formated_records[exam_name] = []
+                    if not exam_name == record['sub_exam__exam__name']:
+                        exam_name = record['sub_exam__exam__name']
+                        formated_records[exam_name] = []
+                    formated_records[exam_name].append({
+                        'course': record['sub_exam__course_id'],
+                        'score': record['order']
+                    })
+                return Response(formated_records)
+
+            if score_type == 'score':
+                records = ClassExamRecord.objects.filter(
+                    stu_class_id=pk,
+                    sub_exam__course_id__in=gaokao_courses,
+                ).order_by('sub_exam__started_at').values(
+                    'sub_exam__exam__name'
+                ).values(
+                    'sub_exam__course_id',
+                    'sub_exam__exam__name',
+                    'total_score',
+                    'attend_count'
+                )
+
+                formated_records = {}
+                total = 0
+                exam_name = ''
+                for record in records:
+                    if not exam_name:
+                        exam_name = record['sub_exam__exam__name']
+                        formated_records[exam_name] = []
+                    if not exam_name == record['sub_exam__exam__name']:
+                        formated_records[exam_name].append({
+                            'course': 0,
+                            'score': total
+                        })
+                        exam_name = record['sub_exam__exam__name']
+                        formated_records[exam_name] = []
+                        total = 0
+
+                    avg_score = record['total_score'] / record['attend_count']
+                    formated_records[exam_name].append({
+                        'course': record['sub_exam__course_id'],
+                        'score': avg_score
+                    })
+                    total += avg_score
+                if exam_name:
                     formated_records[exam_name].append({
                         'course': 0,
                         'score': total
                     })
-                    exam_name = record['sub_exam__exam__name']
-                    formated_records[exam_name] = []
-                    total = 0
-
-                avg_score = record['total_score'] / record['attend_count']
-                formated_records[exam_name].append({
-                    'course': record['sub_exam__course_id'],
-                    'score': avg_score
-                })
-                total += avg_score
-            if exam_name:
-                formated_records[exam_name].append({
-                    'course': 0,
-                    'score': total
-                })
-            return Response(formated_records)
+                return Response(formated_records)
 
     @detail_route(
         methods=['GET'],

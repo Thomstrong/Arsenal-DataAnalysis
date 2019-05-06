@@ -131,7 +131,8 @@ class ClassAnalysis extends PureComponent {
     dispatch({
       type: 'stuClass/fetchTrendData',
       payload: {
-        classId
+        classId,
+        scoreType: this.state.scoreType
       }
     });
     dispatch({
@@ -187,6 +188,14 @@ class ClassAnalysis extends PureComponent {
   };
 
   onScoreTypeChange = (scoreType) => {
+    const { dispatch, stuClass } = this.props;
+    dispatch({
+      type: 'stuClass/fetchTrendData',
+      payload: {
+        classId: stuClass.classInfo.id,
+        scoreType: scoreType
+      }
+    });
     this.setState({ scoreType });
   };
 
@@ -306,7 +315,7 @@ class ClassAnalysis extends PureComponent {
 
     const {
       distributionData, classInfo, teachers,
-      classList, radarData, totalTrend,
+      classList, radarData, totalTrend,maxRank,
       subTrends, kaoqinSummary, kaoqinData,
       kaoqinDetail, studentList, classExamList,
       courseRankData, scoreData, classMap,
@@ -565,6 +574,8 @@ class ClassAnalysis extends PureComponent {
                         </Affix>
                         <Suspense fallback={<PageLoading/>}>
                           <ScoreTrendChart
+                            maxRank={maxRank}
+                            scoreType={this.state.scoreType}
                             lineData={totalTrend}
                             radarViewData={radarViewData}
                             subData={subData}

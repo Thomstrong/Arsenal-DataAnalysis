@@ -23,6 +23,7 @@ class ClassExamRecord(models.Model):
     attend_count = models.IntegerField(default=0)
     highest_score = models.FloatField(default=0.0)
     lowest_score = models.FloatField(default=200.0)
+    order = models.IntegerField(default=0)
 
     def update_score(self, score, is_add=True):
         if score < 0:

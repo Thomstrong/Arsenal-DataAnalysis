@@ -34,10 +34,10 @@ class StudentViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         query = request.query_params.get('query', '')
         if query:
-            q_filter = Q(id__startswith=query) | Q(name__contains=query)
+            q_filter = (Q(id__startswith=query) | Q(name__contains=query)) & ~Q(name='未知')
             students = self.queryset.filter(
                 q_filter,
-            )[:50]
+            ).order_by('is_left')[:50]
             return Response(self.get_serializer_class()(students, many=True).data)
         return Response(status=400, data={'reason': '不可以获取全部列表哦'})
 

@@ -1,15 +1,30 @@
 /**
  * Created by 胡晓慧 on 2019/4/13.
  */
-import React, {memo} from "react";
-import {Col, List, Row} from 'antd';
-import {Axis, Chart, Coord, Geom, Legend,Guide,Tooltip} from "bizcharts";
-import {COURSE_FULLNAME_ALIAS} from "@/constants";
+import React, { memo } from "react";
+import { Col, List, Row } from 'antd';
+import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
+import { COURSE_FULLNAME_ALIAS } from "@/constants";
 
 const { Line } = Guide;
 const ScoreLineChart = memo(
-  ({lineData, radarViewData, subData}) => (
-    <React.Fragment>
+  ({ lineData, radarViewData, subData, scoreType, maxRank }) => {
+    let scale = {
+      score: {}
+    };
+    const isRank = scoreType === 'rank';
+    if (isRank) {
+      const values = [];
+      for (let i = 0; i < maxRank; i++) {
+        values.push(`${maxRank - i}`);
+      }
+      scale.score = {
+        type: 'cat',
+        values
+      };
+    }
+
+    return <React.Fragment>
       <div>
         <Row>
           <Col span={8}>
@@ -76,7 +91,7 @@ const ScoreLineChart = memo(
                 }
               }}
             >
-              <p style={{textAlign: 'center'}}>
+              <p style={{ textAlign: 'center' }}>
                 总分变化趋势
               </p>
               <Axis
@@ -96,15 +111,15 @@ const ScoreLineChart = memo(
                 }}
               />
               <Geom type="line" position="exam*score" size={2}
-              tooltip={[
-                  "score",
-                  (score) => {
-                    return {
-                      name: "平均分数",
-                      value: score.toFixed(3)
-                    };
-                  }
-                ]}/>
+                    tooltip={[
+                      "score",
+                      (score) => {
+                        return {
+                          name: "平均分数",
+                          value: score.toFixed(3)
+                        };
+                      }
+                    ]}/>
               <Geom
                 type="point"
                 position="exam*score"
@@ -124,14 +139,14 @@ const ScoreLineChart = memo(
                     stroke: '#99203e',
                     lineDash: [0, 2, 2],
                     lineWidth: 2,
-                    opacity:0.3,
+                    opacity: 0.3,
                   }}
                   text={{
                     position: '5%',
                     content: "2018 一段线 588",
                     style: {
-                      opacity:0.3,
-                      fill:"#99203e",
+                      opacity: 0.3,
+                      fill: "#99203e",
                     }
                   }}
                 />
@@ -143,14 +158,14 @@ const ScoreLineChart = memo(
                     stroke: '#99203e',
                     lineDash: [0, 2, 2],
                     lineWidth: 2,
-                    opacity:0.3,
+                    opacity: 0.3,
                   }} // 图形样式配置
                   text={{
                     position: '5%',
                     content: "2018 二段线 490",
                     style: {
-                      opacity:0.3,
-                      fill:"#99203e",
+                      opacity: 0.3,
+                      fill: "#99203e",
                     }
                   }}
                 />
@@ -162,14 +177,14 @@ const ScoreLineChart = memo(
                     stroke: '#99203e',
                     lineDash: [0, 2, 2],
                     lineWidth: 2,
-                    opacity:0.3,
+                    opacity: 0.3,
                   }}
                   text={{
                     position: '5%',
                     content: "2018 三段线 344",
                     style: {
-                      fill:"#99203e",
-                      opacity:0.3,
+                      fill: "#99203e",
+                      opacity: 0.3,
                     }
                   }}
                 />
@@ -181,14 +196,14 @@ const ScoreLineChart = memo(
                     stroke: '#6b561e',
                     lineDash: [0, 2, 2],
                     lineWidth: 2,
-                    opacity:0.3,
+                    opacity: 0.3,
                   }} // 图形样式配置
                   text={{
                     position: '75%',
                     content: "2017 一段线 577",
                     style: {
-                      fill:"#6b561e",
-                      opacity:0.3,
+                      fill: "#6b561e",
+                      opacity: 0.3,
                     }
                   }}
                 />
@@ -200,14 +215,14 @@ const ScoreLineChart = memo(
                     stroke: '#6b561e',
                     lineDash: [0, 2, 2],
                     lineWidth: 2,
-                    opacity:0.3,
+                    opacity: 0.3,
                   }}
                   text={{
                     position: '75%',
                     content: "2017 二段线 480",
                     style: {
-                      fill:"#6b561e",
-                      opacity:0.3,
+                      fill: "#6b561e",
+                      opacity: 0.3,
                     }
                   }}
                 />
@@ -219,14 +234,14 @@ const ScoreLineChart = memo(
                     stroke: '#6b561e',
                     lineDash: [0, 2, 2],
                     lineWidth: 2,
-                    opacity:0.3,
+                    opacity: 0.3,
                   }}
                   text={{
                     position: '75%',
                     content: "2017 三段线 359",
                     style: {
-                      fill:"#6b561e",
-                      opacity:0.3,
+                      fill: "#6b561e",
+                      opacity: 0.3,
                     }
                   }}
                 />
@@ -240,15 +255,22 @@ const ScoreLineChart = memo(
           renderItem={item => (
             <List.Item>
               <Chart
-                height={300} data={item.lineData}
+                height={300}
+                data={isRank ? item.lineData.map(data => {
+                  return {
+                    ...data,
+                    score: maxRank - data.score
+                  };
+                }) : item.lineData}
                 scale={{
                   exam: {
                     tickCount: 8
-                  }
+                  },
+                  ...scale
                 }}
                 forceFit
               >
-                <p style={{textAlign: 'center'}}>
+                <p style={{ textAlign: 'center' }}>
                   {`${COURSE_FULLNAME_ALIAS[item.title]} 考试趋势分析`}
                 </p>
                 <Axis
@@ -267,12 +289,12 @@ const ScoreLineChart = memo(
                     type: "y"
                   }}
                 />
-                <Geom type="line" position="exam*score" size={2}tooltip={[
+                <Geom type="line" position="exam*score" size={2} tooltip={[
                   "score",
                   (score) => {
                     return {
-                      name: "平均分数",
-                      value: score.toFixed(3)
+                      name: isRank ? '排名' : "平均分数",
+                      value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
                     };
                   }
                 ]}/>
@@ -291,8 +313,8 @@ const ScoreLineChart = memo(
           )}
         />
       </div>
-    </React.Fragment>
-  )
+    </React.Fragment>;
+  }
 );
 
 export default ScoreLineChart;

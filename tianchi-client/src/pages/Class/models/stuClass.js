@@ -48,6 +48,7 @@ export default {
     kaoqinSummary: [],
     totalTrend: [],
     subTrends: [],
+    maxRank: 0,
     studentsList: [],
     termList: [],
 
@@ -106,7 +107,7 @@ export default {
     * fetchTrendData({ payload }, { call, put }) {
       const response = yield call(getClassGrade, {
         ...payload,
-        type: 'trend'
+        type: 'trend',
       });
       yield put({
         type: 'saveTrendData',
@@ -238,6 +239,7 @@ export default {
       if (!payload) {
         return state;
       }
+      let maxRank = 0;
       const totalTrend = [];
       let subTrends = {};
       for (let key in payload) {
@@ -256,12 +258,14 @@ export default {
             exam: key,
             score: record.score
           });
+          maxRank = maxRank > record.score ? maxRank : record.score;
         }
       }
       return {
         ...state,
         totalTrend,
         subTrends,
+        maxRank
       };
     },
     saveKaoqinData(state, action) {
