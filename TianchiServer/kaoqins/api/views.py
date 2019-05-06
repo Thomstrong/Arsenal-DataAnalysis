@@ -27,8 +27,9 @@ class KaoqinRecordViewSet(viewsets.ModelViewSet):
             if year == -1 or not year.isdigit():
                 return Response('year error!', status=400)
             records = KaoqinRecord.objects.filter(
-                created_at__gte='{}-01-01'.format(year),
-                event_id__gte=9900100
+                Q(term__end_year=year) | Q(term__start_year=year),
+                event_id__gte=9900100,
+                event_id__lte=9900300,
             ).values('event__type_id').annotate(
                 count=Count('id'),
             ).order_by('event__type_id')
@@ -60,12 +61,18 @@ LEFT OUTER JOIN \"classes_class\" ON (\"students_studentrecord\".\"stu_class_id\
 WHERE \"kaoqins_kaoqinrecord\".\"event_id\" IN ('9900100', '9900200', '9900300') 
 GROUP BY \"terms_term\".\"start_year\", \"kaoqins_kaoqinevent\".\"type_id\", \"classes_class\".\"grade_name\", \"terms_term\".\"end_year\"
 ORDER BY \"terms_term\".\"start_year\" ASC''')
-            results = [{
+
+            results = []
+
+            for record in records:
+                if not record.grade_name:
+                    continue
+                results.append({
                 'term': '{}-{}'.format(record.id, record.end_year),
                 'grade': record.grade_name,
                 'type': record.type_id,
                 'count': record.count,
-            } for record in records]
+            })
             return Response(results)
 
         return Response('request error', status=400)

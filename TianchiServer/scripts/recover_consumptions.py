@@ -46,15 +46,14 @@ def run():
 
                 if not student.sex:
                     student.sex = sex
+                    student.is_left = False
                     student.save()
 
-                Consumption.objects.get_or_create(
+                Consumption.objects.create(
                     created_at=time,
                     cost=money_deal,
                     student=student
                 )
-            except ObjectDoesNotExist:
-                continue
             except Exception as e:
                 print(e)
                 err_record_file.write('{},{}\n'.format(line, repr(e)))

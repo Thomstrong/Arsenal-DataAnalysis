@@ -7,6 +7,9 @@ from exams.models.exam_record import StudentExamRecord
 
 
 # python manage.py runscript generate_course_chosen_record
+from students.models.student_record import StudentRecord
+
+
 def run():
     filter_with_exam = Q(
         score__gte=0.0,
@@ -43,14 +46,17 @@ def run():
             cur_stu_id = student_exam_record.student_id
             cur_student = student_exam_record.student
             continue
-
+        year = StudentRecord.objects.filter(
+            student_id=cur_student.id
+        ).select_related('term').order_by('term__end_year').last().term.end_year
         for time in sorted(course_counter.keys(), reverse=True):
             if len(course_counter[time]) == 3:
                 for course_id in course_counter[time]:
                     course = course_map[course_id]
                     _, is_new = CourseRecord.objects.get_or_create(
                         course=course,
-                        student=cur_student
+                        student=cur_student,
+                        year=year
                     )
                     if not is_new:
                         print('student:{}-{} not new'.format(cur_student.id, course.name))

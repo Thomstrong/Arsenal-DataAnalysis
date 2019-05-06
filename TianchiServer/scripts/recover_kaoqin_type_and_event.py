@@ -6,7 +6,7 @@ from kaoqins.models.kaoqin_event import KaoqinEvent
 from kaoqins.models.kaoqin_type import KaoqinType
 from progress.bar import Bar
 
-
+# finish
 # python manage.py runscript recover_kaoqin_type_and_event
 def run():
     root = settings.BASE_DIR

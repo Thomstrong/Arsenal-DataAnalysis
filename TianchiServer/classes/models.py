@@ -12,7 +12,7 @@ class Class(models.Model):
     campus_name = models.IntegerField(choices=CLASS_CAMPUS_CHOICE, default=Campus.Old)
 
     def __unicode__(self):
-        return self.class_name
+        return '{}-{}'.format(str(self.id), self.class_name)
 
     def __str__(self):
         return self.__unicode__()

@@ -4,10 +4,9 @@ from dateutil.parser import parse as parse_date
 from django.conf import settings
 from progress.bar import Bar
 
-# python manage.py runscript recover_student_exam
 from courses.models.course import Course
 from exams.models.exam import Exam
-from exams.models.exam_record import StudentExamRecord, ClassExamRecord
+from exams.models.exam_record import ClassExamRecord, StudentExamRecord
 from exams.models.exam_type import ExamType
 from exams.models.sub_exam import SubExam
 from students.models.student import Student
@@ -15,6 +14,7 @@ from students.models.student_record import StudentRecord
 from terms.models import Term
 
 
+# python -W ignore manage.py runscript recover_student_exam
 def run():
     root = settings.BASE_DIR
     file_name = '5_chengji'
@@ -30,6 +30,9 @@ def run():
         for line in lines:
             split_line = line.replace('"', '').split(',')
             bar.next()
+            if not split_line[3]:
+                # no course id pass
+                continue
             try:
                 started_at = parse_date(split_line[7])
                 term = split_line[5].split('-')
@@ -41,17 +44,15 @@ def run():
                     if started_at.month >= 9:
                         term = [started_at.year, started_at.year + 1, 1]
 
-                term_in_db, _ = Term.objects.get_or_create(
+                term_in_db = Term.objects.get(
                     start_year=int(term[0]),
                     end_year=int(term[1]),
                     order=int(term[2]),
                 )
 
                 course_id = int(split_line[3])
-                course_name = split_line[4]
-                course_in_db, _ = Course.objects.get_or_create(
+                course_in_db = Course.objects.get(
                     id=course_id,
-                    name=course_name
                 )
 
                 exam_type_id = int(split_line[6])
@@ -61,18 +62,29 @@ def run():
 
                 exam_id = int(split_line[1])
                 exam_name = split_line[2]
-                exam_in_db, _ = Exam.objects.get_or_create(
-                    id=exam_id,
-                    type=exam_type_in_db,
-                    term=term_in_db,
-                    name=exam_name
-                )
+                try:
+                    exam_in_db = Exam.objects.get(
+                        id=exam_id,
+                    )
+                except:
+                    exam_in_db = Exam.objects.create(
+                        id=exam_id,
+                        type=exam_type_in_db,
+                        term=term_in_db,
+                        name=exam_name.strip()
+                    )
 
-                sub_exam, _ = SubExam.objects.get_or_create(
-                    course=course_in_db,
-                    started_at=started_at,
-                    exam=exam_in_db
-                )
+                try:
+                    sub_exam = SubExam.objects.get(
+                        course=course_in_db,
+                        exam=exam_in_db
+                    )
+                except:
+                    sub_exam = SubExam.objects.create(
+                        course=course_in_db,
+                        started_at=started_at,
+                        exam=exam_in_db
+                    )
 
                 student_id = split_line[8]
                 if split_line[9]:
@@ -84,40 +96,45 @@ def run():
                     student_in_db = Student.objects.filter(
                         id=student_id
                     ).first()
-                    class_exam_record_id = int(split_line[0])
-                    if student_in_db:
-                        _, is_new_stu_record = StudentExamRecord.objects.get_or_create(
-                            student=student_in_db,
-                            sub_exam=sub_exam,
-                            score=score
+                    if not student_in_db:
+                        student_in_db = Student.objects.create(
+                            id=student_id,
+                            name='未知',
+                            is_left=True
                         )
-                        if not is_new_stu_record:
-                            continue
-
-                        class_exam, _ = ClassExamRecord.objects.get_or_create(
-                            id=int(class_exam_record_id),
-                            sub_exam=sub_exam
-                        )
-                        if not class_exam.stu_class and \
-                                StudentRecord.objects.filter(
-                                    student=student_in_db,
-                                    term=term_in_db
-                                ).exists():
-                            class_exam.stu_class = StudentRecord.objects.filter(
-                                student=student_in_db,
-                                term=term_in_db
-                            ).first().stu_class
-                        class_exam.update_score(score)
-                        continue
-
                     StudentExamRecord.objects.create(
+                        student=student_in_db,
                         sub_exam=sub_exam,
                         score=score
                     )
+                    class_exam_record_id = int(split_line[0])
                     class_exam, _ = ClassExamRecord.objects.get_or_create(
                         id=int(class_exam_record_id),
                         sub_exam=sub_exam
                     )
+                    student_records = StudentRecord.objects.filter(
+                        student=student_in_db,
+                        term=term_in_db
+                    )
+                    record_count = student_records.count()
+                    exam_class = class_exam.stu_class
+                    if record_count == 0 and exam_class:
+                        StudentRecord.objects.create(
+                            student=student_in_db,
+                            term=term_in_db,
+                            stu_class=exam_class
+                        )
+                    if record_count > 1:
+                        err_record_file.write('{},{}\n'.format(line, 'term error!'))
+                    if record_count == 1:
+                        student_record = student_records.first()
+                        if not exam_class:
+                            class_exam.stu_class = student_record.stu_class  # save after update_score
+                        if exam_class and not exam_class.id == student_record.stu_class.id:
+                            err_record_file.write('{},{}-{}-{}\n'.format(
+                                line, 'stu_class strange!',
+                                str(exam_class.id), str(student_record.stu_class.id)
+                            ))
                     class_exam.update_score(score)
                 except Exception as e:
                     # useless student record

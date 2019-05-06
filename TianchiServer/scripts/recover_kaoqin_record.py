@@ -12,7 +12,7 @@ from students.models.student import Student
 from students.models.student_record import StudentRecord
 from terms.models import Term
 
-
+# finish
 # python -W ignore manage.py runscript recover_kaoqin_record
 def run():
     root = settings.BASE_DIR
@@ -42,8 +42,10 @@ def run():
                 stu_in_db, is_new_stu = Student.objects.get_or_create(
                     id=student_id
                 )
+
                 if is_new_stu:
                     stu_in_db.name = student_name
+                    stu_in_db.is_left = True
                     stu_in_db.save()
 
                 class_name = split_line[8]
@@ -52,6 +54,8 @@ def run():
                     class_in_db = Class.objects.get(
                         id=class_id
                     )
+                    if not class_in_db.class_name == class_name:
+                        err_record_file.write('{},{}\n'.format(line, 'class different!!'))
                 except:
                     index = class_name.index('高')
                     grade_name = class_name[index: index + 2]
@@ -70,6 +74,10 @@ def run():
                     if created_at.month >= 9:
                         term = [created_at.year, created_at.year + 1, 1]
 
+                if int(term[1]) == 2019 and not stu_in_db.sex:
+                    stu_in_db.is_left = False
+                    stu_in_db.save()
+
                 term_in_db, _ = Term.objects.get_or_create(
                     start_year=int(term[0]),
                     end_year=int(term[1]),
@@ -87,7 +95,7 @@ def run():
                     id=event_id,
                 )
 
-                record_id = int(split_line[0])
+                record_id = int(split_line[0]) * 10
 
                 KaoqinRecord.objects.get_or_create(
                     id=record_id,

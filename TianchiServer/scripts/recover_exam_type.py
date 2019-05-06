@@ -5,7 +5,7 @@ from progress.bar import Bar
 
 from exams.models.exam_type import ExamType
 
-
+# finish
 # python manage.py runscript recover_exam_type
 def run():
     root = settings.BASE_DIR
@@ -15,6 +15,7 @@ def run():
     err_record_file = open(err_file_path, 'w')
     err_record_file.write('\n')
     with open(file_path, encoding='utf-8') as data_file:
+        # 读取表头
         data_file.readline()
 
         lines = data_file.read().splitlines()

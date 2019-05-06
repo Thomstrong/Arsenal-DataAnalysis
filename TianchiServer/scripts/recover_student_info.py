@@ -36,7 +36,7 @@ def run():
         '高三': Grade.Three,
     }
     root = settings.BASE_DIR
-    file_name = '2_student_info'
+    file_name = '2_student_info_err'
     file_path = os.path.join(root, 'scripts', 'data', file_name + '.csv')
     err_file_path = os.path.join(root, 'scripts', 'data', file_name + '_err.csv')
     err_record_file = open(err_file_path, 'w')
