@@ -27,6 +27,7 @@ export default {
       lowest: [],
       average: [],
     },
+    classExamSummary:{},
     loading: false,
   },
 
@@ -138,13 +139,27 @@ export default {
         lowest: [],
         average: [],
       };
+      const classExamSummary = {
+        highestClass:"",
+        highestExam :"",
+        highestScore :0,
+        averageHighClass:"",
+        averageHighExam :"",
+        averageHighScore :0,
+        averageLowClass : "",
+        averageLowExam : "",
+        averageLowScore : 150,
+        lowestClass : "",
+        lowestExam : "",
+        lowestScore: 150,
+      };
 
       for (let data of payload) {
         const baseInfo = {
           stuClass: data.stu_class,
           exam: data.exam_name
         };
-
+        const average = Number((data.total_score / data.attend_count).toFixed(0));
         classExamData.highest.push({
           ...baseInfo,
           score: data.highest_score
@@ -155,12 +170,33 @@ export default {
         });
         classExamData.average.push({
           ...baseInfo,
-          score: Number((data.total_score / data.attend_count).toFixed(0))
+          score: average
         });
+        if(data.highest_score>classExamSummary.highestScore){
+          classExamSummary.highestScore = data.highest_score;
+          classExamSummary.highestClass = data.stu_class;
+          classExamSummary.highestExam = data.exam_name
+        }
+        if(average>classExamSummary.averageHighScore){
+          classExamSummary.averageHighScore = average;
+          classExamSummary.averageHighClass = data.stu_class;
+          classExamSummary.averageHighExam = data.exam_name
+        }
+        if(average<classExamSummary.averageLowScore){
+          classExamSummary.averageLowScore = average;
+          classExamSummary.averageLowClass = data.stu_class;
+          classExamSummary.averageLowExam = data.exam_name
+        }
+        if(data.lowest_score<classExamSummary.lowestScore){
+          classExamSummary.lowestScore = data.lowest_score;
+          classExamSummary.lowestClass = data.stu_class;
+          classExamSummary.lowestExam = data.exam_name
+        }
       }
       return {
         ...state,
-        classExamData
+        classExamData,
+        classExamSummary
       };
     },
     clear() {

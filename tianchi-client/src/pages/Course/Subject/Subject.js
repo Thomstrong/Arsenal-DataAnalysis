@@ -75,40 +75,7 @@ class Subject extends PureComponent {
 
   render() {
     const {loading, course} = this.props;
-    const {classExamData} = course;
-
-    const classExamDataCopy = classExamData;
-    let highestClass = "";
-    let highestExam = "";
-    let highestScore = 0;
-    let averageHighClass = "";
-    let averageHighExam = "";
-    let averageHighScore = 0;
-    let averageLowClass = "";
-    let averageLowExam = "";
-    let averageLowScore = 0;
-    let lowestClass = "";
-    let lowestExam = "";
-    let lowestScore = 0;
-
-    if (classExamDataCopy.highest.length) {
-      length = classExamDataCopy.highest.length;
-      classExamDataCopy.highest.sort(this.compare('score'));
-      highestClass = classExamDataCopy.highest[0].stuClass;
-      highestExam = classExamDataCopy.highest[0].exam;
-      highestScore = classExamDataCopy.highest[0].score;
-      classExamDataCopy.average.sort(this.compare('score'));
-      averageHighClass = classExamDataCopy.average[0].stuClass;
-      averageHighExam = classExamDataCopy.average[0].exam;
-      averageHighScore = classExamDataCopy.average[0].score;
-      averageLowClass = classExamDataCopy.average[length - 1].stuClass;
-      averageLowExam = classExamDataCopy.average[length - 1].exam;
-      averageLowScore = classExamDataCopy.average[length - 1].score;
-      classExamDataCopy.lowest.sort(this.compare('score'));
-      lowestClass = classExamDataCopy.lowest[length - 1].stuClass;
-      lowestExam = classExamDataCopy.lowest[length - 1].exam;
-      lowestScore = classExamDataCopy.lowest[length - 1].score;
-    }
+    const {classExamData,classExamSummary} = course;
 
 
     return (
@@ -205,8 +172,8 @@ class Subject extends PureComponent {
                 <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
                   type="danger">高{this.state.grade}</Text>
                   <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>
-                <Paragraph>最高分出现在<Text type="danger">{highestExam}</Text>的<Text type="danger">{highestClass}班</Text>,
-                  为<Text type="danger">{highestScore}</Text>分</Paragraph>
+                <Paragraph>最高分出现在<Text type="danger">{classExamSummary.highestExam}</Text>的<Text type="danger">{classExamSummary.highestClass}班</Text>,
+                  为<Text type="danger">{classExamSummary.highestScore}</Text>分</Paragraph>
               </Card>
             </Col>
           </Row>
@@ -216,12 +183,12 @@ class Subject extends PureComponent {
                 <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
                   type="danger">高{this.state.grade}</Text>
                   <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>
-                <Paragraph> 平均分最<Text type="danger">高</Text>出现在<Text type="danger">{averageHighExam}</Text>的<Text
-                  type="danger">{averageHighClass}班</Text>,
-                  为<Text type="danger">{averageHighScore}</Text>分;</Paragraph>
-                <Paragraph> 平均分最<Text type="danger">低</Text>出现在<Text type="danger">{averageLowExam}</Text>的<Text
-                  type="danger">{averageLowClass}班</Text>,
-                  为<Text type="danger">{averageLowScore}</Text>分</Paragraph>
+                <Paragraph> 平均分最<Text type="danger">高</Text>出现在<Text type="danger">{classExamSummary.averageHighExam}</Text>的<Text
+                  type="danger">{classExamSummary.averageHighClass}班</Text>,
+                  为<Text type="danger">{classExamSummary.averageHighScore}</Text>分;</Paragraph>
+                <Paragraph> 平均分最<Text type="danger">低</Text>出现在<Text type="danger">{classExamSummary.averageLowExam}</Text>的<Text
+                  type="danger">{classExamSummary.averageLowClass}班</Text>,
+                  为<Text type="danger">{classExamSummary.averageLowScore}</Text>分</Paragraph>
               </Card>
             </Col>
             <Col xl={{span:18, offset:1}} xs={24}>
@@ -334,8 +301,8 @@ class Subject extends PureComponent {
                   type="danger">高{this.state.grade}</Text>
                   <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>
                 <Paragraph>年级段最<Text type="danger">低</Text>分出现在
-                  <Text type="danger">{lowestExam}</Text>的<Text type="danger">{lowestClass}班</Text>,
-                  为<Text type="danger">{lowestScore}</Text>分</Paragraph>
+                  <Text type="danger">{classExamSummary.lowestExam}</Text>的<Text type="danger">{classExamSummary.lowestClass}班</Text>,
+                  为<Text type="danger">{classExamSummary.lowestScore}</Text>分</Paragraph>
               </Card>
             </Col>
           </Row>
