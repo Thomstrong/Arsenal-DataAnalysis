@@ -20,7 +20,6 @@ import {
   COURSE_FULLNAME_ALIAS,
   EVENT_TYPE_ALIAS,
   SCORE_LEVEL_ALIAS,
-  COURSE_ALIAS_RADAR,
 } from "@/constants";
 
 
@@ -335,18 +334,19 @@ export default {
       let disadSubject = [];
       let unstableSubject = [];
       let radarData = [];
+      let lineSummary = {};
       action.payload.map((data) => {
         unstableSubject.push({
-          name: COURSE_ALIAS_RADAR[data.sub_exam__course_id],
+          name: COURSE_FULLNAME_ALIAS[data.sub_exam__course_id],
           score: data.highest - data.lowest
         });
         disadSubject.push({
-            name: COURSE_ALIAS_RADAR[data.sub_exam__course_id],
+            name: COURSE_FULLNAME_ALIAS[data.sub_exam__course_id],
             score: data.average
           }
         );
         adSubject.push({
-          name: COURSE_ALIAS_RADAR[data.sub_exam__course_id],
+          name: COURSE_FULLNAME_ALIAS[data.sub_exam__course_id],
           score: data.highest
         });
         radarData.push({
@@ -356,22 +356,23 @@ export default {
           [SCORE_LEVEL_ALIAS.average]: Number(data.average.toFixed(0)),
         })
       });
-      unstableSubject.sort(function (a, b) {
-        return b.score - a.score
-      });
-      adSubject.sort(function (a, b) {
-        return b.score - a.score
-      });
-      disadSubject.sort(function (a, b) {
-        return a.score - b.score
-      });
-      let lineSummary={
-        unstable: unstableSubject[0].name,
-        advantage:adSubject[0].name===unstableSubject[0].name?adSubject[1].name:adSubject[0].name,
-        disadvantage:disadSubject[0].name===unstableSubject[0].name?disadSubject[1].name:disadSubject[0].name,
-      };
+      if(action.payload){
+        unstableSubject.sort(function (a, b) {
+          return b.score - a.score
+        });
+        adSubject.sort(function (a, b) {
+          return b.score - a.score
+        });
+        disadSubject.sort(function (a, b) {
+          return a.score - b.score
+        });
 
-
+        lineSummary = {
+          unstable: unstableSubject[0].name,
+          advantage: adSubject[0].name === unstableSubject[0].name ? adSubject[1].name : adSubject[0].name,
+          disadvantage: disadSubject[0].name === unstableSubject[0].name ? disadSubject[1].name : disadSubject[0].name,
+        };
+      }
 
       return {
         ...state,

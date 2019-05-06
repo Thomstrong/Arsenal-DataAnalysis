@@ -6,6 +6,7 @@ import { Card, Col, Empty, List, Row, Typography } from 'antd';
 import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
 import { COURSE_FULLNAME_ALIAS, getDengDi } from "@/constants";
 import Divider from "antd/es/divider";
+
 const { Paragraph, Text } = Typography;
 const { Line } = Guide;
 const dengDiScale = {
@@ -24,39 +25,13 @@ const normalScale = {
   score: {}
 };
 const ScoreLineChart = memo(
-  ({ lineData, radarViewData, lineSummary,subData, scoreType }) => {
-    console.log(lineData,radarViewData);
+  ({ lineData, radarViewData, lineSummary, subData, scoreType }) => {
     let highScoreTime = 0;
-    for (let i=0;i<lineData.length;i++){
-      if (lineData[i].score>=600){
+    for (let i = 0; i < lineData.length; i++) {
+      if (lineData[i].score >= 600) {
         highScoreTime++
       }
     }
-    let adSubject = [];
-    let disadSubject = [];
-    let unstableSubject = [];
-    for (let i=0;i<radarViewData.length;i++) {
-      unstableSubject.push({
-        name:radarViewData[i].item,
-        score:radarViewData[i].high-radarViewData[i].low});
-      disadSubject.push({
-        name:radarViewData[i].item,
-        score:radarViewData[i].low}
-        );
-      adSubject.push({
-        name:radarViewData[i].item,
-        score:radarViewData[i].high});
-    }
-    unstableSubject.sort(function (a,b) {
-      return b.score-a.score});
-    adSubject.sort(function(a,b){
-            return b.score-a.score});
-    disadSubject.sort(function (a,b) {
-            return a.score-b.score});
-    console.log(unstableSubject,adSubject,disadSubject);
-
-
-
     const showDengDi = scoreType === 'deng_di';
     const scale = showDengDi ? dengDiScale : normalScale;
     return (lineData && !!lineData.length) ? <React.Fragment>
@@ -308,22 +283,26 @@ const ScoreLineChart = memo(
           </Chart>
         </Col>
       </Row>
-      <Divider style={{ marginTop: 0 ,marginBottom: 5}} dashed/>
-      {/*todo 薄弱学科等的确定方式待确定*/}
+      <Divider style={{ marginTop: 0, marginBottom: 5 }} dashed/>
+      {lineSummary && lineSummary.unstable &&
       <Card bordered={false} hoverable={true} type="inner"
-                style={{ marginLeft: 12, marginRight: 12,  marginBottom: 0, cursor: "auto" }}>
+            style={{
+              marginLeft: 12,
+              marginRight: 12,
+              marginBottom: 0,
+              cursor: "auto"
+            }}>
         <Paragraph>
           该生的优势学科是<Text type="danger" strong>{lineSummary.advantage}</Text>，
           薄弱学科为<Text type="danger">
           {lineSummary.disadvantage}</Text>，
           不稳定学科为<Text type="danger">{lineSummary.unstable}</Text></Paragraph>
         {scoreType === 'score' && <Paragraph>共统计<Text type="danger">{lineData.length}</Text>次考试，
-          总分在600及以上的为<Text type="danger">{highScoreTime}</Text>次</Paragraph>}
+          总分在600及以上的有<Text type="danger">{highScoreTime}</Text>次</Paragraph>}
         <Paragraph>
           以下是<Text type="danger">各科目</Text>具体成绩趋势图:</Paragraph>
-      </Card>
-      <Divider style={{ marginBottom: 24,marginTop:5 }} dashed/>
-      {/*利用list进行布局*/}
+      </Card>}
+      <Divider style={{ marginBottom: 24, marginTop: 5 }} dashed/>
       <List
         grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 1, xl: 2, xxl: 2 }}
         dataSource={subData}
