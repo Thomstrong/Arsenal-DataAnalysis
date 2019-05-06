@@ -14,3 +14,4 @@ python manage.py runscript generate_course_chosen_record &&
 python manage.py runscript calculate_score &&
 python manage.py runscript refine_student_record_term &&
 python manage.py runscript generate_ciyun_tag &&
+python manage.py runscript refine_student_native_place &&

@@ -1,10 +1,9 @@
 from django.db.models import Count
 from progress.bar import Bar
 
-from classes.models import Class
 from students.models.student_record import StudentRecord
-
 from terms.models import Term
+
 
 # python manage.py runscript refine_student_record_term
 def run():
