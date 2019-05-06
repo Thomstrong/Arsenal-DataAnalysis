@@ -20,6 +20,19 @@ export const COURSE_ALIAS = {
   1: '语',
 };
 
+export const COURSE_ALIAS_RADAR = {
+  59: '技术',
+  17: '政治',
+  8: '地理',
+  7: '历史',
+  6: '生物',
+  5: '化学',
+  4: '物理',
+  3: '英语',
+  2: '数学',
+  1: '语文',
+};
+
 export const COURSE_COLOR = {
   59: '#b89876',
   58: '#81abcc',

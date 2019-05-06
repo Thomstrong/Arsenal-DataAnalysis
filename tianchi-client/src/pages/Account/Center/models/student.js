@@ -20,7 +20,7 @@ import {
   COURSE_FULLNAME_ALIAS,
   EVENT_TYPE_ALIAS,
   SCORE_LEVEL_ALIAS,
-  WEEKDAY_ALIAS
+  COURSE_ALIAS_RADAR,
 } from "@/constants";
 
 
@@ -36,6 +36,7 @@ export default {
       kaoqinData: [],
       kaoqinSummary: [],
       totalTrend: [],
+      lineSummary:{},
       subTrends: [],
     },
     vsStudentInfo: {
@@ -330,20 +331,58 @@ export default {
       };
     },
     saveRadarData(state, action) {
+      let adSubject = [];
+      let disadSubject = [];
+      let unstableSubject = [];
+      let radarData = [];
+      action.payload.map((data) => {
+        unstableSubject.push({
+          name: COURSE_ALIAS_RADAR[data.sub_exam__course_id],
+          score: data.highest - data.lowest
+        });
+        disadSubject.push({
+            name: COURSE_ALIAS_RADAR[data.sub_exam__course_id],
+            score: data.average
+          }
+        );
+        adSubject.push({
+          name: COURSE_ALIAS_RADAR[data.sub_exam__course_id],
+          score: data.highest
+        });
+        radarData.push({
+          'item': COURSE_ALIAS[data.sub_exam__course_id],
+          [SCORE_LEVEL_ALIAS.highest]: Number(data.highest.toFixed(0)),
+          [SCORE_LEVEL_ALIAS.lowest]: Number(data.lowest.toFixed(0)),
+          [SCORE_LEVEL_ALIAS.average]: Number(data.average.toFixed(0)),
+        })
+      });
+      unstableSubject.sort(function (a, b) {
+        return b.score - a.score
+      });
+      adSubject.sort(function (a, b) {
+        return b.score - a.score
+      });
+      disadSubject.sort(function (a, b) {
+        return a.score - b.score
+      });
+      let lineSummary={
+        unstable: unstableSubject[0].name,
+        advantage:adSubject[0].name===unstableSubject[0].name?adSubject[1].name:adSubject[0].name,
+        disadvantage:disadSubject[0].name===unstableSubject[0].name?disadSubject[1].name:disadSubject[0].name,
+      };
+
+
+
       return {
         ...state,
         studentInfo: action.payload ? {
-          ...state.studentInfo,
-          radarData: action.payload.map((data) => {
-            return {
-              'item': COURSE_ALIAS[data.sub_exam__course_id],
-              [SCORE_LEVEL_ALIAS.highest]: Number(data.highest.toFixed(0)),
-              [SCORE_LEVEL_ALIAS.lowest]: Number(data.lowest.toFixed(0)),
-              [SCORE_LEVEL_ALIAS.average]: Number(data.average.toFixed(0)),
-            };
-          })
-        } : state.studentInfo,
-      };
+            ...state.studentInfo,
+            radarData: radarData,
+            lineSummary: lineSummary
+          } :
+          state.studentInfo,
+      }
+        ;
     },
     saveKaoqinData(state, action) {
       if (!action.payload) {
