@@ -30,7 +30,7 @@ class SubExamRecordAdmin(admin.ModelAdmin):
 class ClassExamRecordAdmin(admin.ModelAdmin):
     list_display = ('id','stu_class', 'sub_exam', 'total_score', 'attend_count', 'highest_score', 'lowest_score')
     search_fields = ('stu_class__id','id')
-    list_filter = ('stu_class__id',)
+    list_filter = ('sub_exam',)
 
 
 @admin.register(ExamType)
