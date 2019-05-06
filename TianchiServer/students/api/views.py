@@ -262,10 +262,27 @@ class StudentViewSet(viewsets.ModelViewSet):
             predict_data = [records[i - 1]['total'], tomorrow_date.weekday()]
             predict_cost = Predictor.bayes_predict(info_pairs, costs, predict_data)
 
-            return Response([record for record in records] + [{
+            result = list(records) + [{
                 'date': tomorrow_date,
                 'total': float('%.1f' % predict_cost)
-            }])
+            }]
+
+            average = DailyConsumption.objects.filter(
+                student_id=pk,
+            ).values('student_id').annotate(
+                avg=-Avg('total_cost')
+            ).values('avg')[0]['avg']
+
+            total = DailyConsumption.objects.values_list('student_id', flat=True).distinct().count()
+            rank = DailyConsumption.objects.values('student_id').annotate(
+                avg=-Avg('total_cost')
+            ).filter(avg__gt=average).count()
+
+            return Response({
+                'result': result,
+                'avg': average,
+                'rank': 1 - rank / total
+            })
         date_range = request.query_params.get('date_range', None)
         if not date_range or not date_range.isdigit():
             return Response('range error')

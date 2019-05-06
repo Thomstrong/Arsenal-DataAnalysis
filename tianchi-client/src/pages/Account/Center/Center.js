@@ -61,6 +61,8 @@ const Option = Select.Option;
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
   hourlyAvgCost: student.hourlyAvgCost,
   dailySumCost: student.dailySumCost,
+  dailyAvg: student.dailyAvg,
+  dailyAvgRank: student.dailyAvgRank,
   studentListLoading: loading.effects['student/fetchStudentList'],
   vsStudentListLoading: loading.effects['student/fetchVsStudentList'],
   costLoading: loading.effects['student/fetchHourlyAvgCost'],
@@ -514,6 +516,8 @@ class Center extends PureComponent {
       vsDailySumCost,
       hourlyAvgCost,
       dailySumCost,
+      dailyAvg,
+      dailyAvgRank,
       loading,
       match,
       kaoqinVsData,
@@ -756,6 +760,8 @@ class Center extends PureComponent {
                         <ConsumptionOverallLineChart
                           hourlyAvgCost={hourlyAvgData}
                           dailySumCost={dailySumCost}
+                          dailyAvg={dailyAvg}
+                          dailyAvgRank={dailyAvgRank}
                           maxHourlyAvg={maxHourlyAvg}
                         />
                       </Suspense>

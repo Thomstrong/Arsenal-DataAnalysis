@@ -14,13 +14,7 @@ import {
   getWordCloudData,
 } from '@/services/api';
 
-import {
-  COURSE_ALIAS,
-  COURSE_COLOR,
-  COURSE_FULLNAME_ALIAS,
-  EVENT_TYPE_ALIAS,
-  SCORE_LEVEL_ALIAS,
-} from "@/constants";
+import { COURSE_ALIAS, COURSE_COLOR, COURSE_FULLNAME_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, } from "@/constants";
 
 
 export default {
@@ -35,7 +29,7 @@ export default {
       kaoqinData: [],
       kaoqinSummary: [],
       totalTrend: [],
-      lineSummary:{},
+      lineSummary: {},
       subTrends: [],
     },
     vsStudentInfo: {
@@ -54,6 +48,8 @@ export default {
     radarData: [],
     hourlyAvgCost: [],
     dailySumCost: [],
+    dailyAvg: 0,
+    dailyAvgRank: 0,
     dailyPredictData: {
       date: '',
       dateRange: 0,
@@ -357,24 +353,25 @@ export default {
           [SCORE_LEVEL_ALIAS.highest]: Number(data.highest.toFixed(0)),
           [SCORE_LEVEL_ALIAS.lowest]: Number(data.lowest.toFixed(0)),
           [SCORE_LEVEL_ALIAS.average]: Number(data.average.toFixed(0)),
-        })
+        });
       });
       unstableSubject.sort(function (a, b) {
-        return b.score - a.score
+        return b.score - a.score;
       });
       adSubject.sort(function (a, b) {
-        return b.score - a.score
+        return b.score - a.score;
       });
       disadSubject.sort(function (a, b) {
-        return a.score - b.score
+        return a.score - b.score;
       });
 
-      if(unstableSubject.length){
+      if (unstableSubject.length) {
         lineSummary = {
-        unstable: unstableSubject[0].name,
-        advantage: adSubject[0].name === unstableSubject[0].name && adSubject.length>1? adSubject[1].name : adSubject[0].name,
-        disadvantage: disadSubject[0].name === unstableSubject[0].name ? disadSubject[1].name : disadSubject[0].name,
-      };}
+          unstable: unstableSubject[0].name,
+          advantage: adSubject.length > 1 && adSubject[0].name === unstableSubject[0].name ? adSubject[1].name : adSubject[0].name,
+          disadvantage: disadSubject[0].name === unstableSubject[0].name ? disadSubject[1].name : disadSubject[0].name,
+        };
+      }
 
       return {
         ...state,
@@ -453,7 +450,9 @@ export default {
       }
       return {
         ...state,
-        dailySumCost: payload,
+        dailySumCost: payload.result,
+        dailyAvg: Number(payload.avg.toFixed(2)),
+        dailyAvgRank: Number(payload.rank.toFixed(4))
       };
     },
     saveVsDailySumCost(state, { payload }) {
@@ -462,7 +461,7 @@ export default {
       }
       return {
         ...state,
-        vsDailySumCost: payload
+        vsDailySumCost: payload.result
       };
     },
     saveHourlyCost(state, { payload }) {

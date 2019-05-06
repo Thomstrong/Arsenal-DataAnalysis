@@ -16,7 +16,7 @@ const money = 2000;
 const precent = "20%";
 
 const ConsumptionOverallLineChart = memo(
-  ({ hourlyAvgCost, dailySumCost, maxHourlyAvg }) => {
+  ({ hourlyAvgCost, dailySumCost, maxHourlyAvg, dailyAvgRank, dailyAvg }) => {
     if (chartIns) {
       const geoms = chartIns.getAllGeoms();
       for (let geom of geoms) {
@@ -53,8 +53,12 @@ const ConsumptionOverallLineChart = memo(
               />
             </Col>
             <Col xl={4} xs={24}>
-              <Paragraph>该学生平均日消费为<Text strong style={{ color: "#cc4756" }}>¥{money}</Text>元</Paragraph>
-              <Paragraph>超过<Text strong style={{ color: "#cc4756" }}>{precent}</Text>的学生</Paragraph>
+              <Paragraph>该学生平均日消费为<Text strong style={{ color: "#cc4756" }}>¥{dailyAvg}</Text>元</Paragraph>
+              <Paragraph>超过<Text
+                strong style={{ color: "#cc4756" }}
+              >
+                {`${(dailyAvgRank * 100).toFixed(2)}%`}
+              </Text>的学生</Paragraph>
             </Col>
           </Row> : <Empty/>}
         </Card>
