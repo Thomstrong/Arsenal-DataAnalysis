@@ -29,10 +29,13 @@ class ClassExamViewSet(viewsets.ModelViewSet):
         records = ClassExamRecord.objects.filter(
             sub_exam__exam__term__start_year=start_year,
             stu_class__grade_name=grade,
-            sub_exam__course_id=course
+            sub_exam__course_id=course,
+            attend_count__gt=0
+        ).exclude(
+            sub_exam__exam__type_id__in=[22, 4]
         ).prefetch_related(
             'sub_exam__exam',
             'stu_class'
-        ).order_by('sub_exam__started_at','stu_class__class_name')
+        ).order_by('sub_exam__started_at', 'stu_class__class_name')
         data = self.get_serializer_class()(records, many=True).data
         return Response(data)

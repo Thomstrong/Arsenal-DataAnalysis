@@ -2,10 +2,12 @@
  * Created by 胡晓慧 on 2019/4/13.
  */
 import React, { memo } from "react";
-import { Col, Empty, List, Row } from 'antd';
+import { Card, Col, Empty, List, Row, Typography } from 'antd';
 import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
 import { COURSE_FULLNAME_ALIAS, getDengDi } from "@/constants";
+import Divider from "antd/es/divider";
 
+const { Paragraph, Text } = Typography;
 const { Line } = Guide;
 const dengDiScale = {
   score: {
@@ -23,7 +25,13 @@ const normalScale = {
   score: {}
 };
 const ScoreLineChart = memo(
-  ({ lineData, radarViewData, subData, scoreType }) => {
+  ({ lineData, radarViewData, lineSummary, subData, scoreType }) => {
+    let highScoreTime = 0;
+    for (let i = 0; i < lineData.length; i++) {
+      if (lineData[i].score >= 600) {
+        highScoreTime++
+      }
+    }
     const showDengDi = scoreType === 'deng_di';
     const scale = showDengDi ? dengDiScale : normalScale;
     return (lineData && !!lineData.length) ? <React.Fragment>
@@ -275,7 +283,26 @@ const ScoreLineChart = memo(
           </Chart>
         </Col>
       </Row>
-      {/*利用list进行布局*/}
+      <Divider style={{ marginTop: 0, marginBottom: 5 }} dashed/>
+      {lineSummary && lineSummary.unstable &&
+      <Card bordered={false} hoverable={true} type="inner"
+            style={{
+              marginLeft: 12,
+              marginRight: 12,
+              marginBottom: 0,
+              cursor: "auto"
+            }}>
+        <Paragraph>
+          该生的优势学科是<Text type="danger" strong>{lineSummary.advantage}</Text>，
+          薄弱学科为<Text type="danger">
+          {lineSummary.disadvantage}</Text>，
+          不稳定学科为<Text type="danger">{lineSummary.unstable}</Text></Paragraph>
+        {scoreType === 'score' && <Paragraph>共统计<Text type="danger">{lineData.length}</Text>次考试，
+          总分在600及以上的有<Text type="danger">{highScoreTime}</Text>次</Paragraph>}
+        <Paragraph>
+          以下是<Text type="danger">各科目</Text>具体成绩趋势图:</Paragraph>
+      </Card>}
+      <Divider style={{ marginBottom: 24, marginTop: 5 }} dashed/>
       <List
         grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 1, xl: 2, xxl: 2 }}
         dataSource={subData}

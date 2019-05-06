@@ -541,6 +541,7 @@ class Center extends PureComponent {
 
     //成绩相关,linedata表示总成绩,subData表示每个学科的成绩列表
     const totalTrendData = studentInfo ? studentInfo.totalTrend : [];
+    const lineSummary = studentInfo ? studentInfo.lineSummary : {};
     const subTrendData = studentInfo ? new DataSet.View().source([studentInfo.subTrends]).transform({
       type: "fold",
       fields: Object.keys(studentInfo.subTrends),
@@ -738,6 +739,7 @@ class Center extends PureComponent {
                       {!scoreLoading ? <Suspense fallback={<Spin/>}>
                         <ScoreLineChart
                           lineData={totalTrendData}
+                          lineSummary={lineSummary}
                           radarViewData={radarViewData}
                           subData={subTrendData}
                           scoreType={this.state.scoreType}

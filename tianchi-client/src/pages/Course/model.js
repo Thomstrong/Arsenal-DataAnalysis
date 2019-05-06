@@ -29,6 +29,9 @@ export default {
     },
     classExamSummary:{},
     loading: false,
+    subjectYear: 0,
+    subjectGrade: 0,
+    subjectCourse: 0,
   },
 
   effects: {
@@ -56,7 +59,8 @@ export default {
       const response = yield call(getClassExamData, payload);
       yield put({
         type: 'saveClassExamData',
-        payload: response
+        payload: response,
+        ...payload
       });
     },
     * fetchArcCourse({ payload }, { call, put }) {
@@ -130,7 +134,7 @@ export default {
         coursePercentYear: action.year
       };
     },
-    saveClassExamData(state, { payload }) {
+    saveClassExamData(state, { payload, startYear, grade, course }) {
       if (!payload) {
         return state;
       }
@@ -196,7 +200,10 @@ export default {
       return {
         ...state,
         classExamData,
-        classExamSummary
+        classExamSummary,
+        subjectYear: startYear,
+        subjectGrade: grade,
+        subjectCourse: course,
       };
     },
     clear() {
