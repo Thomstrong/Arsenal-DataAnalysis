@@ -2,7 +2,7 @@
  * Created by 胡晓慧 on 2019/4/12.
  */
 
-import { getClassExamData, getCourseSelectionDistribution } from '@/services/api';
+import { getClassExamData, getCourseSelectionDistribution, getCollageMajorSubject } from '@/services/api';
 import { COURSE_ALIAS, SEX_MAP } from "@/constants";
 import DataSet from "@antv/data-set";
 
@@ -32,6 +32,8 @@ export default {
     subjectYear: 0,
     subjectGrade: 0,
     subjectCourse: 0,
+    subject2Major: null,
+    majorMap: {},
   },
 
   effects: {
@@ -92,7 +94,17 @@ export default {
         payload: response,
         year: payload.year,
       });
-    }
+    },
+    * fetchSubject2Major(_, { call, put }) {
+      const response = yield call(getCollageMajorSubject, {
+        type: 'tagCloud'
+      });
+      yield put({
+        type: 'saveSubject2Major',
+        payload: response
+      });
+    },
+
   },
 
   reducers: {
@@ -210,12 +222,10 @@ export default {
       return {};
     },
 
-    //  todo
     saveArcCourse(state, { payload }) {
       if (!payload) {
         return state;
       }
-      //和弦图数据,sourceweight和targetweight相等，表示人数
       const arcCourse = {
         nodes: payload.nodes.map(courseId => {
           return {
@@ -337,6 +347,53 @@ export default {
         pieOtherOffsetAngle,
         pieSum: total,
         pieTreeYear: year,
+      };
+    },
+
+    saveSubject2Major(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      //todo 后端传来数据的处理
+      const subject2Major= {
+        physics:
+        [{
+          "name": "China",
+          "value": 1383220000,
+        },
+      {
+        "name": "India",
+        "value": 1316000000,
+      }, {
+        "name": "United States",
+        "value": 324982000,
+      }, {
+        "name": "Indonesia",
+        "value": 263510000,
+      }, {
+        "name": "Brazil",
+        "value": 207505000,
+      }, {
+        "name": "Pakistan",
+        "value": 196459000,
+      }, {
+        "name": "Nigeria",
+        "value": 191836000,
+      }, {
+        "name": "Bangladesh",
+        "value": 162459000,
+      }, {
+        "name": "Russia",
+        "value": 146804372,
+      }, {
+        "name": "Japan",
+        "value": 126790000,
+      }]
+      };
+      return {
+        ...state,
+        subject2Major: payload.data,
+        majorMap: payload.tagMap
       };
     },
 

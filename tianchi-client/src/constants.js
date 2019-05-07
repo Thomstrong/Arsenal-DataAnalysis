@@ -43,6 +43,7 @@ export const COURSE_COLOR = {
 };
 
 export const COURSE_FULLNAME_ALIAS = {
+  61: '不限',
   59: '技术',
   58: '英语2',
   57: '1B模块总分',

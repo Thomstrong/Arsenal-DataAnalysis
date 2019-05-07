@@ -119,6 +119,12 @@ export async function getClassExamData({ startYear, grade, course }) {
   return request(`/api/class_exam/summary/?start_year=${startYear}&grade=${grade}&course=${course}`);
 }
 
+export async function getCollageMajorSubject(type) {
+  return request(`/api/courses/tags/`);
+}
+
+
+
 // useless
 export async function queryProjectNotice() {
   return request('/api/project/notice');

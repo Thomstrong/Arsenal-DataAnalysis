@@ -620,6 +620,7 @@ class Center extends PureComponent {
                   <div className={styles.avatarHolder}>
                     {/*词云*/}
                     <TagCloud
+                      repeat={true}
                       data={wordCloudData}
                       height={120}
                       imgUrl={stuImg}
@@ -849,6 +850,7 @@ class Center extends PureComponent {
                         <Row type="flex" align="middle">
                           <Col span={10}>
                             <TagCloud
+                              repeat={true}
                               data={vsWordCloudData}
                               height={380}
                               imgUrl={imgUrl}

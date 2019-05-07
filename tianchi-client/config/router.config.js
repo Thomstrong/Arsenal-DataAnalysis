@@ -120,6 +120,11 @@ export default [
             name: 'subject',
             component: './Course/Subject/Subject',
           },
+          {
+            path: '/course/collageExam',
+            name: 'collageExam',
+            component: './Course/CollageExam/CollageExam',
+          },
         ],
       },
       {
