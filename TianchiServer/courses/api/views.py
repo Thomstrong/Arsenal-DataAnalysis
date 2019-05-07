@@ -199,7 +199,7 @@ class CourseViewSet(viewsets.ModelViewSet):
             ).values_list(
                 'tag',
                 'value'
-            ).order_by('-value')[:120]
+            ).order_by('-value')[:200]
 
         tag_map = {}
         tags = WordCloudTag.objects.filter(

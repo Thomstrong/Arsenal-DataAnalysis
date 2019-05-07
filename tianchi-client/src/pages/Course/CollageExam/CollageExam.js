@@ -17,7 +17,6 @@ class CollageExam extends PureComponent {
 
   componentDidMount() {
     const { dispatch, subject2Major } = this.props;
-
     if (!subject2Major) {
       dispatch({
         type: `course/fetchSubject2Major`,

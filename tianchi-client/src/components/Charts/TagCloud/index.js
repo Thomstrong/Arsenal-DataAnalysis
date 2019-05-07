@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Chart, Geom, Coord, Shape, Tooltip } from 'bizcharts';
+import { Chart, Coord, Geom, Shape } from 'bizcharts';
 import DataSet from '@antv/data-set';
 import Debounce from 'lodash-decorators/debounce';
 import Bind from 'lodash-decorators/bind';
@@ -83,7 +83,7 @@ class TagCloud extends Component {
   @Debounce(500)
   renderChart(nextProps) {
     // const colors = ['#1890FF', '#41D9C7', '#2FC25B', '#FACC14', '#9AE65C'];
-    const { data, height, imgUrl,repeat } = nextProps || this.props;
+    const { data, height, imgUrl, repeat } = nextProps || this.props;
 
     if (data.length < 1 || !this.root) {
       return;
@@ -93,19 +93,20 @@ class TagCloud extends Component {
     const w = this.root.offsetWidth;
 
     const onload = () => {
-      const dv = new DataSet.View().source(!!repeat ?data.concat(data.map(data=>{
+      const dv = new DataSet.View().source(!!repeat ? data.concat(data.map(data => {
         return {
           ...data,
-          value:1,
+          value: 1,
         };
-      })).concat(data.map(data=>{
+      })).concat(data.map(data => {
         return {
           ...data,
-          value:2,
+          value: 2,
         };
-      })):data);
+      })) : data);
       const range = dv.range('value');
       const [min, max] = range;
+      const mid = (max + min) / 2;
       dv.transform({
         type: 'tag-cloud',
         fields: ['name', 'value'],
@@ -113,7 +114,7 @@ class TagCloud extends Component {
         font: 'serif',
         size: [w, h], // 宽高设置最好根据 imageMask 做调整
         padding: 0,
-        timeInterval: 5000, // max execute time
+        timeInterval: 1000, // max execute time
         rotate() {
           let random = ~~(Math.random() * 4) % 4;
 
@@ -124,7 +125,10 @@ class TagCloud extends Component {
           return 0;
         },
         fontSize(d) {
-          // eslint-disable-next-line
+          if (data.length > 120) {
+            return d.value < mid && d.value > 5 ? Math.pow(d.value * 1.2 - min / (max - min), 1 / 4) * 5 :
+              Math.pow(d.value * 1.2 - min / (max - min), 1 / 4) * 6 + 6;
+          }
           return Math.pow(d.value * 1.2 - min / (max - min), 1 / 4) * 6 + 6;
         },
       });
