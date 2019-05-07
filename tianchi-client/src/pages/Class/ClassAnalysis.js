@@ -333,7 +333,8 @@ class ClassAnalysis extends PureComponent {
         score: Number(data.score.toFixed(3))
       };
     }) : [];
-    const showedDistributeData = scoreDistributionData[Number(courseId)] ? scoreDistributionData[Number(courseId)].map(data => {
+    const showedDistributeData = scoreDistributionData[Number(courseId)] ?
+      scoreDistributionData[Number(courseId)].sort((a, b) => a.maxScore - b.maxScore).map(data => {
       return {
         name: classMap[Number(data.classId)],
         range: RANGE_ALIAS[data.maxScore],
@@ -344,22 +345,6 @@ class ClassAnalysis extends PureComponent {
     const { boy, stay, total, local, policy } = distributionData;
     const isAtSchool = classInfo.start_year === 2018;
     const defaultTab = _.difference(location.pathname.split('/'), match.path.split('/'))[0] || 'Trend';
-
-    const radarViewData = new DataSet.View().source(radarData).transform({
-      type: "fold",
-      fields: Object.values(SCORE_LEVEL_ALIAS),
-      key: "user",
-      value: "score" // value字段
-    });
-
-    const subData = subTrends ? new DataSet.View().source([subTrends]).transform({
-      type: "fold",
-      fields: Object.keys(subTrends),
-      // 展开字段集
-      key: "title",
-      // key字段
-      value: "lineData" // value字段
-    }).rows : [];
 
     //table的格式
     const tableColumns = [
@@ -409,12 +394,11 @@ class ClassAnalysis extends PureComponent {
           <Col lg={7} md={24}>
             <Card bordered={false} style={{ marginBottom: 24 }} loading={loading}>
               <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
-                {/*todo classListLoading*/}
                 <Select
                   style={{ width: '100%', display: 'block' }}
                   showSearch
                   notFoundContent={classListLoading ? <Spin size="small"/> :
-                    <Empty description={this.state.classId ? '未找到包含该信息数据' : '请输入班级名或序列号查询'}/>
+                    <Empty description={this.state.classId ? '未找到包含该信息数据' : '请输入班级名或序号查询'}/>
                   }
                   size="large"
                   value={classInfo.id ? `${classInfo.id}-${classInfo.start_year}-${classInfo.class_name}` : this.state.classId}
@@ -471,7 +455,7 @@ class ClassAnalysis extends PureComponent {
                       </Row> : <Empty description='班级学生分布数据缺失'/>
                     }
                   </div>
-                  {defaultTab !== 'Trend' && <Fragment>
+                  {defaultTab !== 'Trend' && radarData.length && <Fragment>
                     <Divider dashed/>
                     <Chart
                       height={400}
@@ -482,7 +466,7 @@ class ClassAnalysis extends PureComponent {
                           tickCount: 5
                         }
                       }}
-                      data={radarViewData}
+                      data={radarData}
                       padding={[20, 20, 95, 20]}
                       forceFit
                       loading={radarLoading}
@@ -560,36 +544,36 @@ class ClassAnalysis extends PureComponent {
               <Tabs defaultActiveKey={defaultTab} onChange={this.onTabChange}>
                 {/*各科成绩趋势的变化*/}
                 <TabPane tab={<span><Icon type="line-chart"/>成绩趋势显示</span>} key="Trend">
-                  {classInfo && classInfo.id ?
-                    <Fragment>
-                      <Card
-                        title={`${classInfo.class_name}考试${this.state.scoreType === 'score' ? '绝对分' : '排名'}趋势变化`}
-                        bordered={false}>
-                        <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
-                          <Select
-                            value={this.state.scoreType} style={{ width: 100 }}
-                            onChange={this.onScoreTypeChange}
-                          >
-                            <Option key="score" value="score">绝对分</Option>
-                            <Option key="rank" value="rank">排名</Option>
-                          </Select>
-                        </Affix>
-                        <Suspense fallback={<PageLoading/>}>
-                          <ScoreTrendChart
-                            maxRank={maxRank}
-                            scoreType={this.state.scoreType}
-                            lineData={totalTrend}
-                            radarViewData={radarViewData}
-                            subData={subData}
-                          />
-                        </Suspense>
-                      </Card>
-                    </Fragment> : <Empty description='请在左侧搜索框中搜索班级数据'/>
-                  }
+                  {classInfo && classInfo.id ? (totalTrend && !!totalTrend.length ? <Fragment>
+                    <Card
+                      title={`${classInfo.class_name}考试${this.state.scoreType === 'score' ? '绝对分' : '排名'}趋势变化`}
+                      bordered={false} bodyStyle={{ padding: '16px' }}
+                    >
+                      <Affix offsetTop={13} style={{ 'zIndex': 1 }}>
+                        <Select
+                          value={this.state.scoreType} style={{ width: 100 }}
+                          onChange={this.onScoreTypeChange}
+                        >
+                          <Option key="score" value="score">绝对分</Option>
+                          <Option key="rank" value="rank">排名</Option>
+                        </Select>
+                      </Affix>
+                      <Suspense fallback={<PageLoading/>}>
+                        <ScoreTrendChart
+                          maxRank={maxRank}
+                          scoreType={this.state.scoreType}
+                          lineData={totalTrend}
+                          radarViewData={radarData}
+                          subData={subTrends}
+                        />
+                      </Suspense>
+                    </Card>
+                  </Fragment> : <Empty description='暂无考试数据'/>) : <Empty description='请在左侧搜索框中搜索班级信息'/>}
                 </TabPane>
                 {/*某次具体考试的具体情况*/}
                 <TabPane tab={<span><Icon type="copy"/>具体考试分析</span>} key="Specific">
-                  {classInfo && classInfo.id && <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+                  {classInfo && !!classInfo.id && !!classExamList.length &&
+                  <Affix offsetTop={13} style={{ 'zIndex': 1 }}>
                     <Select
                       showSearch
                       optionFilterProp="children"
@@ -660,7 +644,7 @@ class ClassAnalysis extends PureComponent {
                       </Card>}
                       {showedScoreData && <Card title="年级其他班成绩对比分析" style={{ marginTop: 12 }}>
                         <Row type='flex' justify="end">
-                          <Affix offsetTop={10}>
+                          <Affix offsetTop={13}>
                             <Select
                               value={String(courseId)} style={{ width: "100%" }}
                               onChange={(courseId) => this.setState({ courseId: Number(courseId) })}>
@@ -837,7 +821,12 @@ class ClassAnalysis extends PureComponent {
                           />
                         </Chart>}
                       </Card>}
-                    </Fragment> : <Empty description={classInfo.id ? `请选择需要分析的考试名称` : `请在左侧搜索班级信息`}/>
+                    </Fragment> :
+                    <Empty
+                      description={classInfo.id ? `${classExamList.length ? '请选择需要分析的考试名称' : '暂无考试数据'}` :
+                        `请在左侧搜索框中搜索班级信息`
+                      }
+                    />
                   }
                 </TabPane>
                 {/*考勤情况*/}

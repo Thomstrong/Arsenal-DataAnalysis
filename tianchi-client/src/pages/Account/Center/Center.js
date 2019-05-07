@@ -580,7 +580,7 @@ class Center extends PureComponent {
         <Row gutter={16}>
           <Col lg={7} md={24}>
             <Card bordered={false} style={{ marginBottom: 24 }} loading={loading}>
-              <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
+              <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
                 <Select
                   style={{ width: '100%', display: 'block' }}
                   showSearch
@@ -730,7 +730,7 @@ class Center extends PureComponent {
                   {studentInfo && studentInfo.id ?
                     <Fragment>
                       {totalTrendData && !!totalTrendData.length && <Row type='flex' justify='start'>
-                        <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
+                        <Affix offsetTop={13} style={{ 'zIndex': 2 }}>
                           <Select
                             value={this.state.scoreType} style={{ width: 120 }}
                             onChange={this.onScoreTypeChange}
@@ -742,7 +742,7 @@ class Center extends PureComponent {
                           </Select>
                         </Affix>
                       </Row>}
-                      {!scoreLoading ? <Suspense fallback={<PageLoading/>}>
+                      {totalTrendData && !!totalTrendData.length ? <Suspense fallback={<PageLoading/>}>
                         <ScoreLineChart
                           lineData={totalTrendData}
                           lineSummary={lineSummary}
@@ -750,7 +750,7 @@ class Center extends PureComponent {
                           subData={subTrendData}
                           scoreType={this.state.scoreType}
                         />
-                      </Suspense> : <Card loading={true} bordered={false}/>}
+                      </Suspense> : <Empty description='暂无考试数据'/>}
                     </Fragment> : initEmpty
                   }
                 </TabPane>
@@ -767,7 +767,7 @@ class Center extends PureComponent {
                           maxHourlyAvg={maxHourlyAvg}
                         />
                       </Suspense>
-                      <Affix offsetTop={80} style={{ 'zIndex': 1, marginTop: 10 }}>
+                      <Affix offsetTop={13} style={{ 'zIndex': 1, marginTop: 10 }}>
                         <Card bordered={false} bodyStyle={{ padding: 5 }}>
                           <span>选择查看的时间：</span>
                           <DatePicker
@@ -809,7 +809,7 @@ class Center extends PureComponent {
                   </Suspense> : initEmpty}
                 </TabPane>
                 <TabPane tab={<span><i className="fa fa-window-restore"/> 对比分析</span>} key="Compare">
-                  {!!studentInfo.id && <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
+                  {!!studentInfo.id && <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
                     <Select
                       style={{ width: '100%', display: 'block' }}
                       showSearch

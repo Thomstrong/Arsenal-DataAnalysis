@@ -63,7 +63,7 @@ export default {
     overLineCounter: [0, 0, 0],
     scoreDistributionData: [],
     classExamList: [],
-    scoreType:'',
+    scoreType: '',
   },
 
   effects: {
@@ -225,19 +225,28 @@ export default {
       if (!payload) {
         return state;
       }
+
+      const radarData = new DataSet.View().source(payload.map((data) => {
+        return {
+          'item': COURSE_ALIAS[data.sub_exam__course_id],
+          [SCORE_LEVEL_ALIAS.highest]: Number(data.highest.toFixed(0)),
+          [SCORE_LEVEL_ALIAS.lowest]: Number(data.lowest.toFixed(0)),
+          [SCORE_LEVEL_ALIAS.average]: Number(data.average.toFixed(0)),
+        };
+      })).transform({
+        type: "fold",
+        fields: Object.values(SCORE_LEVEL_ALIAS),
+        key: "user",
+        value: "score" // value字段
+      }).rows;
+
+
       return {
         ...state,
-        radarData: payload.map((data) => {
-          return {
-            'item': COURSE_ALIAS[data.sub_exam__course_id],
-            [SCORE_LEVEL_ALIAS.highest]: Number(data.highest.toFixed(0)),
-            [SCORE_LEVEL_ALIAS.lowest]: Number(data.lowest.toFixed(0)),
-            [SCORE_LEVEL_ALIAS.average]: Number(data.average.toFixed(0)),
-          };
-        })
+        radarData
       };
     },
-    saveTrendData(state, { payload,scoreType }) {
+    saveTrendData(state, { payload, scoreType }) {
       if (!payload) {
         return state;
       }
@@ -263,6 +272,15 @@ export default {
           maxRank = maxRank > record.score ? maxRank : record.score;
         }
       }
+
+      subTrends = new DataSet.View().source([subTrends]).transform({
+      type: "fold",
+      fields: Object.keys(subTrends),
+      // 展开字段集
+      key: "title",
+      // key字段
+      value: "lineData" // value字段
+    }).rows;
       return {
         ...state,
         totalTrend,

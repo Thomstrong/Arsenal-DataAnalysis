@@ -91,7 +91,7 @@ const AttendanceChart = memo(
             其中，最多的是<Text strong style={{ color: "#c6464a" }}>
               {kaoqinSummary[0].name}</Text>。
           </Paragraph>
-          <Paragraph><Text strong style={{ color: "#c6464a" }}>点击柱状图</Text>查看对应学期考勤具体信息。</Paragraph>
+          <Paragraph>点击<Text strong style={{ color: "#c6464a" }}>柱状图彩色区域</Text>查看违纪学生详情。</Paragraph>
         </Col>}
       </Row> : <Empty description='该班级暂无不良考勤数据'/>}
     </Card>
