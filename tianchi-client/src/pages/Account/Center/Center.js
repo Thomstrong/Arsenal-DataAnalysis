@@ -425,6 +425,12 @@ class Center extends PureComponent {
   };
 
   formatHourlyAvgCost = (hourlyAvgCost, totalHourlyAvgCost) => {
+    if (!hourlyAvgCost.length && !totalHourlyAvgCost.length) {
+      return {
+        hourlyAvgData: [],
+        maxHourlyAvg: 0
+      };
+    }
     let i = 0;
     let j = 0;
     const hourlyAvgData = [];
@@ -492,7 +498,6 @@ class Center extends PureComponent {
       i++;
     }
 
-
     return {
       vsDailyCostData: mergedData,
     };
@@ -530,13 +535,7 @@ class Center extends PureComponent {
     const { hourlyAvgData, maxHourlyAvg } = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
     const { hourlyAvgData: vsAverageData } = this.formatHourlyAvgCost(hourlyAvgCost, costVsData);
     const { formatedData: predictData, maxCost } = this.formatDailyPredictData(dailyPredictData);
-    const { vsDailyCostData } = this.mergeDailyCost(dailySumCost, vsDailySumCost);
-    const radarViewData = new DataSet.View().source(studentInfo.radarData).transform({
-      type: "fold",
-      fields: Object.values(SCORE_LEVEL_ALIAS),
-      key: "user",
-      value: "score" // value字段
-    }).rows;
+    const { vsDailyCostData } = this.mergeDailyCost(dailySumCost || [], vsDailySumCost || []);
     const teacherInfo = studentInfo.teacherInfo;
     const cols = {
       score: {
@@ -558,7 +557,7 @@ class Center extends PureComponent {
     const kaoqinData = this.formatKaoqinData(studentInfo.kaoqinData, termList);
     const kaoqinSummary = studentInfo.kaoqinSummary;
     // 一卡通对比数据1 0-23小时的平均消费
-    const hourlyVsCostData = new DataSet.View().source(vsAverageData).transform({
+    const hourlyVsCostData = vsAverageData.length ? new DataSet.View().source(vsAverageData).transform({
       type: 'map',
       callback(row) {
         const newRow = { ...row };
@@ -571,7 +570,7 @@ class Center extends PureComponent {
       fields: [`${studentInfo.id}-${studentInfo.name}`, `${vsStudentInfo.id}-${vsStudentInfo.name}`],
       key: "student",
       value: "cost"
-    }).rows;
+    }).rows : [];
 
     const defaultTab = _.difference(location.pathname.split('/'), match.path.split('/'))[0] || 'Score';
     return (
@@ -643,11 +642,11 @@ class Center extends PureComponent {
                       </div>
                     </Col>
                     {/*雷达图*/}
-                    {defaultTab !== 'Score' &&
+                    {defaultTab !== 'Score' && !!studentInfo.radarData.length &&
                     <Col md={12} lg={24} sm={12} xs={12} xl={24}><Fragment>
                       <Chart
                         height={350}
-                        data={radarViewData}
+                        data={studentInfo.radarData}
                         padding={[20, 20, 95, 20]}
                         scale={cols}
                         forceFit
@@ -746,7 +745,7 @@ class Center extends PureComponent {
                         <ScoreLineChart
                           lineData={totalTrendData}
                           lineSummary={lineSummary}
-                          radarViewData={radarViewData}
+                          radarViewData={studentInfo.radarData}
                           subData={subTrendData}
                           scoreType={this.state.scoreType}
                         />
@@ -848,8 +847,8 @@ class Center extends PureComponent {
                             <Card
                               title={<Fragment>
                                 {vsStudentInfo.name}
-                                {studentInfo.is_left ? <Tag style={{ marginLeft: '10px' }} color="#f50">已离校</Tag> :
-                                  <Tag style={{ marginLeft: '10px' }} color="#2db7f5">在校生</Tag>}
+                                {vsStudentInfo.is_left ? <Tag style={{ marginLeft: '10px' }} color="#f50">已离校</Tag> :
+                                  <Tag style={{ marginLeft: '10px' }} color="#4ac46a">在校生</Tag>}
                               </Fragment>}
                               bordered={false}
                               hoverable={true}

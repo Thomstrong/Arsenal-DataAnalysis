@@ -1,16 +1,17 @@
 /**
  * Created by 胡晓慧 on 2019/4/14.
  */
-import React, { memo } from "react";
+import React, { Fragment, memo } from "react";
 import { Card, Empty } from 'antd';
 import { Axis, Chart, Coord, Geom, Legend, Tooltip } from "bizcharts";
 import { TimelineChart } from '@/components/Charts';
+import { HOUR_LIST } from '@/constants';
 
 const StuComparedChart = memo(
   ({ comparedScoreData, hourlyVsCostData, vsDailyCostData, kaoqinVsData, colorMap }) => {
     const color = [
       "student",
-      function (student) {
+      (student) => {
         return colorMap[student];
       }
     ];
@@ -44,87 +45,63 @@ const StuComparedChart = memo(
       {/*一卡通分析,消费时间和金额对比*/}
       <Card title="消费对比" bordered={false} style={{ width: '100%' }}>
         {/*平均消费时间的对比,图表*/}
-        <Chart
-          height={400}
-          data={hourlyVsCostData}
-          scale={{
-            hour: {
-              type: "cat",
-              values: [
-                "0时",
-                "1时",
-                "2时",
-                "3时",
-                "4时",
-                "5时",
-                "6时",
-                "7时",
-                "8时",
-                "9时",
-                "10时",
-                "11时",
-                "12时",
-                "13时",
-                "14时",
-                "15时",
-                "16时",
-                "17时",
-                "18时",
-                "19时",
-                "20时",
-                "21时",
-                "22时",
-                "23时"
-              ]
-            }
-          }}
-          forceFit
-        >
-          <Legend position="bottom"/>
-          <Axis name="hour"/>
-          <Axis name="cost"/>
-          <Tooltip
-            crosshairs={{
-              type: "y"
+        {vsDailyCostData.data.length ? <Fragment>
+          <Chart
+            height={400}
+            data={hourlyVsCostData}
+            scale={{
+              hour: {
+                type: "cat",
+                values: HOUR_LIST
+              }
             }}
-          />
-          <Geom type="line" position="hour*cost" size={2} color={color}
-                tooltip={['hour*cost*student', (hour, cost, student) => {
-                  return {
-                    name: student + '平均消费',
-                    value: cost + "元"
-                  };
-                }]}/>
-          <Geom
-            type="point"
-            position="hour*cost"
-            size={4}
-            shape={"circle"}
-            color={color}
-            style={{
-              stroke: "#fff",
-              lineWidth: 1
-            }}
-            tooltip={['hour*cost*student', (hour, cost, student) => {
-              return {
-                name: student + '平均消费',
-                value: cost + "元"
-              };
-            }]}
-          />
-        </Chart>
-        {/*各个时期总消费金额对比*/}
-        <div style={{ padding: '0 24px' }}>
-          {vsDailyCostData.data.length ? <TimelineChart
-            titleMap={vsDailyCostData.titleMap}
-            height={300}
-            data={vsDailyCostData.data}
-          /> : <Empty/>}
-        </div>
+            forceFit
+          >
+            <Legend position="bottom"/>
+            <Axis name="hour"/>
+            <Axis name="cost"/>
+            <Tooltip
+              crosshairs={{
+                type: "y"
+              }}
+            />
+            <Geom type="line" position="hour*cost" size={2} color={color}
+                  tooltip={['hour*cost*student', (hour, cost, student) => {
+                    return {
+                      name: student + '平均消费',
+                      value: cost + "元"
+                    };
+                  }]}/>
+            <Geom
+              type="point"
+              position="hour*cost"
+              size={4}
+              shape={"circle"}
+              color={color}
+              style={{
+                stroke: "#fff",
+                lineWidth: 1
+              }}
+              tooltip={['hour*cost*student', (hour, cost, student) => {
+                return {
+                  name: student + '平均消费',
+                  value: cost + "元"
+                };
+              }]}
+            />
+          </Chart>
+          {/*各个时期总消费金额对比*/}
+          <div style={{ padding: '0 24px' }}>
+            <TimelineChart
+              titleMap={vsDailyCostData.titleMap}
+              height={300}
+              data={vsDailyCostData.data}
+            /></div>
+        </Fragment> : <Empty/>}
       </Card>
       {/*考勤*/}
       <Card title="总考勤情况对比" bordered={false} style={{ width: '100%' }}>
-        {kaoqinVsData && kaoqinVsData.length ?<Chart height={400} data={kaoqinVsData} forceFit>
+        {kaoqinVsData && kaoqinVsData.length ? <Chart height={400} data={kaoqinVsData} forceFit>
           <Axis name="考勤类型"/>
           <Axis name="次数"/>
           <Legend position="bottom"/>
@@ -136,7 +113,7 @@ const StuComparedChart = memo(
           <Geom
             type="interval"
             position="type*count"
-            color={"student"}
+            color={color}
             adjust={[
               {
                 type: "dodge",
@@ -150,7 +127,7 @@ const StuComparedChart = memo(
               };
             }]}
           />
-        </Chart>:<Empty description="两位同学暂无不良考勤数据"/>}
+        </Chart> : <Empty description="两位同学暂无不良考勤数据"/>}
       </Card>
     </React.Fragment>;
   });

@@ -15,7 +15,7 @@ import {
 } from '@/services/api';
 
 import { COURSE_ALIAS, COURSE_COLOR, COURSE_FULLNAME_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, } from "@/constants";
-
+import DataSet from "@antv/data-set";
 
 export default {
   namespace: 'student',
@@ -372,6 +372,12 @@ export default {
           disadvantage: disadSubject[0].name === unstableSubject[0].name ? disadSubject[1].name : disadSubject[0].name,
         };
       }
+      radarData = new DataSet.View().source(radarData).transform({
+        type: "fold",
+        fields: Object.values(SCORE_LEVEL_ALIAS),
+        key: "user",
+        value: "score" // value字段
+      }).rows;
 
       return {
         ...state,
@@ -451,8 +457,8 @@ export default {
       return {
         ...state,
         dailySumCost: payload.result,
-        dailyAvg: Number(payload.avg.toFixed(2)),
-        dailyAvgRank: Number(payload.rank.toFixed(4))
+        dailyAvg: payload.avg ? Number(payload.avg.toFixed(2)) : 0,
+        dailyAvgRank: payload.rank ? Number(payload.rank.toFixed(4)) : 0
       };
     },
     saveVsDailySumCost(state, { payload }) {

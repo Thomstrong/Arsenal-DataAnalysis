@@ -2,10 +2,10 @@
  * Created by 胡晓慧 on 2019/4/13.
  */
 import React, { memo } from "react";
-import { Card, Col, Empty, Row } from 'antd';
+import { Card, Col, Empty, Row, Typography } from 'antd';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
 import { OneTimelineChart } from '@/components/Charts';
-import { Typography } from 'antd';
+import { HOUR_LIST } from '@/constants';
 
 const { Paragraph, Text } = Typography;
 
@@ -77,32 +77,7 @@ const ConsumptionOverallLineChart = memo(
                 scale={{
                   hour: {
                     type: "cat",
-                    values: [
-                      "0时",
-                      "1时",
-                      "2时",
-                      "3时",
-                      "4时",
-                      "5时",
-                      "6时",
-                      "7时",
-                      "8时",
-                      "9时",
-                      "10时",
-                      "11时",
-                      "12时",
-                      "13时",
-                      "14时",
-                      "15时",
-                      "16时",
-                      "17时",
-                      "18时",
-                      "19时",
-                      "20时",
-                      "21时",
-                      "22时",
-                      "23时"
-                    ]
+                    values: HOUR_LIST
                   },
                   avg_cost: {
                     min: 0,

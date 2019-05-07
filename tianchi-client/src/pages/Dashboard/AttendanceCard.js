@@ -3,7 +3,7 @@
  */
 import React, {memo} from 'react';
 import {Card, Col, Row, Typography} from 'antd';
-import {WEEKDAY_ALIAS} from '@/constants';
+import {WEEKDAY_ALIAS,HOUR_LIST} from '@/constants';
 import {Pie, TimelineChart} from '@/components/Charts';
 import styles from './EcardConsumptionCard.less';
 import numeral from 'numeral';
@@ -18,32 +18,7 @@ const cols = {
   },
   hour: {
     type: "cat",
-    values: [
-      "0时",
-      "1时",
-      "2时",
-      "3时",
-      "4时",
-      "5时",
-      "6时",
-      "7时",
-      "8时",
-      "9时",
-      "10时",
-      "11时",
-      "12时",
-      "13时",
-      "14时",
-      "15时",
-      "16时",
-      "17时",
-      "18时",
-      "19时",
-      "20时",
-      "21时",
-      "22时",
-      "23时"
-    ]
+    values: HOUR_LIST
   }
 };
 const colorMap = {
@@ -61,47 +36,35 @@ const colorMap = {
 
 const AttendanceRankingListData = [
   {
-    title: "周六中午10点进离校人次",
+    title: "周日10时进离校人次",
     total: 293
   },
   {
-    title: "周六中午12点进离校人次",
-    total: 207
-  },
-  {
-    title: "周二早上6点进离校人次",
+    title: "周二 6 时进离校人次",
     total: 202
   },
   {
-    title: "周五早上6点进离校人次",
-    total: 187
+    title: "周日12时进离校人次",
+    total: 201
   },
-  // {
-  //   title: "周六中午11点进离校人次",
-  //   total: 186
-  // },
+  {
+    title: "周五 6 时进离校人次",
+    total: 187
+  }
 ];
 const violationRankingData = [
   {
-    title: "2017-2018学年高三早退人数",
-    total: 863
+    title: "2017 - 2018 学年高三早退",
+    total: 865
   },
   {
-    title: "2017-2018学年高三迟到人数",
-    total: 545
+    title: "2017 - 2018 学年高三迟到",
+    total: 546
   },
   {
-    title: "2017-2018学年高二校服违纪人数",
+    title: "2017 - 2018 学年高二校服违纪",
     total: 424
   },
-  // {
-  //   title: "2017-2018学年高三校服违纪人数",
-  //   total: 392
-  // },
-  // {
-  //   title: "2017-2018学年高二迟到人数",
-  //   total: 359
-  // },
 ];
 
 
@@ -180,9 +143,9 @@ const AttendanceCard = memo(({data}) => {
               </ul>
               <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20,cursor:"auto"}}>
                 <Paragraph>1. <Text type='danger'>数据量有限</Text>不能代表所有学生的进离校情况;</Paragraph>
-                <Paragraph>2. 早上<Text type='danger'>6点多</Text>是绝大多数学生的进校时间,7点会有部分学生姗姗来迟;</Paragraph>
-                <Paragraph>3. <Text type='danger'>周五</Text>下午<Text type='danger'>3、4点</Text>是离校高峰，
-                  <Text type='danger'>周日10点到12点</Text>住校生普遍返校</Paragraph>
+                <Paragraph>2. 早上<Text type='danger'> 6 时</Text>是绝大多数学生的进校时间,7时会有部分学生姗姗来迟;</Paragraph>
+                <Paragraph>3. <Text type='danger'>周五</Text>下午<Text type='danger'> 3时 - 4 时</Text>是离校高峰，
+                  <Text type='danger'>周日 10 时 - 12 时</Text>住校生普遍返校</Paragraph>
               </Card>
             </div>
           </Col>}
@@ -213,10 +176,11 @@ const AttendanceCard = memo(({data}) => {
               </ul>
               <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20,cursor:"auto"}}>
                 <Paragraph>1. 违纪情况呈<Text type="danger">递增</Text>趋势，
-                  <Text type="danger">17-18学年</Text>考勤不合格人数最多(18-19学年仅有一半数据);</Paragraph>
+                  <Text type="danger"> 17 - 18 学年</Text>考勤不合格人数最多( 18 - 19 学年仅有一学期数据);</Paragraph>
                 <Paragraph>2. <Text type="danger">高一</Text>违纪情况在任一学年任一类型都是最<Text type="danger">少</Text>的，
                   同时，<Text type="danger">高三</Text>几乎肩负起了<Text type="danger">一半</Text>的违纪指标;</Paragraph>
-                <Paragraph>3. 每一学年的高三学生都会有迟到和校服违纪的现象，但<Text type="danger">早退</Text>集中在17学年和18学年。</Paragraph>
+                <Paragraph>3. 每一学年的高三学生都会有迟到和校服违纪的现象，但
+                  <Text type="danger">早退</Text>集中在 17 学年和 18 学年。</Paragraph>
               </Card>
             </div>
           </Col>}

@@ -17,7 +17,10 @@ def run():
     i = 0
     converted_data = df.values
     while i < len(converted_data):
-        new_place = '{}{}'.format(converted_data[i][0], converted_data[i][1])
+        if '浙江' in converted_data[i][0]:
+            new_place = '{}{}'.format(converted_data[i][0], converted_data[i][1])
+        else:
+            new_place = '{}'.format(converted_data[i][0])
         students[i].native_place = new_place if new_place else '未登记'
         students[i].save()
         i += 1
