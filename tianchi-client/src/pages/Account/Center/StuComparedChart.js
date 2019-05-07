@@ -124,7 +124,7 @@ const StuComparedChart = memo(
       </Card>
       {/*考勤*/}
       <Card title="总考勤情况对比" bordered={false} style={{ width: '100%' }}>
-        <Chart height={400} data={kaoqinVsData} forceFit>
+        {kaoqinVsData && kaoqinVsData.length ?<Chart height={400} data={kaoqinVsData} forceFit>
           <Axis name="考勤类型"/>
           <Axis name="次数"/>
           <Legend position="bottom"/>
@@ -150,7 +150,7 @@ const StuComparedChart = memo(
               };
             }]}
           />
-        </Chart>
+        </Chart>:<Empty description="两位同学都没有违纪情况"/>}
       </Card>
     </React.Fragment>;
   });
