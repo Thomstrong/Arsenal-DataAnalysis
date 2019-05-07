@@ -12,6 +12,7 @@ from wordcloud.models.word_cloud_tag import WordCloudTag
 
 # python manage.py runscript generate_ciyun_tag
 def run():
+    TagRecord.objects.all().delete()
     try:
         # 清晨消费
         tag_in_db, _ = WordCloudTag.objects.get_or_create(
@@ -219,12 +220,12 @@ def run():
             title='大手笔'
         )
         money_dada_records = Consumption.objects.filter(
-            cost__lt=-50,
+            cost__lt=-35,
             student_id__isnull=False,
         ).values('student_id').annotate(
-            sum=Sum('id'),
+            sum=-Sum('cost'),
         )
-        bar = Bar('Afternoon cost record:', max=len(money_dada_records))
+        bar = Bar('Money dada cost record:', max=len(money_dada_records))
 
         for record in money_dada_records:
             bar.next()
@@ -241,13 +242,14 @@ def run():
         tag_in_db, _ = WordCloudTag.objects.get_or_create(
             title='勤俭节约'
         )
+        money_dada_students = money_dada_records.values_list('student_id', flat=True)
         money_nono_records = DailyConsumption.objects.filter(
             total_cost__gt=-5,
             student_id__isnull=False,
-        ).values('student_id').annotate(
+        ).exclude(student_id__in=money_dada_students).values('student_id').annotate(
             count=Count('id'),
         )
-        bar = Bar('Afternoon cost record:', max=len(money_nono_records))
+        bar = Bar('Money nono record:', max=len(money_nono_records))
 
         for record in money_nono_records:
             bar.next()
@@ -268,8 +270,6 @@ def run():
         students = Student.objects.all().exclude(
             kaoqinrecord__event__id__in=[
                 9900100, 9900200, 9900300,
-                100000, 100100, 100200, 100300,
-                200000, 200100, 200200,
             ]
         )
         bar = Bar('Good student record:', max=len(students))
@@ -303,5 +303,27 @@ def run():
                 value=20
             )
         bar.finish()
+
+        # 默默无闻
+        tag_in_db, _ = WordCloudTag.objects.get_or_create(
+            title='默默无闻'
+        )
+
+        have_tag_students = TagRecord.objects.values_list('student_id', flat=True)
+
+        no_tag_students = Student.objects.exclude(
+            id__in=have_tag_students
+        )
+        bar = Bar('No tag record:', max=len(no_tag_students))
+
+        for student in no_tag_students:
+            bar.next()
+            TagRecord.objects.create(
+                student=student,
+                tag=tag_in_db,
+                value=100
+            )
+        bar.finish()
+
     except Exception as e:
         print(repr(e))

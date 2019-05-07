@@ -29,6 +29,7 @@ export default {
       kaoqinData: [],
       kaoqinSummary: [],
       totalTrend: [],
+      scoreType: '',
       lineSummary: {},
       subTrends: [],
     },
@@ -183,6 +184,7 @@ export default {
       yield put({
         type: 'saveTotalTrend',
         payload: response,
+        scoreType:payload.scoreType
       });
     },
     * fetchSubTrends({ payload }, { call, put }) {
@@ -249,7 +251,7 @@ export default {
         ...payload,
       };
     },
-    saveTotalTrend(state, { payload }) {
+    saveTotalTrend(state, { payload,scoreType }) {
       if (!payload) {
         return state;
       }
@@ -262,7 +264,8 @@ export default {
               exam: data.sub_exam__exam__name,
               score: data.total_score
             };
-          })
+          }),
+          scoreType
         },
       };
     },

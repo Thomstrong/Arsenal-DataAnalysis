@@ -51,28 +51,28 @@ export default [
       {
         name: 'studentInfo',
         icon: 'user',
-        path: '/account',
+        path: '/student',
         routes: [
           {
-            path: '/account/center',
+            path: '/student/center',
             name: 'center',
             component: './Account/Center/Center',
             routes: [
               {
-                path: '/account/center',
-                redirect: '/account/center/Score',
+                path: '/student/center',
+                redirect: '/student/center/Score',
               },
               {
-                path: '/account/center/Score',
+                path: '/student/center/Score',
               },
               {
-                path: '/account/center/ECard',
+                path: '/student/center/ECard',
               },
               {
-                path: '/account/center/Attendance',
+                path: '/student/center/Attendance',
               },
               {
-                path: '/account/center/Compare',
+                path: '/student/center/Compare',
               },
             ],
           },

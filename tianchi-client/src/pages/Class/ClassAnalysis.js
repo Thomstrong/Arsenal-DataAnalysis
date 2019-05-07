@@ -78,6 +78,7 @@ class ClassAnalysis extends PureComponent {
     const { classInfo } = this.props.stuClass;
     const { query } = this.props.location;
     if (query && query.classId && Number(query.classId) !== classInfo.id) {
+      this.getClassList(query.classId);
       this.getClassInfo(query.classId);
     }
   }
@@ -279,14 +280,22 @@ class ClassAnalysis extends PureComponent {
       }
     },
     render: (text) => (
-      <Highlighter
-        highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-        searchWords={[this.state.searchText]}
-        autoEscape
-        textToHighlight={text.toString()}
-      />
+      <a onClick={() => this.onStudentClick(text)}>
+        <Highlighter
+          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+          searchWords={[this.state.searchText]}
+          autoEscape
+          textToHighlight={text.toString()}
+        />
+      </a>
+
     ),
   });
+
+  onStudentClick = (text) => {
+    const studentId = text.split('-')[0];
+    router.push(`/student/center/?studentId=${studentId}`);
+  };
 
   handleSearch = (selectedKeys, confirm) => {
     confirm();
@@ -325,7 +334,7 @@ class ClassAnalysis extends PureComponent {
       classList, radarData, totalTrend, maxRank,
       subTrends, kaoqinSummary, kaoqinData,
       kaoqinDetail, studentList, classExamList,
-      courseRankData, scoreData, classMap,examSummary,
+      courseRankData, scoreData, classMap, examSummary,
       examRecords, overLineCounter, scoreDistributionData,
     } = stuClass;
 
@@ -342,12 +351,12 @@ class ClassAnalysis extends PureComponent {
     }) : [];
     const showedDistributeData = scoreDistributionData[Number(courseId)] ?
       scoreDistributionData[Number(courseId)].sort((a, b) => a.maxScore - b.maxScore).map(data => {
-      return {
-        name: classMap[Number(data.classId)],
-        range: RANGE_ALIAS[data.maxScore],
-        count: Number(data.count)
-      };
-    }) : [];
+        return {
+          name: classMap[Number(data.classId)],
+          range: RANGE_ALIAS[data.maxScore],
+          count: Number(data.count)
+        };
+      }) : [];
 
     const { boy, stay, total, local, policy } = distributionData;
     const isAtSchool = classInfo.start_year === 2018;
@@ -597,8 +606,9 @@ class ClassAnalysis extends PureComponent {
                   </Affix>}
                   {examId ?
                     <Fragment>
-                      {courseRankData.totalRank && <Card title="本次考试概况" style={{ marginTop: 12 }}>
-                        {!!examSummary.attendCount && <Row gutter={16} type="flex" justify="start" align="bottom" style={{ marginBottom: 8 }}>
+                      {!!courseRankData.rankData.length && <Card title="本次考试概况" style={{ marginTop: 12 }}>
+                        {!!examSummary.attendCount &&
+                        <Row gutter={16} type="flex" justify="start" align="bottom" style={{ marginBottom: 8 }}>
                           <Col span={4}>
                             <Statistic
                               title="参与考试" value={examSummary.attendCount}

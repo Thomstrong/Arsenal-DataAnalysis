@@ -74,13 +74,22 @@ class Center extends PureComponent {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      studentId: props.studentInfo.id || '',
+      studentId: props.match.params.studentId || props.studentInfo.id || '',
       vsStudentId: '',
       scoreType: 'score',
       dateRange: 7,
       pickedDate: '2019-01-01',
     };
     this.getStudentList = _.debounce(this.getStudentList, 800);
+  }
+
+  componentDidMount() {
+    const { studentInfo } = this.props;
+    const { query } = this.props.location;
+    if (query && query.studentId && Number(query.studentId) !== studentInfo.id) {
+      this.getStudentList(query.studentId);
+      this.getStudentInfo(query.studentId);
+    }
   }
 
   onTabChange = key => {
@@ -532,6 +541,7 @@ class Center extends PureComponent {
       eCardLoading,
       scoreLoading
     } = this.props;
+    const {dateRange, date } = dailyPredictData;
     const { hourlyAvgData, maxHourlyAvg } = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
     const { hourlyAvgData: vsAverageData } = this.formatHourlyAvgCost(hourlyAvgCost, costVsData);
     const { formatedData: predictData, maxCost } = this.formatDailyPredictData(dailyPredictData);
@@ -586,6 +596,7 @@ class Center extends PureComponent {
                   notFoundContent={studentListLoading ? <Spin size="small"/> :
                     <Empty description={this.state.studentId ? '未找到包含该信息学生数据' : '请输入学生姓名或学号查询'}/>
                   }
+                  loading={studentListLoading}
                   size="large"
                   value={studentInfo.id || this.state.studentId}
                   filterOption={false}
@@ -731,7 +742,7 @@ class Center extends PureComponent {
                       {totalTrendData && !!totalTrendData.length && <Row type='flex' justify='start'>
                         <Affix offsetTop={13} style={{ 'zIndex': 2 }}>
                           <Select
-                            value={this.state.scoreType} style={{ width: 120 }}
+                            value={studentInfo.scoreType || this.state.scoreType} style={{ width: 120 }}
                             onChange={this.onScoreTypeChange}
                           >
                             <Option key="score" value="score">绝对分</Option>
@@ -770,12 +781,12 @@ class Center extends PureComponent {
                         <Card bordered={false} bodyStyle={{ padding: 5 }}>
                           <span>选择查看的时间：</span>
                           <DatePicker
-                            defaultValue={moment(moment('2019-01-01'), 'YYYY-MM-DD')}
+                            defaultValue={moment(moment(date || '2019-01-01'), 'YYYY-MM-DD')}
                             onChange={(_, date) => this.onDateChange(date)}
                           />
                           <span style={{ marginLeft: '20px' }}>分析区间：</span>
                           <Select
-                            value={this.state.dateRange} style={{ width: 120 }}
+                            value={dateRange || this.state.dateRange} style={{ width: 120 }}
                             onChange={this.handleChangeRange}
                           >
                             <Option key='one-week' value={7}>1周</Option>
@@ -839,17 +850,18 @@ class Center extends PureComponent {
                           <Col span={10}>
                             <TagCloud
                               data={vsWordCloudData}
-                              height={300}
+                              height={380}
                               imgUrl={imgUrl}
                             />
                           </Col>
                           <Col span={13} offset={1}>
                             <Card
                               title={<Fragment>
-                                {vsStudentInfo.name}
+                                <span style={{ fontSize: '20px', verticalAlign: 'middle' }}>{vsStudentInfo.name}</span>
                                 {vsStudentInfo.is_left ? <Tag style={{ marginLeft: '10px' }} color="#f50">已离校</Tag> :
                                   <Tag style={{ marginLeft: '10px' }} color="#4ac46a">在校生</Tag>}
                               </Fragment>}
+                              headStyle={{ minHeight: '20px' }}
                               bordered={false}
                               hoverable={true}
                               className={styles.vsDetail}
