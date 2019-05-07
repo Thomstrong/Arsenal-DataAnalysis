@@ -32,8 +32,8 @@ export default {
     subjectYear: 0,
     subjectGrade: 0,
     subjectCourse: 0,
-    collage2Subject: [],
-    subject2Major: [],
+    subject2Major: null,
+    majorMap: {},
   },
 
   effects: {
@@ -95,7 +95,6 @@ export default {
         year: payload.year,
       });
     },
-    //todo
     * fetchSubject2Major(_, { call, put }) {
       const response = yield call(getCollageMajorSubject, {
         type: 'tagCloud'
@@ -393,7 +392,8 @@ export default {
       };
       return {
         ...state,
-        subject2Major,
+        subject2Major: payload.data,
+        majorMap: payload.tagMap
       };
     },
 

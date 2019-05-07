@@ -4,9 +4,13 @@ from rest_framework import viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 
-from courses.api.serializers import CourseRecordSerializer
+from courses.api.serializers import CourseRecordSerializer, CourseSerializer
+from courses.models.course import Course
 from courses.models.course_record import CourseRecord
 from utils.decorators import required_params
+from wordcloud.constants import TagType
+from wordcloud.models.tag_record import CourseTag
+from wordcloud.models.word_cloud_tag import WordCloudTag
 
 gaokao_selections = [4, 5, 6, 7, 8, 17, 59]
 all_selections = ['6#8#17', '8#17#59', '5#6#59', '4#5#8', '6#7#59', '4#5#7', '5#8#17', '4#5#59', '5#8#59', '5#6#17',
@@ -178,3 +182,34 @@ class CourseRecordViewSet(viewsets.ModelViewSet):
                 'total': int(total / 3),
                 'data': counter_data
             })
+
+
+class CourseViewSet(viewsets.ModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+    @list_route(
+        methods=['GET']
+    )
+    def tags(self, request):
+        data = {}
+        for course in [4, 5, 6, 7, 8, 17, 59, 61]:
+            data[course] = CourseTag.objects.filter(
+                course_id=course,
+            ).values_list(
+                'tag',
+                'value'
+            ).order_by('-value')[:120]
+
+        tag_map = {}
+        tags = WordCloudTag.objects.filter(
+            type=TagType.Course
+        ).values_list('id', 'title')
+
+        for tag in tags:
+            tag_map[tag[0]] = tag[1]
+
+        return Response({
+            'tagMap': tag_map,
+            'data': data,
+        })

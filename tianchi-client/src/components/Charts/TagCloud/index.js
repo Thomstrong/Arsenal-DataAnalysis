@@ -83,7 +83,7 @@ class TagCloud extends Component {
   @Debounce(500)
   renderChart(nextProps) {
     // const colors = ['#1890FF', '#41D9C7', '#2FC25B', '#FACC14', '#9AE65C'];
-    const { data, height,imgUrl } = nextProps || this.props;
+    const { data, height, imgUrl,repeat } = nextProps || this.props;
 
     if (data.length < 1 || !this.root) {
       return;
@@ -93,7 +93,7 @@ class TagCloud extends Component {
     const w = this.root.offsetWidth;
 
     const onload = () => {
-      const dv = new DataSet.View().source(data.concat(data.map(data=>{
+      const dv = new DataSet.View().source(!!repeat ?data.concat(data.map(data=>{
         return {
           ...data,
           value:1,
@@ -103,7 +103,7 @@ class TagCloud extends Component {
           ...data,
           value:2,
         };
-      })));
+      })):data);
       const range = dv.range('value');
       const [min, max] = range;
       dv.transform({
@@ -118,14 +118,14 @@ class TagCloud extends Component {
           let random = ~~(Math.random() * 4) % 4;
 
           if (random === 3 || random === 1) {
-           return random * 90; // 0, 90, 270
+            return random * 90; // 0, 90, 270
           }
 
-          return 0
+          return 0;
         },
         fontSize(d) {
           // eslint-disable-next-line
-          return Math.pow(d.value*1.2 - min/ (max - min),1/4)*6  + 6;
+          return Math.pow(d.value * 1.2 - min / (max - min), 1 / 4) * 6 + 6;
         },
       });
 
@@ -171,7 +171,7 @@ class TagCloud extends Component {
               y: { nice: false },
             }}
           >
-            <Coord reflect="y" />
+            <Coord reflect="y"/>
             <Geom
               type="point"
               position="x*y"

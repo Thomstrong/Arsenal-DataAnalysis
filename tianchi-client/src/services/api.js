@@ -119,9 +119,8 @@ export async function getClassExamData({ startYear, grade, course }) {
   return request(`/api/class_exam/summary/?start_year=${startYear}&grade=${grade}&course=${course}`);
 }
 
-//todo 修改以便从后端获得数据getCollageMajorSubject
 export async function getCollageMajorSubject(type) {
-  return request(`/api/students/14454`);
+  return request(`/api/courses/tags/`);
 }
 
 
