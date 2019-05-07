@@ -150,7 +150,7 @@ const StuComparedChart = memo(
               };
             }]}
           />
-        </Chart>:<Empty description="两位同学都没有违纪情况"/>}
+        </Chart>:<Empty description="两位同学暂无不良考勤数据"/>}
       </Card>
     </React.Fragment>;
   });

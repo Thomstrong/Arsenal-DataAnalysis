@@ -32,7 +32,7 @@ class ClassViewSet(viewsets.ModelViewSet):
             return Response(status=400, data={'reason': 'need query'})
         classes = self.queryset.filter(
             Q(id__startswith=query) | Q(class_name__contains=query),
-        )[:50]
+        ).order_by('-id')[:50]
         return Response(self.get_serializer_class()(classes, many=True).data)
 
     @detail_route(
@@ -88,11 +88,11 @@ class ClassViewSet(viewsets.ModelViewSet):
         methods=['GET'],
     )
     def grade(self, request, pk):
-        type = request.query_params.get('type', '')
-        if not type:
+        info_type = request.query_params.get('type', '')
+        if not info_type:
             return Response('type 输入有误', status=400)
 
-        if type == 'radar':
+        if info_type == 'radar':
             students = StudentRecord.objects.filter(
                 stu_class_id=pk
             ).values_list('student_id', flat=True)
@@ -108,7 +108,7 @@ class ClassViewSet(viewsets.ModelViewSet):
 
             return Response(exam_records)
 
-        if type == 'trend':
+        if info_type == 'trend':
             score_type = request.query_params.get('score_type', '')
             if not score_type:
                 return Response('score_type 输入有误', status=400)
@@ -116,7 +116,7 @@ class ClassViewSet(viewsets.ModelViewSet):
             if score_type == 'rank':
                 records = ClassExamRecord.objects.filter(
                     stu_class_id=pk,
-                    sub_exam__course_id__in=gaokao_courses,
+                    sub_exam__course_id__in=(gaokao_courses + [60]),
                 ).order_by('sub_exam__started_at').values(
                     'sub_exam__exam__name'
                 ).values(
@@ -124,21 +124,25 @@ class ClassViewSet(viewsets.ModelViewSet):
                     'sub_exam__exam__name',
                     'order',
                 )
-
-                formated_records = {}
+                formatted_records = {}
                 exam_name = ''
                 for record in records:
-                    if not exam_name:
-                        exam_name = record['sub_exam__exam__name']
-                        formated_records[exam_name] = []
                     if not exam_name == record['sub_exam__exam__name']:
                         exam_name = record['sub_exam__exam__name']
-                        formated_records[exam_name] = []
-                    formated_records[exam_name].append({
+                        if exam_name not in formatted_records:
+                            formatted_records[exam_name] = []
+                    formatted_records[exam_name].append({
                         'course': record['sub_exam__course_id'],
                         'score': record['order']
                     })
-                return Response(formated_records)
+
+                #  去除只有总分排名的考试数据
+                results = {}
+                for key in formatted_records:
+                    if len(formatted_records[key]) == 1:
+                        continue
+                    results[key] = formatted_records[key]
+                return Response(results)
 
             if score_type == 'score':
                 records = ClassExamRecord.objects.filter(
@@ -162,7 +166,7 @@ class ClassViewSet(viewsets.ModelViewSet):
                         formated_records[exam_name] = []
                     if not exam_name == record['sub_exam__exam__name']:
                         formated_records[exam_name].append({
-                            'course': 0,
+                            'course': 60,
                             'score': total
                         })
                         exam_name = record['sub_exam__exam__name']
@@ -177,7 +181,7 @@ class ClassViewSet(viewsets.ModelViewSet):
                     total += avg_score
                 if exam_name:
                     formated_records[exam_name].append({
-                        'course': 0,
+                        'course': 60,
                         'score': total
                     })
                 return Response(formated_records)
@@ -247,7 +251,7 @@ class ClassViewSet(viewsets.ModelViewSet):
             sub_exam__exam_id=exam_id,
             attend_count__gt=0,
             stu_class_id__isnull=False
-        ).select_related(
+        ).exclude(sub_exam__course_id=60).select_related(
             'stu_class',
             'sub_exam'
         ).values(

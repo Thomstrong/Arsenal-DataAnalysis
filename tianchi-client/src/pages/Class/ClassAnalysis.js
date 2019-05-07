@@ -61,7 +61,7 @@ class ClassAnalysis extends PureComponent {
     super(props);
     this.state = {
       classId: props.match.params.classId,
-      scoreType: 'score',
+      scoreType: props.stuClass.scoreType || 'score',
       dateRange: 7,
       pickedDate: moment().format('YYYY-MM-DD'),
       searchText: '',
@@ -315,7 +315,7 @@ class ClassAnalysis extends PureComponent {
 
     const {
       distributionData, classInfo, teachers,
-      classList, radarData, totalTrend,maxRank,
+      classList, radarData, totalTrend, maxRank,
       subTrends, kaoqinSummary, kaoqinData,
       kaoqinDetail, studentList, classExamList,
       courseRankData, scoreData, classMap,
@@ -548,7 +548,7 @@ class ClassAnalysis extends PureComponent {
                     </Row>
                   </div>
                 </Fragment>
-              ) : <Empty description='请在上面👆搜索框中搜索班级信息！'/>}
+              ) : <Empty style={{ marginTop: '20px' }} description='请在上面👆搜索框中搜索班级信息！'/>}
             </Card>
           </Col>
           {/*分为三个部分，分别是考试趋势显示和具体考试分析和考勤情况*/}
@@ -562,14 +562,16 @@ class ClassAnalysis extends PureComponent {
                 <TabPane tab={<span><Icon type="line-chart"/>成绩趋势显示</span>} key="Trend">
                   {classInfo && classInfo.id ?
                     <Fragment>
-                      <Card title={`${classInfo.class_name}考试得分趋势变化`} bordered={false}>
+                      <Card
+                        title={`${classInfo.class_name}考试${this.state.scoreType === 'score' ? '绝对分' : '排名'}趋势变化`}
+                        bordered={false}>
                         <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
                           <Select
-                            value={this.state.scoreType} style={{ width: 120 }}
+                            value={this.state.scoreType} style={{ width: 100 }}
                             onChange={this.onScoreTypeChange}
                           >
                             <Option key="score" value="score">绝对分</Option>
-                            <Option key="rank" value="rank">排名(todo)</Option>
+                            <Option key="rank" value="rank">排名</Option>
                           </Select>
                         </Affix>
                         <Suspense fallback={<PageLoading/>}>

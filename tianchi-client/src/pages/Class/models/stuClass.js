@@ -63,6 +63,7 @@ export default {
     overLineCounter: [0, 0, 0],
     scoreDistributionData: [],
     classExamList: [],
+    scoreType:'',
   },
 
   effects: {
@@ -111,7 +112,8 @@ export default {
       });
       yield put({
         type: 'saveTrendData',
-        payload: response
+        payload: response,
+        scoreType: payload.scoreType
       });
     },
     * fetchKaoqinData({ payload }, { call, put }) {
@@ -235,7 +237,7 @@ export default {
         })
       };
     },
-    saveTrendData(state, { payload }) {
+    saveTrendData(state, { payload,scoreType }) {
       if (!payload) {
         return state;
       }
@@ -244,7 +246,7 @@ export default {
       let subTrends = {};
       for (let key in payload) {
         for (let record of payload[key]) {
-          if (record.course === 0) {
+          if (record.course === 60) {
             totalTrend.push({
               exam: key,
               score: record.score
@@ -265,7 +267,8 @@ export default {
         ...state,
         totalTrend,
         subTrends,
-        maxRank
+        maxRank,
+        scoreType
       };
     },
     saveKaoqinData(state, action) {

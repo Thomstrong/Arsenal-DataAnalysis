@@ -39,6 +39,7 @@ const StuComparedChart = React.lazy(() => import('./StuComparedChart'));
 
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
+const initEmpty = <Empty description='请在左侧搜索框中搜索学生信息'/>;
 
 @connect(({ loading, student, global }) => ({
   studentList: student.studentList,
@@ -716,7 +717,7 @@ class Center extends PureComponent {
                     </Row>
                   </div>
                 </Fragment>
-              ) : <Empty description='请在上面👆搜索框中搜索学生信息！'/>}
+              ) : <Empty style={{ margin: '10px auto' }} description='请在上面👆搜索框中搜索学生信息！'/>}
             </Card>
           </Col>
           <Col lg={17} md={24}>
@@ -750,11 +751,12 @@ class Center extends PureComponent {
                           scoreType={this.state.scoreType}
                         />
                       </Suspense> : <Card loading={true} bordered={false}/>}
-                    </Fragment> : <Empty description='请在左侧搜索框中搜索学生信息'/>
+                    </Fragment> : initEmpty
                   }
                 </TabPane>
                 <TabPane tab={<span><Icon type="credit-card"/>一卡通</span>} key="ECard">
-                  {dailySumCost && !!dailySumCost.length ? eCardLoading ? <Card loading={true} bordered={false}/> :
+                  {!!studentInfo.id ? (dailySumCost && !!dailySumCost.length ? eCardLoading ?
+                    <Card loading={true} bordered={false}/> :
                     <Fragment>
                       <Suspense fallback={<PageLoading/>}>
                         <ConsumptionOverallLineChart
@@ -794,17 +796,17 @@ class Center extends PureComponent {
                           dateRange={dailyPredictData.dateRange}
                         />
                       </Suspense>
-                    </Fragment> : <Empty description='暂无一卡通消费数据'/>}
+                    </Fragment> : <Empty description='暂无一卡通消费数据'/>) : initEmpty}
                 </TabPane>
                 <TabPane tab={<span><i className={`fa fa-calendar-check-o`}/> 考勤</span>} key="Attendance">
-                  <Suspense fallback={<PageLoading/>}>
+                  {!!studentInfo.id ? <Suspense fallback={<PageLoading/>}>
                     <AttendanceChart
                       loading={kaoqinLoading}
                       kaoqinData={kaoqinData}
                       termList={termList}
                       kaoqinSummary={kaoqinSummary}
                     />
-                  </Suspense>
+                  </Suspense> : initEmpty}
                 </TabPane>
                 <TabPane tab={<span><i className="fa fa-window-restore"/> 对比分析</span>} key="Compare">
                   {!!studentInfo.id && <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
@@ -898,7 +900,7 @@ class Center extends PureComponent {
                         />
                       </Suspense>
                     </Fragment> : <Empty description={this.state.vsStudentId ? '未找到包含该信息数据' : '请输入待比对学生姓名或学号'}/>) :
-                    <Empty description='请在左侧搜索框中搜索学生信息'/>}
+                    initEmpty}
                 </TabPane>
               </Tabs>
             </Card>

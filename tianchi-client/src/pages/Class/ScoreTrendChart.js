@@ -23,7 +23,6 @@ const ScoreLineChart = memo(
         values
       };
     }
-
     return <React.Fragment>
       <div>
         <Row>
@@ -84,15 +83,24 @@ const ScoreLineChart = memo(
           </Col>
           <Col span={16}>
             <Chart
-              height={300} data={lineData} forceFit
+              key={'class-score-total-trend'}
+              height={300}
+              data={isRank ? lineData.map(data => {
+                return {
+                  ...data,
+                  score: maxRank - data.score
+                };
+              }) : lineData}
+              forceFit
               scale={{
                 exam: {
                   tickCount: 10
-                }
+                },
+                ...scale
               }}
             >
               <p style={{ textAlign: 'center' }}>
-                总分变化趋势
+                {`总分${isRank ? '排名' : ''}变化趋势`}
               </p>
               <Axis
                 name="exam"
@@ -110,16 +118,18 @@ const ScoreLineChart = memo(
                   type: "y"
                 }}
               />
-              <Geom type="line" position="exam*score" size={2}
-                    tooltip={[
-                      "score",
-                      (score) => {
-                        return {
-                          name: "平均分数",
-                          value: score.toFixed(3)
-                        };
-                      }
-                    ]}/>
+              <Geom
+                type="line" size={2}
+                position="exam*score"
+                tooltip={[
+                  "score",
+                  (score) => {
+                    return {
+                      name: `${isRank ? '排名' : '平均分数'}`,
+                      value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
+                    };
+                  }
+                ]}/>
               <Geom
                 type="point"
                 position="exam*score"
@@ -271,7 +281,7 @@ const ScoreLineChart = memo(
                 forceFit
               >
                 <p style={{ textAlign: 'center' }}>
-                  {`${COURSE_FULLNAME_ALIAS[item.title]} 考试趋势分析`}
+                  {`${COURSE_FULLNAME_ALIAS[item.title]} 考试${isRank ? '排名' : '分数'}趋势分析`}
                 </p>
                 <Axis
                   name="exam"
