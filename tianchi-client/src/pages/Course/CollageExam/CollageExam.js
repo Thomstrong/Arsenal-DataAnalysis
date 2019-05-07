@@ -8,19 +8,13 @@ import { connect } from "dva";
 const { Paragraph, Text } = Typography;
 
 @connect(({ course }) => ({
-  collage2Subject: course.collage2Subject,
   subject2Major: course.subject2Major,
 }))
 
 class CollageExam extends PureComponent {
 
   componentDidMount() {
-    const { dispatch, collage2Subject, subject2Major } = this.props;
-    if (!collage2Subject.length) {
-      dispatch({
-        type: 'course/fetchCollage2Subject',
-      });
-    }
+    const { dispatch, subject2Major } = this.props;
 
     if (!subject2Major.length) {
       dispatch({
@@ -31,9 +25,41 @@ class CollageExam extends PureComponent {
 
   render() {
     const {
-      collage2Subject, subject2Major
+      subject2Major
     } = this.props;
-    console.log(collage2Subject,subject2Major);
+    const collage2Subject = [
+        {
+          name: "化学",
+          value: 6533
+        },
+        {
+          name: "技术",
+          value: 3679
+        },
+        {
+          name: "生物",
+          value: 3381
+        },
+        {
+          name: "历史",
+          value: 1145
+        },
+        {
+          name: "地理",
+          value: 1107
+        },
+        {
+          name: "政治",
+          value: 735
+        },
+         {
+          name: "不限",
+          value: 16126
+        },{
+          name: "物理",
+          value: 8774
+        },
+      ];
 
     return (
       <Fragment>
@@ -87,11 +113,11 @@ class CollageExam extends PureComponent {
                 >
                   <Label
                     content="value"
-                    offset={-15}
+                    offset={15}
                     textStyle={{
                       textAlign: "center",
                       fontWeight: "bold",
-                      fontSize: 11
+                      fontSize: 10
                     }}
                   />
                 </Geom>
@@ -100,8 +126,10 @@ class CollageExam extends PureComponent {
             <Col xl={{ span: 8, offset: 1 }} xs={24} md={24} lg={24} style={{ marginTop: 10 }}>
               <Card title="总结" bordered={true} style={{ width: '100%' }} type="inner">
                 <Paragraph>
-                  通过搜集xxx所高校，共xx个专业报考要求，发现有大部分专业要求报考学生要有物理基础
-                </Paragraph>
+                  通过搜集<Text type='danger'>1408</Text>所高校，共<Text type="danger">26650</Text>个专业的报考要求，
+                  发现有大部分专业<Text type='danger'>不限制</Text>考生选课情况。</Paragraph>
+                 <Paragraph>对于有指定科目的专业来说，有无<Text type='danger'>物理</Text>基础是他们关注的重点。
+                  对化学、技术、生物有要求的专业数量紧随其后。这也从侧面解释了传统理科选课人数居高不下的原因了</Paragraph>
               </Card>
             </Col>
           </Row>:<Empty description="暂无数据"/>}

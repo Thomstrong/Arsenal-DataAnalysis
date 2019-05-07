@@ -95,15 +95,7 @@ export default {
         year: payload.year,
       });
     },
-    //todo 获取选课数据
-    * fetchCollage2Subject(_, { call, put }) {
-      const response = yield call(getCollageMajorSubject, {
-        type: 'pie'
-      });
-      yield put({
-        type: 'saveCollage2Subject',
-      });
-    },
+    //todo
     * fetchSubject2Major(_, { call, put }) {
       const response = yield call(getCollageMajorSubject, {
         type: 'tagCloud'
@@ -358,49 +350,7 @@ export default {
         pieTreeYear: year,
       };
     },
-    saveCollage2Subject(state) {
-      //todo 后端传来数据的处理
-      const collage2Subject = [
-        {
-          name: "物理",
-          value: 96
-        },
-        {
-          name: "历史",
-          value: 121
-        },
-        {
-          name: "地理",
-          value: 100
-        },
-        {
-          name: "化学",
-          value: 111
-        },
-        {
-          name: "生物",
-          value: 102
-        },
-        {
-          name: "政治",
-          value: 124
-        },
-        {
-          name: "技术",
-          value: 123
-        },
-        {
-          name: "不限",
-          value: 23
-        }
 
-      ];
-
-      return {
-        ...state,
-        collage2Subject
-      };
-    },
     saveSubject2Major(state, { payload }) {
       if (!payload) {
         return state;
