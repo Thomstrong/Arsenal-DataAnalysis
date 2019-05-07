@@ -541,6 +541,7 @@ class Center extends PureComponent {
       eCardLoading,
       scoreLoading
     } = this.props;
+    const {dateRange, date } = dailyPredictData;
     const { hourlyAvgData, maxHourlyAvg } = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
     const { hourlyAvgData: vsAverageData } = this.formatHourlyAvgCost(hourlyAvgCost, costVsData);
     const { formatedData: predictData, maxCost } = this.formatDailyPredictData(dailyPredictData);
@@ -741,7 +742,7 @@ class Center extends PureComponent {
                       {totalTrendData && !!totalTrendData.length && <Row type='flex' justify='start'>
                         <Affix offsetTop={13} style={{ 'zIndex': 2 }}>
                           <Select
-                            value={this.state.scoreType} style={{ width: 120 }}
+                            value={studentInfo.scoreType || this.state.scoreType} style={{ width: 120 }}
                             onChange={this.onScoreTypeChange}
                           >
                             <Option key="score" value="score">绝对分</Option>
@@ -780,12 +781,12 @@ class Center extends PureComponent {
                         <Card bordered={false} bodyStyle={{ padding: 5 }}>
                           <span>选择查看的时间：</span>
                           <DatePicker
-                            defaultValue={moment(moment('2019-01-01'), 'YYYY-MM-DD')}
+                            defaultValue={moment(moment(date || '2019-01-01'), 'YYYY-MM-DD')}
                             onChange={(_, date) => this.onDateChange(date)}
                           />
                           <span style={{ marginLeft: '20px' }}>分析区间：</span>
                           <Select
-                            value={this.state.dateRange} style={{ width: 120 }}
+                            value={dateRange || this.state.dateRange} style={{ width: 120 }}
                             onChange={this.handleChangeRange}
                           >
                             <Option key='one-week' value={7}>1周</Option>
