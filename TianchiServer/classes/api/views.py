@@ -1,5 +1,5 @@
 # Create your views here.
-from django.db.models import Q, Max, Min, Avg, Count
+from django.db.models import Q, Max, Min, Avg, Count, Sum
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
@@ -234,6 +234,53 @@ class ClassViewSet(viewsets.ModelViewSet):
             'records': records,
             'summary': sumary,
             'details': formated_details,
+        })
+
+    @required_params(params=['exam_id'])
+    @detail_route(
+        methods=['GET']
+    )
+    def exam_summary(self, request, pk):
+        exam_id = request.query_params.get('exam_id', '')
+        if not exam_id:
+            return Response('exam_id 输入有误', status=400)
+        attend_count = ClassExamRecord.objects.filter(
+            stu_class_id=pk,
+            sub_exam__exam_id=exam_id
+        ).values(
+            'sub_exam__exam_id'
+        ).annotate(
+            count=Sum('attend_count')
+        )
+
+        students = StudentRecord.objects.filter(
+            stu_class_id=pk
+        ).values_list('student_id', flat=True)
+
+        absent_count = StudentExamRecord.objects.filter(
+            student_id__in=students,
+            sub_exam__exam_id=exam_id,
+            score=-2
+        ).values(
+            'sub_exam__exam_id'
+        ).annotate(
+            count=Count('id')
+        )
+
+        free_count = StudentExamRecord.objects.filter(
+            student_id__in=students,
+            sub_exam__exam_id=exam_id,
+            score=-3
+        ).values(
+            'sub_exam__exam_id'
+        ).annotate(
+            count=Count('id')
+        )
+
+        return Response({
+            'attend_count': attend_count[0]['count'] if attend_count else 0,
+            'absent_count': absent_count[0]['count'] if absent_count else 0,
+            'free_count': free_count[0]['count'] if free_count else 0,
         })
 
     @required_params(params=['exam_id'])

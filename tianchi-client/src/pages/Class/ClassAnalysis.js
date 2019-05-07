@@ -213,6 +213,13 @@ class ClassAnalysis extends PureComponent {
       }
     });
     dispatch({
+      type: 'stuClass/fetchExamSummary',
+      payload: {
+        classId: stuClass.classInfo.id,
+        examId
+      }
+    });
+    dispatch({
       type: 'stuClass/fetchExamRecords',
       payload: {
         classId: stuClass.classInfo.id,
@@ -318,7 +325,7 @@ class ClassAnalysis extends PureComponent {
       classList, radarData, totalTrend, maxRank,
       subTrends, kaoqinSummary, kaoqinData,
       kaoqinDetail, studentList, classExamList,
-      courseRankData, scoreData, classMap,
+      courseRankData, scoreData, classMap,examSummary,
       examRecords, overLineCounter, scoreDistributionData,
     } = stuClass;
 
@@ -590,22 +597,22 @@ class ClassAnalysis extends PureComponent {
                   </Affix>}
                   {examId ?
                     <Fragment>
-                      {courseRankData.totalRank && <Card title="本次考试排名一览" style={{ marginTop: 12 }}>
-                        <Row gutter={16} type="flex" justify="start" align="bottom" style={{ marginBottom: 8 }}>
+                      {courseRankData.totalRank && <Card title="本次考试概况" style={{ marginTop: 12 }}>
+                        {!!examSummary.attendCount && <Row gutter={16} type="flex" justify="start" align="bottom" style={{ marginBottom: 8 }}>
                           <Col span={4}>
                             <Statistic
-                              title="参与考试" value={-100}
-                              suffix="人"
+                              title="参与考试" value={examSummary.attendCount}
+                              suffix="人次"
                             /></Col>
                           <Col span={4}>
                             <Statistic
-                              title="缺考" value={-100}
-                              suffix="人"
+                              title="缺考" value={examSummary.absentCount}
+                              suffix="人次"
                             /></Col>
                           <Col span={4}>
                             <Statistic
-                              title="免考" value={-100}
-                              suffix="人"
+                              title="免考" value={examSummary.freeCount}
+                              suffix="人次"
                             /></Col>
                           <Col span={4} offset={8}>
                             <Statistic
@@ -614,7 +621,7 @@ class ClassAnalysis extends PureComponent {
                               valueStyle={{ color: '#cf1322', fontSize: "48px" }}
                             />
                           </Col>
-                        </Row>
+                        </Row>}
                         <Divider style={{ marginTop: 8 }} dashed/>
                         <Row type="flex" justify="start" gutter={24}>
                           {courseRankData.rankData.map((data) => (

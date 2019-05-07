@@ -9,6 +9,7 @@ import {
   getExamRank,
   getExamRecords,
   getScoreDistribution,
+  getExamSummary,
 } from '@/services/api';
 import {
   COURSE_ALIAS,
@@ -62,6 +63,7 @@ export default {
     examRecords: [],
     overLineCounter: [0, 0, 0],
     scoreDistributionData: [],
+    examSummary: {},
     classExamList: [],
     scoreType: '',
   },
@@ -151,6 +153,15 @@ export default {
       });
       yield put({
         type: 'saveScoreDistribution',
+        payload: response,
+      });
+    },
+    * fetchExamSummary({ payload }, { call, put }) {
+      const response = yield call(getExamSummary, {
+        ...payload
+      });
+      yield put({
+        type: 'saveExamSummary',
         payload: response,
       });
     },
@@ -482,6 +493,20 @@ export default {
       return {
         ...state,
         scoreDistributionData,
+      };
+    },
+    saveExamSummary(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      const examSummary = {}
+      return {
+        ...state,
+        examSummary: {
+          attendCount: payload.attend_count,
+          absentCount: payload.absent_count,
+          freeCount: payload.free_count
+        }
       };
     },
     saveClassExamList(state, { payload }) {

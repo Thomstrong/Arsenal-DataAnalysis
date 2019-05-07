@@ -42,6 +42,10 @@ export async function getScoreDistribution({ classId, examId }) {
   return request(`/api/classes/${classId}/score_distribution/?exam_id=${examId}`);
 }
 
+export async function getExamSummary({ classId, examId }) {
+  return request(`/api/classes/${classId}/exam_summary/?exam_id=${examId}`);
+}
+
 // student
 export async function getStudentBasic(studentId) {
   return request(`/api/students/${studentId}/`);
