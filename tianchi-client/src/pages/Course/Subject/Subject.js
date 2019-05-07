@@ -23,7 +23,7 @@ class Subject extends PureComponent {
     this.state = {
       term: props.course.subjectYear || 2018,
       grade: props.course.subjectGrade || 3,
-      course: props.course.subjectCourse || 1
+      course: props.course.subjectCourse || 3
     };
   }
 
@@ -106,7 +106,6 @@ class Subject extends PureComponent {
                   <Option key="grade-option-2" value={2}>高二</Option>
                   <Option key="grade-option-3" value={3}>高三</Option>
                 </Select>
-                {/*todo 有一个问题,除了常见学科外,一些特殊学科实际上与学年有关*/}
                 <Select
                   loading={loading} disabled={loading} value={this.state.course}
                   style={{ width: "100%" }} onChange={this.handleCourseChanged}
