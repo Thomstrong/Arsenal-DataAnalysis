@@ -74,13 +74,22 @@ class Center extends PureComponent {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      studentId: props.studentInfo.id || '',
+      studentId: props.match.params.studentId || props.studentInfo.id || '',
       vsStudentId: '',
       scoreType: 'score',
       dateRange: 7,
       pickedDate: '2019-01-01',
     };
     this.getStudentList = _.debounce(this.getStudentList, 800);
+  }
+
+  componentDidMount() {
+    const { studentInfo } = this.props;
+    const { query } = this.props.location;
+    if (query && query.studentId && Number(query.studentId) !== studentInfo.id) {
+      this.getStudentList(query.studentId);
+      this.getStudentInfo(query.studentId);
+    }
   }
 
   onTabChange = key => {
@@ -586,6 +595,7 @@ class Center extends PureComponent {
                   notFoundContent={studentListLoading ? <Spin size="small"/> :
                     <Empty description={this.state.studentId ? '未找到包含该信息学生数据' : '请输入学生姓名或学号查询'}/>
                   }
+                  loading={studentListLoading}
                   size="large"
                   value={studentInfo.id || this.state.studentId}
                   filterOption={false}
@@ -839,17 +849,18 @@ class Center extends PureComponent {
                           <Col span={10}>
                             <TagCloud
                               data={vsWordCloudData}
-                              height={300}
+                              height={380}
                               imgUrl={imgUrl}
                             />
                           </Col>
                           <Col span={13} offset={1}>
                             <Card
                               title={<Fragment>
-                                {vsStudentInfo.name}
+                                <span style={{ fontSize: '20px', verticalAlign: 'middle' }}>{vsStudentInfo.name}</span>
                                 {vsStudentInfo.is_left ? <Tag style={{ marginLeft: '10px' }} color="#f50">已离校</Tag> :
                                   <Tag style={{ marginLeft: '10px' }} color="#4ac46a">在校生</Tag>}
                               </Fragment>}
+                              headStyle={{ minHeight: '20px' }}
                               bordered={false}
                               hoverable={true}
                               className={styles.vsDetail}
