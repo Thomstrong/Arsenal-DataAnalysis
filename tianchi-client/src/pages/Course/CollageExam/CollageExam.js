@@ -1,6 +1,6 @@
 import React, { Fragment, PureComponent } from "react";
 import { Axis, Chart, Coord, Geom, Label, Legend, Tooltip, } from "bizcharts";
-import { Card, Col, Empty, Row, Typography } from "antd";
+import { Card, Col, Empty, Row, Typography,Divider } from "antd";
 import TagCloud from '@/components/Charts/TagCloud';
 import backImg from '../../../../public/tagcloud/Rectangular.jpeg';
 import { connect } from "dva";
@@ -169,7 +169,8 @@ class CollageExam extends PureComponent {
               部分学校允许申请统计学、物理学、数学等理科专业；</Paragraph>
             <Paragraph>对选课情况<Text type='danger'>不做限制</Text>的专业主要是市场营销、物流管理、财务管理、电子商务、
               <Text type='danger'>英语</Text>等专业。</Paragraph>
-              <Paragraph style={{fontSize:12}}><Text type='secondary'>因为不同高校要求不同，
+              <Divider/>
+              <Paragraph style={{fontSize:12}}><Text type='secondary'>* 因为不同高校要求不同，
                 所以即使专业名称相同，不同学校对考生的选课情况也有不同的限制。</Text></Paragraph></Typography>
           </Card></Fragment>}
       </Fragment>
