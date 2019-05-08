@@ -9,7 +9,7 @@ from wordcloud.models.tag_record import CourseTag
 from wordcloud.models.word_cloud_tag import WordCloudTag
 
 
-# python manage.py generate_course_tags
+# python manage.py runscript generate_course_tags
 def run():
     CourseTag.objects.all().delete()
     course_map = []
