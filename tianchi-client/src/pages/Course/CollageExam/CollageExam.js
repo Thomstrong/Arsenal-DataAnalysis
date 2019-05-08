@@ -118,7 +118,7 @@ class CollageExam extends PureComponent {
             </Col>
           </Row> : <Empty description="暂无数据"/>}
         </Card>
-        {!subject2Major ? <Empty description="暂无数据"/> : <Card title={`2019年高校专业选考科目要求`} bodyStyle={{ paddingTop: 0 }}>
+        {!subject2Major ? <Empty description="暂无数据"/> : <Fragment>
           < Row gutter={16} style={{ marginTop: 24 }}>
             {Object.keys(subject2Major).map(courseId => {
               return <Col
@@ -151,7 +151,7 @@ class CollageExam extends PureComponent {
             <Paragraph>
               要求物理背景的专业集中在工科和理科中。。。。。。
             </Paragraph>
-          </Card></Card>}
+          </Card></Fragment>}
       </Fragment>
     );
   }
