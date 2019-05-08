@@ -129,6 +129,9 @@ class Selection extends PureComponent {
 
   filterOptions = (text, option) => {
     for (let i = 0; i < text.length; i++) {
+      if (['理', '学', '历', '治', '术'].includes(text[i])) {
+        continue;
+      }
       if (!option.props.value.includes(text[i])) {
         return false;
       }
@@ -473,7 +476,7 @@ class Selection extends PureComponent {
             data={detailDistribution}
             forceFit
           >
-            <Axis name="selection" tickLine={null}/>
+            <Axis name="selection"/>
             <Axis name="count"/>
             <Legend/>
             <Tooltip/>
@@ -495,7 +498,7 @@ class Selection extends PureComponent {
                   marginRatio: 1 / 32
                 }
               ]}
-              size={this.state.windowWidth * 0.0035}
+              size={this.state.windowWidth / 300}
               tooltip={[
                 "year*count",
                 (year, count) => {
