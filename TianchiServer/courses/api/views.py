@@ -1,5 +1,5 @@
 # Create your views here.
-from django.db.models import Count
+from django.db.models import Count, Sum
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
@@ -209,7 +209,14 @@ class CourseViewSet(viewsets.ModelViewSet):
         for tag in tags:
             tag_map[tag[0]] = tag[1]
 
+        summary = CourseTag.objects.values(
+            'course_id'
+        ).annotate(
+            sum=Sum('value')
+        ).order_by('-sum')
+
         return Response({
             'tagMap': tag_map,
             'data': data,
+            'summary': summary
         })

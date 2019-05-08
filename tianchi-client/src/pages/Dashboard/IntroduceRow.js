@@ -15,7 +15,7 @@ const topColResponsiveProps = {
 
 const IntroduceRow = memo(({ loading, data, year }) => {
     const {
-      campusData, totalStudentCount, totalStayCount,totalStudentInDb, dailyAvgCost,
+      campusData, totalStudentCount, totalStayCount, totalStudentInDb, dailyAvgCost,
       yearCostData, totalYearCost, kaoqinSummaryData, totalKaoqinCount
     } = data;
     return <Row gutter={24}>
@@ -47,7 +47,7 @@ const IntroduceRow = memo(({ loading, data, year }) => {
           title="住校生人数占比"
           total={`${(totalStayCount / totalStudentCount * 100).toFixed(2)}%`}
           footer={
-            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden'}}>
+            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
               <Row>
                 <Col span={12}>
                   走读生 {numeral(totalStudentCount - totalStayCount).format('0,0')}
@@ -96,10 +96,10 @@ const IntroduceRow = memo(({ loading, data, year }) => {
           footer={
             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
               <Row>
-                <Col span={12}>
+                <Col span={12} style={{ fontSize: '.9em', margin: '2px 0' }}>
                   迟到早退{kaoqinSummaryData[0] ? kaoqinSummaryData[0].y : 0}次
                 </Col>
-                <Col span={12}>
+                <Col span={12} style={{ fontSize: '.9em', margin: '2px 0' }}>
                   校服违纪{kaoqinSummaryData[1] ? kaoqinSummaryData[1].y : 0}次
                 </Col>
               </Row>

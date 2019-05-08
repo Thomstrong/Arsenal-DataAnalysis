@@ -10,6 +10,7 @@ const { Paragraph, Text } = Typography;
 
 @connect(({ course }) => ({
   subject2Major: course.subject2Major,
+  collage2Subject: course.collage2Subject,
   majorMap: course.majorMap,
 }))
 
@@ -27,45 +28,13 @@ class CollageExam extends PureComponent {
   render() {
     const {
       subject2Major,
-      majorMap
+      majorMap,
+      collage2Subject,
     } = this.props;
-    const collage2Subject = [
-      {
-        name: "化学",
-        value: 6533
-      },
-      {
-        name: "技术",
-        value: 3679
-      },
-      {
-        name: "生物",
-        value: 3381
-      },
-      {
-        name: "历史",
-        value: 1145
-      },
-      {
-        name: "地理",
-        value: 1107
-      },
-      {
-        name: "政治",
-        value: 735
-      },
-      {
-        name: "不限",
-        value: 16126
-      }, {
-        name: "物理",
-        value: 8774
-      },
-    ];
 
     return (
       <Fragment>
-        <Card title="2019年高校招生指定科目情况" bordered={true} style={{ width: '100%' }}>
+        <Card title="2019年高校专业选考科目概况" bordered={true} style={{ width: '100%', marginBottom: 24 }}>
           {(collage2Subject && collage2Subject.length) ? <Row type="flex" align="middle">
             <Col xl={15} xs={24} md={24} lg={24}>
               <Chart
@@ -108,6 +77,15 @@ class CollageExam extends PureComponent {
                   type="interval"
                   position="name*value"
                   color="name"
+                  tooltip={[
+                    "name*value",
+                    (name, value) => {
+                      return {
+                        name: name,
+                        value: `${value} 高校专业`
+                      };
+                    }
+                  ]}
                   style={{
                     lineWidth: 1,
                     stroke: "#fff"
@@ -128,7 +106,11 @@ class CollageExam extends PureComponent {
             <Col xl={{ span: 8, offset: 1 }} xs={24} md={24} lg={24} style={{ marginTop: 10 }}>
               <Card title="总结" bordered={true} style={{ width: '100%' }} type="inner">
                 <Paragraph>
-                  通过搜集<Text type='danger'>1408</Text>所高校，共<Text type="danger">26650</Text>个专业的报考要求，
+                  通过对
+                  <a href={'http://zt.zjzs.net/xk2019/'} target='_blank'>
+                    《2019年拟在浙招生高校专业（类）选考科目要求范围》
+                  </a>检索，搜集<Text type='danger'>1408</Text>所不同高校，对
+                  <Text type="danger"> 26650 </Text>个专业的报考要求，
                   发现有大部分专业<Text type='danger'>不限制</Text>考生选课情况。</Paragraph>
                 <Paragraph>对于有指定科目的专业来说，有无<Text type='danger'>物理</Text>基础是他们关注的重点。
                   对化学、技术、生物有要求的专业数量紧随其后。这也从侧面解释了传统理科选课人数居高不下的原因了</Paragraph>
@@ -136,39 +118,40 @@ class CollageExam extends PureComponent {
             </Col>
           </Row> : <Empty description="暂无数据"/>}
         </Card>
-        {subject2Major ? <Fragment><Row gutter={16} style={{ marginTop: 24 }}>
-          {Object.keys(subject2Major).map(courseId => {
-            return <Col
-              key={`course-major-col-${courseId}`}
-              xl={6} lg={12} sm={12} xs={12} style={{ marginBottom: 24 }}
-            >
-              <Card
-                key={`course-major-card-${courseId}`}
-                title={COURSE_FULLNAME_ALIAS[Number(courseId)]}
-                bordered={false}
-                bodyStyle={{ overflow: 'hidden' }}
+        {!subject2Major ? <Empty description="暂无数据"/> : <Card title={`2019年高校专业选考科目要求`} bodyStyle={{ paddingTop: 0 }}>
+          < Row gutter={16} style={{ marginTop: 24 }}>
+            {Object.keys(subject2Major).map(courseId => {
+              return <Col
+                key={`course-major-col-${courseId}`}
+                xl={6} lg={12} sm={12} xs={12} style={{ marginBottom: 24 }}
               >
-                <TagCloud
-                  key={`course-major-cloud-${courseId}`}
-                  repeat={false}
-                  data={subject2Major[courseId].map(data => {
-                    return {
-                      name: majorMap[data[0]],
-                      value: data[1]
-                    };
-                  })}
-                  height={161}
-                  imgUrl={backImg}
-                />
-              </Card>
-            </Col>;
-          })}
-        </Row>
+                <Card
+                  key={`course-major-card-${courseId}`}
+                  title={`${COURSE_FULLNAME_ALIAS[Number(courseId)]}`}
+                  bordered={true}
+                  bodyStyle={{ overflow: 'hidden' }}
+                >
+                  <TagCloud
+                    key={`course-major-cloud-${courseId}`}
+                    repeat={false}
+                    data={subject2Major[courseId].map(data => {
+                      return {
+                        name: majorMap[data[0]],
+                        value: data[1]
+                      };
+                    })}
+                    height={161}
+                    imgUrl={backImg}
+                  />
+                </Card>
+              </Col>;
+            })}
+          </Row>
           <Card title="总结" bordered={true} style={{ width: '100%' }}>
             <Paragraph>
               要求物理背景的专业集中在工科和理科中。。。。。。
             </Paragraph>
-          </Card></Fragment> : <Empty description="暂无数据"/>}
+          </Card></Card>}
       </Fragment>
     );
   }

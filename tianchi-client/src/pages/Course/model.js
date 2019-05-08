@@ -2,8 +2,8 @@
  * Created by 胡晓慧 on 2019/4/12.
  */
 
-import { getClassExamData, getCourseSelectionDistribution, getCollageMajorSubject } from '@/services/api';
-import { COURSE_ALIAS, SEX_MAP } from "@/constants";
+import { getClassExamData, getCollageMajorSubject, getCourseSelectionDistribution } from '@/services/api';
+import { COURSE_ALIAS, COURSE_FULLNAME_ALIAS, SEX_MAP } from "@/constants";
 import DataSet from "@antv/data-set";
 
 export default {
@@ -27,13 +27,15 @@ export default {
       lowest: [],
       average: [],
     },
-    classExamSummary:{},
+    classExamSummary: {},
     loading: false,
     subjectYear: 0,
     subjectGrade: 0,
     subjectCourse: 0,
     subject2Major: null,
     majorMap: {},
+    collage2Subject: [],
+    totalMajor: 0
   },
 
   effects: {
@@ -156,17 +158,17 @@ export default {
         average: [],
       };
       const classExamSummary = {
-        highestClass:"",
-        highestExam :"",
-        highestScore :0,
-        averageHighClass:"",
-        averageHighExam :"",
-        averageHighScore :0,
-        averageLowClass : "",
-        averageLowExam : "",
-        averageLowScore : 150,
-        lowestClass : "",
-        lowestExam : "",
+        highestClass: "",
+        highestExam: "",
+        highestScore: 0,
+        averageHighClass: "",
+        averageHighExam: "",
+        averageHighScore: 0,
+        averageLowClass: "",
+        averageLowExam: "",
+        averageLowScore: 150,
+        lowestClass: "",
+        lowestExam: "",
         lowestScore: 150,
       };
 
@@ -188,25 +190,25 @@ export default {
           ...baseInfo,
           score: average
         });
-        if(data.highest_score>classExamSummary.highestScore){
+        if (data.highest_score > classExamSummary.highestScore) {
           classExamSummary.highestScore = data.highest_score;
           classExamSummary.highestClass = data.stu_class;
-          classExamSummary.highestExam = data.exam_name
+          classExamSummary.highestExam = data.exam_name;
         }
-        if(average>classExamSummary.averageHighScore){
+        if (average > classExamSummary.averageHighScore) {
           classExamSummary.averageHighScore = average;
           classExamSummary.averageHighClass = data.stu_class;
-          classExamSummary.averageHighExam = data.exam_name
+          classExamSummary.averageHighExam = data.exam_name;
         }
-        if(average<classExamSummary.averageLowScore){
+        if (average < classExamSummary.averageLowScore) {
           classExamSummary.averageLowScore = average;
           classExamSummary.averageLowClass = data.stu_class;
-          classExamSummary.averageLowExam = data.exam_name
+          classExamSummary.averageLowExam = data.exam_name;
         }
-        if(data.lowest_score<classExamSummary.lowestScore){
+        if (data.lowest_score < classExamSummary.lowestScore) {
           classExamSummary.lowestScore = data.lowest_score;
           classExamSummary.lowestClass = data.stu_class;
-          classExamSummary.lowestExam = data.exam_name
+          classExamSummary.lowestExam = data.exam_name;
         }
       }
       return {
@@ -354,46 +356,17 @@ export default {
       if (!payload) {
         return state;
       }
-      //todo 后端传来数据的处理
-      const subject2Major= {
-        physics:
-        [{
-          "name": "China",
-          "value": 1383220000,
-        },
-      {
-        "name": "India",
-        "value": 1316000000,
-      }, {
-        "name": "United States",
-        "value": 324982000,
-      }, {
-        "name": "Indonesia",
-        "value": 263510000,
-      }, {
-        "name": "Brazil",
-        "value": 207505000,
-      }, {
-        "name": "Pakistan",
-        "value": 196459000,
-      }, {
-        "name": "Nigeria",
-        "value": 191836000,
-      }, {
-        "name": "Bangladesh",
-        "value": 162459000,
-      }, {
-        "name": "Russia",
-        "value": 146804372,
-      }, {
-        "name": "Japan",
-        "value": 126790000,
-      }]
-      };
+      const collage2Subject = payload.summary.map(data => {
+        return {
+          name: COURSE_FULLNAME_ALIAS[data.course_id],
+          value: data.sum
+        };
+      });
       return {
         ...state,
         subject2Major: payload.data,
-        majorMap: payload.tagMap
+        majorMap: payload.tagMap,
+        collage2Subject,
       };
     },
 
