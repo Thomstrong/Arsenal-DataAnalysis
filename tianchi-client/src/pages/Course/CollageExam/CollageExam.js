@@ -48,7 +48,7 @@ class CollageExam extends PureComponent {
                 padding={[40, 40, 60, 40]}
                 forceFit
               >
-                <Coord type="polar"/>
+                <Coord type="polar" rotate={-90}/>
                 <Axis
                   name="value"
                   label={null}
@@ -65,7 +65,7 @@ class CollageExam extends PureComponent {
                   }}
                   tickLine={null}
                   label={{
-                    Offset: 10,
+                    Offset: 20,
                     textStyle: {
                       textAlign: "center" // 设置坐标轴 label 的文本对齐方向
                     }
@@ -99,7 +99,7 @@ class CollageExam extends PureComponent {
                 >
                   <Label
                     content="value"
-                    offset={15}
+                    offset={20}
                     textStyle={{
                       textAlign: "center",
                       fontWeight: "bold",

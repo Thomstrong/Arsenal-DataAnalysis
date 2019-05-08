@@ -356,14 +356,11 @@ export default {
       if (!payload) {
         return state;
       }
-      const collage2Subject = Array(8);
-      let i = 6;
-      payload.summary.map(data => {
-        collage2Subject[i % 8] = {
+      const collage2Subject = payload.summary.map(data => {
+        return {
           name: COURSE_FULLNAME_ALIAS[data.course_id],
           value: data.sum
         };
-        i += 1;
       });
       return {
         ...state,
