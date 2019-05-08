@@ -237,7 +237,7 @@ export default {
         return state;
       }
 
-      const radarData = new DataSet.View().source(payload.map((data) => {
+      let radarData = new DataSet.View().source(payload.map((data) => {
         return {
           'item': COURSE_ALIAS[data.sub_exam__course_id],
           [SCORE_LEVEL_ALIAS.highest]: Number(data.highest.toFixed(0)),
@@ -249,12 +249,20 @@ export default {
         fields: Object.values(SCORE_LEVEL_ALIAS),
         key: "user",
         value: "score" // value字段
-      }).rows;
+      });
 
-
+      if (radarData.rows.length && radarData.range('score')[1] > 100) {
+        radarData = radarData.transform({
+          type: 'map',
+          callback(data) {
+            data.score = Number((data.score / radarData.range('score')[1] * 100).toFixed(0));
+            return data;
+          }
+        });
+      }
       return {
         ...state,
-        radarData
+        radarData: radarData.rows
       };
     },
     saveTrendData(state, { payload, scoreType }) {

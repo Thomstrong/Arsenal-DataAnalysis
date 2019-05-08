@@ -56,6 +56,7 @@ const ScoreLineChart = memo(
               <Axis
                 name="score"
                 line={null}
+                label={null}
                 tickLine={null}
                 grid={{
                   type: "polygon",

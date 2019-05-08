@@ -46,7 +46,6 @@ export default {
     vsStudentList: [],
     wordCloudData: [],
     vsWordCloudData: [],
-    radarData: [],
     hourlyAvgCost: [],
     dailySumCost: [],
     dailyAvg: 0,
@@ -184,7 +183,7 @@ export default {
       yield put({
         type: 'saveTotalTrend',
         payload: response,
-        scoreType:payload.scoreType
+        scoreType: payload.scoreType
       });
     },
     * fetchSubTrends({ payload }, { call, put }) {
@@ -251,7 +250,7 @@ export default {
         ...payload,
       };
     },
-    saveTotalTrend(state, { payload,scoreType }) {
+    saveTotalTrend(state, { payload, scoreType }) {
       if (!payload) {
         return state;
       }
@@ -353,9 +352,9 @@ export default {
         });
         radarData.push({
           'item': COURSE_ALIAS[data.sub_exam__course_id],
-          [SCORE_LEVEL_ALIAS.highest]: Number(data.highest.toFixed(0)),
-          [SCORE_LEVEL_ALIAS.lowest]: Number(data.lowest.toFixed(0)),
-          [SCORE_LEVEL_ALIAS.average]: Number(data.average.toFixed(0)),
+          [SCORE_LEVEL_ALIAS.highest]: data.lowest > 0 ? Number(data.highest.toFixed(0)) : 0,
+          [SCORE_LEVEL_ALIAS.lowest]: data.lowest > 0 ? Number(data.lowest.toFixed(0)) : 0,
+          [SCORE_LEVEL_ALIAS.average]: data.lowest > 0 ? Number(data.average.toFixed(0)) : 0,
         });
       });
       unstableSubject.sort(function (a, b) {
@@ -379,14 +378,24 @@ export default {
         type: "fold",
         fields: Object.values(SCORE_LEVEL_ALIAS),
         key: "user",
-        value: "score" // value字段
-      }).rows;
+        value: "score"
+      });
+
+      if (radarData.rows.length && radarData.range('score')[1] > 100) {
+        radarData.transform({
+          type: 'map',
+          callback(data) {
+            data.score = Number((data.score / radarData.range('score')[1] * 100).toFixed(0));
+            return data;
+          }
+        });
+      }
 
       return {
         ...state,
         studentInfo: action.payload ? {
             ...state.studentInfo,
-            radarData: radarData,
+            radarData: radarData.rows,
             lineSummary: lineSummary
           } :
           state.studentInfo,
