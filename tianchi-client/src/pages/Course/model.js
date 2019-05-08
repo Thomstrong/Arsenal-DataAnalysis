@@ -15,6 +15,7 @@ export default {
     coursePercentYear: 0,
     arcCourse: {},
     detailDistribution: [],
+    allSelections: [],
     courseSelectionTree: {},
     courseSelectionPie: [],
     courseSelectionPieOther: [],
@@ -246,11 +247,13 @@ export default {
       if (!payload) {
         return state;
       }
+      const allSelections = {};
       const detailDistribution = [];
       for (let data of payload) {
         const { year } = data;
         for (let selection in data.data) {
           const courses = selection.split('#').map(id => COURSE_ALIAS[id]).join('');
+          allSelections[courses] = 1;
           detailDistribution.push({
             year: String(year),
             selection: courses,
@@ -260,7 +263,8 @@ export default {
       }
       return {
         ...state,
-        detailDistribution
+        detailDistribution,
+        allSelections: Object.keys(allSelections)
       };
     },
     saveDetailPercent(state, { payload, year }) {

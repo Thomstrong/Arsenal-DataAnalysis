@@ -5,10 +5,11 @@
 
 import React, { Fragment, PureComponent } from 'react';
 import { COURSE_FULLNAME_ALIAS } from "@/constants";
-import { BackTop, Button, Card, Col, Row, Select, Typography } from 'antd';
+import { Affix, BackTop, Button, Card, Col, Row, Select, Typography } from 'antd';
 import DataSet from "@antv/data-set";
 import { Axis, Chart, Coord, G2, Geom, Guide, Label, Legend, Tooltip, View } from "bizcharts";
 import { connect } from "dva";
+import { gradientColor } from "@/utils/utils";
 
 const { Paragraph, Text: AntdText } = Typography;
 const { Option } = Select;
@@ -21,6 +22,7 @@ const { Option } = Select;
   totalStudents: course.totalStudents,
   arcCourse: course.arcCourse,
   detailDistribution: course.detailDistribution,
+  allSelections: course.allSelections,
   courseSelectionPie: course.courseSelectionPie,
   courseSelectionPieOther: course.courseSelectionPieOther,
   pieOtherOffsetAngle: course.pieOtherOffsetAngle,
@@ -28,15 +30,36 @@ const { Option } = Select;
   courseSelectionTree: course.courseSelectionTree,
   loading: loading.models.rule,
 }))
+
+
 class Selection extends PureComponent {
   constructor() {
     super();
     this.state = {
-      pieFront: false
+      pieFront: false,
+      filterSelections: [],
+      windowWidth: 0,
     };
+    this.resize = _.debounce(this.resize, 800);
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.resize);
+  }
+
+  resize = () => {
+    if (window.innerWidth === this.state.windowWidth) {
+      return;
+    }
+    this.setState({
+      windowWidth: window.innerWidth
+    });
+  };
+
+
   componentDidMount() {
+    window.addEventListener('resize', this.resize);
+    this.resize();
     const {
       dispatch, distributions, coursePercents,
       arcCourse, detailDistribution, courseSelectionPie
@@ -104,6 +127,20 @@ class Selection extends PureComponent {
     });
   };
 
+  filterOptions = (text, option) => {
+    for (let i = 0; i < text.length; i++) {
+      if (!option.props.value.includes(text[i])) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  onFilterChanged = (selections) => {
+    this.setState({
+      filterSelections: selections
+    });
+  };
 
   render() {
     const {
@@ -114,6 +151,8 @@ class Selection extends PureComponent {
       courseSelectionTree, pieTreeYear
     } = this.props;
 
+    const { filterSelections } = this.state;
+    let allSelections = this.props.allSelections;
     const { Text } = Guide;
 
     //分组层叠图颜色
@@ -132,6 +171,25 @@ class Selection extends PureComponent {
       "技术": "#fa816d",
       "政治": "#d15b7f",
     };
+
+    const selectionColrMap = {
+      2017: '#26BFBF',
+      2018: '#FC6170',
+      2019: '#FFD747'
+    };
+    const missSelectionColrMap = {
+      2017: '#4c5a5a',
+      2018: '#826d6d',
+      2019: '#a39d99'
+    };
+    const otherTypeColorMap = {};
+    if (courseSelectionPieOther.length) {
+      const otherTypeColors = gradientColor('#b6e7ff', '#6387c9', courseSelectionPieOther.length);
+      courseSelectionPieOther.map((data, index) => {
+        otherTypeColorMap[data.otherType] = otherTypeColors[index];
+      });
+    }
+
     const chartWidth = window.innerWidth;
     const chartHeight = window.innerHeight / 2;
     // 定义 other 的图形，增加两条辅助线
@@ -336,7 +394,6 @@ class Selection extends PureComponent {
                         return {
                           name: COURSE_FULLNAME_ALIAS[source] + " <-> " + COURSE_FULLNAME_ALIAS[target] + "</span>",
                           value: sourceWeight + "人"
-
                         };
                       }
                     ]}
@@ -394,26 +451,51 @@ class Selection extends PureComponent {
         </Card>
         <Card title="七选三组合分布情况" bordered={true} style={{ width: '100%', marginTop: 24 }}>
           {/*柱状图显示35种选择人数分布情况,分组柱状图*/}
+          <Affix offsetTop={15} style={{ 'zIndex': 1 }}>
+            <Select
+              allowClear
+              autoClearSearchValue={false}
+              filterOption={(input, option) => this.filterOptions(input, option)}
+              mode="multiple"
+              placeholder="请选择或查询希望筛选的组合"
+              value={filterSelections}
+              onChange={(selections) => this.onFilterChanged(selections)}
+              style={{ width: '100%', marginBottom: '10px' }}
+            >
+              {allSelections.map(courses => <Option key={`courses-option-${courses}`} value={courses}>
+                {courses}
+              </Option>)}
+            </Select>
+          </Affix>
           <Chart
             key='selection-3_in_7-chart'
             height={400}
             data={detailDistribution}
             forceFit
           >
-            <Axis name="selection"/>
+            <Axis name="selection" tickLine={null}/>
             <Axis name="count"/>
             <Legend/>
             <Tooltip/>
             <Geom
               type="interval"
               position="selection*count"
-              color={["year", "#26BFBF-#FC6170-#FFD747"]}
+              color={["year*selection", (year, selection) => {
+                if (filterSelections.length) {
+                  if (filterSelections.includes(selection)) {
+                    return selectionColrMap[year];
+                  }
+                  return missSelectionColrMap[year];
+                }
+                return selectionColrMap[year];
+              }]}
               adjust={[
                 {
                   type: "dodge",
                   marginRatio: 1 / 32
                 }
               ]}
+              size={this.state.windowWidth * 0.0035}
               tooltip={[
                 "year*count",
                 (year, count) => {
@@ -430,8 +512,9 @@ class Selection extends PureComponent {
           {/*矩形树图,与饼图柱状图结合,做成卡片翻转样式,仅显示数值*/}
           <Row>
             <Col offset={1} xs={24} xl={22}>
-              <Select id='3in7-selection' defaultValue={pieTreeYear || 2019} style={{ width: 120, float: "center" }}
-                      onChange={(year) => this.onDetailYearChanged(year)}
+              <Select
+                id='3in7-selection' defaultValue={pieTreeYear || 2019} style={{ width: 120, float: "center" }}
+                onChange={(year) => this.onDetailYearChanged(year)}
               >
                 <Option key="pie-tree-option-2017" value={2017}>2017年</Option>
                 <Option key="pie-tree-option-2018" value={2018}>2018年</Option>
@@ -473,7 +556,14 @@ class Selection extends PureComponent {
                       <Geom
                         type="intervalStack"
                         position="value"
-                        color="type"
+                        color={["type", (name) => {
+                          if (filterSelections.length) {
+                            if (filterSelections.includes(name)) {
+                              return;
+                            }
+                            return '#bababa';
+                          }
+                        }]}
                         shape={[
                           "type",
                           function (type) {
@@ -521,7 +611,15 @@ class Selection extends PureComponent {
                         type="intervalStack"
                         position="1*value"
                         boolean={true}
-                        color={["otherType", "#b6e7ff-#6387c9"]}
+                        color={["otherType", (name) => {
+                          if (filterSelections.length) {
+                            if (filterSelections.includes(name)) {
+                              return otherTypeColorMap[name];
+                            }
+                            return '#bababa';
+                          }
+                          return otherTypeColorMap[name];
+                        }]}
                       >
                         <Label
                           content="value*otherType"
@@ -552,7 +650,14 @@ class Selection extends PureComponent {
                     <Geom
                       type="polygon"
                       position="x*y"
-                      color="name"
+                      color={["name", (name) => {
+                        if (filterSelections.length) {
+                          if (filterSelections.includes(name)) {
+                            return;
+                          }
+                          return '#bababa';
+                        }
+                      }]}
                       tooltip={[
                         "name*value",
                         (name, count) => {
