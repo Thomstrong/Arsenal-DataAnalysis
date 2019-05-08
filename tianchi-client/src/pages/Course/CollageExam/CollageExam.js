@@ -80,9 +80,15 @@ class CollageExam extends PureComponent {
                   tooltip={[
                     "name*value",
                     (name, value) => {
+                      if (name === '不限') {
+                        return {
+                          name: '可选专业',
+                          value: `${value} 个`
+                        };
+                      }
                       return {
-                        name: name,
-                        value: `${value} 高校专业`
+                        name: '被限制专业',
+                        value: `${value} 个`
                       };
                     }
                   ]}
