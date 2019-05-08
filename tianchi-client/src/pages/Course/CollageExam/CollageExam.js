@@ -155,21 +155,21 @@ class CollageExam extends PureComponent {
           </Row>
           <Card title="总结" bordered={true} style={{ width: '100%' }}>
             <Typography style={{marginLeft:40}}>
-            <Paragraph>选修<Text type='danger'>物理</Text>即可申请的专业集中在<Text type='danger'>工科</Text>和
+            <Paragraph>选修<Text type='danger'>物理</Text>即可填报的专业集中在<Text type='danger'>工科</Text>和
               <Text type='danger'>理科</Text>中，以<Text type='danger'>土木工程</Text>、电子、自动化、计算机、通信工程、自动化、数学、物理学为主；</Paragraph>
-            <Paragraph>选修<Text type='danger'>化学、生物</Text>即可申请的专业重叠度较高，
+            <Paragraph>选修<Text type='danger'>化学、生物</Text>即可填报的专业重叠度较高，
               多是药学、<Text type='danger'>医学</Text>、环境工程、生物技术、土木类等；</Paragraph>
-            <Paragraph>选修<Text type='danger'>历史</Text>即可申请的专业多是
+            <Paragraph>选修<Text type='danger'>历史</Text>即可填报的专业多是
               <Text type='danger'>文学类</Text>、教育类、语言类、历史学和国际贸易等；</Paragraph>
-            <Paragraph>选修<Text type='danger'>地理</Text>即可申请的专业除了语言等文学类专业外还集中在
+            <Paragraph>选修<Text type='danger'>地理</Text>即可填报的专业除了语言等文学类专业外还集中在
               <Text type='danger'>城乡规划</Text>、旅游管理、交通运输、测绘等理工类专业；</Paragraph>
-             <Paragraph>选修<Text type='danger'>政治</Text>即可申请的专业集中在法学类、金融类、<Text type='danger'>教育</Text>类；</Paragraph>
-            <Paragraph>选修<Text type='danger'>技术</Text>即可申请的专业
+             <Paragraph>选修<Text type='danger'>政治</Text>即可填报的专业集中在法学类、金融类、<Text type='danger'>教育</Text>类；</Paragraph>
+            <Paragraph>选修<Text type='danger'>技术</Text>即可填报的专业
               主要是<Text type='danger'>软件工程</Text>、计算机、通信工程、电子信息工程、物联网等工科类专业，
               部分学校允许申请统计学、物理学、数学等理科专业；</Paragraph>
             <Paragraph>对选课情况<Text type='danger'>不做限制</Text>的专业主要是市场营销、物流管理、财务管理、电子商务、
               <Text type='danger'>英语</Text>等专业。</Paragraph>
-              <Paragraph style={{textAlign:'center',marginLeft:-30}}><Text type='secondary'>Tips：因为不同高校要求不同，
+              <Paragraph style={{fontSize:12}}><Text type='secondary'>因为不同高校要求不同，
                 所以即使专业名称相同，不同学校对考生的选课情况也有不同的限制。</Text></Paragraph></Typography>
           </Card></Fragment>}
       </Fragment>
