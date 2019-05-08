@@ -729,7 +729,7 @@ class Center extends PureComponent {
                     </Row>
                   </div>
                 </Fragment>
-              ) : <Empty style={{ margin: '10px auto' }} description='请在上面👆搜索框中搜索学生信息！'/>}
+              ) : <Empty style={{ margin: '10px auto' }} description='请在👆搜索框中搜索学生信息！'/>}
             </Card>
           </Col>
           <Col lg={17} md={24}>

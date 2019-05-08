@@ -549,7 +549,7 @@ class ClassAnalysis extends PureComponent {
                     </Row>
                   </div>
                 </Fragment>
-              ) : <Empty style={{ marginTop: '20px' }} description='请在上面👆搜索框中搜索班级信息！'/>}
+              ) : <Empty style={{ marginTop: '20px' }} description='请在👆搜索框中搜索班级信息！'/>}
             </Card>
           </Col>
           {/*分为三个部分，分别是考试趋势显示和具体考试分析和考勤情况*/}
