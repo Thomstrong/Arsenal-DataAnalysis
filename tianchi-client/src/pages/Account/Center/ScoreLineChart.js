@@ -33,7 +33,7 @@ const ScoreLineChart = memo(
         highScoreTime++;
       }
     }
-    console.log(scoreType);
+
     const showDengDi = scoreType === 'deng_di';
     const scale = showDengDi ? dengDiScale : normalScale;
     return (lineData && !!lineData.length) ? <React.Fragment>
@@ -400,8 +400,20 @@ const ScoreLineChart = memo(
               <Line
                 key='student-z-score-line'
                 top={true}
-                start={[-0.5, 0]}
-                end={['max', 0]}
+                start={(xScale, yScale) =>{
+                  if (yScale.score.min>0) {
+                    return [-0.5,-100]
+                  }
+                  return [-0.5,0]
+
+                } }
+                end={(xScale, yScale) =>{
+                  if (yScale.score.min>0) {
+                    return ['max',-100]
+                  }
+                  return ['max',0]
+
+                } }
                 lineStyle={{
                   stroke: '#67686e',
                   lineDash: [0, 2, 2],
