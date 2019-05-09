@@ -13,8 +13,10 @@ class ClassMiniSerializer(serializers.ModelSerializer):
     def get_start_year(self, obj):
         year = obj.studentrecord_set.select_related(
             'term'
-        ).last().term.start_year
-        return year
+        ).last()
+        if year:
+            return year.term.start_year
+        return ''
 
 
 class ClassBasicSerializer(ClassMiniSerializer):

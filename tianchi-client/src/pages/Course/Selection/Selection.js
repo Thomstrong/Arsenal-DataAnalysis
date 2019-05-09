@@ -438,19 +438,20 @@ class Selection extends PureComponent {
                 <AntdText type="danger">历史</AntdText>在七门学科中较为<AntdText type="danger">弱势</AntdText>。
                 究其原因，可能是填报志愿时不同专业对
                 <a href={'/course/collageExam'}>选课要求</a>
-                的不同，物理化学在填报志愿时较有优势，
-                其中2019年选考物理后的可申报专业覆盖面高达93.5%，化学为85.5%;</Paragraph>
+                的不同，物理、化学在填报志愿时较有优势，其中2019年选考物理后可填报专业覆盖面高达93.5%，化学为85.5%；</Paragraph>
               <Paragraph>2.
-                2019年,选课人数突增，但<AntdText type="danger">男女</AntdText>生选课<AntdText type="danger">差异并不明显</AntdText>，
-                <AntdText type="danger">女男比</AntdText>在理化生三个学科上依次<AntdText type="danger">增高</AntdText>，
-                男女选课人数最不均衡的居然是政治接近<AntdText type="danger">1：5</AntdText>。
-                其中，化学、地理的选课男女比接近<AntdText type="danger">1：1</AntdText>；
-                物理、技术接近<AntdText type="danger">2：1</AntdText>；
-                生物、历史接近<AntdText type="danger">1：2</AntdText>；</Paragraph>
+                2019年，选课人数突增，但<AntdText type="danger">男女</AntdText>生选课<AntdText type="danger">差异并不明显</AntdText>，
+                <AntdText type="danger">女生的占比</AntdText>在物化生三个学科上依次<AntdText type="danger">增高</AntdText>，
+                男女选课人数最不均衡的是政治，接近<AntdText type="danger">1 : 5</AntdText>。
+                其中，化学、地理的选课男女比接近<AntdText type="danger">1 : 1</AntdText>；
+                物理、技术接近<AntdText type="danger">2 : 1</AntdText>；
+                生物、历史接近<AntdText type="danger">1 : 2</AntdText>；</Paragraph>
               <Paragraph>3.
-                选课的重叠情况三年来没有什么显著的变化。选修了<AntdText type="danger">物理</AntdText>的同学还是有<AntdText type="danger">近6成</AntdText>同时选修了化学或生物；
-                选修了<AntdText type="danger">化学、生物</AntdText>的同学有<AntdText type="danger">一半</AntdText>也进行了生物或物理，化学或物理的组合；
-                选修政治的同学其他六门课程的选修概率基本相同。</Paragraph>
+                选课的重叠情况三年来没有什么显著的变化。选修了<AntdText type="danger">物理</AntdText>的同学还是有
+                <AntdText type="danger">近 6 成</AntdText>同时选修了化学或生物；
+                选修了<AntdText type="danger">化学、生物</AntdText>的同学有
+                <AntdText type="danger">一半</AntdText>分别搭配了生物或物理，化学或物理；
+                选修政治的同学搭配其他六门课程的概率基本相同。</Paragraph>
             </Typography>
           </Card>}
         </Card>
@@ -700,14 +701,14 @@ class Selection extends PureComponent {
           <Row>
             <Card title='总结' bordered={false} hoverable={true}
                   style={{ marginLeft: 32, marginRight: 32, cursor: "auto" }}>
-              <Paragraph>1. 无论哪一年，<AntdText type="danger">物理化学、物理生物</AntdText>再加上其他一门学科的选课方案占据了整个选课方案的<AntdText
-                type="danger">近一半</AntdText>;
-                从另一角度来说,与人们设想的避难就易选课方式不同,即使开放自由选课，传统<AntdText type="danger">理综科目</AntdText>
+              <Paragraph>1. 无论哪一年，<AntdText type="danger">物理化学、物理生物</AntdText>
+                再加上其他一门学科的选课方案占据了所有选课方案的<AntdText type="danger">近一半</AntdText>；
+                从另一角度来说，与人们设想的避难就易选课方式不同，即使开放自由选课，传统<AntdText type="danger">理综科目</AntdText>
                 仍是选课<AntdText type="danger">热门</AntdText>组合;</Paragraph>
-              <Paragraph>2. <AntdText type="danger">物化生</AntdText>和<AntdText type="danger">物化地</AntdText>的组合方式最受欢迎的,选课比例都能达到两位数。
-                2017年物化生选课人数达到32%,2018年物化地选课人数达到23%;</Paragraph>
+              <Paragraph>2. <AntdText type="danger">物化生</AntdText>和<AntdText type="danger">物化地</AntdText>
+                的组合方式最受欢迎，选课比例都能达到两位数。2017年物化生选课人数达到32%，2018年物化地选课人数达到23%；</Paragraph>
               <Paragraph>3. <AntdText type="danger">2019年</AntdText>的选课更<AntdText type="danger">多样化</AntdText>一些。
-                2019年，仅史政技<AntdText type="danger">1种</AntdText>组合方式0人选择；2018年，生政技等<AntdText type="danger">4种</AntdText>选课组合无人问津；
+                2019年，仅史政技<AntdText type="danger">1种</AntdText>组合方式无人选择；2018年，生政技等<AntdText type="danger">4种</AntdText>选课组合无人问津；
                 2017年更是多达<AntdText type="danger">5种</AntdText>。物史政、化政技、物史技、化史技、生政技等组合方式<AntdText
                   type="danger">几乎没人</AntdText>选择;</Paragraph>
               <Paragraph>4. 2019年选课人数增加，大部分7选3组合选课人数呈上升趋势，但历史政治、历史地理、化学地理等组合方式选课人数<AntdText

@@ -1,6 +1,6 @@
 import React, { Fragment, PureComponent } from "react";
 import { Axis, Chart, Coord, Geom, Label, Legend, Tooltip, } from "bizcharts";
-import { Card, Col, Divider, Empty, Row, Typography } from "antd";
+import { Card, Col, Divider, Empty, Row, Carousel, Typography } from "antd";
 import TagCloud from '@/components/Charts/TagCloud';
 import backImg from '../../../../public/tagcloud/Rectangular.jpeg';
 import { connect } from "dva";
@@ -8,10 +8,11 @@ import { COURSE_FULLNAME_ALIAS } from "@/constants";
 
 const { Paragraph, Text } = Typography;
 
-@connect(({ course }) => ({
+@connect(({ course, loading }) => ({
   subject2Major: course.subject2Major,
   collage2Subject: course.collage2Subject,
   majorMap: course.majorMap,
+  loading: loading.effects['course/fetchSubject2Major']
 }))
 
 class CollageExam extends PureComponent {
@@ -30,6 +31,7 @@ class CollageExam extends PureComponent {
       subject2Major,
       majorMap,
       collage2Subject,
+      loading
     } = this.props;
 
     return (
@@ -126,40 +128,68 @@ class CollageExam extends PureComponent {
         </Card>
         {!subject2Major ? <Empty description="暂无数据"/> : <Fragment>
           < Row gutter={24} style={{ marginTop: 24 }}>
-            {Object.keys(subject2Major).map(courseId => {
-              return <Col
-                key={`course-major-col-${courseId}`}
-                xl={8} lg={12} sm={12} xs={12} style={{ marginBottom: 24 }}
-              >
-                <Card
-                  key={`course-major-card-${courseId}`}
-                  title={`${COURSE_FULLNAME_ALIAS[Number(courseId)]}`}
-                  bordered={true}
-                  bodyStyle={{ overflow: 'hidden' }}
+            <Carousel autoplay={!loading} pauseOnFocus={true}>
+              <div>{[4, 5, 6, 59].map(courseId => {
+                return <Col
+                  key={`course-major-col-${courseId}`}
+                  xl={6} lg={12} sm={12} xs={12} style={{ marginBottom: 24 }}
                 >
-                  <TagCloud
-                    key={`course-major-cloud-${courseId}`}
-                    repeat={false}
-                    data={subject2Major[courseId].map(data => {
-                      return {
-                        name: majorMap[data[0]],
-                        value: data[1]
-                      };
-                    })}
-                    height={161}
-                    imgUrl={backImg}
-                  />
-                </Card>
-              </Col>;
-            })}
+                  <Card
+                    key={`course-major-card-${courseId}`}
+                    title={`${COURSE_FULLNAME_ALIAS[Number(courseId)]}`}
+                    bordered={true}
+                    bodyStyle={{ overflow: 'hidden' }}
+                  >
+                    <TagCloud
+                      key={`course-major-cloud-${courseId}`}
+                      repeat={false}
+                      data={subject2Major[courseId].map(data => {
+                        return {
+                          name: majorMap[data[0]],
+                          value: data[1]
+                        };
+                      })}
+                      height={161}
+                      imgUrl={backImg}
+                    />
+                  </Card>
+                </Col>;
+              })}</div>
+              <div>{[7, 8, 17, 61].map(courseId => {
+                return <Col
+                  key={`course-major-col-${courseId}`}
+                  xl={6} lg={12} sm={12} xs={12} style={{ marginBottom: 24 }}
+                >
+                  <Card
+                    key={`course-major-card-${courseId}`}
+                    title={`${COURSE_FULLNAME_ALIAS[Number(courseId)]}`}
+                    bordered={true}
+                    bodyStyle={{ overflow: 'hidden' }}
+                  >
+                    <TagCloud
+                      key={`course-major-cloud-${courseId}`}
+                      repeat={false}
+                      data={subject2Major[courseId].map(data => {
+                        return {
+                          name: majorMap[data[0]],
+                          value: data[1]
+                        };
+                      })}
+                      height={161}
+                      imgUrl={backImg}
+                    />
+                  </Card>
+                </Col>;
+              })}</div>
+            </Carousel>
           </Row>
-          <Card title="总结" bordered={true} style={{ width: '100%' }} bodyStyle={{paddingBottom: '5px'}}>
+          <Card title="总结" bordered={true} style={{ width: '100%' }} bodyStyle={{ paddingBottom: '5px' }}>
             <Paragraph style={{ marginLeft: 30 }}>
               <ul>
                 <li style={{ marginBottom: 10 }}>
                   选修<Text type='danger'>物理</Text>即可填报的专业集中在<Text type='danger'>工科</Text>和
                   <Text type='danger'>理科</Text>中，以
-                  <Text type='danger'>土木工程</Text>、电子、自动化、计算机、通信工程、自动化、数学、物理学为主；
+                  <Text type='danger'>土木工程</Text>、电子、计算机、通信工程、自动化、数学、物理学为主；
                 </li>
                 <li style={{ marginBottom: 10 }}>
                   选修<Text type='danger'>化学、生物</Text>即可填报的专业重叠度较高，
@@ -174,22 +204,22 @@ class CollageExam extends PureComponent {
                   <Text type='danger'>城乡规划</Text>、旅游管理、交通运输、测绘等理工类专业；
                 </li>
                 <li style={{ marginBottom: 10 }}>
-                  选修<Text type='danger'>政治</Text>即可填报的专业集中在法学类、金融类、<Text
+                  选修<Text type='danger'>政治</Text>即可填报的专业集中在法学类、金融类和<Text
                   type='danger'>教育</Text>类；
                 </li>
                 <li style={{ marginBottom: 10 }}>
-                  选修<Text type='danger'>技术</Text>即可填报的专业
-                  主要是<Text type='danger'>软件工程</Text>、计算机、通信工程、电子信息工程、物联网等工科类专业，
-                  允许填报部分学校的统计学、物理学、数学等理科专业；
+                  选修<Text type='danger'>技术</Text>即可填报的专业主要是
+                  <Text type='danger'>软件工程</Text>
+                  、计算机、通信工程、电子信息工程、物联网等工科类专业，同时，可以填报部分学校的统计学、物理学、数学等理科专业；
                 </li>
                 <li style={{ marginBottom: 10 }}>
                   对选课情况<Text type='danger'>不做限制</Text>的专业主要是市场营销、物流管理、财务管理、电子商务、
                   <Text type='danger'>英语</Text>等专业。
                 </li>
-                <Divider style={{ width: '38.2%', minWidth: '20%', marginBottom:'15px' }}/>
+                <Divider style={{ width: '38.2%', minWidth: '20%', marginBottom: '15px' }}/>
                 <Paragraph style={{ fontSize: 12 }}>
-                  <Text type='secondary'>* 因为不同高校要求不同，
-                    所以即使专业名称相同，不同学校对考生的选课情况也有不同的限制。
+                  <Text type='secondary'>
+                    * 因为不同高校要求不同，所以即使专业名称相同，不同学校对考生的选课情况也有不同的限制。
                   </Text>
                 </Paragraph>
               </ul>
