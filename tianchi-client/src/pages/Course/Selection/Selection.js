@@ -299,7 +299,7 @@ class Selection extends PureComponent {
             <Select
               id='yujue-year-selection'
               defaultValue={coursePercentYear || 2019}
-              style={{ width: 180, float: "right", paddingRight: 60 }}
+              style={{ width: 120, margin: '0 3%' }}
               onChange={(year) => this.onYearChanged(year, 'fetchCoursePercents', 'fetchArcCourse')}
             >
               <Option key={`course-percents-2017`} value={2017}>2017年</Option>
