@@ -352,9 +352,9 @@ export default {
         });
         radarData.push({
           'item': COURSE_ALIAS[data.sub_exam__course_id],
-          [SCORE_LEVEL_ALIAS.highest]: data.lowest > 0 ? Number(data.highest.toFixed(0)) : 0,
+          [SCORE_LEVEL_ALIAS.highest]: data.highest > 0 ? Number(data.highest.toFixed(0)) : 0,
           [SCORE_LEVEL_ALIAS.lowest]: data.lowest > 0 ? Number(data.lowest.toFixed(0)) : 0,
-          [SCORE_LEVEL_ALIAS.average]: data.lowest > 0 ? Number(data.average.toFixed(0)) : 0,
+          [SCORE_LEVEL_ALIAS.average]: data.average > 0 ? Number(data.average.toFixed(0)) : 0,
         });
       });
       unstableSubject.sort(function (a, b) {

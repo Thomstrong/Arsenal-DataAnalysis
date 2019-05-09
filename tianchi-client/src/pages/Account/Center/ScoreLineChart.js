@@ -9,16 +9,17 @@ import Divider from "antd/es/divider";
 
 const { Paragraph, Text } = Typography;
 const { Line } = Guide;
-const dengDiScale = {
-  score: {
-    type: 'cat',
-    values: [
+const dengDiList = [
       'E',
       'D',
       'C',
       'B',
       'A',
     ]
+const dengDiScale = {
+  score: {
+    type: 'cat',
+    values: dengDiList
   }
 };
 const normalScale = {
@@ -29,7 +30,7 @@ const ScoreLineChart = memo(
     let highScoreTime = 0;
     for (let i = 0; i < lineData.length; i++) {
       if (lineData[i].score >= 600) {
-        highScoreTime++
+        highScoreTime++;
       }
     }
     console.log(scoreType);
@@ -135,6 +136,12 @@ const ScoreLineChart = memo(
             <Geom type="line" position="exam*score" size={2} tooltip={[
               "score",
               (score) => {
+                if (showDengDi) {
+                  return {
+                    name: "等第",
+                    value: dengDiList[score]
+                  };
+                }
                 return {
                   name: "分数",
                   value: score
@@ -153,6 +160,12 @@ const ScoreLineChart = memo(
               tooltip={[
                 "score",
                 (score) => {
+                  if (showDengDi) {
+                    return {
+                      name: "等第",
+                      value: dengDiList[score]
+                    };
+                  }
                   return {
                     name: "分数",
                     value: score
@@ -287,13 +300,17 @@ const ScoreLineChart = memo(
       </Row>
       <Divider style={{ marginTop: 0, marginBottom: 5 }} dashed/>
       {lineSummary && lineSummary.unstable &&
-      <Card bordered={false} hoverable={true} type="inner"
-            style={{
-              marginLeft: 12,
-              marginRight: 12,
-              marginBottom: 0,
-              cursor: "auto"
-            }}>
+      <Card
+        bordered={false} hoverable={true} type="inner"
+        style={{
+          margin: '0 12px',
+          cursor: "auto"
+        }}
+        bodyStyle={{
+          paddingBottom: 0,
+          paddingTop: '20px',
+        }}
+      >
         <Paragraph>
           该生的优势学科是<Text type="danger" strong>{lineSummary.advantage}</Text>，
           薄弱学科为<Text type="danger">
@@ -301,10 +318,8 @@ const ScoreLineChart = memo(
           不稳定学科为<Text type="danger">{lineSummary.unstable}</Text></Paragraph>
         {scoreType === 'score' && <Paragraph>共统计<Text type="danger">{lineData.length}</Text>次考试，
           总分在600及以上的有<Text type="danger">{highScoreTime}</Text>次</Paragraph>}
-        <Paragraph>
-          以下是<Text type="danger">各科目</Text>具体成绩趋势图:</Paragraph>
       </Card>}
-      <Divider style={{ marginBottom: 24, marginTop: 5 }} dashed/>
+      <Divider style={{ marginBottom: 24, marginTop: 5 }} dashed>各科目成绩趋势</Divider>
       <List
         grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 1, xl: 2, xxl: 2 }}
         dataSource={subData}
@@ -349,6 +364,12 @@ const ScoreLineChart = memo(
               <Geom type="line" position="exam*score" size={2} tooltip={[
                 "score",
                 (score) => {
+                  if (showDengDi) {
+                    return {
+                      name: "等第",
+                      value: dengDiList[score]
+                    };
+                  }
                   return {
                     name: "分数",
                     value: score

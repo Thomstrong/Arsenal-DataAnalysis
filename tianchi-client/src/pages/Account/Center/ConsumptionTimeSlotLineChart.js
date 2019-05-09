@@ -1,7 +1,7 @@
 /**
  * Created by 胡晓慧 on 2019/4/13.
  */
-import React, { memo } from "react";
+import React, { Fragment, memo } from "react";
 import { Card, Col, Empty, Row, Typography } from 'antd';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
 import { DATE_REANGE_ALIAS, HOUR_LIST, INTERVAL_MAP } from "@/constants";
@@ -14,7 +14,6 @@ let chartIns = null;
 
 const ConsumptionTimeSlotLineChart = memo(
   ({ hourlyCost, dailyPredictData, date, dateRange, maxCost }) => {
-
     let lastAllCost = 0;
     let nowAllCost = 0;
     let futureAllCost = 0;
@@ -77,10 +76,9 @@ const ConsumptionTimeSlotLineChart = memo(
       }
     }
 
-
     return (
-      <Card title={`${date} 各时期消费情况一览`} bordered={false} style={{ width: '100%' }}>
-        <Card title={`${date}起往后${DATE_REANGE_ALIAS[dateRange]}，每日消费总额、上一周期消费对比及下一周期消费预测`}
+      <Fragment>
+        <Card title={`${date} 起往后${DATE_REANGE_ALIAS[dateRange]}，每日消费总额、上一周期消费对比及下一周期消费预测`}
               bordered={false} style={{ width: '100%', cursor: "auto" }} hoverable={true}
         >
           {hourlyCost.length ? <Row type="flex" align="middle">
@@ -91,15 +89,15 @@ const ConsumptionTimeSlotLineChart = memo(
                 </Paragraph>
               }
               <Paragraph>
-                上一周期消费总额为
+                {`上${DATE_REANGE_ALIAS[dateRange]}消费总额为`}
                 <Text strong style={{ color: "#cc4756" }}>¥{lastAllCost.toFixed(2)}元</Text>
               </Paragraph>
               <Paragraph>
-                当前周期消费总额为
+                {`这${DATE_REANGE_ALIAS[dateRange]}消费总额为`}
                 <Text strong style={{ color: "#cc4756" }}>¥{nowAllCost.toFixed(2)}元</Text>
               </Paragraph>
               <Paragraph>
-                预测下周期消费总额为
+                {`预测下${DATE_REANGE_ALIAS[dateRange]}消费总额为`}
                 <Text strong style={{ color: "#cc4756" }}>¥{futureAllCost.toFixed(2)}元</Text>
               </Paragraph>
               <Paragraph>
@@ -332,7 +330,7 @@ const ConsumptionTimeSlotLineChart = memo(
             </Col>
           </Row> : <Empty/>}
         </Card>
-      </Card>
+      </Fragment>
     );
   }
 );
