@@ -264,7 +264,7 @@ class Center extends PureComponent {
     if (vsStudentInfo.id) {
       if (vsStudentInfo.id === studentId) {
         dispatch({
-          type: 'student/clearCompare',
+          type: 'student/clearCompareData',
         });
         this.setState({
           vsStudentId: ''

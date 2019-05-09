@@ -236,11 +236,6 @@ export default {
         payload: response,
       });
     },
-    * clearCompare({ payload }, { call, put }) {
-      yield put({
-        type: 'clearCompareData',
-      });
-    }
   },
 
   reducers: {
