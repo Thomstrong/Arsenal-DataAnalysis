@@ -149,13 +149,18 @@ class TagCloud extends Component {
   }
 
   render() {
-    const { className, height } = this.props;
+    const { className, height, radio } = this.props;
     const { dv, w, h } = this.state;
 
+    const cloudStyle = {
+      width: radio ? height * radio : '100%',
+      height,
+      margin: '0 auto'
+    };
     return (
       <div
         className={classNames(styles.tagCloud, className)}
-        style={{ width: '100%', height }}
+        style={cloudStyle}
         ref={this.saveRootRef}
       >
         {dv && (

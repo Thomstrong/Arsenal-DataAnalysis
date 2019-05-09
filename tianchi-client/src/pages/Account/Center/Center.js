@@ -617,6 +617,7 @@ class Center extends PureComponent {
                       repeat={true}
                       data={wordCloudData}
                       height={120}
+                      radio={2.8}
                       imgUrl={stuImg}
                     />
                     <div className={styles.name} style={{ paddingTop: 7 }}>{studentInfo.name}</div>
@@ -848,13 +849,19 @@ class Center extends PureComponent {
                   </Affix>}
                   {studentInfo.id ? (vsStudentInfo.id ?
                     <Fragment>
-                      <Card title="基本信息对比" bordered={false} style={{ width: '100%' }}>
+                      <Card
+                        title="基本信息对比"
+                        bordered={false}
+                        style={{ width: '100%'}}
+                        bodyStyle={{ paddingLeft: 0 }}
+                      >
                         <Row type="flex" align="middle">
                           <Col span={10}>
                             <TagCloud
                               repeat={true}
                               data={vsWordCloudData}
                               height={380}
+                              radio={0.8}
                               imgUrl={imgUrl}
                             />
                           </Col>
@@ -871,7 +878,7 @@ class Center extends PureComponent {
                                   <Tag style={{ marginLeft: '10px', cursor: 'default' }} color="#4ac46a">在校生</Tag>}
                               </Fragment>}
                               headStyle={{ minHeight: '20px' }}
-                              style={{ cursor: 'default' }}
+                              style={{ cursor: 'default', marginLeft: '25px' }}
                               bordered={false}
                               hoverable={true}
                               className={styles.vsDetail}

@@ -128,7 +128,7 @@ class CollageExam extends PureComponent {
         </Card>
         {!subject2Major ? <Empty description="暂无数据"/> : <Fragment>
           < Row gutter={24} style={{ marginTop: 24 }}>
-            <Carousel autoplay={!loading} pauseOnFocus={true}>
+            <Carousel autoplay={!loading} pauseOnFocus={true} pauseOnHover={true} >
               <div>{[4, 5, 6, 59].map(courseId => {
                 return <Col
                   key={`course-major-col-${courseId}`}
@@ -143,13 +143,14 @@ class CollageExam extends PureComponent {
                     <TagCloud
                       key={`course-major-cloud-${courseId}`}
                       repeat={false}
+                      radio={1.9}
                       data={subject2Major[courseId].map(data => {
                         return {
                           name: majorMap[data[0]],
                           value: data[1]
                         };
                       })}
-                      height={161}
+                      height={140}
                       imgUrl={backImg}
                     />
                   </Card>
@@ -169,13 +170,14 @@ class CollageExam extends PureComponent {
                     <TagCloud
                       key={`course-major-cloud-${courseId}`}
                       repeat={false}
+                      radio={1.9}
                       data={subject2Major[courseId].map(data => {
                         return {
                           name: majorMap[data[0]],
                           value: data[1]
                         };
                       })}
-                      height={161}
+                      height={140}
                       imgUrl={backImg}
                     />
                   </Card>

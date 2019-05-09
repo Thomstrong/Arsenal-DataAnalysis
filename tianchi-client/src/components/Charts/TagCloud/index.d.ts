@@ -5,6 +5,7 @@ export interface ITagCloudProps {
     value: number;
   }>;
   height: number;
+  radio?: number;
   style?: React.CSSProperties;
   imgUrl:string;
   repeat:boolean;
