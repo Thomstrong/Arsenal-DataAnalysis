@@ -8,7 +8,7 @@ import defaultSettings from '../src/defaultSettings';
 
 const { pwa, primaryColor } = defaultSettings;
 const { APP_TYPE, TEST } = process.env;
-const server = 'http://localhost:8000';
+const server = 'http://39.97.114.234:8000';
 const plugins = [
   [
     'umi-plugin-react',
@@ -18,9 +18,7 @@ const plugins = [
         hmr: true,
       },
       locale: {
-        enable: true, // default false
-        default: 'zh-CN', // default zh-CN
-        baseNavigator: true, // default true, when it is true, will use `navigator.language` overwrite default
+        enable: false, // default false
       },
       dynamicImport: {
         loadingComponent: './components/PageLoading/index',
@@ -44,6 +42,11 @@ const plugins = [
         } : {}),
     },
   ],
+  ['umi-plugin-auto-externals', {
+    packages: ['react', 'antd', 'moment', 'react-dom',],
+    urlTemplate: 'https://unpkg.com/{{ library }}@{{ version }}/{{ path }}',
+    checkOnline: false,
+  }],
 ];
 
 export default {
@@ -93,7 +96,7 @@ export default {
           .map(a => a.replace(/([A-Z])/g, '-$1'))
           .map(a => a.toLowerCase());
 
-        return `antd-pro${arr.join('-')}-${localName}`.replace(/--/g, '-');
+        return `tianchi-client${arr.join('-')}-${localName}`.replace(/--/g, '-');
       }
 
       return localName;
