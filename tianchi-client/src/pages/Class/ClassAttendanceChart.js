@@ -50,7 +50,15 @@ const AttendanceChart = memo(
                 <Geom
                   type="intervalStack"
                   position="student*count"
-                  color={"name"}
+                  color={['name', (name) => {
+                    if (name === '迟到'){
+                      return '#4190f7';
+                    }
+                    else if (name === "校服违纪"){
+                       return '#61be67';
+                    }
+                    return '#f3cd49'
+                  }]}
                 />
               </Chart>
             </Fragment> :
@@ -76,7 +84,15 @@ const AttendanceChart = memo(
               <Geom
                 type="intervalStack"
                 position="term*count"
-                color={"name"}
+                color={['name', (name) => {
+                    if (name === '迟到'){
+                      return '#4190f7';
+                    }
+                    else if (name === "校服违纪"){
+                       return '#61be67';
+                    }
+                    return '#f3cd49'
+                  }]}
               />
             </Chart>}
         </Col>
