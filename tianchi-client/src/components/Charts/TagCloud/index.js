@@ -116,12 +116,6 @@ class TagCloud extends Component {
         padding: 0,
         timeInterval: 1000, // max execute time
         rotate() {
-          let random = ~~(Math.random() * 4) % 4;
-
-          if (random === 3 || random === 1) {
-            return random * 90; // 0, 90, 270
-          }
-
           return 0;
         },
         fontSize(d) {
