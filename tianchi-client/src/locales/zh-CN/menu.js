@@ -4,7 +4,7 @@ export default {
   'menu.register': '注册',
   'menu.register.result': '注册结果',
   'menu.dashboard': '总体信息概览',
-  'menu.dashboard.analysis': '主页',
+  'menu.dashboard.analysis': '概览',
   'menu.dashboard.monitor': '监控页',
   'menu.dashboard.workplace': '工作台',
   'menu.form': '表单页',

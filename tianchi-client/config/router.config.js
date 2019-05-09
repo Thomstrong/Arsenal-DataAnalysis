@@ -106,28 +106,6 @@ export default [
         ],
       },
       {
-        name: 'courseAnalysis',
-        icon: 'book',
-        path: '/course',
-        routes: [
-          {
-            path: '/course/selection',
-            name: 'elective',
-            component: './Course/Selection/Selection',
-          },
-          {
-            path: '/course/subject',
-            name: 'subject',
-            component: './Course/Subject/Subject',
-          },
-          {
-            path: '/course/collageExam',
-            name: 'collageExam',
-            component: './Course/CollageExam/CollageExam',
-          },
-        ],
-      },
-      {
         name: 'class',
         icon: 'team',
         path: '/class',
@@ -143,6 +121,28 @@ export default [
             ]
           },
 
+        ],
+      },
+      {
+        name: 'courseAnalysis',
+        icon: 'book',
+        path: '/course',
+        routes: [
+          {
+            path: '/course/subject',
+            name: 'subject',
+            component: './Course/Subject/Subject',
+          },
+          {
+            path: '/course/selection',
+            name: 'elective',
+            component: './Course/Selection/Selection',
+          },
+          {
+            path: '/course/collageExam',
+            name: 'collageExam',
+            component: './Course/CollageExam/CollageExam',
+          },
         ],
       },
       // forms
