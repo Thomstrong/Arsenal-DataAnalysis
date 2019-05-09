@@ -154,6 +154,7 @@ class TagCloud extends Component {
 
     const cloudStyle = {
       width: radio ? height * radio : '100%',
+      maxWidth: '100%',
       height,
       margin: '0 auto'
     };
