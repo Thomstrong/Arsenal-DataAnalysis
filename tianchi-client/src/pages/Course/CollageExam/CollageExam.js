@@ -125,11 +125,11 @@ class CollageExam extends PureComponent {
           </Row> : <Empty description="暂无数据"/>}
         </Card>
         {!subject2Major ? <Empty description="暂无数据"/> : <Fragment>
-          < Row gutter={16} style={{ marginTop: 24 }}>
+          < Row gutter={24} style={{ marginTop: 24 }}>
             {Object.keys(subject2Major).map(courseId => {
               return <Col
                 key={`course-major-col-${courseId}`}
-                xl={6} lg={12} sm={12} xs={12} style={{ marginBottom: 24 }}
+                xl={8} lg={12} sm={12} xs={12} style={{ marginBottom: 24 }}
               >
                 <Card
                   key={`course-major-card-${courseId}`}

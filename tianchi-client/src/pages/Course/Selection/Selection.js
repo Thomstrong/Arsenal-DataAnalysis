@@ -433,10 +433,12 @@ class Selection extends PureComponent {
                 style={{ marginLeft: 32, marginRight: 32, cursor: "auto" }}>
             <Typography>
               <Paragraph>1.
-                自2017年高考改革以来选修<AntdText type="danger">物理、化学、生物</AntdText>的人数一直居<AntdText type="danger">高</AntdText>不下。传统文科中
+                自 2017 年高考改革以来，选修<AntdText type="danger">物理、化学、生物</AntdText>的人数一直居<AntdText type="danger">高</AntdText>不下。传统文科中
                 <AntdText type="danger">地理</AntdText>最受<AntdText type="danger">欢迎</AntdText>，
                 <AntdText type="danger">历史</AntdText>在七门学科中较为<AntdText type="danger">弱势</AntdText>。
-                究其原因,可能是填报志愿时不同专业对选课要求的不同，物理化学在填报志愿时较有优势，
+                究其原因，可能是填报志愿时不同专业对
+                <a href={'/course/collageExam'}>选课要求</a>
+                的不同，物理化学在填报志愿时较有优势，
                 其中2019年选考物理后的可申报专业覆盖面高达93.5%，化学为85.5%;</Paragraph>
               <Paragraph>2.
                 2019年,选课人数突增，但<AntdText type="danger">男女</AntdText>生选课<AntdText type="danger">差异并不明显</AntdText>，

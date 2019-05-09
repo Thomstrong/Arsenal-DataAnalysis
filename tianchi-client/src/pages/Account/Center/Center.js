@@ -861,11 +861,17 @@ class Center extends PureComponent {
                           <Col span={13} offset={1}>
                             <Card
                               title={<Fragment>
-                                <span style={{ fontSize: '20px', verticalAlign: 'middle' }}>{vsStudentInfo.name}</span>
-                                {vsStudentInfo.is_left ? <Tag style={{ marginLeft: '10px' }} color="#f50">已离校</Tag> :
-                                  <Tag style={{ marginLeft: '10px' }} color="#4ac46a">在校生</Tag>}
+                                <span
+                                  style={{ fontSize: '20px', verticalAlign: 'middle' }}
+                                >
+                                  {vsStudentInfo.name}
+                                  </span>
+                                {vsStudentInfo.is_left ?
+                                  <Tag style={{ marginLeft: '10px', cursor: 'default' }} color="#f50">已离校</Tag> :
+                                  <Tag style={{ marginLeft: '10px', cursor: 'default' }} color="#4ac46a">在校生</Tag>}
                               </Fragment>}
                               headStyle={{ minHeight: '20px' }}
+                              style={{ cursor: 'default' }}
                               bordered={false}
                               hoverable={true}
                               className={styles.vsDetail}
