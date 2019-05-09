@@ -56,6 +56,11 @@ export default {
     APP_TYPE: APP_TYPE || '',
   },
   treeShaking: true,
+  externals: {
+    '@antv/g2': 'antv-g2',
+    '@antv/data-set': '@antv/data-set',
+    'bizcharts': 'bizcharts'
+  },
   targets: {
     ie: 11,
   },
