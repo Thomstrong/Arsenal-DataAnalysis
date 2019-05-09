@@ -10,12 +10,12 @@ import Divider from "antd/es/divider";
 const { Paragraph, Text } = Typography;
 const { Line } = Guide;
 const dengDiList = [
-      'E',
-      'D',
-      'C',
-      'B',
-      'A',
-    ]
+  'E',
+  'D',
+  'C',
+  'B',
+  'A',
+];
 const dengDiScale = {
   score: {
     type: 'cat',
@@ -333,7 +333,13 @@ const ScoreLineChart = memo(
                   ...data,
                   score: getDengDi(data.score)
                 };
-              }) : item.lineData}
+              }) : item.lineData.map(data => {
+                return {
+                  ...data,
+                  score: Number(data.score.toFixed(2))
+                };
+              })
+              }
               scale={{
                 ...scale,
                 exam: {
@@ -397,31 +403,31 @@ const ScoreLineChart = memo(
               />
 
               {scoreType === 'z_score' && <Guide key='student-score-lines'>
-              <Line
-                key='student-z-score-line'
-                top={true}
-                start={(xScale, yScale) =>{
-                  if (yScale.score.min>0) {
-                    return [-0.5,-100]
-                  }
-                  return [-0.5,0]
+                <Line
+                  key='student-z-score-line'
+                  top={true}
+                  start={(xScale, yScale) => {
+                    if (yScale.score.min > 0) {
+                      return [-0.5, -100];
+                    }
+                    return [-0.5, 0];
 
-                } }
-                end={(xScale, yScale) =>{
-                  if (yScale.score.min>0) {
-                    return ['max',-100]
-                  }
-                  return ['max',0]
+                  }}
+                  end={(xScale, yScale) => {
+                    if (yScale.score.min > 0) {
+                      return ['max', -100];
+                    }
+                    return ['max', 0];
 
-                } }
-                lineStyle={{
-                  stroke: '#67686e',
-                  lineDash: [0, 2, 2],
-                  lineWidth: 2,
-                  opacity: 0.4,
-                }}
-              />
-            </Guide>}
+                  }}
+                  lineStyle={{
+                    stroke: '#67686e',
+                    lineDash: [0, 2, 2],
+                    lineWidth: 2,
+                    opacity: 0.4,
+                  }}
+                />
+              </Guide>}
             </Chart>
           </List.Item>
         )}

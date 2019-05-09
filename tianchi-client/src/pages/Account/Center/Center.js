@@ -557,12 +557,6 @@ class Center extends PureComponent {
     //成绩相关,linedata表示总成绩,subData表示每个学科的成绩列表
     const totalTrendData = studentInfo ? studentInfo.totalTrend : [];
     const lineSummary = studentInfo ? studentInfo.lineSummary : {};
-    const subTrendData = studentInfo ? new DataSet.View().source([studentInfo.subTrends]).transform({
-      type: "fold",
-      fields: Object.keys(studentInfo.subTrends),
-      key: "title",
-      value: "lineData"
-    }).rows : [];
     //考勤的相关数据
     const kaoqinData = this.formatKaoqinData(studentInfo.kaoqinData, termList);
     const kaoqinSummary = studentInfo.kaoqinSummary;
@@ -759,7 +753,7 @@ class Center extends PureComponent {
                           lineData={totalTrendData}
                           lineSummary={lineSummary}
                           radarViewData={studentInfo.radarData}
-                          subData={subTrendData}
+                          subData={studentInfo.subTrends}
                           scoreType={this.state.scoreType}
                         />
                       </Suspense> : <Empty description='暂无考试数据'/>}

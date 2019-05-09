@@ -256,7 +256,8 @@ export default {
           totalTrend: payload.map(data => {
             return {
               exam: data.sub_exam__exam__name,
-              score: data.total_score
+              score: (scoreType === 'score' || scoreType === 'deng_di') ? data.total_score :
+                Number(data.total_score.toFixed(2))
             };
           }),
           scoreType
@@ -272,7 +273,12 @@ export default {
         ...state,
         studentInfo: {
           ...state.studentInfo,
-          subTrends: payload
+          subTrends: new DataSet.View().source([payload]).transform({
+            type: "fold",
+            fields: Object.keys(payload),
+            key: "title",
+            value: "lineData"
+          }).rows
         },
       };
     },
