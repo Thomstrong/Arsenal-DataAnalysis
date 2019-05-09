@@ -4,6 +4,7 @@
 import React, { Fragment, memo } from "react";
 import { Button, Card, Col, Empty, Icon, Row, Typography } from 'antd';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
+import { EVENT_TYPE_ALIAS } from "@/constants";
 
 const { Paragraph, Text } = Typography;
 
@@ -51,13 +52,14 @@ const AttendanceChart = memo(
                   type="intervalStack"
                   position="student*count"
                   color={['name', (name) => {
-                    if (name === '迟到'){
+                    if (name === EVENT_TYPE_ALIAS[99001]) {
                       return '#4190f7';
                     }
-                    else if (name === "校服违纪"){
-                       return '#61be67';
+
+                    if (name === EVENT_TYPE_ALIAS[99002]) {
+                      return '#61be67';
                     }
-                    return '#f3cd49'
+                    return '#f3cd49';
                   }]}
                 />
               </Chart>
@@ -85,14 +87,15 @@ const AttendanceChart = memo(
                 type="intervalStack"
                 position="term*count"
                 color={['name', (name) => {
-                    if (name === '迟到'){
-                      return '#4190f7';
-                    }
-                    else if (name === "校服违纪"){
-                       return '#61be67';
-                    }
-                    return '#f3cd49'
-                  }]}
+                  if (name === EVENT_TYPE_ALIAS[99001]) {
+                    return '#4190f7';
+                  }
+
+                  if (name === EVENT_TYPE_ALIAS[99002]) {
+                    return '#61be67';
+                  }
+                  return '#f3cd49';
+                }]}
               />
             </Chart>}
         </Col>

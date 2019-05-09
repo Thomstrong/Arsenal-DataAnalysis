@@ -349,15 +349,36 @@ class ClassAnalysis extends PureComponent {
         score: Number(data.score.toFixed(3))
       };
     }) : [];
-    const showedDistributeData = scoreDistributionData[Number(courseId)] ?
-      scoreDistributionData[Number(courseId)].sort((a, b) => a.maxScore - b.maxScore).map(data => {
+    let showedDistributeData = scoreDistributionData[Number(courseId)] ?
+      scoreDistributionData[Number(courseId)].map(data => {
         return {
           name: classMap[Number(data.classId)],
           range: RANGE_ALIAS[data.maxScore],
           count: Number(data.count)
         };
       }) : [];
-
+    // 从后端获取到的分布已经是按照range排好序的因此不用再次参与下面的排序
+    showedDistributeData = _.sortBy(showedDistributeData, ['name']);
+    if (showedDistributeData.length) {
+      const template = showedDistributeData[0];
+      let i = 0;
+      const fakeData = [];
+      Object.values(RANGE_ALIAS).map(range => {
+        if (i < showedDistributeData.length) {
+          if (showedDistributeData[i].range !== range) {
+            fakeData.push({
+              ...template,
+              range: range,
+              count: 0
+            });
+            return;
+          }
+          fakeData.push(showedDistributeData[i]);
+        }
+        i += 1;
+      });
+      showedDistributeData = fakeData.concat(showedDistributeData.slice(i));
+    }
     const { boy, stay, total, local, policy } = distributionData;
     const isAtSchool = classInfo.start_year === 2018;
     const defaultTab = _.difference(location.pathname.split('/'), match.path.split('/'))[0] || 'Trend';
@@ -837,10 +858,10 @@ class ClassAnalysis extends PureComponent {
                             color={"range"}
                             tooltip={
                               ["range*count",
-                                (range,count) => {
+                                (range, count) => {
                                   return {
-                                    name: range ,
-                                    value: count+'人'
+                                    name: range,
+                                    value: count + '人'
                                   };
                                 }
                               ]

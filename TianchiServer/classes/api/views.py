@@ -295,6 +295,7 @@ class ClassViewSet(viewsets.ModelViewSet):
         stu_class = self.get_object()
         records = ClassExamRecord.objects.filter(
             stu_class__grade_name=stu_class.grade_name,
+            stu_class__campus_name=stu_class.campus_name,
             sub_exam__exam_id=exam_id,
             attend_count__gt=0,
             stu_class_id__isnull=False
@@ -392,10 +393,13 @@ class ClassViewSet(viewsets.ModelViewSet):
         exam_id = request.query_params.get('exam_id', '')
         if not exam_id:
             return Response('exam_id 错误!', 404)
-        grade = self.get_object().grade_name
+        stu_class = self.get_object()
+        grade = stu_class.grade_name
+        campus_name = stu_class.campus_name
         class_ids = ClassExamRecord.objects.filter(
             sub_exam__exam_id=exam_id,
             stu_class__grade_name=grade,
+            stu_class__campus_name=campus_name,
             stu_class_id__isnull=False,
         ).values_list('stu_class_id', flat=True).order_by(
             'stu_class_id'
