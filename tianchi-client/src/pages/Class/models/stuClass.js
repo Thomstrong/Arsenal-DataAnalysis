@@ -240,9 +240,9 @@ export default {
       let radarData = new DataSet.View().source(payload.map((data) => {
         return {
           'item': COURSE_ALIAS[data.sub_exam__course_id],
-          [SCORE_LEVEL_ALIAS.highest]: Number(data.highest.toFixed(0)),
-          [SCORE_LEVEL_ALIAS.lowest]: Number(data.lowest.toFixed(0)),
-          [SCORE_LEVEL_ALIAS.average]: Number(data.average.toFixed(0)),
+          [SCORE_LEVEL_ALIAS.highest]: data.highest > 0 ? Number(data.highest.toFixed(0)) : 0,
+          [SCORE_LEVEL_ALIAS.lowest]: data.lowest > 0 ? Number(data.lowest.toFixed(0)) : 0,
+          [SCORE_LEVEL_ALIAS.average]: data.average > 0 ? Number(data.average.toFixed(0)) : 0,
         };
       })).transform({
         type: "fold",

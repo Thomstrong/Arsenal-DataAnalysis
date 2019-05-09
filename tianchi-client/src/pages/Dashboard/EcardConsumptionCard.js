@@ -99,7 +99,7 @@ const EcardConsumptionCard = memo(({ data }) => {
     yearCostData
   } = data;
   return <React.Fragment>
-    <Card loading={sexHourlyLoading} style={{ marginTop: 24, cursor: "auto" }}>
+    <Card title='一卡通消费概况' loading={sexHourlyLoading} style={{ marginTop: 24, cursor: "auto" }}>
       <Tabs defaultActiveKey={"Sex"}>
         <TabPane tab={<span><Icon type="line-chart"/>性别对比</span>} key="Sex">
           <Row>

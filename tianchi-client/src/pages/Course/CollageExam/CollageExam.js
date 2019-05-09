@@ -115,7 +115,7 @@ class CollageExam extends PureComponent {
                   通过对
                   <a href={'http://zt.zjzs.net/xk2019/'} target='_blank'>
                     《2019年拟在浙招生高校专业（类）选考科目要求范围》
-                  </a>检索，搜集<Text type='danger'>1408</Text>所不同高校，对
+                  </a>检索，搜集<Text type='danger'>1408</Text>所不同高校对
                   <Text type="danger"> 26650 </Text>个专业的报考要求，
                   发现有大部分专业<Text type='danger'>不限制</Text>考生选课情况。</Paragraph>
                 <Paragraph>对于有指定科目的专业来说，有无<Text type='danger'>物理</Text>基础是他们关注的重点。

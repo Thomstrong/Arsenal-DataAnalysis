@@ -541,7 +541,7 @@ class Center extends PureComponent {
       eCardLoading,
       scoreLoading
     } = this.props;
-    const {dateRange, date } = dailyPredictData;
+    const { dateRange, date } = dailyPredictData;
     const { hourlyAvgData, maxHourlyAvg } = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
     const { hourlyAvgData: vsAverageData } = this.formatHourlyAvgCost(hourlyAvgCost, costVsData);
     const { formatedData: predictData, maxCost } = this.formatDailyPredictData(dailyPredictData);
@@ -779,14 +779,21 @@ class Center extends PureComponent {
                           maxHourlyAvg={maxHourlyAvg}
                         />
                       </Suspense>
-                      <Affix offsetTop={13} style={{ 'zIndex': 1, marginTop: 10 }}>
-                        <Card bordered={false} bodyStyle={{ padding: 5 }}>
+                      <Card
+                        bodyStyle={{
+                          paddingTop: '8px'
+                        }}
+                        title={`${date} 各时期消费情况一览`}
+                        bordered={false}
+                        style={{ width: '100%' }}
+                      >
+                        <Affix offsetTop={13} style={{ 'zIndex': 1, marginTop: 10 }}>
                           <span>选择查看的时间：</span>
                           <DatePicker
                             defaultValue={moment(moment(date || '2019-01-01'), 'YYYY-MM-DD')}
                             onChange={(_, date) => this.onDateChange(date)}
                           />
-                          <span style={{ marginLeft: '20px' }}>分析区间：</span>
+                          <span style={{ marginLeft: '20px' }}>分析周期：</span>
                           <Select
                             value={dateRange || this.state.dateRange} style={{ width: 120 }}
                             onChange={this.handleChangeRange}
@@ -797,17 +804,17 @@ class Center extends PureComponent {
                             <Option key='six-month' value={180}>6个月</Option>
                             <Option key='one-year' value={365}>1年</Option>
                           </Select>
-                        </Card>
-                      </Affix>
-                      <Suspense fallback={<PageLoading/>}>
-                        <ConsumptionTimeSlotLineChart
-                          hourlyCost={hourlyCost}
-                          dailyPredictData={predictData}
-                          maxCost={maxCost}
-                          date={dailyPredictData.date}
-                          dateRange={dailyPredictData.dateRange}
-                        />
-                      </Suspense>
+                        </Affix>
+                        <Suspense fallback={<PageLoading/>}>
+                          <ConsumptionTimeSlotLineChart
+                            hourlyCost={hourlyCost}
+                            dailyPredictData={predictData}
+                            maxCost={maxCost}
+                            date={dailyPredictData.date}
+                            dateRange={dailyPredictData.dateRange}
+                          />
+                        </Suspense>
+                      </Card>
                     </Fragment> : <Empty description='暂无一卡通消费数据'/>) : initEmpty}
                 </TabPane>
                 <TabPane tab={<span><i className={`fa fa-calendar-check-o`}/> 考勤</span>} key="Attendance">

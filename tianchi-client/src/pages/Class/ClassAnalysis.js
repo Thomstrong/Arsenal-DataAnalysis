@@ -466,7 +466,7 @@ class ClassAnalysis extends PureComponent {
                         <Col xl={8} lg={12} md={6}><Statistic title="住校生" value={stay} suffix={`/${total}`}/></Col>
                         <Col xl={8} lg={12} md={6}><Statistic title="本地生源" value={local} suffix={`/${total}`}/></Col>
                         <Col xl={8} lg={12} md={6}><Statistic title="外地生源" value={total - local} suffix={`/${total}`}/></Col>
-                        <Col xl={8} lg={12} md={6}><Statistic title="团员/党员" value={policy} suffix={`/${total}`}/></Col>
+                        <Col xl={8} lg={12} md={6}><Statistic title="团(党)员" value={policy} suffix={`/${total}`}/></Col>
                         <Col xl={8} lg={12} md={6}><Statistic title="其他面貌" value={total - policy} suffix={`/${total}`}/></Col>
                       </Row> : <Empty description='班级学生分布数据缺失'/>
                     }
@@ -560,7 +560,7 @@ class ClassAnalysis extends PureComponent {
             >
               <Tabs defaultActiveKey={defaultTab} onChange={this.onTabChange}>
                 {/*各科成绩趋势的变化*/}
-                <TabPane tab={<span><Icon type="line-chart"/>成绩趋势显示</span>} key="Trend">
+                <TabPane tab={<span><Icon type="line-chart"/>成绩趋势</span>} key="Trend">
                   {classInfo && classInfo.id ? (totalTrend && !!totalTrend.length ? <Fragment>
                     <Card
                       title={`${classInfo.class_name}考试${this.state.scoreType === 'score' ? '绝对分' : '排名'}趋势变化`}
@@ -595,7 +595,6 @@ class ClassAnalysis extends PureComponent {
                       showSearch
                       optionFilterProp="children"
                       style={{ width: 300 }}
-                      value={this.state.examId}
                       onChange={this.onExamChanged}
                       filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                       placeholder="请选择该班级参与的考试"
@@ -849,7 +848,7 @@ class ClassAnalysis extends PureComponent {
                 </TabPane>
                 {/*考勤情况*/}
                 {/*todo 文字分析部分加上该班级违纪最多的同学，及具体信息*/}
-                <TabPane tab={<span><i className={`fa fa-calendar-check-o`}/> 考勤情况显示</span>} key="Attendance">
+                <TabPane tab={<span><i className={`fa fa-calendar-check-o`}/> 考勤情况</span>} key="Attendance">
                   <Suspense fallback={<PageLoading/>}>
                     <ClassAttendanceChart
                       loading={kaoqinLoading}

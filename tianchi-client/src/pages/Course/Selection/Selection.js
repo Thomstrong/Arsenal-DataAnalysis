@@ -463,7 +463,8 @@ class Selection extends PureComponent {
               placeholder="请选择或查询希望筛选的组合"
               value={filterSelections}
               onChange={(selections) => this.onFilterChanged(selections)}
-              style={{ width: '100%', marginBottom: '10px' }}
+              dropdownMatchSelectWidth={true}
+              style={{ width: '92%', margin: '0 4% 15px' }}
             >
               {allSelections.map(courses => <Option key={`courses-option-${courses}`} value={courses}>
                 {courses}

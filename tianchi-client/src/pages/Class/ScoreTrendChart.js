@@ -2,7 +2,7 @@
  * Created by 胡晓慧 on 2019/4/13.
  */
 import React, { memo } from "react";
-import { Col, List, Row } from 'antd';
+import { Col, Divider, List, Row } from 'antd';
 import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
 import { COURSE_FULLNAME_ALIAS } from "@/constants";
 
@@ -260,6 +260,7 @@ const ScoreLineChart = memo(
             </Chart>
           </Col>
         </Row>
+        <Divider style={{ marginBottom: 24, marginTop: 5 }} dashed>各科目成绩趋势</Divider>
         <List
           grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 1, xl: 2, xxl: 2 }}
           dataSource={subData}
