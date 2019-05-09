@@ -62,6 +62,10 @@ export default class SiderMenu extends PureComponent {
       [styles.fixSiderBar]: fixSiderbar,
       [styles.light]: theme === 'light',
     });
+
+    const collapsedImage = classNames(styles.logoImage, {
+      [styles.collapsed]: collapsed,
+    });
     return (
       <Sider
         trigger={null}
@@ -77,13 +81,23 @@ export default class SiderMenu extends PureComponent {
         theme={theme}
         className={siderClassName}
       >
-        <div className={styles.logo} id="logo">
+        <div className={styles.logo} style={{ paddingLeft: `${collapsed ? 22 : 15}px` }} id="logo">
           <Link to="/">
-            <img src={logo} alt="logo" />
-            <h1>{title}</h1>
+            <img src={logo} alt="logo" className={collapsedImage}/>
+            <span
+              style={{
+                color: 'white',
+                fontSize: '1.4em',
+                verticalAlign: 'middle',
+                marginLeft: '8px',
+                fontWeight: 'bold'
+              }}
+            >
+              {!collapsed && title}
+              </span>
           </Link>
         </div>
-        <Suspense fallback={<PageLoading />}>
+        <Suspense fallback={<PageLoading/>}>
           <BaseMenu
             {...this.props}
             mode="inline"

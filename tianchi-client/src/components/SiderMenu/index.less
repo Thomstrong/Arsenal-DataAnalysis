@@ -24,7 +24,14 @@
     font-family: Avenir, 'Helvetica Neue', Arial, Helvetica, sans-serif;
     vertical-align: middle;
   }
+  .logoImage {
+    transition: all 1s;
+    &.collapsed {
+      transform: rotate(360deg);
+    }
+  }
 }
+
 .sider {
   position: relative;
   z-index: 10;
