@@ -66,8 +66,8 @@ const errorHandler = error => {
 const request = extend({
   errorHandler, // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
-  // useCache: true,
-  // maxCache: 100,
+  useCache: true,
+  maxCache: 50,
 });
 
 export default request;

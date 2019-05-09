@@ -56,6 +56,13 @@ export default {
     APP_TYPE: APP_TYPE || '',
   },
   treeShaking: true,
+  externals: {
+    lodash: {
+      commonjs: 'lodash',
+      amd: 'lodash',
+      root: '_'
+    }
+  },
   targets: {
     ie: 11,
   },
