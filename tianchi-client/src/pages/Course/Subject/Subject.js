@@ -4,7 +4,7 @@
 //具体科目的分析,用户可以选择学年,呈现出该学年,该学科,不同班级每次考试的成绩分布
 
 import React, { PureComponent } from 'react';
-import { COURSE_FULLNAME_ALIAS, GAOKAO_COURSES, POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
+import { COURSE_FULLNAME_ALIAS, GAOKAO_COURSES, GRADE_ALIAS, POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
 import { Affix, BackTop, Card, Col, Row, Select, Typography } from 'antd';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
 import { connect } from "dva";
@@ -84,7 +84,7 @@ class Subject extends PureComponent {
       <Card title="各班某年某科目成绩统计" bordered={true} style={{ width: '100%' }}>
         <BackTop/>
         <Row type="flex" justify="end" style={{ padding: 10 }}>
-          <Affix offsetTop={80} style={{ 'zIndex': 1 }}>
+          <Affix offsetTop={16} style={{ 'zIndex': 2 }}>
             <Col span={10} style={{ display: 'inline-flex' }}>
               <div style={{ backgroundColor: 'white', display: 'inline-flex' }}>
                 <Select
@@ -173,7 +173,7 @@ class Subject extends PureComponent {
           <Col xl={{ span: 5, offset: 1 }} xs={24}>
             <Card bordered={false} hoverable={true} style={{ cursor: "auto" }}>
               <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
-                type="danger">高{this.state.grade}</Text>
+                type="danger">{GRADE_ALIAS[this.state.grade]}</Text>
                 <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>
               <Paragraph>最高分出现在<Text type="danger">{classExamSummary.highestExam}</Text>的<Text
                 type="danger">{classExamSummary.highestClass}班</Text>,
@@ -185,7 +185,7 @@ class Subject extends PureComponent {
           <Col xl={5} xs={24}>
             <Card bordered={false} hoverable={true} style={{ cursor: "auto" }}>
               <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
-                type="danger">高{this.state.grade}</Text>
+                type="danger">{GRADE_ALIAS[this.state.grade]}</Text>
                 <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>
               <Paragraph> 平均分最<Text type="danger">高</Text>出现在<Text
                 type="danger">{classExamSummary.averageHighExam}</Text>的<Text
@@ -304,7 +304,7 @@ class Subject extends PureComponent {
           <Col xl={{ span: 5, offset: 1 }} xs={24}>
             <Card bordered={false} hoverable={true} style={{ cursor: "auto" }}>
               <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
-                type="danger">高{this.state.grade}</Text>
+                type="danger">{GRADE_ALIAS[this.state.grade]}</Text>
                 <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>
               <Paragraph>年级段最<Text type="danger">低</Text>分出现在
                 <Text type="danger">{classExamSummary.lowestExam}</Text>的<Text

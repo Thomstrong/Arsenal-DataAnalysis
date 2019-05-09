@@ -408,7 +408,15 @@ class ClassAnalysis extends PureComponent {
           title: `${COURSE_FULLNAME_ALIAS[courseId]}成绩`,
           dataIndex: courseId,
           key: `record-${courseId}`,
-          sorter: (a, b) => a[courseId] - b[courseId],
+          sorter: (a, b) => {
+            if(!b[courseId]) {
+              return 1
+            }
+            if(!a[courseId]) {
+              return -1
+            }
+            return a[courseId] - b[courseId]
+          },
           width: 120,
           align: 'center',
         };
@@ -617,6 +625,7 @@ class ClassAnalysis extends PureComponent {
                       optionFilterProp="children"
                       style={{ width: 300 }}
                       onChange={this.onExamChanged}
+                      value={this.state.examId}
                       filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                       placeholder="请选择该班级参与的考试"
                     >
@@ -673,14 +682,14 @@ class ClassAnalysis extends PureComponent {
                       <Card title="本次考试该班学生成绩与排名" style={{ marginTop: 12 }} bodyStyle={{ padding: 10 }}>
                         <Table
                           bordered
-                          rowKey={record => record.index}
+                          rowKey={record => record.name}
                           columns={tableColumns}
                           dataSource={examRecords}
                           scroll={{ x: 1600, y: 255 }}
                           pagination={false}
                         />
                       </Card>}
-                      {showedScoreData && <Card title="年级其他班成绩对比分析" style={{ marginTop: 12 }}>
+                      {showedScoreData && <Card title="与年级其他班成绩对比分析" style={{ marginTop: 12 }}>
                         <Row type='flex' justify="end">
                           <Affix offsetTop={13}>
                             <Select

@@ -111,7 +111,7 @@ class TagCloud extends Component {
         type: 'tag-cloud',
         fields: ['name', 'value'],
         imageMask: this.imageMask,
-        font: 'serif',
+        font: 'Verdana',
         size: [w, h], // 宽高设置最好根据 imageMask 做调整
         padding: 0,
         timeInterval: 1000, // max execute time
