@@ -836,6 +836,16 @@ class ClassAnalysis extends PureComponent {
                             type="intervalStack"
                             position="name*count"
                             color={"range"}
+                            tooltip={
+                              ["range*count",
+                                (range,count) => {
+                                  return {
+                                    name: range ,
+                                    value: count+'人'
+                                  };
+                                }
+                              ]
+                            }
                           />
                         </Chart>}
                       </Card>}

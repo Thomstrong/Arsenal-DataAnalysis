@@ -95,7 +95,7 @@ const ScoreLineChart = memo(
               forceFit
               scale={{
                 exam: {
-                  tickCount: 10
+                  tickCount: 5
                 },
                 ...scale
               }}
@@ -144,7 +144,7 @@ const ScoreLineChart = memo(
               <Guide>
                 <Line
                   top={true}
-                  start={[-1, 588]}
+                  start={[-0.5, 588]}
                   end={['max', 588]}
                   lineStyle={{
                     stroke: '#99203e',
@@ -163,7 +163,7 @@ const ScoreLineChart = memo(
                 />
                 <Line
                   top={true}
-                  start={[-1, 490]}
+                  start={[-0.5, 490]}
                   end={['max', 490]}
                   lineStyle={{
                     stroke: '#99203e',
@@ -182,7 +182,7 @@ const ScoreLineChart = memo(
                 />
                 <Line
                   top={true}
-                  start={[-1, 344]}
+                  start={[-0.5, 344]}
                   end={['max', 344]}
                   lineStyle={{
                     stroke: '#99203e',
@@ -201,7 +201,7 @@ const ScoreLineChart = memo(
                 />
                 <Line
                   top={true}
-                  start={[-1, 577]}
+                  start={[-0.5, 577]}
                   end={['max', 577]}
                   lineStyle={{
                     stroke: '#6b561e',
@@ -220,7 +220,7 @@ const ScoreLineChart = memo(
                 />
                 <Line
                   top={true}
-                  start={[-1, 480]}
+                  start={[-0.5, 480]}
                   end={['max', 480]}
                   lineStyle={{
                     stroke: '#6b561e',
@@ -239,7 +239,7 @@ const ScoreLineChart = memo(
                 />
                 <Line
                   top={true}
-                  start={[-1, 359]}
+                  start={[-0.5, 359]}
                   end={['max', 359]}
                   lineStyle={{
                     stroke: '#6b561e',
@@ -275,7 +275,7 @@ const ScoreLineChart = memo(
                 }) : item.lineData}
                 scale={{
                   exam: {
-                    tickCount: 8
+                    tickCount: 3
                   },
                   ...scale
                 }}
