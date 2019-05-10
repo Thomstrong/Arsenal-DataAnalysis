@@ -46,7 +46,7 @@ class ClassViewSet(viewsets.ModelViewSet):
             'student__is_stay_school',
             'student__native_place',
             'student__policy'
-        )
+        ).distinct('student')
         boy_counter = 0
         stay_counter = 0
         local_count = 0
@@ -65,7 +65,6 @@ class ClassViewSet(viewsets.ModelViewSet):
                 local_count += 1
             if record['student__policy'] in [PolicyType.gcd, PolicyType.gqt]:
                 policy_count += 1
-
         return Response({
             'total': total,
             'boy': boy_counter,
