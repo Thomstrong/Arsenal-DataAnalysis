@@ -85,5 +85,5 @@ Email: thomstrong@dingtalk.com
 
 ##### 浏览器说明
 
-支持Chrome、Safari、Edge、Opera、火狐等主流浏览器，建议使用除IE/Edge的浏览器并配合1280像素以上宽屏辅之触摸面板以获得更好的体验。
+支持Chrome、Safari、Edge、Opera、火狐等主流浏览器，建议使用除IE/Edge的浏览器并配合1280像素以上宽屏以获得更好的体验。
 
