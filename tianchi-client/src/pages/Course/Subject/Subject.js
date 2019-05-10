@@ -3,9 +3,9 @@
  */
 //具体科目的分析,用户可以选择学年,呈现出该学年,该学科,不同班级每次考试的成绩分布
 
-import React, { PureComponent } from 'react';
+import React, { PureComponent,Fragment } from 'react';
 import { COURSE_FULLNAME_ALIAS, GAOKAO_COURSES, GRADE_ALIAS, POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
-import { Affix, BackTop, Card, Col, Row, Select, Typography } from 'antd';
+import { Affix, BackTop, Card, Col, Row, Select, Typography,Empty } from 'antd';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
 import { connect } from "dva";
 
@@ -79,6 +79,7 @@ class Subject extends PureComponent {
   render() {
     const { loading, course } = this.props;
     const { classExamData, classExamSummary } = course;
+    console.log(classExamData)
 
     return (
       <Card title="各班某年某科目成绩统计" bordered={true} style={{ width: '100%' }}>
@@ -118,7 +119,9 @@ class Subject extends PureComponent {
             </Col>
           </Affix>
         </Row>
-        <Row style={{ padding: 10 }} type="flex" align="middle">
+        {classExamData.highest.length?
+          <Fragment>
+          <Row style={{ padding: 10 }} type="flex" align="middle">
           <Col xl={18} xs={24}>
             <Card type="inner" title="各班某年某科目最高分统计" bordered={true} style={{ width: '100%' }} hoverable={true}>
               <Chart height={400} data={classExamData.highest} padding='auto' forceFit>
@@ -313,6 +316,7 @@ class Subject extends PureComponent {
             </Card>
           </Col>
         </Row>
+          </Fragment>:<Empty description={"该学年该年级该科目暂无数据，更新选项试试看"}/>}
       </Card>
     );
   }
