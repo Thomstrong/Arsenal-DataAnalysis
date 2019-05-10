@@ -8,7 +8,7 @@ import defaultSettings from '../src/defaultSettings';
 
 const { pwa, primaryColor } = defaultSettings;
 const { APP_TYPE, TEST } = process.env;
-const server = 'http://39.97.114.234:8000';
+const server = 'http://localhost:8000';
 const plugins = [
   [
     'umi-plugin-react',
