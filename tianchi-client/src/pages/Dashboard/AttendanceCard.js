@@ -180,7 +180,7 @@ const AttendanceCard = memo(({data}) => {
                 <Paragraph>2. <Text type="danger">高一</Text>违纪情况在任一学年任一类型都是最<Text type="danger">少</Text>的，
                   同时，<Text type="danger">高三</Text>几乎肩负起了<Text type="danger">一半</Text>的违纪指标;</Paragraph>
                 <Paragraph>3. 每一学年的高三学生都会有迟到和校服违纪的现象，但
-                  <Text type="danger">早退</Text>集中在 17 学年和 18 学年。</Paragraph>
+                  <Text type="danger">早退</Text>集中在 16-17 学年和 17-18 学年。</Paragraph>
               </Card>
             </div>
           </Col>}
