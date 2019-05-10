@@ -3,9 +3,9 @@
  */
 //具体科目的分析,用户可以选择学年,呈现出该学年,该学科,不同班级每次考试的成绩分布
 
-import React, { PureComponent,Fragment } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { COURSE_FULLNAME_ALIAS, GAOKAO_COURSES, GRADE_ALIAS, POLICY_TYPE_ALIAS, SEX_MAP } from "@/constants";
-import { Affix, BackTop, Card, Col, Row, Select, Typography,Empty } from 'antd';
+import { Affix, BackTop, Card, Col, Empty, Row, Select, Typography } from 'antd';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
 import { connect } from "dva";
 
@@ -68,18 +68,9 @@ class Subject extends PureComponent {
     this.setState({ course });
   };
 
-  compare(property) {
-    return function (a, b) {
-      var value1 = a[property];
-      var value2 = b[property];
-      return value2 - value1;
-    };
-  }
-
   render() {
     const { loading, course } = this.props;
     const { classExamData, classExamSummary } = course;
-    console.log(classExamData)
 
     return (
       <Card title="各班某年某科目成绩统计" bordered={true} style={{ width: '100%' }}>
@@ -119,204 +110,210 @@ class Subject extends PureComponent {
             </Col>
           </Affix>
         </Row>
-        {classExamData.highest.length?
-          <Fragment>
-          <Row style={{ padding: 10 }} type="flex" align="middle">
-          <Col xl={18} xs={24}>
-            <Card type="inner" title="各班某年某科目最高分统计" bordered={true} style={{ width: '100%' }} hoverable={true}>
-              <Chart height={400} data={classExamData.highest} padding='auto' forceFit>
-                <Legend/>
-                <Axis name="exam"/>
-                <Axis
-                  name="score"
-                />
-                <Tooltip
-                  crosshairs={{
-                    type: "y"
-                  }}
-                />
-                <Geom
-                  type="line"
-                  position="exam*score"
-                  size={2}
-                  color={"stuClass"}
-                  tooltip={[
-                    "stuClass*score",
-                    (stuClass, score) => {
-                      return {
-                        name: stuClass,
-                        value: score + "分"
-                      };
-                    }
-                  ]}
-                />
-                <Geom
-                  type="point"
-                  position="exam*score"
-                  size={4}
-                  shape={"circle"}
-                  color={"stuClass"}
-                  style={{
-                    stroke: "#fff",
-                    lineWidth: 1
-                  }}
-                  tooltip={[
-                    "stuClass*score",
-                    (stuClass, score) => {
-                      return {
-                        name: stuClass,
-                        value: score + "分"
-                      };
-                    }
-                  ]}
-                />
-              </Chart>
-            </Card>
-          </Col>
-          <Col xl={{ span: 5, offset: 1 }} xs={24}>
-            <Card bordered={false} hoverable={true} style={{ cursor: "auto" }}>
-              <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
-                type="danger">{GRADE_ALIAS[this.state.grade]}</Text>
-                <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>
-              <Paragraph>最高分出现在<Text type="danger">{classExamSummary.highestExam}</Text>的<Text
-                type="danger">{classExamSummary.highestClass}班</Text>,
-                为<Text type="danger">{classExamSummary.highestScore}</Text>分</Paragraph>
-            </Card>
-          </Col>
-        </Row>
-        <Row style={{ padding: 10 }} type="flex" align="middle">
-          <Col xl={5} xs={24}>
-            <Card bordered={false} hoverable={true} style={{ cursor: "auto" }}>
-              <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
-                type="danger">{GRADE_ALIAS[this.state.grade]}</Text>
-                <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>
-              <Paragraph> 平均分最<Text type="danger">高</Text>出现在<Text
-                type="danger">{classExamSummary.averageHighExam}</Text>的<Text
-                type="danger">{classExamSummary.averageHighClass}班</Text>,
-                为<Text type="danger">{classExamSummary.averageHighScore}</Text>分;</Paragraph>
-              <Paragraph> 平均分最<Text type="danger">低</Text>出现在<Text
-                type="danger">{classExamSummary.averageLowExam}</Text>的<Text
-                type="danger">{classExamSummary.averageLowClass}班</Text>,
-                为<Text type="danger">{classExamSummary.averageLowScore}</Text>分</Paragraph>
-            </Card>
-          </Col>
-          <Col xl={{ span: 18, offset: 1 }} xs={24}>
-            <Card type="inner" title="各班某年某科目平均分统计" bordered={true} style={{ width: '100%' }} hoverable={true}>
-              <Chart height={400} data={classExamData.average} padding="auto" forceFit>
-                <Legend/>
-                <Axis name="exam"/>
-                <Axis
-                  name="score"
-                />
-                <Tooltip
-                  crosshairs={{
-                    type: "y"
-                  }}
-                />
-                <Geom
-                  type="line"
-                  position="exam*score"
-                  size={2}
-                  color={"stuClass"}
-                  tooltip={[
-                    "stuClass*score",
-                    (stuClass, score) => {
-                      return {
-                        name: stuClass,
-                        value: score + "分"
-                      };
-                    }
-                  ]}
-                />
-                <Geom
-                  type="point"
-                  position="exam*score"
-                  size={4}
-                  shape={"circle"}
-                  color={"stuClass"}
-                  style={{
-                    stroke: "#fff",
-                    lineWidth: 1
-                  }}
-                  tooltip={[
-                    "stuClass*score",
-                    (stuClass, score) => {
-                      return {
-                        name: stuClass,
-                        value: score + "分"
-                      };
-                    }
-                  ]}
-                />
-              </Chart>
-            </Card>
-          </Col>
-        </Row>
-        <Row style={{ padding: 10 }} type="flex" align="middle">
-          <Col xl={18} xs={24}>
-            <Card type="inner" title="各班某年某科目最低分统计" bordered={true} style={{ width: '100%' }} hoverable={true}>
-              <Chart height={400} data={classExamData.lowest} padding="auto" forceFit>
-                <Legend/>
-                <Axis name="exam"/>
-                <Axis
-                  name="score"
-                />
-                <Tooltip
-                  crosshairs={{
-                    type: "y"
-                  }}
-                />
-                <Geom
-                  type="line"
-                  position="exam*score"
-                  size={2}
-                  color={"stuClass"}
-                  tooltip={[
-                    "stuClass*score",
-                    (stuClass, score) => {
-                      return {
-                        name: stuClass,
-                        value: score + "分"
-                      };
-                    }
-                  ]}
-                />
-                <Geom
-                  type="point"
-                  position="exam*score"
-                  size={4}
-                  shape={"circle"}
-                  color={"stuClass"}
-                  style={{
-                    stroke: "#fff",
-                    lineWidth: 1
-                  }}
-                  tooltip={[
-                    "stuClass*score",
-                    (stuClass, score) => {
-                      return {
-                        name: stuClass,
-                        value: score + "分"
-                      };
-                    }
-                  ]}
-                />
-              </Chart>
-            </Card>
-          </Col>
-          <Col xl={{ span: 5, offset: 1 }} xs={24}>
-            <Card bordered={false} hoverable={true} style={{ cursor: "auto" }}>
-              <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
-                type="danger">{GRADE_ALIAS[this.state.grade]}</Text>
-                <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>
-              <Paragraph>年级段最<Text type="danger">低</Text>分出现在
-                <Text type="danger">{classExamSummary.lowestExam}</Text>的<Text
-                  type="danger">{classExamSummary.lowestClass}班</Text>,
-                为<Text type="danger">{classExamSummary.lowestScore}</Text>分</Paragraph>
-            </Card>
-          </Col>
-        </Row>
-          </Fragment>:<Empty description={"该学年该年级该科目暂无数据，更新选项试试看"}/>}
+        {classExamData.highest.length ? <Fragment>
+            <Row style={{ padding: 10 }} type="flex" align="middle">
+              <Col xl={18} xs={24}>
+                <Card type="inner" title="各班某年某科目最高分统计" bordered={true} style={{ width: '100%' }} hoverable={true}>
+                  <Chart height={400} data={classExamData.highest} padding='auto' forceFit>
+                    <Legend/>
+                    <Axis name="exam"/>
+                    <Axis
+                      name="score"
+                    />
+                    <Tooltip
+                      crosshairs={{
+                        type: "y"
+                      }}
+                    />
+                    <Geom
+                      type="line"
+                      position="exam*score"
+                      size={2}
+                      color={"stuClass"}
+                      tooltip={[
+                        "stuClass*score",
+                        (stuClass, score) => {
+                          return {
+                            name: stuClass,
+                            value: score + "分"
+                          };
+                        }
+                      ]}
+                    />
+                    <Geom
+                      type="point"
+                      position="exam*score"
+                      size={4}
+                      shape={"circle"}
+                      color={"stuClass"}
+                      style={{
+                        stroke: "#fff",
+                        lineWidth: 1
+                      }}
+                      tooltip={[
+                        "stuClass*score",
+                        (stuClass, score) => {
+                          return {
+                            name: stuClass,
+                            value: score + "分"
+                          };
+                        }
+                      ]}
+                    />
+                  </Chart>
+                </Card>
+              </Col>
+              <Col xl={{ span: 5, offset: 1 }} xs={24}>
+                <Card bordered={false} hoverable={true} style={{ cursor: "auto" }}>
+                  <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
+                    type="danger">{GRADE_ALIAS[this.state.grade]}</Text>
+                    <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>
+                  <Paragraph>最高分出现在<Text type="danger">{classExamSummary.highestExam}</Text>的<Text
+                    type="danger">{classExamSummary.highestClass}班</Text>,
+                    为<Text type="danger">{classExamSummary.highestScore}</Text>分</Paragraph>
+                </Card>
+              </Col>
+            </Row>
+            <Row style={{ padding: 10 }} type="flex" align="middle">
+              <Col xl={5} xs={24}>
+                <Card bordered={false} hoverable={true} style={{ cursor: "auto" }}>
+                  <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
+                    type="danger">{GRADE_ALIAS[this.state.grade]}</Text>
+                    <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>
+                  <Paragraph> 平均分最<Text type="danger">高</Text>出现在<Text
+                    type="danger">{classExamSummary.averageHighExam}</Text>的<Text
+                    type="danger">{classExamSummary.averageHighClass}班</Text>,
+                    为<Text type="danger">{classExamSummary.averageHighScore}</Text>分;</Paragraph>
+                  <Paragraph> 平均分最<Text type="danger">低</Text>出现在<Text
+                    type="danger">{classExamSummary.averageLowExam}</Text>的<Text
+                    type="danger">{classExamSummary.averageLowClass}班</Text>,
+                    为<Text type="danger">{classExamSummary.averageLowScore}</Text>分</Paragraph>
+                </Card>
+              </Col>
+              <Col xl={{ span: 18, offset: 1 }} xs={24}>
+                <Card type="inner" title="各班某年某科目平均分统计" bordered={true} style={{ width: '100%' }} hoverable={true}>
+                  <Chart height={400} data={classExamData.average} padding="auto" forceFit>
+                    <Legend/>
+                    <Axis name="exam"/>
+                    <Axis
+                      name="score"
+                    />
+                    <Tooltip
+                      crosshairs={{
+                        type: "y"
+                      }}
+                    />
+                    <Geom
+                      type="line"
+                      position="exam*score"
+                      size={2}
+                      color={"stuClass"}
+                      tooltip={[
+                        "stuClass*score",
+                        (stuClass, score) => {
+                          return {
+                            name: stuClass,
+                            value: score + "分"
+                          };
+                        }
+                      ]}
+                    />
+                    <Geom
+                      type="point"
+                      position="exam*score"
+                      size={4}
+                      shape={"circle"}
+                      color={"stuClass"}
+                      style={{
+                        stroke: "#fff",
+                        lineWidth: 1
+                      }}
+                      tooltip={[
+                        "stuClass*score",
+                        (stuClass, score) => {
+                          return {
+                            name: stuClass,
+                            value: score + "分"
+                          };
+                        }
+                      ]}
+                    />
+                  </Chart>
+                </Card>
+              </Col>
+            </Row>
+            <Row style={{ padding: 10 }} type="flex" align="middle">
+              <Col xl={18} xs={24}>
+                <Card type="inner" title="各班某年某科目最低分统计" bordered={true} style={{ width: '100%' }} hoverable={true}>
+                  <Chart height={400} data={classExamData.lowest} padding="auto" forceFit>
+                    <Legend/>
+                    <Axis name="exam"/>
+                    <Axis
+                      name="score"
+                    />
+                    <Tooltip
+                      crosshairs={{
+                        type: "y"
+                      }}
+                    />
+                    <Geom
+                      type="line"
+                      position="exam*score"
+                      size={2}
+                      color={"stuClass"}
+                      tooltip={[
+                        "stuClass*score",
+                        (stuClass, score) => {
+                          return {
+                            name: stuClass,
+                            value: score + "分"
+                          };
+                        }
+                      ]}
+                    />
+                    <Geom
+                      type="point"
+                      position="exam*score"
+                      size={4}
+                      shape={"circle"}
+                      color={"stuClass"}
+                      style={{
+                        stroke: "#fff",
+                        lineWidth: 1
+                      }}
+                      tooltip={[
+                        "stuClass*score",
+                        (stuClass, score) => {
+                          return {
+                            name: stuClass,
+                            value: score + "分"
+                          };
+                        }
+                      ]}
+                    />
+                  </Chart>
+                </Card>
+              </Col>
+              <Col xl={{ span: 5, offset: 1 }} xs={24}>
+                <Card bordered={false} hoverable={true} style={{ cursor: "auto" }}>
+                  <Paragraph><Text type="danger">{this.state.term}-{this.state.term + 1}</Text>学年<Text
+                    type="danger">{GRADE_ALIAS[this.state.grade]}</Text>
+                    <Text type="danger">{COURSE_FULLNAME_ALIAS[this.state.course]}</Text>:</Paragraph>
+                  <Paragraph>年级段最<Text type="danger">低</Text>分出现在
+                    <Text type="danger">{classExamSummary.lowestExam}</Text>的<Text
+                      type="danger">{classExamSummary.lowestClass}班</Text>,
+                    为<Text type="danger">{classExamSummary.lowestScore}</Text>分</Paragraph>
+                </Card>
+              </Col>
+            </Row>
+          </Fragment> :
+          <Empty
+            description={
+              `${this.state.term} - ${this.state.term + 1} 学年${
+                GRADE_ALIAS[this.state.grade]
+                }年级${COURSE_FULLNAME_ALIAS[this.state.course]}考试暂无数据`
+            }
+          />}
       </Card>
     );
   }
