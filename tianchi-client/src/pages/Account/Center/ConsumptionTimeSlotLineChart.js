@@ -65,12 +65,12 @@ const ConsumptionTimeSlotLineChart = memo(
     for (let i = 0; i < list.length; i++) {
       if (list[i] !== undefined) {
         if (list[i].student !== 0) {
-          if ((list[i].student - list[i].school) > 5) {
-            equal = 0;
-            high = 1;
-          } else if ((list[i].school - list[i].student) > 5) {
-            equal = 0;
-            high = 0;
+          if ((list[i].student - list[i].school) > 2) {
+            equal = equal +1;
+            high = high + 1;
+          } else if ((list[i].school - list[i].student) > 2) {
+            equal = equal -1;
+            high = high - 1;
           }
         }
       }
@@ -324,8 +324,8 @@ const ConsumptionTimeSlotLineChart = memo(
                 平均消费
                 <Text strong style={{ color: "#cc4756" }}>¥{maxHourlyCost.toFixed(2)}元</Text>
               </Paragraph>
-              <Paragraph>该同学在对应时刻消费水平较校平均消费水平{equal ? <Text strong style={{ color: "#cc4756" }}>持平</Text> :
-                (high ? <Text strong style={{ color: "#cc4756" }}>高</Text> :
+              <Paragraph>该同学在对应时刻消费水平较校平均消费水平{equal===1 ? <Text strong style={{ color: "#cc4756" }}>持平</Text> :
+                (high>0 ? <Text strong style={{ color: "#cc4756" }}>高</Text> :
                   <Text strong style={{ color: "#cc4756" }}>低</Text>)}</Paragraph>
             </Col>
           </Row> : <Empty/>}

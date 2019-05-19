@@ -28,6 +28,7 @@ export default {
       teacherInfo: [],
       kaoqinData: [],
       kaoqinSummary: [],
+      totalKaoqinCount:0,
       totalTrend: [],
       scoreType: '',
       lineSummary: {},
@@ -408,6 +409,7 @@ export default {
         return state;
       }
       const termList = {};
+      let count = 0;
       const { termMap } = action;
       const { summary, records } = action.payload;
       state.studentInfo.kaoqinSummary = summary.map((data) => {
@@ -418,11 +420,13 @@ export default {
       });
       state.studentInfo.kaoqinData = records.map((data) => {
         termList[termMap[data.term]] = 1;
+        count = count + data.count;
         return {
           'name': EVENT_TYPE_ALIAS[data.event__type_id],
           [termMap[data.term]]: data.count,
         };
       });
+      state.studentInfo.totalKaoqinCount = count;
       state.termList = Object.keys(termList);
       return state;
     },

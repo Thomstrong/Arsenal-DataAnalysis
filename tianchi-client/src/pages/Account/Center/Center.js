@@ -560,6 +560,7 @@ class Center extends PureComponent {
     //考勤的相关数据
     const kaoqinData = this.formatKaoqinData(studentInfo.kaoqinData, termList);
     const kaoqinSummary = studentInfo.kaoqinSummary;
+    const totalKaoqinCount = studentInfo.totalKaoqinCount;
     // 一卡通对比数据1 0-23小时的平均消费
     const hourlyVsCostData = vsAverageData.length ? new DataSet.View().source(vsAverageData).transform({
       type: 'map',
@@ -819,6 +820,7 @@ class Center extends PureComponent {
                       kaoqinData={kaoqinData}
                       termList={termList}
                       kaoqinSummary={kaoqinSummary}
+                      totalKaoqinCount={totalKaoqinCount}
                     />
                   </Suspense> : initEmpty}
                 </TabPane>
