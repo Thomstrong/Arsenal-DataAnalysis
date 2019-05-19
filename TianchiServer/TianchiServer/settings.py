@@ -78,6 +78,17 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
 
+REST_FRAMEWORK_EXTENSIONS = {
+    'DEFAULT_CACHE_KEY_FUNC': 'utils.cache_funcs.calculate_cache_key'
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
+
 ROOT_URLCONF = 'TianchiServer.urls'
 
 TEMPLATES = [

@@ -3,10 +3,12 @@ from django.db.models import Count, Sum
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
+from rest_framework_extensions.cache.decorators import cache_response
 
 from courses.api.serializers import CourseRecordSerializer, CourseSerializer
 from courses.models.course import Course
 from courses.models.course_record import CourseRecord
+from utils.cache_funcs import ONE_MONTH
 from utils.decorators import required_params
 from wordcloud.constants import TagType
 from wordcloud.models.tag_record import CourseTag
@@ -188,6 +190,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
+    @cache_response(ONE_MONTH)
     @list_route(
         methods=['GET']
     )

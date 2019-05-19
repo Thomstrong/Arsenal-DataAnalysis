@@ -3,17 +3,22 @@ from django.db.models import Avg, Sum, Q, Count
 from rest_framework import viewsets, status
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
+from rest_framework_extensions.cache.decorators import cache_response
 
 from consumptions.api.serializers import ConsumptionSerializer, ConsumptionDailyDataSerializer
 from consumptions.models import Consumption, DailyConsumption, HourlyConsumption
 from students.models.student_record import StudentRecord
+from utils.cache_funcs import calculate_cache_key, ONE_MONTH
 from utils.decorators import required_params
+
+
 
 
 class ConsumptionViewSet(viewsets.ModelViewSet):
     queryset = Consumption.objects.all()
     serializer_class = ConsumptionSerializer
 
+    @cache_response(ONE_MONTH)
     @required_params(params=['base'])
     @list_route(
         methods=['GET']
@@ -38,7 +43,7 @@ class ConsumptionViewSet(viewsets.ModelViewSet):
             ).annotate(
                 total_cost=-Avg('total_cost'),
                 count=Count('id')
-            ).values('hour', field, 'total_cost','count').order_by('hour')
+            ).values('hour', field, 'total_cost', 'count').order_by('hour')
             return Response(records)
 
         if base == 'grade':
@@ -80,6 +85,7 @@ class ConsumptionViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
+    @cache_response(ONE_MONTH)
     @list_route(
         methods=['GET'],
     )

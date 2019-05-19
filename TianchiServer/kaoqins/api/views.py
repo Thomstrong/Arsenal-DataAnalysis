@@ -2,9 +2,11 @@ from django.db.models import Count, Q
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
+from rest_framework_extensions.cache.decorators import cache_response
 
 from kaoqins.api.serializers import KaoqinRecordMiniSerializer
 from kaoqins.models.kaoqin_record import KaoqinRecord
+from utils.cache_funcs import ONE_MONTH
 from utils.decorators import required_params
 
 
@@ -14,6 +16,7 @@ class KaoqinRecordViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self, *args, **kwargs):
         return KaoqinRecordMiniSerializer
 
+    @cache_response(ONE_MONTH)
     @required_params(params=['base'])
     @list_route(
         methods=['GET']
