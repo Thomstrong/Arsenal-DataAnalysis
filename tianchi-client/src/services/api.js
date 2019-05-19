@@ -75,6 +75,10 @@ export async function getConsumption({ studentId, date, type, dateRange }) {
   return request(`/api/students/${studentId}/consumptions/?date=${date || ''}&type=${type}&date_range=${dateRange || ''}`);
 }
 
+export async function getStudentCostDetail({ studentId, timeStamp }) {
+  return request(`/api/students/${studentId}/consumptions/?type=daily_detail&date=${timeStamp}`);
+}
+
 export async function getCompare({ studentId, compareId, type }) {
   return request(`/api/students/${studentId}/compare?with=${compareId}&type=${type}`);
 }

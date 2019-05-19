@@ -1,4 +1,5 @@
 # Create your views here.
+import datetime
 from datetime import timedelta
 
 from dateutil.parser import parse as parse_date
@@ -8,7 +9,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
 from consumptions.api.serializers import DailyConsumptionSerializer
-from consumptions.models import DailyConsumption, HourlyConsumption
+from consumptions.models import DailyConsumption, HourlyConsumption, Consumption
 from courses.models.course_record import CourseRecord
 from exams.models.exam_record import StudentExamRecord
 from kaoqins.models.kaoqin_record import KaoqinRecord
@@ -230,6 +231,24 @@ class StudentViewSet(viewsets.ModelViewSet):
         if not info_type:
             return Response(status=400)
 
+        if info_type == 'daily_detail':
+            time_stamp = int(request.query_params.get('date', 0))
+            date = datetime.datetime.fromtimestamp(time_stamp / 1e3)
+            records = Consumption.objects.filter(
+                created_at__gte=date.date(),
+                created_at__lt=date.date() + timedelta(days=1),
+                student_id=pk,
+            ).order_by('created_at').values('created_at', 'cost')
+
+            formatted_records = []
+
+            for record in records:
+                formatted_records.append({
+                    'time': record['created_at'],
+                    'cost': -record['cost'],
+                })
+            return Response(formatted_records)
+
         if info_type == 'hourly_avg':
             records = HourlyConsumption.objects.filter(
                 student_id=pk,
@@ -237,6 +256,7 @@ class StudentViewSet(viewsets.ModelViewSet):
                 avg_cost=-Avg('total_cost')
             )
             return Response(records)
+
         if info_type == 'daily_sum':
             records = DailyConsumption.objects.filter(
                 student_id=pk,

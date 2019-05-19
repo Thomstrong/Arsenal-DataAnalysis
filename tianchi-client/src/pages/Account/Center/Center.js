@@ -62,12 +62,13 @@ const initEmpty = <Empty description='请在左侧搜索框中搜索学生信息
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
   hourlyAvgCost: student.hourlyAvgCost,
   dailySumCost: student.dailySumCost,
+  dailyCostDetail: student.dailyCostDetail,
   dailyAvg: student.dailyAvg,
   dailyAvgRank: student.dailyAvgRank,
   studentListLoading: loading.effects['student/fetchStudentList'],
   vsStudentListLoading: loading.effects['student/fetchVsStudentList'],
   costLoading: loading.effects['student/fetchHourlyAvgCost'],
-  scoreLoading: loading.effects['student/fetchTotalTrend'] && loading.effects['student/fetchSubTrends'],
+  costDetailLoading: loading.effects['student/fetchCostDetail'],
   eCardLoading: loading.effects['student/fetchDailySumCost'] && loading.effects['student/fetchDailyPredictData'],
 }))
 class Center extends PureComponent {
@@ -519,6 +520,14 @@ class Center extends PureComponent {
 
 
   onPointClick = (startTime, endTime, timeStamp, left, top) => {
+    const { dispatch, studentInfo } = this.props;
+    dispatch({
+      type: 'student/fetchCostDetail',
+      payload: {
+        studentId: studentInfo.id,
+        timeStamp,
+      }
+    });
     this.setState({
       popStyle: {
         position: 'absolute',
@@ -535,8 +544,8 @@ class Center extends PureComponent {
   onPopClose = () => {
     this.setState({
       popVisible: false
-    })
-  }
+    });
+  };
 
   render() {
     const {
@@ -557,6 +566,8 @@ class Center extends PureComponent {
       vsDailySumCost,
       hourlyAvgCost,
       dailySumCost,
+      dailyCostDetail,
+      costDetailLoading,
       dailyAvg,
       dailyAvgRank,
       loading,
@@ -565,7 +576,6 @@ class Center extends PureComponent {
       location,
       kaoqinLoading,
       eCardLoading,
-      scoreLoading
     } = this.props;
     const { dateRange, date } = dailyPredictData;
     const { hourlyAvgData, maxHourlyAvg } = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
@@ -805,6 +815,8 @@ class Center extends PureComponent {
                           popStyle={this.state.popStyle}
                           onPointClick={this.onPointClick}
                           onPopClose={this.onPopClose}
+                          dailyCostDetail={dailyCostDetail}
+                          costDetailLoading={costDetailLoading}
                         />
                       </Suspense>
                       <Card
@@ -885,7 +897,7 @@ class Center extends PureComponent {
                       <Card
                         title="基本信息对比"
                         bordered={false}
-                        style={{ width: '100%'}}
+                        style={{ width: '100%' }}
                         bodyStyle={{ paddingLeft: 0 }}
                       >
                         <Row type="flex" align="middle">

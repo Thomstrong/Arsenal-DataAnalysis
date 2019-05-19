@@ -18,8 +18,8 @@ const precent = "20%";
 
 const ConsumptionOverallLineChart = memo(
   ({
-     hourlyAvgCost, dailySumCost, maxHourlyAvg, dailyAvgRank, dailyAvg,
-     popVisible, popStyle, onPointClick, popTitle, startTime, endTime, onPopClose,
+     hourlyAvgCost, dailySumCost, maxHourlyAvg, dailyAvgRank, dailyAvg, costDetailLoading,
+     popVisible, popStyle, onPointClick, popTitle, startTime, endTime, onPopClose, dailyCostDetail
    }) => {
     if (chartIns) {
       const geoms = chartIns.getAllGeoms();
@@ -39,24 +39,6 @@ const ConsumptionOverallLineChart = memo(
         }
       }
     }
-    const data = [
-      {
-        time: '2019-09-01 23:00:00',
-        cost: 100
-      }, {
-        time: '2019-09-01 23:00:00',
-        cost: 100
-      }, {
-        time: '2019-09-01 23:00:00',
-        cost: 100
-      }, {
-        time: '2019-09-01 23:00:00',
-        cost: 100
-      }, {
-        time: '2019-09-01 23:00:00',
-        cost: 100
-      },
-    ];
 
     return (
       <Card title="总体消费情况一览" bordered={false} style={{ width: '100%' }}>
@@ -72,10 +54,11 @@ const ConsumptionOverallLineChart = memo(
                 </Fragment>}
                 content={<List
                   size="small"
+                  loading={costDetailLoading}
                   header={null}
                   footer={null}
                   bordered={false}
-                  dataSource={data}
+                  dataSource={dailyCostDetail}
                   renderItem={item => <List.Item>{`${item.time} ${item.cost}`}</List.Item>}
                 />}
                 overlayClassName={styles.oneLineChartPop}
