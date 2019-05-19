@@ -746,6 +746,7 @@ class Center extends PureComponent {
                             <Option key="z_score" value="z_score">离均值(Z分)</Option>
                             <Option key="t_score" value="t_score">标准分(T分)</Option>
                             <Option key="deng_di" value="deng_di">等第</Option>
+                            <Option key="class_rank" value="class_rank">班级排名</Option>
                           </Select>
                         </Affix>
                       </Row>}

@@ -138,11 +138,25 @@ class StudentViewSet(viewsets.ModelViewSet):
             return Response(exam_records)
 
         score_type = request.query_params.get('score_type', '')
-        score_types = ['t_score', 'z_score', 'score', 'deng_di']
+        score_types = ['t_score', 'z_score', 'score', 'deng_di', 'class_rank']
         if score_type not in score_types:
             return Response('score_type must in {}'.format(','.join(score_types)), status=400)
 
         if type == 'total_trend':
+            if score_type == 'class_rank':
+                records = StudentExamRecord.objects.filter(
+                    student_id=pk,
+                    sub_exam__course_id=60,
+                    class_rank__gt=0
+                ).order_by('sub_exam__started_at').values(
+                    'sub_exam__exam__name'
+                ).annotate(
+                    total_score=Sum(score_type)
+                ).values(
+                    'sub_exam__exam__name',
+                    'total_score'
+                )
+                return Response(records)
             records = StudentExamRecord.objects.filter(
                 student_id=pk,
                 sub_exam__course_id__in=gaokao_courses,
@@ -159,9 +173,9 @@ class StudentViewSet(viewsets.ModelViewSet):
 
         if type == 'subject_trend':
             records = StudentExamRecord.objects.filter(
+                Q(class_rank__gt=0) if score_type == 'class_rank' else Q(score__gt=0),
                 student_id=pk,
                 sub_exam__course_id__in=gaokao_courses,
-                score__gt=0
             ).order_by('sub_exam__started_at').values(
                 'sub_exam__exam__name'
             ).values(
