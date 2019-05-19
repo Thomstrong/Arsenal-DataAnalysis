@@ -11,8 +11,13 @@ def run():
     # calculate class rank
     StudentExamRecord.objects.filter(sub_exam__course_id=60).delete()
     StudentExamRecord.objects.filter(class_rank__gt=0).update(class_rank=0)
-    class_exam_records = ClassExamRecord.objects.filter(attend_count__gt=0).order_by('stu_class_id',
-                                                                                     'sub_exam__exam_id')
+    class_exam_records = ClassExamRecord.objects.filter(
+        attend_count__gt=0,
+        stu_class__isnull=False
+    ).order_by(
+        'stu_class_id',
+        'sub_exam__exam_id'
+    ).exclude()
     bar = Bar('Class Ranking', max=len(class_exam_records))
     exam_id = None
     total_score_counter = {}
