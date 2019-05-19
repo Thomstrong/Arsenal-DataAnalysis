@@ -223,3 +223,11 @@ export const HOUR_LIST = [
   "22时",
   "23时"
 ];
+
+export const SCORE_TYPE_ALIAS = {
+  score: "绝对分",
+  z_score: "离均值(Z分)",
+  t_score: "标准分(T分)",
+  deng_di: "等第",
+  class_rank: "班级排名",
+};
