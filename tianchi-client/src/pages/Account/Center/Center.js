@@ -79,6 +79,11 @@ class Center extends PureComponent {
       scoreType: 'score',
       dateRange: 7,
       pickedDate: '2019-01-01',
+      popStyle: null,
+      popVisible: false,
+      popTitle: '',
+      startTime: null,
+      endTime: null,
     };
     this.getStudentList = _.debounce(this.getStudentList, 800);
   }
@@ -512,6 +517,27 @@ class Center extends PureComponent {
     };
   };
 
+
+  onPointClick = (startTime, endTime, timeStamp, left, top) => {
+    this.setState({
+      popStyle: {
+        position: 'absolute',
+        top: `${top}px`,
+        left: `${left}px`,
+      },
+      popVisible: true,
+      popTitle: moment(timeStamp).format("YYYY-MM-DD"),
+      startTime,
+      endTime,
+    });
+  };
+
+  onPopClose = () => {
+    this.setState({
+      popVisible: false
+    })
+  }
+
   render() {
     const {
       studentInfo,
@@ -772,6 +798,13 @@ class Center extends PureComponent {
                           dailyAvg={dailyAvg}
                           dailyAvgRank={dailyAvgRank}
                           maxHourlyAvg={maxHourlyAvg}
+                          popVisible={this.state.popVisible}
+                          startTime={this.state.startTime}
+                          endTime={this.state.endTime}
+                          popTitle={this.state.popTitle}
+                          popStyle={this.state.popStyle}
+                          onPointClick={this.onPointClick}
+                          onPopClose={this.onPopClose}
                         />
                       </Suspense>
                       <Card

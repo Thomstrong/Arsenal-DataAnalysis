@@ -7,6 +7,22 @@ import styles from './index.less';
 
 @autoHeight()
 class OneTimelineChart extends React.Component {
+  checkClickPoint = (ev) => {
+    let index = -1;
+    if (!ev.data) {
+      return index;
+    }
+    for (let i in ev.data) {
+      const d = ev.data[i];
+      if (d.x <= ev.x + 3 && d.x >= ev.x - 3 && d.y <= ev.y + 20 && d.y >= ev.y - 20) {
+        index = i;
+        break;
+      }
+    }
+
+    return index;
+  };
+
   render() {
     const {
       title,
@@ -15,11 +31,15 @@ class OneTimelineChart extends React.Component {
       titleMap = {
         y: '单天消费总额',
       },
-      borderWidth = 2,
+      borderWidth = 2.2,
       data: sourceData,
-      showPredict: showPredict
+      showPredict: showPredict,
+      enableDig,
+      startTime,
+      endTime,
+      onPointClick,
+      onBlur,
     } = this.props;
-
     const data = Array.isArray(sourceData) && sourceData.length ? sourceData : [{ x: 0, y: 0 }];
     const lastTime = data[data.length - 1].x;
 
@@ -34,8 +54,8 @@ class OneTimelineChart extends React.Component {
 
     const ds = new DataSet({
       state: {
-        start: data[0].x,
-        end: data[data.length - 1].x,
+        start: startTime || data[0].x,
+        end: endTime || data[data.length - 1].x,
       },
     });
 
@@ -45,7 +65,7 @@ class OneTimelineChart extends React.Component {
         type: 'filter',
         callback: obj => {
           const date = obj.x;
-          return date <= ds.state.end && date >= ds.state.start;
+          return date >= ds.state.start && date <= ds.state.end;
         },
       })
       .transform({
@@ -67,7 +87,7 @@ class OneTimelineChart extends React.Component {
       type: 'time',
       // tickInterval: 24 * 3600 * 1000,
       mask: 'YYYY/MM/DD',
-      range: [0, 1],
+      range: [0.01, 0.99],
     };
 
     const cols = {
@@ -102,32 +122,65 @@ class OneTimelineChart extends React.Component {
       <div className={styles.timelineChart} style={{ height: height + 30 }}>
         <div>
           {title && <h4>{title}</h4>}
-          <Chart height={height} padding={padding} data={dv} scale={cols} forceFit>
+          <Chart
+            height={height} padding={padding} data={dv} scale={cols} forceFit
+            onPlotClick={(ev) => {
+              if (!enableDig) {
+                return;
+              }
+              if (ev.target.constructor.name === 'Canvas') {
+                onBlur && onBlur();
+                return;
+              }
+              if (!ev.data && ev.target.constructor.name === 'Path') {
+                return;
+              }
+              const index = this.checkClickPoint(ev);
+              if (index === -1) {
+                onBlur && onBlur();
+              }
+            }}
+            onLineClick={(ev) => {
+              if (!enableDig) {
+                return;
+              }
+
+              const index = this.checkClickPoint(ev);
+              if (index === -1) {
+                return;
+              }
+              const data = ev.data[index];
+              const startTime = ev.data[0]._origin.x;
+              const endTime = ev.data[ev.data.length - 1]._origin.x;
+              onPointClick && onPointClick(startTime, endTime, data._origin.x, data.x.toFixed(0), data.y.toFixed(0),);
+            }}
+          >
             <Axis name="x"/>
             <Tooltip
               crosshairs={{
                 type: "y"
               }}
             />
-            <Geom type="line" position="x*value" size={borderWidth}
-                  color={['x', (x) => {
-                    if (showPredict && x >= lastTime) {
-                      return '#ff0000';
-                    }
-                    return "#1890ff";
-                  }]}
-                  tooltip={['value*x', (value, x) => {
-                    if (showPredict && x >= lastTime) {
-                      return {
-                        name: "预测值",
-                        value: value + "元"
-                      };
-                    }
-                    return {
-                      name: "单天消费额",
-                      value: value + "元"
-                    };
-                  }]}
+            <Geom
+              type="line" position="x*value" size={borderWidth}
+              color={['x', (x) => {
+                if (showPredict && x >= lastTime) {
+                  return '#ff0000';
+                }
+                return "#1890ff";
+              }]}
+              tooltip={['value*x', (value, x) => {
+                if (showPredict && x >= lastTime) {
+                  return {
+                    name: "预测值",
+                    value: value + "元"
+                  };
+                }
+                return {
+                  name: "单天消费额",
+                  value: value + "元"
+                };
+              }]}
             />
             {showPredict && <Geom
               type="point" position="x*value"

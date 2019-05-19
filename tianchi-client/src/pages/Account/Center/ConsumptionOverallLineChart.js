@@ -1,11 +1,12 @@
 /**
  * Created by 胡晓慧 on 2019/4/13.
  */
-import React, { memo } from "react";
-import { Card, Col, Empty, Row, Typography } from 'antd';
+import React, { Fragment, memo } from "react";
+import { Button, Card, Col, Empty, List, Popover, Row, Typography } from 'antd';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
 import { OneTimelineChart } from '@/components/Charts';
 import { HOUR_LIST } from '@/constants';
+import styles from './ConsumptionOverallLineChart.less';
 
 const { Paragraph, Text } = Typography;
 
@@ -16,7 +17,10 @@ const money = 2000;
 const precent = "20%";
 
 const ConsumptionOverallLineChart = memo(
-  ({ hourlyAvgCost, dailySumCost, maxHourlyAvg, dailyAvgRank, dailyAvg }) => {
+  ({
+     hourlyAvgCost, dailySumCost, maxHourlyAvg, dailyAvgRank, dailyAvg,
+     popVisible, popStyle, onPointClick, popTitle, startTime, endTime, onPopClose,
+   }) => {
     if (chartIns) {
       const geoms = chartIns.getAllGeoms();
       for (let geom of geoms) {
@@ -35,13 +39,54 @@ const ConsumptionOverallLineChart = memo(
         }
       }
     }
+    const data = [
+      {
+        time: '2019-09-01 23:00:00',
+        cost: 100
+      }, {
+        time: '2019-09-01 23:00:00',
+        cost: 100
+      }, {
+        time: '2019-09-01 23:00:00',
+        cost: 100
+      }, {
+        time: '2019-09-01 23:00:00',
+        cost: 100
+      }, {
+        time: '2019-09-01 23:00:00',
+        cost: 100
+      },
+    ];
 
     return (
       <Card title="总体消费情况一览" bordered={false} style={{ width: '100%' }}>
         <Card title="总体消费趋势" bordered={false} style={{ width: '100%', cursor: "auto" }} hoverable={true}>
           {dailySumCost.length ? <Row type="flex" align="middle">
             <Col xl={20} xs={24}>
+              <Popover
+                key='cost-line-popover'
+                visible={popVisible} trigger="click"
+                title={<Fragment>
+                  {popTitle}
+                  <Button size='small' shape='circle' icon='close' onClick={() => onPopClose()}/>
+                </Fragment>}
+                content={<List
+                  size="small"
+                  header={null}
+                  footer={null}
+                  bordered={false}
+                  dataSource={data}
+                  renderItem={item => <List.Item>{`${item.time} ${item.cost}`}</List.Item>}
+                />}
+                overlayClassName={styles.oneLineChartPop}
+              >
+                <div key='cost-line-popover-target' style={popStyle}/>
+              </Popover>
               <OneTimelineChart
+                key='ConsumptionOverallLineChart-slider-chart'
+                enableDig={true}
+                onPointClick={onPointClick}
+                onBlur={onPopClose}
                 showPredict={true}
                 height={300}
                 data={dailySumCost.map((data) => {
@@ -50,6 +95,8 @@ const ConsumptionOverallLineChart = memo(
                     y: data.total
                   };
                 })}
+                startTime={startTime}
+                endTime={endTime}
               />
             </Col>
             <Col xl={4} xs={24}>
