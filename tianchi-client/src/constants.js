@@ -129,8 +129,8 @@ export const INTERVAL_MAP = {
   7: 1,
   30: 2,
   90: 5,
-  180: 10,
-  365: 20,
+  180: 15,
+  365: 30,
 };
 
 export const CLASS_CAMPUS_CHOICE = {
