@@ -515,7 +515,6 @@ class Center extends PureComponent {
   };
 
   onTypeSwitchChanged = (checked) => {
-    console.log(checked);
     this.setState({
       excludePingshi: checked
     });
