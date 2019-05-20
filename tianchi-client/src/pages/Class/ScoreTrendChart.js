@@ -126,7 +126,7 @@ const ScoreLineChart = memo(
                   "score",
                   (score) => {
                     return {
-                      name: `${isRank ? '排名' : '平均分数'}`,
+                      name: `${isRank ? '排名' : '分数'}`,
                       value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
                     };
                   }
@@ -134,6 +134,15 @@ const ScoreLineChart = memo(
               <Geom
                 type="point"
                 position="exam*score"
+                tooltip={[
+                  "score",
+                  (score) => {
+                    return {
+                      name: `${isRank ? '排名' : '分数'}`,
+                      value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
+                    };
+                  }
+                ]}
                 size={4}
                 shape={"circle"}
                 style={{
@@ -305,7 +314,7 @@ const ScoreLineChart = memo(
                   "score",
                   (score) => {
                     return {
-                      name: isRank ? '排名' : "平均分数",
+                      name: isRank ? '排名' : "分数",
                       value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
                     };
                   }
@@ -313,6 +322,15 @@ const ScoreLineChart = memo(
                 <Geom
                   type="point"
                   position="exam*score"
+                  tooltip={[
+                  "score",
+                  (score) => {
+                    return {
+                      name: isRank ? '排名' : "分数",
+                      value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
+                    };
+                  }
+                ]}
                   size={4}
                   shape={"circle"}
                   style={{

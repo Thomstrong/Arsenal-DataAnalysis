@@ -4,7 +4,7 @@
 import React, { memo } from "react";
 import { Card, Col, Empty, List, Row, Typography } from 'antd';
 import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
-import { COURSE_FULLNAME_ALIAS, getDengDi } from "@/constants";
+import { COURSE_FULLNAME_ALIAS, getDengDi, SCORE_TYPE_ALIAS } from "@/constants";
 import Divider from "antd/es/divider";
 
 const { Paragraph, Text } = Typography;
@@ -28,14 +28,22 @@ const normalScale = {
 const ScoreLineChart = memo(
   ({ lineData, radarViewData, lineSummary, subData, scoreType }) => {
     let highScoreTime = 0;
-    for (let i = 0; i < lineData.length; i++) {
-      if (lineData[i].score >= 600) {
-        highScoreTime++;
+    if (scoreType === 'score') {
+      for (let i = 0; i < lineData.length; i++) {
+        if (lineData[i].score >= 600) {
+          highScoreTime++;
+        }
       }
     }
 
+    const isRank = scoreType === 'class_rank';
     const showDengDi = scoreType === 'deng_di';
-    const scale = showDengDi ? dengDiScale : normalScale;
+    const scale = showDengDi ? dengDiScale : isRank ? {
+      score: {
+        max: -1, min: -50,
+        ticks: [-1, -10, -20, -30, -40, -50]
+      }
+    } : normalScale;
     return (lineData && !!lineData.length) ? <React.Fragment>
       <Row>
         <Col span={8}>
@@ -104,13 +112,17 @@ const ScoreLineChart = memo(
                 ...data,
                 score: getDengDi(data.score)
               };
-            }) : lineData}
+            }) : (isRank ? lineData.map(data => {
+              return {
+                ...data,
+                score: -(data.score)
+              };
+            }) : lineData)}
             forceFit
             scale={{
               ...scale,
               exam: {
-                tickCount: 4
-
+                tickCount: 5
               }
             }}
           >
@@ -127,7 +139,14 @@ const ScoreLineChart = memo(
                 },
               }}
             />
-            <Axis name="score"/>
+            <Axis
+              name="score"
+              label={{
+                formatter(text, item, index) {
+                  return isRank ? -Number(text) : text;
+                },
+              }}
+            />
             <Tooltip
               crosshairs={{
                 type: "y"
@@ -140,6 +159,13 @@ const ScoreLineChart = memo(
                   return {
                     name: "等第",
                     value: dengDiList[score]
+                  };
+                }
+
+                if (isRank) {
+                  return {
+                    name: "排名",
+                    value: -score
                   };
                 }
                 return {
@@ -164,6 +190,12 @@ const ScoreLineChart = memo(
                     return {
                       name: "等第",
                       value: dengDiList[score]
+                    };
+                  }
+                  if (isRank) {
+                    return {
+                      name: "排名",
+                      value: -score
                     };
                   }
                   return {
@@ -333,6 +365,11 @@ const ScoreLineChart = memo(
                   ...data,
                   score: getDengDi(data.score)
                 };
+              }) : isRank ? item.lineData.map(data => {
+                return {
+                  ...data,
+                  score: -data.score
+                };
               }) : item.lineData.map(data => {
                 return {
                   ...data,
@@ -349,7 +386,7 @@ const ScoreLineChart = memo(
               forceFit
             >
               <p style={{ textAlign: 'center' }}>
-                {`${COURSE_FULLNAME_ALIAS[item.title]} 考试趋势分析`}
+                {`${COURSE_FULLNAME_ALIAS[item.title]}考试${SCORE_TYPE_ALIAS[scoreType]}趋势分析`}
               </p>
               <Axis
                 name="exam"
@@ -361,7 +398,14 @@ const ScoreLineChart = memo(
                   },
                 }}
               />
-              <Axis name="score"/>
+              <Axis
+                name="score"
+                label={{
+                  formatter(text, item, index) {
+                    return isRank ? -Number(text) : text;
+                  },
+                }}
+              />
               <Tooltip
                 crosshairs={{
                   type: "y"
@@ -374,6 +418,13 @@ const ScoreLineChart = memo(
                     return {
                       name: "等第",
                       value: dengDiList[score]
+                    };
+                  }
+
+                  if (isRank) {
+                    return {
+                      name: "排名",
+                      value: -score
                     };
                   }
                   return {
