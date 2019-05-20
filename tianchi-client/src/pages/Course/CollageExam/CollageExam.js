@@ -34,8 +34,6 @@ class CollageExam extends PureComponent {
       loading
     } = this.props;
 
-    console.log(collage2Subject);
-
     return (
       <Fragment>
         <Card title="2019年高校专业选考科目概况" bordered={true} style={{ width: '100%', marginBottom: 24 }}>
