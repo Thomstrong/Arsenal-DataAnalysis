@@ -38,6 +38,20 @@ const ScoreLineChart = memo(
       }
     }
     const getFilteredData = data => data.filter(d => !excludePingshi || !PING_SHI_EXAM_TYPES.includes(d.type));
+    let minMaxData= getFilteredData(lineData);
+    let i = 0;
+    let maxScore=0;
+    let minScore=1000;
+    if(minMaxData.length){
+      for (i=0;i<minMaxData.length;i++){
+          if (maxScore < minMaxData[i].score){
+              maxScore = minMaxData[i].score
+            }
+          if(minScore> minMaxData[i].score){
+            minScore = minMaxData[i].score
+          }
+      }
+    }
     const isRank = scoreType === 'class_rank';
     const showDengDi = scoreType === 'deng_di';
     const scale = showDengDi ? dengDiScale : isRank ? {
@@ -53,7 +67,7 @@ const ScoreLineChart = memo(
             key={'center-radar'}
             height={300}
             data={radarViewData}
-            padding={[20, 20, 95, 20]}
+            padding={[30, 20, 55, 20]}
             scale={{
               'score': {
                 min: 0,
@@ -208,10 +222,10 @@ const ScoreLineChart = memo(
               ]}
             />
             {scoreType === 'score' && <Guide key='student-score-lines'>
-              <Line
+              {maxScore>=588 && minScore<=588 && <Line
                 key='student-score-line1'
                 top={true}
-                start={[-1, 588]}
+                start={[-0.5, 588]}
                 end={['max', 588]}
                 lineStyle={{
                   stroke: '#99203e',
@@ -227,11 +241,11 @@ const ScoreLineChart = memo(
                     fill: "#99203e",
                   }
                 }}
-              />
-              <Line
+              />}
+              {maxScore>=490 && minScore<=490 && <Line
                 key='student-score-line2'
                 top={true}
-                start={[-1, 490]}
+                start={[-0.5, 490]}
                 end={['max', 490]}
                 lineStyle={{
                   stroke: '#99203e',
@@ -247,11 +261,11 @@ const ScoreLineChart = memo(
                     fill: "#99203e",
                   }
                 }}
-              />
-              <Line
+              />}
+              {maxScore>=344 && minScore<=344 && <Line
                 key='student-score-line3'
                 top={true}
-                start={[-1, 344]}
+                start={[-0.5, 344]}
                 end={['max', 344]}
                 lineStyle={{
                   stroke: '#99203e',
@@ -267,11 +281,11 @@ const ScoreLineChart = memo(
                     opacity: 0.5,
                   }
                 }}
-              />
-              <Line
+              />}
+              {maxScore>=577 && minScore<=577 && <Line
                 key='student-score-line4'
                 top={true}
-                start={[-1, 577]}
+                start={[-0.5, 577]}
                 end={['max', 577]}
                 lineStyle={{
                   stroke: '#6b561e',
@@ -287,11 +301,11 @@ const ScoreLineChart = memo(
                     opacity: 0.5,
                   }
                 }}
-              />
-              <Line
+              />}
+              {maxScore>=480 && minScore<=480 && <Line
                 key='student-score-line5'
                 top={true}
-                start={[-1, 480]}
+                start={[-0.5, 480]}
                 end={['max', 480]}
                 lineStyle={{
                   stroke: '#6b561e',
@@ -307,11 +321,11 @@ const ScoreLineChart = memo(
                     opacity: 0.5,
                   }
                 }}
-              />
-              <Line
+              />}
+              {maxScore>=359 && minScore<=359 && <Line
                 key='student-score-line6'
                 top={true}
-                start={[-1, 359]}
+                start={[-0.5, 359]}
                 end={['max', 359]}
                 lineStyle={{
                   stroke: '#6b561e',
@@ -327,7 +341,7 @@ const ScoreLineChart = memo(
                     opacity: 0.5,
                   }
                 }}
-              />
+              />}
             </Guide>}
           </Chart>
         </Col>

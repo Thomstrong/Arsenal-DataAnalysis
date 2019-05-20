@@ -15,6 +15,20 @@ const ScoreTrendChart = memo(
     };
     const isRank = scoreType === 'rank';
     const getFilteredData = data => data.filter(d => !excludePingshi || !PING_SHI_EXAM_TYPES.includes(d.type));
+    let minMaxData= getFilteredData(lineData);
+    let i = 0;
+    let maxScore=0;
+    let minScore=1000;
+    if(minMaxData.length){
+      for (i=0;i<minMaxData.length;i++){
+          if (maxScore < minMaxData[i].score){
+              maxScore = minMaxData[i].score
+            }
+          if(minScore> minMaxData[i].score){
+            minScore = minMaxData[i].score
+          }
+      }
+    }
     if (isRank) {
       const values = [];
       for (let i = 0; i < maxRank; i++) {
@@ -32,7 +46,7 @@ const ScoreTrendChart = memo(
             <Chart
               height={300}
               data={radarViewData}
-              padding={[20, 20, 95, 20]}
+              padding={[20, 20, 55, 20]}
               scale={{
                 'score': {
                   min: 0,
@@ -153,7 +167,7 @@ const ScoreTrendChart = memo(
                 }}
               />
               <Guide>
-                <Line
+               {maxScore>=588 && minScore<=588 &&  <Line
                   top={true}
                   start={[-0.5, 588]}
                   end={['max', 588]}
@@ -171,8 +185,8 @@ const ScoreTrendChart = memo(
                       fill: "#99203e",
                     }
                   }}
-                />
-                <Line
+                />}
+                {maxScore>=490 && minScore<=490 && <Line
                   top={true}
                   start={[-0.5, 490]}
                   end={['max', 490]}
@@ -190,8 +204,8 @@ const ScoreTrendChart = memo(
                       fill: "#99203e",
                     }
                   }}
-                />
-                <Line
+                />}
+                {maxScore>=344 && minScore<=344 && <Line
                   top={true}
                   start={[-0.5, 344]}
                   end={['max', 344]}
@@ -209,8 +223,8 @@ const ScoreTrendChart = memo(
                       opacity: 0.3,
                     }
                   }}
-                />
-                <Line
+                />}
+                {maxScore>=577 && minScore<=577 && <Line
                   top={true}
                   start={[-0.5, 577]}
                   end={['max', 577]}
@@ -228,8 +242,8 @@ const ScoreTrendChart = memo(
                       opacity: 0.3,
                     }
                   }}
-                />
-                <Line
+                />}
+                {maxScore>=480 && minScore<=480 && <Line
                   top={true}
                   start={[-0.5, 480]}
                   end={['max', 480]}
@@ -247,8 +261,8 @@ const ScoreTrendChart = memo(
                       opacity: 0.3,
                     }
                   }}
-                />
-                <Line
+                />}
+                {maxScore>=359 && minScore<=359 && <Line
                   top={true}
                   start={[-0.5, 359]}
                   end={['max', 359]}
@@ -266,7 +280,7 @@ const ScoreTrendChart = memo(
                       opacity: 0.3,
                     }
                   }}
-                />
+                />}
               </Guide>
             </Chart>
           </Col>

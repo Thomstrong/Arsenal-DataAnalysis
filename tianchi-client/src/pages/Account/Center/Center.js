@@ -661,7 +661,7 @@ class Center extends PureComponent {
                       <Chart
                         height={350}
                         data={studentInfo.radarData}
-                        padding={[20, 20, 95, 20]}
+                        padding={[20, 20, 55, 20]}
                         scale={cols}
                         forceFit
                         loading={loading}
