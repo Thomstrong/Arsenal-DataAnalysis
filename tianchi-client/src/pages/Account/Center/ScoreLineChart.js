@@ -4,7 +4,7 @@
 import React, { memo } from "react";
 import { Card, Col, Empty, List, Row, Typography } from 'antd';
 import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
-import { COURSE_FULLNAME_ALIAS, getDengDi } from "@/constants";
+import { COURSE_FULLNAME_ALIAS, getDengDi, SCORE_TYPE_ALIAS,PING_SHI_EXAM_TYPES } from "@/constants";
 import Divider from "antd/es/divider";
 
 const { Paragraph, Text } = Typography;
@@ -25,17 +25,41 @@ const dengDiScale = {
 const normalScale = {
   score: {}
 };
+
+
 const ScoreLineChart = memo(
-  ({ lineData, radarViewData, lineSummary, subData, scoreType }) => {
+  ({ lineData, radarViewData, lineSummary, subData, scoreType, excludePingshi }) => {
     let highScoreTime = 0;
-    for (let i = 0; i < lineData.length; i++) {
-      if (lineData[i].score >= 600) {
-        highScoreTime++;
+    if (scoreType === 'score') {
+      for (let data of lineData) {
+        if ((!excludePingshi || !PING_SHI_EXAM_TYPES.includes(data.type)) && data.score >= 600) {
+          highScoreTime++;
+        }
       }
     }
-
+    const getFilteredData = data => data.filter(d => !excludePingshi || !PING_SHI_EXAM_TYPES.includes(d.type));
+    let minMaxData= getFilteredData(lineData);
+    let i = 0;
+    let maxScore=0;
+    let minScore=1000;
+    if(minMaxData.length){
+      for (i=0;i<minMaxData.length;i++){
+          if (maxScore < minMaxData[i].score){
+              maxScore = minMaxData[i].score
+            }
+          if(minScore> minMaxData[i].score){
+            minScore = minMaxData[i].score
+          }
+      }
+    }
+    const isRank = scoreType === 'class_rank';
     const showDengDi = scoreType === 'deng_di';
-    const scale = showDengDi ? dengDiScale : normalScale;
+    const scale = showDengDi ? dengDiScale : isRank ? {
+      score: {
+        max: -1, min: -50,
+        ticks: [-1, -10, -20, -30, -40, -50]
+      }
+    } : normalScale;
     return (lineData && !!lineData.length) ? <React.Fragment>
       <Row>
         <Col span={8}>
@@ -43,7 +67,7 @@ const ScoreLineChart = memo(
             key={'center-radar'}
             height={300}
             data={radarViewData}
-            padding={[20, 20, 95, 20]}
+            padding={[30, 20, 55, 20]}
             scale={{
               'score': {
                 min: 0,
@@ -99,23 +123,27 @@ const ScoreLineChart = memo(
           <Chart
             key={'center-total-trend'}
             height={300}
-            data={showDengDi ? lineData.map(data => {
+            data={showDengDi ? getFilteredData(lineData).map(data => {
               return {
                 ...data,
                 score: getDengDi(data.score)
               };
-            }) : lineData}
+            }) : (isRank ? getFilteredData(lineData).map(data => {
+              return {
+                ...data,
+                score: -(data.score)
+              };
+            }) : getFilteredData(lineData))}
             forceFit
             scale={{
               ...scale,
               exam: {
-                tickCount: 4
-
-              }
+                tickCount: 5
+              },
             }}
           >
             <p style={{ textAlign: 'center' }}>
-              总分变化趋势
+              {`总分${SCORE_TYPE_ALIAS[scoreType]}变化趋势`}
             </p>
             <Axis
               name="exam"
@@ -127,7 +155,14 @@ const ScoreLineChart = memo(
                 },
               }}
             />
-            <Axis name="score"/>
+            <Axis
+              name="score"
+              label={{
+                formatter(text, item, index) {
+                  return isRank ? -Number(text) : text;
+                },
+              }}
+            />
             <Tooltip
               crosshairs={{
                 type: "y"
@@ -140,6 +175,13 @@ const ScoreLineChart = memo(
                   return {
                     name: "等第",
                     value: dengDiList[score]
+                  };
+                }
+
+                if (isRank) {
+                  return {
+                    name: "排名",
+                    value: -score
                   };
                 }
                 return {
@@ -166,6 +208,12 @@ const ScoreLineChart = memo(
                       value: dengDiList[score]
                     };
                   }
+                  if (isRank) {
+                    return {
+                      name: "排名",
+                      value: -score
+                    };
+                  }
                   return {
                     name: "分数",
                     value: score
@@ -174,10 +222,10 @@ const ScoreLineChart = memo(
               ]}
             />
             {scoreType === 'score' && <Guide key='student-score-lines'>
-              <Line
+              {maxScore>=588 && minScore<=588 && <Line
                 key='student-score-line1'
                 top={true}
-                start={[-1, 588]}
+                start={[-0.5, 588]}
                 end={['max', 588]}
                 lineStyle={{
                   stroke: '#99203e',
@@ -193,11 +241,11 @@ const ScoreLineChart = memo(
                     fill: "#99203e",
                   }
                 }}
-              />
-              <Line
+              />}
+              {maxScore>=490 && minScore<=490 && <Line
                 key='student-score-line2'
                 top={true}
-                start={[-1, 490]}
+                start={[-0.5, 490]}
                 end={['max', 490]}
                 lineStyle={{
                   stroke: '#99203e',
@@ -213,11 +261,11 @@ const ScoreLineChart = memo(
                     fill: "#99203e",
                   }
                 }}
-              />
-              <Line
+              />}
+              {maxScore>=344 && minScore<=344 && <Line
                 key='student-score-line3'
                 top={true}
-                start={[-1, 344]}
+                start={[-0.5, 344]}
                 end={['max', 344]}
                 lineStyle={{
                   stroke: '#99203e',
@@ -233,11 +281,11 @@ const ScoreLineChart = memo(
                     opacity: 0.5,
                   }
                 }}
-              />
-              <Line
+              />}
+              {maxScore>=577 && minScore<=577 && <Line
                 key='student-score-line4'
                 top={true}
-                start={[-1, 577]}
+                start={[-0.5, 577]}
                 end={['max', 577]}
                 lineStyle={{
                   stroke: '#6b561e',
@@ -253,11 +301,11 @@ const ScoreLineChart = memo(
                     opacity: 0.5,
                   }
                 }}
-              />
-              <Line
+              />}
+              {maxScore>=480 && minScore<=480 && <Line
                 key='student-score-line5'
                 top={true}
-                start={[-1, 480]}
+                start={[-0.5, 480]}
                 end={['max', 480]}
                 lineStyle={{
                   stroke: '#6b561e',
@@ -273,11 +321,11 @@ const ScoreLineChart = memo(
                     opacity: 0.5,
                   }
                 }}
-              />
-              <Line
+              />}
+              {maxScore>=359 && minScore<=359 && <Line
                 key='student-score-line6'
                 top={true}
-                start={[-1, 359]}
+                start={[-0.5, 359]}
                 end={['max', 359]}
                 lineStyle={{
                   stroke: '#6b561e',
@@ -293,7 +341,7 @@ const ScoreLineChart = memo(
                     opacity: 0.5,
                   }
                 }}
-              />
+              />}
             </Guide>}
           </Chart>
         </Col>
@@ -328,12 +376,17 @@ const ScoreLineChart = memo(
             <Chart
               key={`subject-${item.title}-trend`}
               height={300}
-              data={showDengDi ? item.lineData.map(data => {
+              data={showDengDi ? getFilteredData(item.lineData).map(data => {
                 return {
                   ...data,
                   score: getDengDi(data.score)
                 };
-              }) : item.lineData.map(data => {
+              }) : isRank ? getFilteredData(item.lineData).map(data => {
+                return {
+                  ...data,
+                  score: -data.score
+                };
+              }) : getFilteredData(item.lineData).map(data => {
                 return {
                   ...data,
                   score: Number(data.score.toFixed(2))
@@ -349,7 +402,7 @@ const ScoreLineChart = memo(
               forceFit
             >
               <p style={{ textAlign: 'center' }}>
-                {`${COURSE_FULLNAME_ALIAS[item.title]} 考试趋势分析`}
+                {`${COURSE_FULLNAME_ALIAS[item.title]}考试${SCORE_TYPE_ALIAS[scoreType]}趋势分析`}
               </p>
               <Axis
                 name="exam"
@@ -361,7 +414,14 @@ const ScoreLineChart = memo(
                   },
                 }}
               />
-              <Axis name="score"/>
+              <Axis
+                name="score"
+                label={{
+                  formatter(text, item, index) {
+                    return isRank ? -Number(text) : text;
+                  },
+                }}
+              />
               <Tooltip
                 crosshairs={{
                   type: "y"
@@ -374,6 +434,13 @@ const ScoreLineChart = memo(
                     return {
                       name: "等第",
                       value: dengDiList[score]
+                    };
+                  }
+
+                  if (isRank) {
+                    return {
+                      name: "排名",
+                      value: -score
                     };
                   }
                   return {

@@ -71,9 +71,11 @@ class Subject extends PureComponent {
   render() {
     const { loading, course } = this.props;
     const { classExamData, classExamSummary } = course;
-
+    const termText = `${this.state.term} - ${this.state.term + 1}学年`;
     return (
-      <Card title="各班某年某科目成绩统计" bordered={true} style={{ width: '100%' }}>
+      <Card
+        title={`${termText}${GRADE_ALIAS[this.state.grade]}各班${COURSE_FULLNAME_ALIAS[this.state.course]}成绩统计`}
+        bordered={true} style={{ width: '100%', cursor: 'default' }}>
         <BackTop/>
         <Row type="flex" justify="end" style={{ padding: 10 }}>
           <Affix offsetTop={16} style={{ 'zIndex': 2 }}>
@@ -113,7 +115,10 @@ class Subject extends PureComponent {
         {classExamData.highest.length ? <Fragment>
             <Row style={{ padding: 10 }} type="flex" align="middle">
               <Col xl={18} xs={24}>
-                <Card type="inner" title="各班某年某科目最高分统计" bordered={true} style={{ width: '100%' }} hoverable={true}>
+                <Card
+                  type="inner" bordered={true} style={{ width: '100%', cursor: 'default' }} hoverable={true}
+                  title={`${termText}${GRADE_ALIAS[this.state.grade]}各班${COURSE_FULLNAME_ALIAS[this.state.course]}最高分统计`}
+                >
                   <Chart height={400} data={classExamData.highest} padding='auto' forceFit>
                     <Legend/>
                     <Axis name="exam"/>
@@ -191,7 +196,10 @@ class Subject extends PureComponent {
                 </Card>
               </Col>
               <Col xl={{ span: 18, offset: 1 }} xs={24}>
-                <Card type="inner" title="各班某年某科目平均分统计" bordered={true} style={{ width: '100%' }} hoverable={true}>
+                <Card
+                  type="inner" bordered={true} style={{ width: '100%', cursor: 'default' }} hoverable={true}
+                  title={`${termText}${GRADE_ALIAS[this.state.grade]}各班${COURSE_FULLNAME_ALIAS[this.state.course]}平均分统计`}
+                >
                   <Chart height={400} data={classExamData.average} padding="auto" forceFit>
                     <Legend/>
                     <Axis name="exam"/>
@@ -244,7 +252,10 @@ class Subject extends PureComponent {
             </Row>
             <Row style={{ padding: 10 }} type="flex" align="middle">
               <Col xl={18} xs={24}>
-                <Card type="inner" title="各班某年某科目最低分统计" bordered={true} style={{ width: '100%' }} hoverable={true}>
+                <Card
+                  type="inner" bordered={true} style={{ width: '100%', cursor: 'default' }} hoverable={true}
+                  title={`${termText}${GRADE_ALIAS[this.state.grade]}各班${COURSE_FULLNAME_ALIAS[this.state.course]}最低分统计`}
+                >
                   <Chart height={400} data={classExamData.lowest} padding="auto" forceFit>
                     <Legend/>
                     <Axis name="exam"/>

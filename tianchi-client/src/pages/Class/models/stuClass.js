@@ -272,11 +272,14 @@ export default {
       let maxRank = 0;
       const totalTrend = [];
       let subTrends = {};
-      for (let key in payload) {
-        for (let record of payload[key]) {
+      const results = payload.results;
+      const typeMap = payload.type_map;
+      for (let key in results) {
+        for (let record of results[key]) {
           if (record.course === 60) {
             totalTrend.push({
               exam: key,
+              type: typeMap[key],
               score: record.score
             });
             continue;
@@ -286,6 +289,7 @@ export default {
           }
           subTrends[record.course].push({
             exam: key,
+            type: typeMap[key],
             score: record.score
           });
           maxRank = maxRank > record.score ? maxRank : record.score;
@@ -293,13 +297,13 @@ export default {
       }
 
       subTrends = new DataSet.View().source([subTrends]).transform({
-      type: "fold",
-      fields: Object.keys(subTrends),
-      // 展开字段集
-      key: "title",
-      // key字段
-      value: "lineData" // value字段
-    }).rows;
+        type: "fold",
+        fields: Object.keys(subTrends),
+        // 展开字段集
+        key: "title",
+        // key字段
+        value: "lineData" // value字段
+      }).rows;
       return {
         ...state,
         totalTrend,
@@ -507,7 +511,7 @@ export default {
       if (!payload) {
         return state;
       }
-      const examSummary = {}
+      const examSummary = {};
       return {
         ...state,
         examSummary: {

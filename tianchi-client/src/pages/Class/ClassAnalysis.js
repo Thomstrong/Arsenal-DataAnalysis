@@ -23,13 +23,15 @@ import {
   Empty,
   Icon,
   Input,
+  message,
   Row,
   Select,
   Spin,
   Statistic,
+  Switch,
   Table,
   Tabs,
-  Tag
+  Tag,
 } from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './ClassAnalysis.less';
@@ -68,6 +70,7 @@ class ClassAnalysis extends PureComponent {
       courseId: -1,
       examId: '',
       digMode: false,
+      excludePingshi: false,
       digTerm: '',
     };
     this.getClassList = _.debounce(this.getClassList, 800);
@@ -293,6 +296,11 @@ class ClassAnalysis extends PureComponent {
   });
 
   onStudentClick = (text) => {
+    const studentName = text.split('-')[1];
+    if (studentName === '未知') {
+      message.warning('抱歉～没有更多这个学生的信息咯～😅', 5);
+      return;
+    }
     const studentId = text.split('-')[0];
     router.push(`/student/center/?studentId=${studentId}`);
   };
@@ -321,6 +329,11 @@ class ClassAnalysis extends PureComponent {
     });
   };
 
+  onTypeSwitchChanged = (checked) => {
+    this.setState({
+      excludePingshi: checked
+    });
+  };
 
   render() {
     const {
@@ -409,13 +422,13 @@ class ClassAnalysis extends PureComponent {
           dataIndex: courseId,
           key: `record-${courseId}`,
           sorter: (a, b) => {
-            if(!b[courseId]) {
-              return 1
+            if (!b[courseId]) {
+              return 1;
             }
-            if(!a[courseId]) {
-              return -1
+            if (!a[courseId]) {
+              return -1;
             }
-            return a[courseId] - b[courseId]
+            return a[courseId] - b[courseId];
           },
           width: 120,
           align: 'center',
@@ -603,6 +616,13 @@ class ClassAnalysis extends PureComponent {
                           <Option key="score" value="score">绝对分</Option>
                           <Option key="rank" value="rank">排名</Option>
                         </Select>
+                        <Divider style={{ margin: '0 15px', height: '20px' }} type="vertical"/>
+                        <span style={{ verticalAlign: 'middle', marginRight: '10px' }}>{'不看平时成绩'}</span>
+                        <Switch
+                          style={{ verticalAlign: 'middle' }}
+                          defaultChecked={this.state.excludePingshi}
+                          onChange={this.onTypeSwitchChanged}
+                        />
                       </Affix>
                       <Suspense fallback={<PageLoading/>}>
                         <ScoreTrendChart
@@ -611,6 +631,7 @@ class ClassAnalysis extends PureComponent {
                           lineData={totalTrend}
                           radarViewData={radarData}
                           subData={subTrends}
+                          excludePingshi={this.state.excludePingshi}
                         />
                       </Suspense>
                     </Card>
@@ -724,9 +745,15 @@ class ClassAnalysis extends PureComponent {
                             position="name*score"
                             color={['name', (name) => {
                               if (name === classInfo.class_name)
-                                return '#fbd436';
+                                return '#fba01c';
                               else
                                 return '#39a1ff';
+                            }]}
+                            tooltip={['score', (score) => {
+                              return {
+                                name: '平均分',
+                                value: score
+                              };
                             }]}
                           />
                           {courseId === -1 && <Guide>
