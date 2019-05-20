@@ -63,12 +63,13 @@ const initEmpty = <Empty description='请在左侧搜索框中搜索学生信息
   kaoqinLoading: loading.effects['student/fetchKaoqinData'],
   hourlyAvgCost: student.hourlyAvgCost,
   dailySumCost: student.dailySumCost,
+  dailyCostDetail: student.dailyCostDetail,
   dailyAvg: student.dailyAvg,
   dailyAvgRank: student.dailyAvgRank,
   studentListLoading: loading.effects['student/fetchStudentList'],
   vsStudentListLoading: loading.effects['student/fetchVsStudentList'],
   costLoading: loading.effects['student/fetchHourlyAvgCost'],
-  scoreLoading: loading.effects['student/fetchTotalTrend'] && loading.effects['student/fetchSubTrends'],
+  costDetailLoading: loading.effects['student/fetchCostDetail'],
   eCardLoading: loading.effects['student/fetchDailySumCost'] && loading.effects['student/fetchDailyPredictData'],
 }))
 class Center extends PureComponent {
@@ -80,6 +81,11 @@ class Center extends PureComponent {
       scoreType: 'score',
       dateRange: 7,
       pickedDate: '2019-01-01',
+      popStyle: null,
+      popVisible: false,
+      popTitle: '',
+      startTime: null,
+      endTime: null,
       excludePingshi: false,
     };
     this.getStudentList = _.debounce(this.getStudentList, 800);
@@ -514,6 +520,34 @@ class Center extends PureComponent {
     };
   };
 
+  onPointClick = (startTime, endTime, timeStamp, left, top) => {
+    const { dispatch, studentInfo } = this.props;
+    dispatch({
+      type: 'student/fetchCostDetail',
+      payload: {
+        studentId: studentInfo.id,
+        timeStamp,
+      }
+    });
+    this.setState({
+      popStyle: {
+        position: 'absolute',
+        top: `${top}px`,
+        left: `${left}px`,
+      },
+      popVisible: true,
+      popTitle: `${moment(timeStamp).format("YYYY-MM-DD")} 消费明细`,
+      startTime,
+      endTime,
+    });
+  };
+
+  onPopClose = () => {
+    this.setState({
+      popVisible: false
+    });
+  };
+
   onTypeSwitchChanged = (checked) => {
     this.setState({
       excludePingshi: checked
@@ -539,6 +573,8 @@ class Center extends PureComponent {
       vsDailySumCost,
       hourlyAvgCost,
       dailySumCost,
+      dailyCostDetail,
+      costDetailLoading,
       dailyAvg,
       dailyAvgRank,
       loading,
@@ -547,7 +583,6 @@ class Center extends PureComponent {
       location,
       kaoqinLoading,
       eCardLoading,
-      scoreLoading
     } = this.props;
     const { dateRange, date } = dailyPredictData;
     const { hourlyAvgData, maxHourlyAvg } = this.formatHourlyAvgCost(hourlyAvgCost, totalHourlyAvgCost);
@@ -786,6 +821,15 @@ class Center extends PureComponent {
                           dailyAvg={dailyAvg}
                           dailyAvgRank={dailyAvgRank}
                           maxHourlyAvg={maxHourlyAvg}
+                          popVisible={this.state.popVisible}
+                          startTime={this.state.startTime}
+                          endTime={this.state.endTime}
+                          popTitle={this.state.popTitle}
+                          popStyle={this.state.popStyle}
+                          onPointClick={this.onPointClick}
+                          onPopClose={this.onPopClose}
+                          dailyCostDetail={dailyCostDetail}
+                          costDetailLoading={costDetailLoading}
                         />
                       </Suspense>
                       <Card

@@ -472,14 +472,14 @@ const EcardConsumptionCard = memo(({ data }) => {
             <ul className={styles.rankingList}>
               {yearCostRankingData.map((item, i) => (
                 <li key={item.title}>
-                        <span
-                          className={`${styles.rankingItemNumber} ${i < 1 ? styles.active : ''}`}
-                        >
-                          {i + 1}
-                        </span>
+                  <span
+                    className={`${styles.rankingItemNumber} ${i < 1 ? styles.active : ''}`}
+                  >
+                    {i + 1}
+                  </span>
                   <span className={styles.rankingItemTitle} title={item.title}>
-                          {item.title}
-                        </span>
+                    {item.title}
+                  </span>
                   <span>¥{numeral(item.total).format('0,0')}</span>
                 </li>
               ))}
