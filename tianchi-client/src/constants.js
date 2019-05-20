@@ -231,3 +231,6 @@ export const SCORE_TYPE_ALIAS = {
   deng_di: "等第",
   class_rank: "班级排名",
 };
+
+
+export const PING_SHI_EXAM_TYPES = [4, 22, 5, 18];

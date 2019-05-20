@@ -121,15 +121,19 @@ class ClassViewSet(viewsets.ModelViewSet):
                 ).values(
                     'sub_exam__course_id',
                     'sub_exam__exam__name',
+                    'sub_exam__exam__type_id',
                     'order',
                 )
                 formatted_records = {}
+                type_map = {}
                 exam_name = ''
                 for record in records:
                     if not exam_name == record['sub_exam__exam__name']:
                         exam_name = record['sub_exam__exam__name']
                         if exam_name not in formatted_records:
                             formatted_records[exam_name] = []
+                    if exam_name not in type_map:
+                        type_map[exam_name] = record['sub_exam__exam__type_id']
                     formatted_records[exam_name].append({
                         'course': record['sub_exam__course_id'],
                         'score': record['order']
@@ -141,7 +145,10 @@ class ClassViewSet(viewsets.ModelViewSet):
                     if len(formatted_records[key]) == 1:
                         continue
                     results[key] = formatted_records[key]
-                return Response(results)
+                return Response({
+                    'results': results,
+                    'type_map': type_map
+                })
 
             if score_type == 'score':
                 records = ClassExamRecord.objects.filter(
@@ -152,11 +159,13 @@ class ClassViewSet(viewsets.ModelViewSet):
                 ).values(
                     'sub_exam__course_id',
                     'sub_exam__exam__name',
+                    'sub_exam__exam__type_id',
                     'total_score',
                     'attend_count'
                 )
 
                 formated_records = {}
+                type_map = {}
                 total = 0
                 exam_name = ''
                 for record in records:
@@ -171,7 +180,8 @@ class ClassViewSet(viewsets.ModelViewSet):
                         exam_name = record['sub_exam__exam__name']
                         formated_records[exam_name] = []
                         total = 0
-
+                    if exam_name not in type_map:
+                        type_map[exam_name] = record['sub_exam__exam__type_id']
                     avg_score = record['total_score'] / record['attend_count']
                     formated_records[exam_name].append({
                         'course': record['sub_exam__course_id'],
@@ -183,7 +193,11 @@ class ClassViewSet(viewsets.ModelViewSet):
                         'course': 60,
                         'score': total
                     })
-                return Response(formated_records)
+
+                return Response({
+                    'results': formated_records,
+                    'type_map': type_map
+                })
 
     @detail_route(
         methods=['GET'],

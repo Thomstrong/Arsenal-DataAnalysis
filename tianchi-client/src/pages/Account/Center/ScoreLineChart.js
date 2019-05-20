@@ -4,7 +4,7 @@
 import React, { memo } from "react";
 import { Card, Col, Empty, List, Row, Typography } from 'antd';
 import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
-import { COURSE_FULLNAME_ALIAS, getDengDi, SCORE_TYPE_ALIAS } from "@/constants";
+import { COURSE_FULLNAME_ALIAS, getDengDi, SCORE_TYPE_ALIAS,PING_SHI_EXAM_TYPES } from "@/constants";
 import Divider from "antd/es/divider";
 
 const { Paragraph, Text } = Typography;
@@ -32,12 +32,12 @@ const ScoreLineChart = memo(
     let highScoreTime = 0;
     if (scoreType === 'score') {
       for (let data of lineData) {
-        if ((!excludePingshi || (data.type !== 22 && data.type !== 4)) && data.score >= 600) {
+        if ((!excludePingshi || !PING_SHI_EXAM_TYPES.includes(data.type)) && data.score >= 600) {
           highScoreTime++;
         }
       }
     }
-
+    const getFilteredData = data => data.filter(d => !excludePingshi || !PING_SHI_EXAM_TYPES.includes(d.type));
     const isRank = scoreType === 'class_rank';
     const showDengDi = scoreType === 'deng_di';
     const scale = showDengDi ? dengDiScale : isRank ? {
@@ -109,17 +109,17 @@ const ScoreLineChart = memo(
           <Chart
             key={'center-total-trend'}
             height={300}
-            data={showDengDi ? lineData.filter(data => !excludePingshi || (data.type !== 22 && data.type !== 4)).map(data => {
+            data={showDengDi ? getFilteredData(lineData).map(data => {
               return {
                 ...data,
                 score: getDengDi(data.score)
               };
-            }) : (isRank ? lineData.filter(data => !excludePingshi || (data.type !== 22 && data.type !== 4)).map(data => {
+            }) : (isRank ? getFilteredData(lineData).map(data => {
               return {
                 ...data,
                 score: -(data.score)
               };
-            }) : lineData.filter(data => !excludePingshi || (data.type !== 22 && data.type !== 4)))}
+            }) : getFilteredData(lineData))}
             forceFit
             scale={{
               ...scale,
@@ -362,17 +362,17 @@ const ScoreLineChart = memo(
             <Chart
               key={`subject-${item.title}-trend`}
               height={300}
-              data={showDengDi ? item.lineData.filter(data => !excludePingshi || (data.type !== 22 && data.type !== 4)).map(data => {
+              data={showDengDi ? getFilteredData(item.lineData).map(data => {
                 return {
                   ...data,
                   score: getDengDi(data.score)
                 };
-              }) : isRank ? item.lineData.filter(data => !excludePingshi || (data.type !== 22 && data.type !== 4)).map(data => {
+              }) : isRank ? getFilteredData(item.lineData).map(data => {
                 return {
                   ...data,
                   score: -data.score
                 };
-              }) : item.lineData.filter(data => !excludePingshi || (data.type !== 22 && data.type !== 4)).map(data => {
+              }) : getFilteredData(item.lineData).map(data => {
                 return {
                   ...data,
                   score: Number(data.score.toFixed(2))

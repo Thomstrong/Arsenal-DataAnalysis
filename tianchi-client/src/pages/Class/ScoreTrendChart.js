@@ -4,15 +4,17 @@
 import React, { memo } from "react";
 import { Col, Divider, List, Row } from 'antd';
 import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
-import { COURSE_FULLNAME_ALIAS } from "@/constants";
+import { COURSE_FULLNAME_ALIAS, PING_SHI_EXAM_TYPES } from "@/constants";
 
 const { Line } = Guide;
-const ScoreLineChart = memo(
-  ({ lineData, radarViewData, subData, scoreType, maxRank }) => {
+
+const ScoreTrendChart = memo(
+  ({ lineData, radarViewData, subData, scoreType, maxRank, excludePingshi }) => {
     let scale = {
       score: {}
     };
     const isRank = scoreType === 'rank';
+    const getFilteredData = data => data.filter(d => !excludePingshi || !PING_SHI_EXAM_TYPES.includes(d.type));
     if (isRank) {
       const values = [];
       for (let i = 0; i < maxRank; i++) {
@@ -86,12 +88,12 @@ const ScoreLineChart = memo(
             <Chart
               key={'class-score-total-trend'}
               height={300}
-              data={isRank ? lineData.map(data => {
+              data={isRank ? getFilteredData(lineData).map(data => {
                 return {
                   ...data,
                   score: maxRank - data.score
                 };
-              }) : lineData}
+              }) : getFilteredData(lineData)}
               forceFit
               scale={{
                 exam: {
@@ -277,12 +279,12 @@ const ScoreLineChart = memo(
             <List.Item>
               <Chart
                 height={300}
-                data={isRank ? item.lineData.map(data => {
+                data={isRank ? getFilteredData(item.lineData).map(data => {
                   return {
                     ...data,
                     score: maxRank - data.score
                   };
-                }) : item.lineData}
+                }) : getFilteredData(item.lineData)}
                 scale={{
                   exam: {
                     tickCount: 3
@@ -323,14 +325,14 @@ const ScoreLineChart = memo(
                   type="point"
                   position="exam*score"
                   tooltip={[
-                  "score",
-                  (score) => {
-                    return {
-                      name: isRank ? '排名' : "分数",
-                      value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
-                    };
-                  }
-                ]}
+                    "score",
+                    (score) => {
+                      return {
+                        name: isRank ? '排名' : "分数",
+                        value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
+                      };
+                    }
+                  ]}
                   size={4}
                   shape={"circle"}
                   style={{
@@ -347,4 +349,4 @@ const ScoreLineChart = memo(
   }
 );
 
-export default ScoreLineChart;
+export default ScoreTrendChart;

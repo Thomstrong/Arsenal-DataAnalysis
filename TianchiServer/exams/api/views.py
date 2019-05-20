@@ -32,7 +32,7 @@ class ClassExamViewSet(viewsets.ModelViewSet):
             sub_exam__course_id=course,
             attend_count__gt=0
         ).exclude(
-            sub_exam__exam__type_id__in=[22, 4]
+            sub_exam__exam__type_id__in=[4, 22, 5, 18]
         ).prefetch_related(
             'sub_exam__exam',
             'stu_class'

@@ -751,7 +751,7 @@ class Center extends PureComponent {
                                                                            value={type}>{SCORE_TYPE_ALIAS[type]}</Option>)}
                       </Select>
                       <Divider style={{margin: '0 15px',height: '20px'}} type="vertical"/>
-                      <span style={{ verticalAlign: 'middle', marginRight: '10px' }}>{'隐藏平时成绩'}</span>
+                      <span style={{ verticalAlign: 'middle', marginRight: '10px' }}>{'不看平时成绩'}</span>
                       <Switch
                         style={{ verticalAlign: 'middle' }}
                         defaultChecked={this.state.excludePingshi}

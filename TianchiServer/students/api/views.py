@@ -165,7 +165,7 @@ class StudentViewSet(viewsets.ModelViewSet):
             ).order_by('sub_exam__started_at').values(
                 'sub_exam__exam__name'
             ).annotate(
-                total_score=Sum(score_type) if not score_type == 'deng_di' else Avg(score_type)
+                total_score=Sum(score_type) if not (score_type == 'deng_di' or score_type == 'z_score') else Avg(score_type)
             ).values(
                 'sub_exam__exam__name',
                 'sub_exam__exam__type_id',
