@@ -45,7 +45,7 @@ const plugins = [
   ['umi-plugin-auto-externals', {
     packages: ['react', 'antd', 'moment', 'react-dom',],
     urlTemplate: 'https://unpkg.com/{{ library }}@{{ version }}/{{ path }}',
-    checkOnline: false,
+    checkOnline: true,
   }],
 ];
 
