@@ -229,7 +229,7 @@ export const SCORE_TYPE_ALIAS = {
   z_score: "离均值(Z分)",
   t_score: "标准分(T分)",
   deng_di: "等第",
-  class_rank: "班级排名",
+  class_rank: "班内排名",
 };
 
 

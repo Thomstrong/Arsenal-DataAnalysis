@@ -61,7 +61,7 @@ const ConsumptionOverallLineChart = memo(
                 key='cost-line-popover'
                 visible={popVisible} trigger="click"
                 title={<Fragment>
-                  <span style={{marginLeft: '15%'}}>{popTitle}</span>
+                  <span style={{ marginLeft: '15%' }}>{popTitle}</span>
                   <Button
                     style={{
                       position: 'absolute',
@@ -189,27 +189,30 @@ const ConsumptionOverallLineChart = memo(
                 <Axis name="hour"/>
                 <Axis name="total_avg" visible={false}/>
                 <Tooltip/>
-                <Geom type="interval" position="hour*avg_cost"
-                      tooltip={['avg_cost', (avgCost) => {
-                        return {
-                          name: "该同学平均消费",
-                          value: avgCost + "元"
-                        };
-                      }]}/>
-                <Geom type="line" position="hour*total_avg" color="#61be67" size={2} shape="smooth"
-                      tooltip={['total_avg', (totalAvg) => {
-                        return {
-                          name: "全校同学平均消费",
-                          value: totalAvg + "元"
-                        };
-                      }]}/>
-                <Geom type="point" position="hour*total_avg" color="#61be67" size={3} shape="circle"
-                      tooltip={['total_avg', (totalAvg) => {
-                        return {
-                          name: "全校同学平均消费",
-                          value: totalAvg + "元"
-                        };
-                      }]}/>
+                <Geom
+                  type="interval" position="hour*avg_cost"
+                  tooltip={['avg_cost', (avgCost) => {
+                    return {
+                      name: "该同学平均消费",
+                      value: avgCost + "元"
+                    };
+                  }]}/>
+                <Geom
+                  type="line" position="hour*total_avg" color="#61be67" size={2} shape="smooth"
+                  tooltip={['total_avg', (totalAvg) => {
+                    return {
+                      name: "全校同学平均消费",
+                      value: totalAvg + "元"
+                    };
+                  }]}/>
+                <Geom
+                  type="point" position="hour*total_avg" color="#61be67" size={3} shape="circle"
+                  tooltip={['total_avg', (totalAvg) => {
+                    return {
+                      name: "全校同学平均消费",
+                      value: totalAvg + "元"
+                    };
+                  }]}/>
               </Chart>
             </Col>
           </Row> : <Empty/>}
