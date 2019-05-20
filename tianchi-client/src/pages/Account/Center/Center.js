@@ -1,6 +1,6 @@
 import React, { Fragment, PureComponent, Suspense } from 'react';
 import { connect } from 'dva';
-import { POLICY_TYPE_ALIAS, SCORE_LEVEL_ALIAS, SEX_MAP } from "@/constants";
+import { POLICY_TYPE_ALIAS, SCORE_LEVEL_ALIAS, SCORE_TYPE_ALIAS, SEX_MAP } from "@/constants";
 import router from 'umi/router';
 import _ from 'lodash';
 import PageLoading from '@/components/PageLoading';
@@ -18,6 +18,7 @@ import {
   Row,
   Select,
   Spin,
+  Switch,
   Tabs,
   Tag
 } from 'antd';
@@ -79,6 +80,7 @@ class Center extends PureComponent {
       scoreType: 'score',
       dateRange: 7,
       pickedDate: '2019-01-01',
+      excludePingshi: false,
     };
     this.getStudentList = _.debounce(this.getStudentList, 800);
   }
@@ -512,6 +514,12 @@ class Center extends PureComponent {
     };
   };
 
+  onTypeSwitchChanged = (checked) => {
+    this.setState({
+      excludePingshi: checked
+    });
+  };
+
   render() {
     const {
       studentInfo,
@@ -553,7 +561,6 @@ class Center extends PureComponent {
         max: 100
       }
     };
-
     //成绩相关,linedata表示总成绩,subData表示每个学科的成绩列表
     const totalTrendData = studentInfo ? studentInfo.totalTrend : [];
     const lineSummary = studentInfo ? studentInfo.lineSummary : {};
@@ -654,7 +661,7 @@ class Center extends PureComponent {
                       <Chart
                         height={350}
                         data={studentInfo.radarData}
-                        padding={[20, 20, 95, 20]}
+                        padding={[20, 20, 55, 20]}
                         scale={cols}
                         forceFit
                         loading={loading}
@@ -734,30 +741,37 @@ class Center extends PureComponent {
             >
               <Tabs defaultActiveKey={defaultTab} onChange={this.onTabChange}>
                 <TabPane tab={<span><Icon type="line-chart"/>成绩</span>} key="Score">
+                  {studentInfo && !!studentInfo.id && <Row type='flex' justify='start'>
+                    <Affix offsetTop={13} style={{ 'zIndex': 2 }}>
+                      <Select
+                        value={studentInfo.scoreType || this.state.scoreType} style={{ width: 120 }}
+                        onChange={this.onScoreTypeChange}
+                      >
+                        {Object.keys(SCORE_TYPE_ALIAS).map(type => <Option key={type}
+                                                                           value={type}>{SCORE_TYPE_ALIAS[type]}</Option>)}
+                      </Select>
+                      <Divider style={{margin: '0 15px',height: '20px'}} type="vertical"/>
+                      <span style={{ verticalAlign: 'middle', marginRight: '10px' }}>{'不看平时成绩'}</span>
+                      <Switch
+                        style={{ verticalAlign: 'middle' }}
+                        defaultChecked={this.state.excludePingshi}
+                        onChange={this.onTypeSwitchChanged}
+                      />
+                    </Affix>
+                  </Row>}
                   {studentInfo && studentInfo.id ?
                     <Fragment>
-                      {totalTrendData && !!totalTrendData.length && <Row type='flex' justify='start'>
-                        <Affix offsetTop={13} style={{ 'zIndex': 2 }}>
-                          <Select
-                            value={studentInfo.scoreType || this.state.scoreType} style={{ width: 120 }}
-                            onChange={this.onScoreTypeChange}
-                          >
-                            <Option key="score" value="score">绝对分</Option>
-                            <Option key="z_score" value="z_score">离均值(Z分)</Option>
-                            <Option key="t_score" value="t_score">标准分(T分)</Option>
-                            <Option key="deng_di" value="deng_di">等第</Option>
-                          </Select>
-                        </Affix>
-                      </Row>}
                       {totalTrendData && !!totalTrendData.length ? <Suspense fallback={<PageLoading/>}>
-                        <ScoreLineChart
-                          lineData={totalTrendData}
-                          lineSummary={lineSummary}
-                          radarViewData={studentInfo.radarData}
-                          subData={studentInfo.subTrends}
-                          scoreType={this.state.scoreType}
-                        />
-                      </Suspense> : <Empty description='暂无考试数据'/>}
+                          <ScoreLineChart
+                            lineData={totalTrendData}
+                            lineSummary={lineSummary}
+                            radarViewData={studentInfo.radarData}
+                            subData={studentInfo.subTrends}
+                            scoreType={this.state.scoreType}
+                            excludePingshi={this.state.excludePingshi}
+                          />
+                        </Suspense> :
+                        <Empty description={`暂无${SCORE_TYPE_ALIAS[studentInfo.scoreType || this.state.scoreType]}数据`}/>}
                     </Fragment> : initEmpty
                   }
                 </TabPane>
@@ -852,7 +866,7 @@ class Center extends PureComponent {
                       <Card
                         title="基本信息对比"
                         bordered={false}
-                        style={{ width: '100%'}}
+                        style={{ width: '100%' }}
                         bodyStyle={{ paddingLeft: 0 }}
                       >
                         <Row type="flex" align="middle">

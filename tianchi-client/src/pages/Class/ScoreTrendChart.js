@@ -4,15 +4,31 @@
 import React, { memo } from "react";
 import { Col, Divider, List, Row } from 'antd';
 import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
-import { COURSE_FULLNAME_ALIAS } from "@/constants";
+import { COURSE_FULLNAME_ALIAS, PING_SHI_EXAM_TYPES } from "@/constants";
 
 const { Line } = Guide;
-const ScoreLineChart = memo(
-  ({ lineData, radarViewData, subData, scoreType, maxRank }) => {
+
+const ScoreTrendChart = memo(
+  ({ lineData, radarViewData, subData, scoreType, maxRank, excludePingshi }) => {
     let scale = {
       score: {}
     };
     const isRank = scoreType === 'rank';
+    const getFilteredData = data => data.filter(d => !excludePingshi || !PING_SHI_EXAM_TYPES.includes(d.type));
+    let minMaxData= getFilteredData(lineData);
+    let i = 0;
+    let maxScore=0;
+    let minScore=1000;
+    if(minMaxData.length){
+      for (i=0;i<minMaxData.length;i++){
+          if (maxScore < minMaxData[i].score){
+              maxScore = minMaxData[i].score
+            }
+          if(minScore> minMaxData[i].score){
+            minScore = minMaxData[i].score
+          }
+      }
+    }
     if (isRank) {
       const values = [];
       for (let i = 0; i < maxRank; i++) {
@@ -30,7 +46,7 @@ const ScoreLineChart = memo(
             <Chart
               height={300}
               data={radarViewData}
-              padding={[20, 20, 95, 20]}
+              padding={[20, 20, 55, 20]}
               scale={{
                 'score': {
                   min: 0,
@@ -86,12 +102,12 @@ const ScoreLineChart = memo(
             <Chart
               key={'class-score-total-trend'}
               height={300}
-              data={isRank ? lineData.map(data => {
+              data={isRank ? getFilteredData(lineData).map(data => {
                 return {
                   ...data,
                   score: maxRank - data.score
                 };
-              }) : lineData}
+              }) : getFilteredData(lineData)}
               forceFit
               scale={{
                 exam: {
@@ -126,7 +142,7 @@ const ScoreLineChart = memo(
                   "score",
                   (score) => {
                     return {
-                      name: `${isRank ? '排名' : '平均分数'}`,
+                      name: `${isRank ? '排名' : '分数'}`,
                       value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
                     };
                   }
@@ -134,6 +150,15 @@ const ScoreLineChart = memo(
               <Geom
                 type="point"
                 position="exam*score"
+                tooltip={[
+                  "score",
+                  (score) => {
+                    return {
+                      name: `${isRank ? '排名' : '分数'}`,
+                      value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
+                    };
+                  }
+                ]}
                 size={4}
                 shape={"circle"}
                 style={{
@@ -142,7 +167,7 @@ const ScoreLineChart = memo(
                 }}
               />
               <Guide>
-                <Line
+               {maxScore>=588 && minScore<=588 &&  <Line
                   top={true}
                   start={[-0.5, 588]}
                   end={['max', 588]}
@@ -160,8 +185,8 @@ const ScoreLineChart = memo(
                       fill: "#99203e",
                     }
                   }}
-                />
-                <Line
+                />}
+                {maxScore>=490 && minScore<=490 && <Line
                   top={true}
                   start={[-0.5, 490]}
                   end={['max', 490]}
@@ -179,8 +204,8 @@ const ScoreLineChart = memo(
                       fill: "#99203e",
                     }
                   }}
-                />
-                <Line
+                />}
+                {maxScore>=344 && minScore<=344 && <Line
                   top={true}
                   start={[-0.5, 344]}
                   end={['max', 344]}
@@ -198,8 +223,8 @@ const ScoreLineChart = memo(
                       opacity: 0.3,
                     }
                   }}
-                />
-                <Line
+                />}
+                {maxScore>=577 && minScore<=577 && <Line
                   top={true}
                   start={[-0.5, 577]}
                   end={['max', 577]}
@@ -217,8 +242,8 @@ const ScoreLineChart = memo(
                       opacity: 0.3,
                     }
                   }}
-                />
-                <Line
+                />}
+                {maxScore>=480 && minScore<=480 && <Line
                   top={true}
                   start={[-0.5, 480]}
                   end={['max', 480]}
@@ -236,8 +261,8 @@ const ScoreLineChart = memo(
                       opacity: 0.3,
                     }
                   }}
-                />
-                <Line
+                />}
+                {maxScore>=359 && minScore<=359 && <Line
                   top={true}
                   start={[-0.5, 359]}
                   end={['max', 359]}
@@ -255,7 +280,7 @@ const ScoreLineChart = memo(
                       opacity: 0.3,
                     }
                   }}
-                />
+                />}
               </Guide>
             </Chart>
           </Col>
@@ -268,12 +293,12 @@ const ScoreLineChart = memo(
             <List.Item>
               <Chart
                 height={300}
-                data={isRank ? item.lineData.map(data => {
+                data={isRank ? getFilteredData(item.lineData).map(data => {
                   return {
                     ...data,
                     score: maxRank - data.score
                   };
-                }) : item.lineData}
+                }) : getFilteredData(item.lineData)}
                 scale={{
                   exam: {
                     tickCount: 3
@@ -305,7 +330,7 @@ const ScoreLineChart = memo(
                   "score",
                   (score) => {
                     return {
-                      name: isRank ? '排名' : "平均分数",
+                      name: isRank ? '排名' : "分数",
                       value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
                     };
                   }
@@ -313,6 +338,15 @@ const ScoreLineChart = memo(
                 <Geom
                   type="point"
                   position="exam*score"
+                  tooltip={[
+                    "score",
+                    (score) => {
+                      return {
+                        name: isRank ? '排名' : "分数",
+                        value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
+                      };
+                    }
+                  ]}
                   size={4}
                   shape={"circle"}
                   style={{
@@ -329,4 +363,4 @@ const ScoreLineChart = memo(
   }
 );
 
-export default ScoreLineChart;
+export default ScoreTrendChart;

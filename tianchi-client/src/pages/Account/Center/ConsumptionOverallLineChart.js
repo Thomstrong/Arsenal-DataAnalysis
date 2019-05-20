@@ -11,9 +11,6 @@ const { Paragraph, Text } = Typography;
 
 let chartIns = null;
 
-//todo 由后端传入
-const money = 2000;
-const precent = "20%";
 
 const ConsumptionOverallLineChart = memo(
   ({ hourlyAvgCost, dailySumCost, maxHourlyAvg, dailyAvgRank, dailyAvg }) => {

@@ -210,9 +210,9 @@ const EcardConsumptionCard = memo(({ data }) => {
                 <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20, cursor: "auto" }}>
                   <Paragraph>1. 消费主要发生在<Text type='danger'>6、7</Text>时,<Text type='danger'>11、12</Text>时
                     和<Text type='danger'>17</Text>时三个时间段;</Paragraph>
-                  <Paragraph>2.由于总体人数的差异，男生的消费人次明显比女生多，
+                  <Paragraph>2. 由于总体人数的差异，男生的消费人次明显比女生多，
                     但<Text type='danger'>女生</Text>的平均消费水平更<Text type='danger'>高</Text>一些;</Paragraph>
-                  <Paragraph>3.平均消费金额的极值与消费人数的极值并不发生在同一时段，
+                  <Paragraph>3. 平均消费金额的极值与消费人数的极值并不发生在同一时段，
                     可以看出<Text type='danger'>非就餐时间的消费</Text>(零食等)占据部分学生<Text type='danger'>更多</Text>开销。</Paragraph>
                 </Card>
               </div>

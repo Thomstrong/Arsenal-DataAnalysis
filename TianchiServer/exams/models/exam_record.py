@@ -14,6 +14,7 @@ class StudentExamRecord(models.Model):
     z_score = models.FloatField(default=0.0)
     t_score = models.FloatField(default=0.0)
     deng_di = models.FloatField(default=0.0)
+    class_rank = models.IntegerField(default=0)
 
 
 class ClassExamRecord(models.Model):
