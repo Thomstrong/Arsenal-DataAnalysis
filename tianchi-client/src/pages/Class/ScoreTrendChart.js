@@ -15,18 +15,15 @@ const ScoreTrendChart = memo(
     };
     const isRank = scoreType === 'rank';
     const getFilteredData = data => data.filter(d => !excludePingshi || !PING_SHI_EXAM_TYPES.includes(d.type));
-    let minMaxData= getFilteredData(lineData);
-    let i = 0;
-    let maxScore=0;
-    let minScore=1000;
-    if(minMaxData.length){
-      for (i=0;i<minMaxData.length;i++){
-          if (maxScore < minMaxData[i].score){
-              maxScore = minMaxData[i].score
-            }
-          if(minScore> minMaxData[i].score){
-            minScore = minMaxData[i].score
-          }
+    const filteredData = getFilteredData(lineData);
+    let maxScore = 0;
+    let minScore = 1000;
+    for (let data of filteredData) {
+      if (maxScore < data.score) {
+        maxScore = data.score;
+      }
+      if (minScore > data.score) {
+        minScore = data.score;
       }
     }
     if (isRank) {
@@ -102,12 +99,12 @@ const ScoreTrendChart = memo(
             <Chart
               key={'class-score-total-trend'}
               height={300}
-              data={isRank ? getFilteredData(lineData).map(data => {
+              data={isRank ? filteredData.map(data => {
                 return {
                   ...data,
                   score: maxRank - data.score
                 };
-              }) : getFilteredData(lineData)}
+              }) : filteredData}
               forceFit
               scale={{
                 exam: {
@@ -166,122 +163,128 @@ const ScoreTrendChart = memo(
                   lineWidth: 1
                 }}
               />
-              <Guide>
-               {maxScore>=588 && minScore<=588 &&  <Line
-                  top={true}
-                  start={[-0.5, 588]}
-                  end={['max', 588]}
-                  lineStyle={{
-                    stroke: '#99203e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity: 0.3,
-                  }}
-                  text={{
-                    position: '5%',
-                    content: "2018 一段线 588",
-                    style: {
-                      opacity: 0.3,
-                      fill: "#99203e",
-                    }
-                  }}
-                />}
-                {maxScore>=490 && minScore<=490 && <Line
-                  top={true}
-                  start={[-0.5, 490]}
-                  end={['max', 490]}
-                  lineStyle={{
-                    stroke: '#99203e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity: 0.3,
-                  }} // 图形样式配置
-                  text={{
-                    position: '5%',
-                    content: "2018 二段线 490",
-                    style: {
-                      opacity: 0.3,
-                      fill: "#99203e",
-                    }
-                  }}
-                />}
-                {maxScore>=344 && minScore<=344 && <Line
-                  top={true}
-                  start={[-0.5, 344]}
-                  end={['max', 344]}
-                  lineStyle={{
-                    stroke: '#99203e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity: 0.3,
-                  }}
-                  text={{
-                    position: '5%',
-                    content: "2018 三段线 344",
-                    style: {
-                      fill: "#99203e",
-                      opacity: 0.3,
-                    }
-                  }}
-                />}
-                {maxScore>=577 && minScore<=577 && <Line
-                  top={true}
-                  start={[-0.5, 577]}
-                  end={['max', 577]}
-                  lineStyle={{
-                    stroke: '#6b561e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity: 0.3,
-                  }} // 图形样式配置
-                  text={{
-                    position: '75%',
-                    content: "2017 一段线 577",
-                    style: {
-                      fill: "#6b561e",
-                      opacity: 0.3,
-                    }
-                  }}
-                />}
-                {maxScore>=480 && minScore<=480 && <Line
-                  top={true}
-                  start={[-0.5, 480]}
-                  end={['max', 480]}
-                  lineStyle={{
-                    stroke: '#6b561e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity: 0.3,
-                  }}
-                  text={{
-                    position: '75%',
-                    content: "2017 二段线 480",
-                    style: {
-                      fill: "#6b561e",
-                      opacity: 0.3,
-                    }
-                  }}
-                />}
-                {maxScore>=359 && minScore<=359 && <Line
-                  top={true}
-                  start={[-0.5, 359]}
-                  end={['max', 359]}
-                  lineStyle={{
-                    stroke: '#6b561e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity: 0.3,
-                  }}
-                  text={{
-                    position: '75%',
-                    content: "2017 三段线 359",
-                    style: {
-                      fill: "#6b561e",
-                      opacity: 0.3,
-                    }
-                  }}
-                />}
-              </Guide>
+              {588 >= minScore && 344 <= maxScore && <Guide key='total-trend-guide'>
+              {(588 >= minScore && 588 <= maxScore) && <Line
+                key='student-score-line1'
+                top={true}
+                start={[-0.5, 588]}
+                end={['max', 588]}
+                lineStyle={{
+                  stroke: '#99203e',
+                  lineDash: [0, 2, 2],
+                  lineWidth: 2,
+                  opacity: 0.4,
+                }}
+                text={{
+                  position: '1%',
+                  content: "2018 一段线 588",
+                  style: {
+                    opacity: 0.5,
+                    fill: "#99203e",
+                  }
+                }}
+              />}
+              {(490 >= minScore && 490 <= maxScore) && <Line
+                key='student-score-line2'
+                top={true}
+                start={[-0.5, 490]}
+                end={['max', 490]}
+                lineStyle={{
+                  stroke: '#99203e',
+                  lineDash: [0, 2, 2],
+                  lineWidth: 2,
+                  opacity: 0.4,
+                }}
+                text={{
+                  position: '1%',
+                  content: "2018 二段线 490",
+                  style: {
+                    opacity: 0.5,
+                    fill: "#99203e",
+                  }
+                }}
+              />}
+              {(344 >= minScore && 344 <= maxScore) && <Line
+                key='student-score-line3'
+                top={true}
+                start={[-0.5, 344]}
+                end={['max', 344]}
+                lineStyle={{
+                  stroke: '#99203e',
+                  lineDash: [0, 2, 2],
+                  lineWidth: 2,
+                  opacity: 0.4,
+                }}
+                text={{
+                  position: '1%',
+                  content: "2018 三段线 344",
+                  style: {
+                    fill: "#99203e",
+                    opacity: 0.5,
+                  }
+                }}
+              />}
+              {(577 >= minScore && 577 <= maxScore) && <Line
+                key='student-score-line4'
+                top={true}
+                start={[-0.5, 577]}
+                end={['max', 577]}
+                lineStyle={{
+                  stroke: '#6b561e',
+                  lineDash: [0, 2, -1],
+                  lineWidth: 2,
+                  opacity: 0.2,
+                }} // 图形样式配置
+                text={{
+                  position: '70%',
+                  content: "2017 一段线 577",
+                  style: {
+                    fill: "#6b561e",
+                    opacity: 0.5,
+                  }
+                }}
+              />}
+              {(480 >= minScore && 480 <= maxScore) && <Line
+                key='student-score-line5'
+                top={true}
+                start={[-0.5, 480]}
+                end={['max', 480]}
+                lineStyle={{
+                  stroke: '#6b561e',
+                  lineDash: [0, 2, -1],
+                  lineWidth: 2,
+                  opacity: 0.2,
+                }}
+                text={{
+                  position: '70%',
+                  content: "2017 二段线 480",
+                  style: {
+                    fill: "#6b561e",
+                    opacity: 0.5,
+                  }
+                }}
+              />}
+              {(359 >= minScore && 359 <= maxScore) && <Line
+                key='student-score-line6'
+                top={true}
+                start={[-0.5, 359]}
+                end={['max', 359]}
+                lineStyle={{
+                  stroke: '#6b561e',
+                  lineDash: [0, 2, -1],
+                  lineWidth: 2,
+                  opacity: 0.2,
+                }}
+                text={{
+                  position: '70%',
+                  content: "2017 三段线 359",
+                  style: {
+                    fill: "#6b561e",
+                    opacity: 0.5,
+                  }
+                }}
+              />}
+            </Guide>}
             </Chart>
           </Col>
         </Row>

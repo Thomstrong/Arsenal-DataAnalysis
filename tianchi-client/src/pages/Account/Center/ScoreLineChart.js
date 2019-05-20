@@ -4,7 +4,7 @@
 import React, { memo } from "react";
 import { Card, Col, Empty, List, Row, Typography } from 'antd';
 import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
-import { COURSE_FULLNAME_ALIAS, getDengDi, SCORE_TYPE_ALIAS,PING_SHI_EXAM_TYPES } from "@/constants";
+import { COURSE_FULLNAME_ALIAS, getDengDi, SCORE_TYPE_ALIAS, PING_SHI_EXAM_TYPES } from "@/constants";
 import Divider from "antd/es/divider";
 
 const { Paragraph, Text } = Typography;
@@ -38,18 +38,15 @@ const ScoreLineChart = memo(
       }
     }
     const getFilteredData = data => data.filter(d => !excludePingshi || !PING_SHI_EXAM_TYPES.includes(d.type));
-    let minMaxData= getFilteredData(lineData);
-    let i = 0;
-    let maxScore=0;
-    let minScore=1000;
-    if(minMaxData.length){
-      for (i=0;i<minMaxData.length;i++){
-          if (maxScore < minMaxData[i].score){
-              maxScore = minMaxData[i].score
-            }
-          if(minScore> minMaxData[i].score){
-            minScore = minMaxData[i].score
-          }
+    const filteredData = getFilteredData(lineData);
+    let maxScore = 0;
+    let minScore = 1000;
+    for (let data of filteredData) {
+      if (maxScore < data.score) {
+        maxScore = data.score;
+      }
+      if (minScore > data.score) {
+        minScore = data.score;
       }
     }
     const isRank = scoreType === 'class_rank';
@@ -123,17 +120,17 @@ const ScoreLineChart = memo(
           <Chart
             key={'center-total-trend'}
             height={300}
-            data={showDengDi ? getFilteredData(lineData).map(data => {
+            data={showDengDi ? filteredData.map(data => {
               return {
                 ...data,
                 score: getDengDi(data.score)
               };
-            }) : (isRank ? getFilteredData(lineData).map(data => {
+            }) : (isRank ? filteredData.map(data => {
               return {
                 ...data,
                 score: -(data.score)
               };
-            }) : getFilteredData(lineData))}
+            }) : filteredData)}
             forceFit
             scale={{
               ...scale,
@@ -221,8 +218,8 @@ const ScoreLineChart = memo(
                 }
               ]}
             />
-            {scoreType === 'score' && <Guide key='student-score-lines'>
-              {maxScore>=588 && minScore<=588 && <Line
+            {scoreType === 'score' && (588 >= minScore && 344 <= maxScore) && <Guide key='total-trend-guide'>
+              {(588 >= minScore && 588 <= maxScore) && <Line
                 key='student-score-line1'
                 top={true}
                 start={[-0.5, 588]}
@@ -242,7 +239,7 @@ const ScoreLineChart = memo(
                   }
                 }}
               />}
-              {maxScore>=490 && minScore<=490 && <Line
+              {(490 >= minScore && 490 <= maxScore) && <Line
                 key='student-score-line2'
                 top={true}
                 start={[-0.5, 490]}
@@ -262,7 +259,7 @@ const ScoreLineChart = memo(
                   }
                 }}
               />}
-              {maxScore>=344 && minScore<=344 && <Line
+              {(344 >= minScore && 344 <= maxScore) && <Line
                 key='student-score-line3'
                 top={true}
                 start={[-0.5, 344]}
@@ -282,7 +279,7 @@ const ScoreLineChart = memo(
                   }
                 }}
               />}
-              {maxScore>=577 && minScore<=577 && <Line
+              {(577 >= minScore && 577 <= maxScore) && <Line
                 key='student-score-line4'
                 top={true}
                 start={[-0.5, 577]}
@@ -302,7 +299,7 @@ const ScoreLineChart = memo(
                   }
                 }}
               />}
-              {maxScore>=480 && minScore<=480 && <Line
+              {(480 >= minScore && 480 <= maxScore) && <Line
                 key='student-score-line5'
                 top={true}
                 start={[-0.5, 480]}
@@ -322,7 +319,7 @@ const ScoreLineChart = memo(
                   }
                 }}
               />}
-              {maxScore>=359 && minScore<=359 && <Line
+              {(359 >= minScore && 359 <= maxScore) && <Line
                 key='student-score-line6'
                 top={true}
                 start={[-0.5, 359]}
@@ -469,9 +466,9 @@ const ScoreLineChart = memo(
                 ]}
               />
 
-              {scoreType === 'z_score' && <Guide key='student-score-lines'>
+              {scoreType === 'z_score' && <Guide key='sub-trend-guide'>
                 <Line
-                  key='student-z-score-line'
+                  key={`${item.title}-z-score-line`}
                   top={true}
                   start={(xScale, yScale) => {
                     if (yScale.score.min > 0) {
