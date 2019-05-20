@@ -25,12 +25,14 @@ const dengDiScale = {
 const normalScale = {
   score: {}
 };
+
+
 const ScoreLineChart = memo(
-  ({ lineData, radarViewData, lineSummary, subData, scoreType }) => {
+  ({ lineData, radarViewData, lineSummary, subData, scoreType, excludePingshi }) => {
     let highScoreTime = 0;
     if (scoreType === 'score') {
-      for (let i = 0; i < lineData.length; i++) {
-        if (lineData[i].score >= 600) {
+      for (let data of lineData) {
+        if ((!excludePingshi || (data.type !== 22 && data.type !== 4)) && data.score >= 600) {
           highScoreTime++;
         }
       }
@@ -107,27 +109,27 @@ const ScoreLineChart = memo(
           <Chart
             key={'center-total-trend'}
             height={300}
-            data={showDengDi ? lineData.map(data => {
+            data={showDengDi ? lineData.filter(data => !excludePingshi || (data.type !== 22 && data.type !== 4)).map(data => {
               return {
                 ...data,
                 score: getDengDi(data.score)
               };
-            }) : (isRank ? lineData.map(data => {
+            }) : (isRank ? lineData.filter(data => !excludePingshi || (data.type !== 22 && data.type !== 4)).map(data => {
               return {
                 ...data,
                 score: -(data.score)
               };
-            }) : lineData)}
+            }) : lineData.filter(data => !excludePingshi || (data.type !== 22 && data.type !== 4)))}
             forceFit
             scale={{
               ...scale,
               exam: {
                 tickCount: 5
-              }
+              },
             }}
           >
             <p style={{ textAlign: 'center' }}>
-              总分变化趋势
+              {`总分${SCORE_TYPE_ALIAS[scoreType]}变化趋势`}
             </p>
             <Axis
               name="exam"
@@ -360,17 +362,17 @@ const ScoreLineChart = memo(
             <Chart
               key={`subject-${item.title}-trend`}
               height={300}
-              data={showDengDi ? item.lineData.map(data => {
+              data={showDengDi ? item.lineData.filter(data => !excludePingshi || (data.type !== 22 && data.type !== 4)).map(data => {
                 return {
                   ...data,
                   score: getDengDi(data.score)
                 };
-              }) : isRank ? item.lineData.map(data => {
+              }) : isRank ? item.lineData.filter(data => !excludePingshi || (data.type !== 22 && data.type !== 4)).map(data => {
                 return {
                   ...data,
                   score: -data.score
                 };
-              }) : item.lineData.map(data => {
+              }) : item.lineData.filter(data => !excludePingshi || (data.type !== 22 && data.type !== 4)).map(data => {
                 return {
                   ...data,
                   score: Number(data.score.toFixed(2))

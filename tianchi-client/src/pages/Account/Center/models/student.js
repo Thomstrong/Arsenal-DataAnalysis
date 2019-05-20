@@ -256,6 +256,7 @@ export default {
           totalTrend: payload.map(data => {
             return {
               exam: data.sub_exam__exam__name,
+              type: data.sub_exam__exam__type_id,
               score: (scoreType === 'score' || scoreType === 'deng_di' || scoreType === 'class_rank') ? data.total_score :
                 Number(data.total_score.toFixed(2))
             };

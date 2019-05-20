@@ -18,6 +18,7 @@ import {
   Row,
   Select,
   Spin,
+  Switch,
   Tabs,
   Tag
 } from 'antd';
@@ -79,6 +80,7 @@ class Center extends PureComponent {
       scoreType: 'score',
       dateRange: 7,
       pickedDate: '2019-01-01',
+      excludePingshi: false,
     };
     this.getStudentList = _.debounce(this.getStudentList, 800);
   }
@@ -512,6 +514,13 @@ class Center extends PureComponent {
     };
   };
 
+  onTypeSwitchChanged = (checked) => {
+    console.log(checked);
+    this.setState({
+      excludePingshi: checked
+    });
+  };
+
   render() {
     const {
       studentInfo,
@@ -553,7 +562,6 @@ class Center extends PureComponent {
         max: 100
       }
     };
-
     //成绩相关,linedata表示总成绩,subData表示每个学科的成绩列表
     const totalTrendData = studentInfo ? studentInfo.totalTrend : [];
     const lineSummary = studentInfo ? studentInfo.lineSummary : {};
@@ -743,6 +751,13 @@ class Center extends PureComponent {
                         {Object.keys(SCORE_TYPE_ALIAS).map(type => <Option key={type}
                                                                            value={type}>{SCORE_TYPE_ALIAS[type]}</Option>)}
                       </Select>
+                      <Divider style={{margin: '0 15px',height: '20px'}} type="vertical"/>
+                      <span style={{ verticalAlign: 'middle', marginRight: '10px' }}>{'隐藏平时成绩'}</span>
+                      <Switch
+                        style={{ verticalAlign: 'middle' }}
+                        defaultChecked={this.state.excludePingshi}
+                        onChange={this.onTypeSwitchChanged}
+                      />
                     </Affix>
                   </Row>}
                   {studentInfo && studentInfo.id ?
@@ -754,6 +769,7 @@ class Center extends PureComponent {
                             radarViewData={studentInfo.radarData}
                             subData={studentInfo.subTrends}
                             scoreType={this.state.scoreType}
+                            excludePingshi={this.state.excludePingshi}
                           />
                         </Suspense> :
                         <Empty description={`暂无${SCORE_TYPE_ALIAS[studentInfo.scoreType || this.state.scoreType]}数据`}/>}

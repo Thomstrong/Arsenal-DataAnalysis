@@ -154,6 +154,7 @@ class StudentViewSet(viewsets.ModelViewSet):
                     total_score=Sum(score_type)
                 ).values(
                     'sub_exam__exam__name',
+                    'sub_exam__exam__type_id',
                     'total_score'
                 )
                 return Response(records)
@@ -167,6 +168,7 @@ class StudentViewSet(viewsets.ModelViewSet):
                 total_score=Sum(score_type) if not score_type == 'deng_di' else Avg(score_type)
             ).values(
                 'sub_exam__exam__name',
+                'sub_exam__exam__type_id',
                 'total_score'
             )
             return Response(records)
@@ -180,6 +182,7 @@ class StudentViewSet(viewsets.ModelViewSet):
                 'sub_exam__exam__name'
             ).values(
                 'sub_exam__exam__name',
+                'sub_exam__exam__type_id',
                 'sub_exam__course_id',
                 score_type
             )
@@ -190,6 +193,7 @@ class StudentViewSet(viewsets.ModelViewSet):
                     formated_records[record['sub_exam__course_id']] = []
                 formated_records[record['sub_exam__course_id']].append({
                     'exam': record['sub_exam__exam__name'],
+                    'type': record['sub_exam__exam__type_id'],
                     'score': record.get(score_type)
                 })
             return Response(formated_records)
