@@ -34,6 +34,8 @@ class CollageExam extends PureComponent {
       loading
     } = this.props;
 
+    console.log(collage2Subject);
+
     return (
       <Fragment>
         <Card title="2019年高校专业选考科目概况" bordered={true} style={{ width: '100%', marginBottom: 24 }}>
@@ -89,7 +91,7 @@ class CollageExam extends PureComponent {
                         };
                       }
                       return {
-                        name: '被限制专业',
+                        name: `被${name}限制的专业`,
                         value: `${value} 个`
                       };
                     }

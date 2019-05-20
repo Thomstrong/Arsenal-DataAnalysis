@@ -88,7 +88,9 @@ const scale = {
 
 const getColor = (category) => {
   return {
-    "整体": "#ea87e4",
+    "整体": "#f3cd49",
+    "高三": "#9287e7",
+    "高三消费人数": "#9287e7",
   }[category];
 };
 const EcardConsumptionCard = memo(({ data }) => {
