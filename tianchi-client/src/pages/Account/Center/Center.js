@@ -535,7 +535,7 @@ class Center extends PureComponent {
         left: `${left}px`,
       },
       popVisible: true,
-      popTitle: moment(timeStamp).format("YYYY-MM-DD"),
+      popTitle: `${moment(timeStamp).format("YYYY-MM-DD")} 消费明细`,
       startTime,
       endTime,
     });

@@ -244,7 +244,7 @@ class StudentViewSet(viewsets.ModelViewSet):
 
             for record in records:
                 formatted_records.append({
-                    'time': record['created_at'],
+                    'time': record['created_at'].time(),
                     'cost': -record['cost'],
                 })
             return Response(formatted_records)

@@ -2,7 +2,7 @@
  * Created by 胡晓慧 on 2019/4/13.
  */
 import React, { Fragment, memo } from "react";
-import { Button, Card, Col, Empty, List, Popover, Row, Typography } from 'antd';
+import { Button, Card, Col, Empty, Popover, Row, Table, Typography } from 'antd';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
 import { OneTimelineChart } from '@/components/Charts';
 import { HOUR_LIST } from '@/constants';
@@ -12,10 +12,22 @@ const { Paragraph, Text } = Typography;
 
 let chartIns = null;
 
-//todo 由后端传入
-const money = 2000;
-const precent = "20%";
-
+const columns = [
+  {
+    title: '消费时间',
+    dataIndex: 'time',
+    key: 'time',
+    width: 120,
+    align: 'center',
+  }, {
+    title: '消费金额',
+    dataIndex: 'cost',
+    key: 'cost',
+    align: 'center',
+    width: 120,
+    sorter: (a, b) => a.cost - b.cost,
+  },
+];
 const ConsumptionOverallLineChart = memo(
   ({
      hourlyAvgCost, dailySumCost, maxHourlyAvg, dailyAvgRank, dailyAvg, costDetailLoading,
@@ -49,17 +61,28 @@ const ConsumptionOverallLineChart = memo(
                 key='cost-line-popover'
                 visible={popVisible} trigger="click"
                 title={<Fragment>
-                  {popTitle}
-                  <Button size='small' shape='circle' icon='close' onClick={() => onPopClose()}/>
+                  <span style={{marginLeft: '15%'}}>{popTitle}</span>
+                  <Button
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      border: 'none',
+                      verticalAlign: 'middle'
+                    }}
+                    size='small' icon='close'
+                    onClick={() => onPopClose()}
+                  />
                 </Fragment>}
-                content={<List
+                content={<Table
                   size="small"
                   loading={costDetailLoading}
                   header={null}
                   footer={null}
-                  bordered={false}
+                  pagination={false}
+                  bordered={true}
                   dataSource={dailyCostDetail}
-                  renderItem={item => <List.Item>{`${item.time} ${item.cost}`}</List.Item>}
+                  columns={columns}
+                  scroll={dailyCostDetail.length > 5 ? { y: 180 } : {}}
                 />}
                 overlayClassName={styles.oneLineChartPop}
               >
@@ -96,8 +119,8 @@ const ConsumptionOverallLineChart = memo(
           {dailySumCost.length ? <Row type="flex" align="middle">
             <Col xl={4} xs={24}>
               <Paragraph>共有<Text strong style={{ color: "#cc4756" }}>{timeCount}</Text>个时间段产生过消费;</Paragraph>
-              <Paragraph>其中，平均消费最高出现在<Text strong style={{ color: "#cc4756" }}>{maxTime}时</Text>,平均消费金额为<Text strong
-                                                                                                              style={{ color: "#cc4756" }}>¥{maxMoney}</Text></Paragraph>
+              <Paragraph>其中，平均消费最高出现在<Text strong style={{ color: "#cc4756" }}>{maxTime}时</Text>,平均消费金额为
+                <Text strong style={{ color: "#cc4756" }}>¥{maxMoney}</Text></Paragraph>
             </Col>
             <Col xl={20} xs={24}>
               <Chart
@@ -166,27 +189,30 @@ const ConsumptionOverallLineChart = memo(
                 <Axis name="hour"/>
                 <Axis name="total_avg" visible={false}/>
                 <Tooltip/>
-                <Geom type="interval" position="hour*avg_cost" color="#0099CC"
-                      tooltip={['avg_cost', (avgCost) => {
-                        return {
-                          name: "该同学平均消费",
-                          value: avgCost + "元"
-                        };
-                      }]}/>
-                <Geom type="line" position="hour*total_avg" color="#FF9900" size={2} shape="smooth"
-                      tooltip={['total_avg', (totalAvg) => {
-                        return {
-                          name: "全校同学平均消费",
-                          value: totalAvg + "元"
-                        };
-                      }]}/>
-                <Geom type="point" position="hour*total_avg" color="#FF9900" size={3} shape="circle"
-                      tooltip={['total_avg', (totalAvg) => {
-                        return {
-                          name: "全校同学平均消费",
-                          value: totalAvg + "元"
-                        };
-                      }]}/>
+                <Geom
+                  type="interval" position="hour*avg_cost" color="#0099CC"
+                  tooltip={['avg_cost', (avgCost) => {
+                    return {
+                      name: "该同学平均消费",
+                      value: avgCost + "元"
+                    };
+                  }]}/>
+                <Geom
+                  type="line" position="hour*total_avg" color="#FF9900" size={2} shape="smooth"
+                  tooltip={['total_avg', (totalAvg) => {
+                    return {
+                      name: "全校同学平均消费",
+                      value: totalAvg + "元"
+                    };
+                  }]}/>
+                <Geom
+                  type="point" position="hour*total_avg" color="#FF9900" size={3} shape="circle"
+                  tooltip={['total_avg', (totalAvg) => {
+                    return {
+                      name: "全校同学平均消费",
+                      value: totalAvg + "元"
+                    };
+                  }]}/>
               </Chart>
             </Col>
           </Row> : <Empty/>}
