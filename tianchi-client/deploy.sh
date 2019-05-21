@@ -1,7 +1,7 @@
 #!/bin/bash
 cd /root/Tianchi-Analysis/Arsenal-DataAnalysis/tianchi-client &&
 git pull origin master &&
-set NODE_ENV=production &&
+export NODE_ENV=production &&
 yarn install &&
 yarn build &&
 yarn docker-hub:build &&
