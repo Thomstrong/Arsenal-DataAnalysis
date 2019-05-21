@@ -82,6 +82,7 @@ const ConsumptionOverallLineChart = memo(
                   bordered={true}
                   dataSource={dailyCostDetail}
                   columns={columns}
+                  rowKey={(record) => record.time}
                   scroll={dailyCostDetail.length > 5 ? { y: 180 } : {}}
                 />}
                 overlayClassName={styles.oneLineChartPop}

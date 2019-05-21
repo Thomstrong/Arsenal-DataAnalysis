@@ -543,6 +543,9 @@ class Center extends PureComponent {
   };
 
   onPopClose = () => {
+    if (!this.state.popVisible) {
+      return;
+    }
     this.setState({
       popVisible: false
     });
@@ -785,7 +788,7 @@ class Center extends PureComponent {
                         {Object.keys(SCORE_TYPE_ALIAS).map(type => <Option key={type}
                                                                            value={type}>{SCORE_TYPE_ALIAS[type]}</Option>)}
                       </Select>
-                      <Divider style={{margin: '0 15px',height: '20px'}} type="vertical"/>
+                      <Divider style={{ margin: '0 15px', height: '20px' }} type="vertical"/>
                       <span style={{ verticalAlign: 'middle', marginRight: '10px' }}>{'不看平时成绩'}</span>
                       <Switch
                         style={{ verticalAlign: 'middle' }}

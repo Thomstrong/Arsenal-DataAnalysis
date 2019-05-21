@@ -128,16 +128,18 @@ class OneTimelineChart extends React.Component {
               if (!enableDig) {
                 return;
               }
-              if (ev.target.constructor.name === 'Canvas') {
-                onBlur && onBlur();
+              if (!ev.shape.name) {
+                // click outside
+                !!onBlur && onBlur();
                 return;
               }
-              if (!ev.data && ev.target.constructor.name === 'Path') {
+              if (!ev.data && ev.shape.name === 'line') {
+                // click line
                 return;
               }
               const index = this.checkClickPoint(ev);
               if (index === -1) {
-                onBlur && onBlur();
+                !!onBlur && onBlur();
               }
             }}
             onLineClick={(ev) => {
@@ -152,7 +154,7 @@ class OneTimelineChart extends React.Component {
               const data = ev.data[index];
               const startTime = ev.data[0]._origin.x;
               const endTime = ev.data[ev.data.length - 1]._origin.x;
-              onPointClick && onPointClick(startTime, endTime, data._origin.x, data.x.toFixed(0), data.y.toFixed(0),);
+              !!onPointClick && onPointClick(startTime, endTime, data._origin.x, data.x.toFixed(0), data.y.toFixed(0),);
             }}
           >
             <Axis name="x"/>
