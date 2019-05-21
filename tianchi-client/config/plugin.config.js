@@ -23,7 +23,7 @@ function getModulePackageName(module) {
 
 export default config => {
   config.output
-    .filename('[name].[hash:8].js')
+    .filename('[name].[chunkhash:8].js')
     .chunkFilename('[name].[chunkhash:8].async.js');
   // optimize chunks
   config.optimization
