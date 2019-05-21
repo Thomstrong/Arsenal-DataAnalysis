@@ -129,8 +129,8 @@ export const INTERVAL_MAP = {
   7: 1,
   30: 2,
   90: 5,
-  180: 10,
-  365: 20,
+  180: 15,
+  365: 30,
 };
 
 export const CLASS_CAMPUS_CHOICE = {
@@ -223,3 +223,14 @@ export const HOUR_LIST = [
   "22时",
   "23时"
 ];
+
+export const SCORE_TYPE_ALIAS = {
+  score: "绝对分",
+  z_score: "离均值(Z分)",
+  t_score: "标准分(T分)",
+  deng_di: "等第",
+  class_rank: "班内排名",
+};
+
+
+export const PING_SHI_EXAM_TYPES = [4, 22, 5, 18];

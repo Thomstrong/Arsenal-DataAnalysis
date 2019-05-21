@@ -89,7 +89,7 @@ class CollageExam extends PureComponent {
                         };
                       }
                       return {
-                        name: '被限制专业',
+                        name: `被${name}限制的专业`,
                         value: `${value} 个`
                       };
                     }

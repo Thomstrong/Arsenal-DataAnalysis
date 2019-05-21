@@ -12,6 +12,7 @@ import {
   getStudentList,
   getStudentTeachers,
   getWordCloudData,
+  getStudentCostDetail,
 } from '@/services/api';
 
 import { COURSE_ALIAS, COURSE_COLOR, COURSE_FULLNAME_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, } from "@/constants";
@@ -49,6 +50,7 @@ export default {
     vsWordCloudData: [],
     hourlyAvgCost: [],
     dailySumCost: [],
+    dailyCostDetail: [],
     dailyAvg: 0,
     vsDailyAvg:0,
     dailyAvgRank: 0,
@@ -126,6 +128,13 @@ export default {
       const response = yield call(getStudentList, payload.query);
       yield put({
         type: 'saveVsStudentList',
+        payload: response
+      });
+    },
+    * fetchCostDetail({ payload }, { call, put }) {
+      const response = yield call(getStudentCostDetail, payload);
+      yield put({
+        type: 'saveDailyCostDetail',
         payload: response
       });
     },
@@ -258,7 +267,8 @@ export default {
           totalTrend: payload.map(data => {
             return {
               exam: data.sub_exam__exam__name,
-              score: (scoreType === 'score' || scoreType === 'deng_di') ? data.total_score :
+              type: data.sub_exam__exam__type_id,
+              score: (scoreType === 'score' || scoreType === 'deng_di' || scoreType === 'class_rank') ? data.total_score :
                 Number(data.total_score.toFixed(2))
             };
           }),
@@ -487,6 +497,15 @@ export default {
         ...state,
         vsDailySumCost: payload.result,
         vsDailyAvg: payload.avg ? Number(payload.avg.toFixed(2)) : 0,
+      };
+    },
+    saveDailyCostDetail(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        dailyCostDetail: payload
       };
     },
     saveHourlyCost(state, { payload }) {

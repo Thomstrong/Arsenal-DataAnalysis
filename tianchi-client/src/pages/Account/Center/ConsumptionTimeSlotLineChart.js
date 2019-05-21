@@ -112,7 +112,7 @@ const ConsumptionTimeSlotLineChart = memo(
                   now: {
                     alias: '当前时间',
                     min: 0, max: maxCost,
-                    tickInterval: 10
+                    tickInterval: 10,
                   },
                   last: {
                     alias: `${DATE_REANGE_ALIAS[dateRange]}前`,
@@ -127,7 +127,8 @@ const ConsumptionTimeSlotLineChart = memo(
                   offset: {
                     alias: `距离${date}天数`,
                     min: 0, max: dateRange,
-                    tickInterval: INTERVAL_MAP[dateRange]
+                    tickInterval: INTERVAL_MAP[dateRange],
+                    range: [ 1/30, 29/30 ]
                   }
                 }}
                 forceFit
@@ -144,7 +145,7 @@ const ConsumptionTimeSlotLineChart = memo(
                       value: '当前时间',
                       marker: {
                         symbol: "square",
-                        fill: "#F182bd",
+                        fill: "#4190f7",
                         radius: 5
                       }
                     },
@@ -152,7 +153,7 @@ const ConsumptionTimeSlotLineChart = memo(
                       value: `${DATE_REANGE_ALIAS[dateRange]}前`,
                       marker: {
                         symbol: "hyphen",
-                        stroke: "#3182bd",
+                        stroke: "#61be67",
                         radius: 5,
                         lineWidth: 3
                       }
@@ -161,7 +162,7 @@ const ConsumptionTimeSlotLineChart = memo(
                       value: `${DATE_REANGE_ALIAS[dateRange]}后预测`,
                       marker: {
                         symbol: "hyphen",
-                        stroke: "#ffae6b",
+                        stroke: "#f3cd49",
                         radius: 5,
                         lineWidth: 3
                       }
@@ -192,7 +193,7 @@ const ConsumptionTimeSlotLineChart = memo(
                 <Geom
                   type="interval"
                   position="offset*now"
-                  color={"#F182bd"}
+                  color={"#4190f7"}
                   tooltip={['offset*now', (offset, now) => {
                     return {
                       name: '当天消费金额',
@@ -205,7 +206,7 @@ const ConsumptionTimeSlotLineChart = memo(
                 <Geom
                   type="line"
                   position="offset*last"
-                  color={"#3182bd"}
+                  color={"#61be67"}
                   size={2}
                   shape="smooth"
                   tooltip={['offset*last', (offset, value) => {
@@ -220,7 +221,7 @@ const ConsumptionTimeSlotLineChart = memo(
                 <Geom
                   type="point"
                   position="offset*last"
-                  color={"#3182bd"}
+                  color={"#61be67"}
                   size={2}
                   shape="circle"
                   tooltip={['offset*last', (offset, value) => {
@@ -235,7 +236,7 @@ const ConsumptionTimeSlotLineChart = memo(
                 <Geom
                   type="line"
                   position="offset*future"
-                  color={"#fdae6b"}
+                  color={"#f3cd49"}
                   size={2}
                   shape="smooth"
                   tooltip={['offset*future', (offset, value) => {
@@ -250,7 +251,7 @@ const ConsumptionTimeSlotLineChart = memo(
                 <Geom
                   type="point"
                   position="offset*future"
-                  color={"#fdae6b"}
+                  color={"#f3cd49"}
                   size={2}
                   shape="circle"
                   tooltip={['offset*future', (offset, value) => {

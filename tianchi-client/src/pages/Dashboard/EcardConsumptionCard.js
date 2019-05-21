@@ -88,7 +88,9 @@ const scale = {
 
 const getColor = (category) => {
   return {
-    "整体": "#ea87e4",
+    "整体": "#f3cd49",
+    "高三": "#9287e7",
+    "高三消费人数": "#9287e7",
   }[category];
 };
 const EcardConsumptionCard = memo(({ data }) => {
@@ -210,7 +212,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                     和<Text type='danger'>17</Text>时三个时间段，与就餐时间相符;</Paragraph>
                   <Paragraph>2. 由于总体人数的差异，男生的消费人次明显多于女生，
                     但<Text type='danger'>女生</Text>的平均消费水平更<Text type='danger'>高</Text>一些;</Paragraph>
-                  <Paragraph>3.平均消费金额的极值与消费人数的极值并不发生在同一时段，
+                  <Paragraph>3. 平均消费金额的极值与消费人数的极值并不发生在同一时段，
                     可以看出<Text type='danger'>非就餐时间的消费</Text>(零食等)占据部分学生<Text type='danger'>更多</Text>开销。</Paragraph>
                 </Card>
               </div>
@@ -472,14 +474,14 @@ const EcardConsumptionCard = memo(({ data }) => {
             <ul className={styles.rankingList}>
               {yearCostRankingData.map((item, i) => (
                 <li key={item.title}>
-                        <span
-                          className={`${styles.rankingItemNumber} ${i < 1 ? styles.active : ''}`}
-                        >
-                          {i + 1}
-                        </span>
+                  <span
+                    className={`${styles.rankingItemNumber} ${i < 1 ? styles.active : ''}`}
+                  >
+                    {i + 1}
+                  </span>
                   <span className={styles.rankingItemTitle} title={item.title}>
-                          {item.title}
-                        </span>
+                    {item.title}
+                  </span>
                   <span>¥{numeral(item.total).format('0,0')}</span>
                 </li>
               ))}

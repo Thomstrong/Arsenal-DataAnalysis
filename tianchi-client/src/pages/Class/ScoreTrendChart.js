@@ -4,15 +4,28 @@
 import React, { memo } from "react";
 import { Col, Divider, List, Row } from 'antd';
 import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
-import { COURSE_FULLNAME_ALIAS } from "@/constants";
+import { COURSE_FULLNAME_ALIAS, PING_SHI_EXAM_TYPES } from "@/constants";
 
 const { Line } = Guide;
-const ScoreLineChart = memo(
-  ({ lineData, radarViewData, subData, scoreType, maxRank }) => {
+
+const ScoreTrendChart = memo(
+  ({ lineData, radarViewData, subData, scoreType, maxRank, excludePingshi }) => {
     let scale = {
       score: {}
     };
     const isRank = scoreType === 'rank';
+    const getFilteredData = data => data.filter(d => !excludePingshi || !PING_SHI_EXAM_TYPES.includes(d.type));
+    const filteredData = getFilteredData(lineData);
+    let maxScore = 0;
+    let minScore = 1000;
+    for (let data of filteredData) {
+      if (maxScore < data.score) {
+        maxScore = data.score;
+      }
+      if (minScore > data.score) {
+        minScore = data.score;
+      }
+    }
     if (isRank) {
       const values = [];
       for (let i = 0; i < maxRank; i++) {
@@ -30,7 +43,7 @@ const ScoreLineChart = memo(
             <Chart
               height={300}
               data={radarViewData}
-              padding={[20, 20, 95, 20]}
+              padding={[20, 20, 55, 20]}
               scale={{
                 'score': {
                   min: 0,
@@ -86,12 +99,12 @@ const ScoreLineChart = memo(
             <Chart
               key={'class-score-total-trend'}
               height={300}
-              data={isRank ? lineData.map(data => {
+              data={isRank ? filteredData.map(data => {
                 return {
                   ...data,
                   score: maxRank - data.score
                 };
-              }) : lineData}
+              }) : filteredData}
               forceFit
               scale={{
                 exam: {
@@ -126,7 +139,7 @@ const ScoreLineChart = memo(
                   "score",
                   (score) => {
                     return {
-                      name: `${isRank ? '排名' : '平均分数'}`,
+                      name: `${isRank ? '排名' : '分数'}`,
                       value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
                     };
                   }
@@ -134,6 +147,15 @@ const ScoreLineChart = memo(
               <Geom
                 type="point"
                 position="exam*score"
+                tooltip={[
+                  "score",
+                  (score) => {
+                    return {
+                      name: `${isRank ? '排名' : '分数'}`,
+                      value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
+                    };
+                  }
+                ]}
                 size={4}
                 shape={"circle"}
                 style={{
@@ -141,122 +163,128 @@ const ScoreLineChart = memo(
                   lineWidth: 1
                 }}
               />
-              <Guide>
-                <Line
-                  top={true}
-                  start={[-0.5, 588]}
-                  end={['max', 588]}
-                  lineStyle={{
-                    stroke: '#99203e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity: 0.3,
-                  }}
-                  text={{
-                    position: '5%',
-                    content: "2018 一段线 588",
-                    style: {
-                      opacity: 0.3,
-                      fill: "#99203e",
-                    }
-                  }}
-                />
-                <Line
-                  top={true}
-                  start={[-0.5, 490]}
-                  end={['max', 490]}
-                  lineStyle={{
-                    stroke: '#99203e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity: 0.3,
-                  }} // 图形样式配置
-                  text={{
-                    position: '5%',
-                    content: "2018 二段线 490",
-                    style: {
-                      opacity: 0.3,
-                      fill: "#99203e",
-                    }
-                  }}
-                />
-                <Line
-                  top={true}
-                  start={[-0.5, 344]}
-                  end={['max', 344]}
-                  lineStyle={{
-                    stroke: '#99203e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity: 0.3,
-                  }}
-                  text={{
-                    position: '5%',
-                    content: "2018 三段线 344",
-                    style: {
-                      fill: "#99203e",
-                      opacity: 0.3,
-                    }
-                  }}
-                />
-                <Line
-                  top={true}
-                  start={[-0.5, 577]}
-                  end={['max', 577]}
-                  lineStyle={{
-                    stroke: '#6b561e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity: 0.3,
-                  }} // 图形样式配置
-                  text={{
-                    position: '75%',
-                    content: "2017 一段线 577",
-                    style: {
-                      fill: "#6b561e",
-                      opacity: 0.3,
-                    }
-                  }}
-                />
-                <Line
-                  top={true}
-                  start={[-0.5, 480]}
-                  end={['max', 480]}
-                  lineStyle={{
-                    stroke: '#6b561e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity: 0.3,
-                  }}
-                  text={{
-                    position: '75%',
-                    content: "2017 二段线 480",
-                    style: {
-                      fill: "#6b561e",
-                      opacity: 0.3,
-                    }
-                  }}
-                />
-                <Line
-                  top={true}
-                  start={[-0.5, 359]}
-                  end={['max', 359]}
-                  lineStyle={{
-                    stroke: '#6b561e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity: 0.3,
-                  }}
-                  text={{
-                    position: '75%',
-                    content: "2017 三段线 359",
-                    style: {
-                      fill: "#6b561e",
-                      opacity: 0.3,
-                    }
-                  }}
-                />
-              </Guide>
+              {588 >= minScore && 344 <= maxScore && <Guide key='total-trend-guide'>
+              {(588 >= minScore && 588 <= maxScore) && <Line
+                key='student-score-line1'
+                top={true}
+                start={[-0.5, 588]}
+                end={['max', 588]}
+                lineStyle={{
+                  stroke: '#99203e',
+                  lineDash: [0, 2, 2],
+                  lineWidth: 2,
+                  opacity: 0.4,
+                }}
+                text={{
+                  position: '1%',
+                  content: "2018 一段线 588",
+                  style: {
+                    opacity: 0.5,
+                    fill: "#99203e",
+                  }
+                }}
+              />}
+              {(490 >= minScore && 490 <= maxScore) && <Line
+                key='student-score-line2'
+                top={true}
+                start={[-0.5, 490]}
+                end={['max', 490]}
+                lineStyle={{
+                  stroke: '#99203e',
+                  lineDash: [0, 2, 2],
+                  lineWidth: 2,
+                  opacity: 0.4,
+                }}
+                text={{
+                  position: '1%',
+                  content: "2018 二段线 490",
+                  style: {
+                    opacity: 0.5,
+                    fill: "#99203e",
+                  }
+                }}
+              />}
+              {(344 >= minScore && 344 <= maxScore) && <Line
+                key='student-score-line3'
+                top={true}
+                start={[-0.5, 344]}
+                end={['max', 344]}
+                lineStyle={{
+                  stroke: '#99203e',
+                  lineDash: [0, 2, 2],
+                  lineWidth: 2,
+                  opacity: 0.4,
+                }}
+                text={{
+                  position: '1%',
+                  content: "2018 三段线 344",
+                  style: {
+                    fill: "#99203e",
+                    opacity: 0.5,
+                  }
+                }}
+              />}
+              {(577 >= minScore && 577 <= maxScore) && <Line
+                key='student-score-line4'
+                top={true}
+                start={[-0.5, 577]}
+                end={['max', 577]}
+                lineStyle={{
+                  stroke: '#6b561e',
+                  lineDash: [0, 2, -1],
+                  lineWidth: 2,
+                  opacity: 0.2,
+                }} // 图形样式配置
+                text={{
+                  position: '70%',
+                  content: "2017 一段线 577",
+                  style: {
+                    fill: "#6b561e",
+                    opacity: 0.5,
+                  }
+                }}
+              />}
+              {(480 >= minScore && 480 <= maxScore) && <Line
+                key='student-score-line5'
+                top={true}
+                start={[-0.5, 480]}
+                end={['max', 480]}
+                lineStyle={{
+                  stroke: '#6b561e',
+                  lineDash: [0, 2, -1],
+                  lineWidth: 2,
+                  opacity: 0.2,
+                }}
+                text={{
+                  position: '70%',
+                  content: "2017 二段线 480",
+                  style: {
+                    fill: "#6b561e",
+                    opacity: 0.5,
+                  }
+                }}
+              />}
+              {(359 >= minScore && 359 <= maxScore) && <Line
+                key='student-score-line6'
+                top={true}
+                start={[-0.5, 359]}
+                end={['max', 359]}
+                lineStyle={{
+                  stroke: '#6b561e',
+                  lineDash: [0, 2, -1],
+                  lineWidth: 2,
+                  opacity: 0.2,
+                }}
+                text={{
+                  position: '70%',
+                  content: "2017 三段线 359",
+                  style: {
+                    fill: "#6b561e",
+                    opacity: 0.5,
+                  }
+                }}
+              />}
+            </Guide>}
             </Chart>
           </Col>
         </Row>
@@ -268,12 +296,12 @@ const ScoreLineChart = memo(
             <List.Item>
               <Chart
                 height={300}
-                data={isRank ? item.lineData.map(data => {
+                data={isRank ? getFilteredData(item.lineData).map(data => {
                   return {
                     ...data,
                     score: maxRank - data.score
                   };
-                }) : item.lineData}
+                }) : getFilteredData(item.lineData)}
                 scale={{
                   exam: {
                     tickCount: 3
@@ -305,7 +333,7 @@ const ScoreLineChart = memo(
                   "score",
                   (score) => {
                     return {
-                      name: isRank ? '排名' : "平均分数",
+                      name: isRank ? '排名' : "分数",
                       value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
                     };
                   }
@@ -313,6 +341,15 @@ const ScoreLineChart = memo(
                 <Geom
                   type="point"
                   position="exam*score"
+                  tooltip={[
+                    "score",
+                    (score) => {
+                      return {
+                        name: isRank ? '排名' : "分数",
+                        value: isRank ? (maxRank - score).toFixed(0) : score.toFixed(3)
+                      };
+                    }
+                  ]}
                   size={4}
                   shape={"circle"}
                   style={{
@@ -329,4 +366,4 @@ const ScoreLineChart = memo(
   }
 );
 
-export default ScoreLineChart;
+export default ScoreTrendChart;
