@@ -63,6 +63,7 @@ const initEmpty = <Empty description='请在左侧搜索框中搜索学生信息
   hourlyAvgCost: student.hourlyAvgCost,
   dailySumCost: student.dailySumCost,
   dailyAvg: student.dailyAvg,
+  vsDailyAvg:student.vsDailyAvg,
   dailyAvgRank: student.dailyAvgRank,
   studentListLoading: loading.effects['student/fetchStudentList'],
   vsStudentListLoading: loading.effects['student/fetchVsStudentList'],
@@ -532,6 +533,7 @@ class Center extends PureComponent {
       hourlyAvgCost,
       dailySumCost,
       dailyAvg,
+      vsDailyAvg,
       dailyAvgRank,
       loading,
       match,
@@ -913,8 +915,12 @@ class Center extends PureComponent {
                       </Card>
                       <Suspense fallback={<PageLoading/>}>
                         <StuComparedChart
+                          studentInfo={studentInfo}
+                          vsStudentInfo={vsStudentInfo}
                           comparedScoreData={gradeVsData}
                           hourlyVsCostData={hourlyVsCostData}
+                          dailyAvg={dailyAvg}
+                          vsDailyAvg={vsDailyAvg}
                           vsDailyCostData={{
                             data: vsDailyCostData,
                             titleMap: {

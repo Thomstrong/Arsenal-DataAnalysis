@@ -50,6 +50,7 @@ export default {
     hourlyAvgCost: [],
     dailySumCost: [],
     dailyAvg: 0,
+    vsDailyAvg:0,
     dailyAvgRank: 0,
     dailyPredictData: {
       date: '',
@@ -484,7 +485,8 @@ export default {
       }
       return {
         ...state,
-        vsDailySumCost: payload.result
+        vsDailySumCost: payload.result,
+        vsDailyAvg: payload.avg ? Number(payload.avg.toFixed(2)) : 0,
       };
     },
     saveHourlyCost(state, { payload }) {
