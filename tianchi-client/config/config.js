@@ -52,10 +52,6 @@ export default {
     opera: 50,
     ie: 11,
   },
-  exportStatic: {
-    htmlSuffix: true,
-    dynamicRoot: true
-  },
   // 路由配置
   routes: pageRoutes,
   // Theme for antd
