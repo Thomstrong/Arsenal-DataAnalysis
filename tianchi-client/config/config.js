@@ -13,23 +13,26 @@ const plugins = [
     antd: true,
     dva: {
       hmr: true,
+      immer: true,
     },
     locale: {
       enable: false, // default false
     },
+    library: 'react',
     dynamicImport: {
       loadingComponent: './components/PageLoading/index',
       webpackChunkName: true,
       level: 3,
     },
     pwa: false,
+    hardSource: false,
+    chunks: ['vendors', 'umi'],
     ...(!process.env.TEST && os.platform() === 'darwin' ?
       {
         dll: {
           include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
           exclude: ['@babel/runtime', 'netlify-lambda'],
         },
-        hardSource: false,
       } : {}),
   },],
   ['umi-plugin-auto-externals', {

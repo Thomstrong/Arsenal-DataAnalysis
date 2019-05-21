@@ -1,4 +1,6 @@
 // Change theme plugin
+import MergeLessPlugin from 'antd-pro-merge-less';
+import AntDesignThemePlugin from 'antd-theme-webpack-plugin';
 import path from 'path';
 
 function getModulePackageName(module) {
@@ -22,14 +24,40 @@ function getModulePackageName(module) {
 }
 
 export default config => {
+  const outFile = path.join(__dirname, '../.temp/ant-design-pro.less');
+  const stylesDir = path.join(__dirname, '../src/');
+
+  config.plugin('merge-less').use(MergeLessPlugin, [
+    {
+      stylesDir,
+      outFile,
+    },
+  ]);
+
+  config.plugin('ant-design-theme').use(AntDesignThemePlugin, [
+    {
+      antDir: path.join(__dirname, '../node_modules/antd'),
+      stylesDir,
+      varFile: path.join(__dirname, '../node_modules/antd/lib/style/themes/default.less'),
+      mainLessFile: outFile, //     themeVariables: ['@primary-color'],
+      indexFileName: 'index.html',
+      generateOne: true,
+      lessUrl: 'https://gw.alipayobjects.com/os/lib/less.js/3.8.1/less.min.js',
+    },
+  ]);
+
+  config.output
+    .filename('[name].[hash:8].js')
+    .chunkFilename('[name].[chunkhash:8].async.js');
   // optimize chunks
   config.optimization
+    .minimize(true)
     .runtimeChunk(false) // share the same chunks across different modules
     .splitChunks({
       chunks: 'async',
       name: 'vendors',
       maxInitialRequests: Infinity,
-      minSize: 0,
+      minSize: 30000,
       cacheGroups: {
         vendors: {
           test: module => {
