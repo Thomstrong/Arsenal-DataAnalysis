@@ -23,11 +23,14 @@ const plugins = [
       level: 3,
     },
     pwa: false,
-    dll: {
-      include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-      exclude: ['@babel/runtime', 'netlify-lambda'],
-    },
-    hardSource: false,
+    ...(!process.env.TEST && os.platform() === 'darwin' ?
+      {
+        dll: {
+          include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+          exclude: ['@babel/runtime', 'netlify-lambda'],
+        },
+        hardSource: false,
+      } : {}),
   },],
   ['umi-plugin-auto-externals', {
     packages: ['react', 'antd', 'moment', 'react-dom',],
