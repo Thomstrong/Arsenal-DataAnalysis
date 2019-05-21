@@ -4,19 +4,9 @@ from classes.models import Class
 
 
 class ClassMiniSerializer(serializers.ModelSerializer):
-    start_year = serializers.SerializerMethodField()
-
     class Meta:
         model = Class
         fields = ('id', 'class_name', 'start_year')
-
-    def get_start_year(self, obj):
-        year = obj.studentrecord_set.select_related(
-            'term'
-        ).last()
-        if year:
-            return year.term.start_year
-        return ''
 
 
 class ClassBasicSerializer(ClassMiniSerializer):

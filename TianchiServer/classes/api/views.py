@@ -31,7 +31,7 @@ class ClassViewSet(viewsets.ModelViewSet):
         if not query:
             return Response(status=400, data={'reason': 'need query'})
         classes = self.queryset.filter(
-            Q(id__startswith=query) | Q(class_name__contains=query),
+            Q(id__startswith=query) | Q(class_name__contains=query) | Q(start_year=query),
         ).order_by('-id')[:50]
         return Response(self.get_serializer_class()(classes, many=True).data)
 

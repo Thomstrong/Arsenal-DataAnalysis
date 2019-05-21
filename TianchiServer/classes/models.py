@@ -10,6 +10,7 @@ class Class(models.Model):
     class_name = models.CharField(max_length=255, blank=False)
     grade_name = models.IntegerField(choices=CLASS_GRADE_CHOICE)
     campus_name = models.IntegerField(choices=CLASS_CAMPUS_CHOICE, default=Campus.Old)
+    start_year = models.IntegerField(null=True, default=0)
 
     def __unicode__(self):
         return '{}-{}'.format(str(self.id), self.class_name)
