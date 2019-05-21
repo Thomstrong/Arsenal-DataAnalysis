@@ -47,6 +47,7 @@ export default {
     kaoqinData: [],
     kaoqinDetail: {},
     kaoqinSummary: [],
+    kaoqinCount:0,
     totalTrend: [],
     subTrends: [],
     maxRank: 0,
@@ -317,9 +318,11 @@ export default {
         return state;
       }
       let termList = {};
+      let count = 0;
       const { termMap } = action;
       const { summary, records, details } = action.payload;
       state.kaoqinSummary = summary.map((data) => {
+        count = count + data.count;
         return {
           'name': EVENT_TYPE_ALIAS[data.event__type_id],
           'count': data.count
@@ -370,7 +373,8 @@ export default {
         kaoqinData: data.rows,
         termList,
         kaoqinDetail,
-        studentList
+        studentList,
+        kaoqinCount:count
       };
     },
     saveExamRecords(state, { payload }) {

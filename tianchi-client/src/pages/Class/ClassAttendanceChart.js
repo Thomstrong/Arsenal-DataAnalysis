@@ -10,7 +10,7 @@ const { Paragraph, Text } = Typography;
 
 
 const AttendanceChart = memo(
-  ({ kaoqinData, kaoqinDetail, kaoqinSummary, term, termList, loading, toggleDig, digMode }) => (
+  ({ kaoqinData, kaoqinDetail, kaoqinSummary, kaoqinCount, term, termList, loading, toggleDig, digMode }) => (
     <Card
       loading={loading} bordered={false} style={{ width: '100%' }}
       title={`${digMode ? term : ''} 考勤记录${digMode ? '' : '概览'}`}
@@ -108,7 +108,8 @@ const AttendanceChart = memo(
               return `${data.name} ${data.count} 次, `;
             })} </Text>
             其中，最多的是<Text strong style={{ color: "#c6464a" }}>
-              {kaoqinSummary[0].name}</Text>。
+              {kaoqinSummary[0].name}</Text>，共{kaoqinSummary[0].count}次，
+              占<Text strong style={{color:"#c6464a"}}>{(kaoqinSummary[0].count/kaoqinCount*100).toFixed(2)}%</Text>。
           </Paragraph>
           <Paragraph>点击<Text strong style={{ color: "#c6464a" }}>柱状图彩色区域</Text>查看违纪学生详情。</Paragraph>
         </Col>}
