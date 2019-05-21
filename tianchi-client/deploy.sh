@@ -20,7 +20,7 @@ if [ $(git diff master origin/master --name-only --oneline | grep ^package\.json
     npm_update=1
 fi
 
-if [ $(git diff master origin/master --name-only --oneline | grep ^javascripts/.*$ | wc -l) != 0 ]; then
+if [ $(git diff master origin/master --name-only --oneline | grep ^tianchi-client/.*$ | wc -l) != 0 ]; then
     js_update=1
 fi
 
