@@ -29,16 +29,16 @@ const normalScale = {
 
 const ScoreLineChart = memo(
   ({ lineData, radarViewData, lineSummary, subData, scoreType, excludePingshi }) => {
+    const getFilteredData = data => data.filter(d => !excludePingshi || !PING_SHI_EXAM_TYPES.includes(d.type));
+    const filteredData = getFilteredData(lineData);
     let highScoreTime = 0;
     if (scoreType === 'score') {
-      for (let data of lineData) {
+      for (let data of filteredData) {
         if ((!excludePingshi || !PING_SHI_EXAM_TYPES.includes(data.type)) && data.score >= 600) {
           highScoreTime++;
         }
       }
     }
-    const getFilteredData = data => data.filter(d => !excludePingshi || !PING_SHI_EXAM_TYPES.includes(d.type));
-    const filteredData = getFilteredData(lineData);
     let maxScore = 0;
     let minScore = 1000;
     for (let data of filteredData) {
@@ -361,7 +361,7 @@ const ScoreLineChart = memo(
           薄弱学科为<Text type="danger">
           {lineSummary.disadvantage}</Text>，
           不稳定学科为<Text type="danger">{lineSummary.unstable}</Text></Paragraph>
-        {scoreType === 'score' && <Paragraph>共统计<Text type="danger">{lineData.length}</Text>次考试，
+        {scoreType === 'score' && <Paragraph>共统计<Text type="danger">{filteredData.length}</Text>次考试，
           总分在600及以上的有<Text type="danger">{highScoreTime}</Text>次</Paragraph>}
       </Card>}
       <Divider style={{ marginBottom: 24, marginTop: 5 }} dashed>各科目成绩趋势</Divider>

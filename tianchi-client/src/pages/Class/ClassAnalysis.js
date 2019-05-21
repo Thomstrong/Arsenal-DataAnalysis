@@ -345,7 +345,7 @@ class ClassAnalysis extends PureComponent {
     const {
       distributionData, classInfo, teachers,
       classList, radarData, totalTrend, maxRank,
-      subTrends, kaoqinSummary, kaoqinData,
+      subTrends, kaoqinSummary, kaoqinData, kaoqinCount,
       kaoqinDetail, studentList, classExamList,
       courseRankData, scoreData, classMap, examSummary,
       examRecords, overLineCounter, scoreDistributionData,
@@ -876,6 +876,7 @@ class ClassAnalysis extends PureComponent {
                         {this.state.courseId !== -1 && <Chart
                           key={'class-score-distribution'}
                           height={400} data={showedDistributeData}
+                          style={{marginTop:-60}}
                           forceFit
                         >
                           <Legend/>
@@ -926,6 +927,7 @@ class ClassAnalysis extends PureComponent {
                       kaoqinDetail={kaoqinDetailData}
                       termList={this.state.digMode ? studentList : termList}
                       kaoqinSummary={kaoqinSummary}
+                      kaoqinCount={kaoqinCount}
                     />
                   </Suspense>
                 </TabPane>
