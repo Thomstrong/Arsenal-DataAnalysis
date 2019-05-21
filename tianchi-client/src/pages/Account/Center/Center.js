@@ -65,6 +65,7 @@ const initEmpty = <Empty description='请在左侧搜索框中搜索学生信息
   dailySumCost: student.dailySumCost,
   dailyCostDetail: student.dailyCostDetail,
   dailyAvg: student.dailyAvg,
+  vsDailyAvg:student.vsDailyAvg,
   dailyAvgRank: student.dailyAvgRank,
   studentListLoading: loading.effects['student/fetchStudentList'],
   vsStudentListLoading: loading.effects['student/fetchVsStudentList'],
@@ -579,6 +580,7 @@ class Center extends PureComponent {
       dailyCostDetail,
       costDetailLoading,
       dailyAvg,
+      vsDailyAvg,
       dailyAvgRank,
       loading,
       match,
@@ -605,6 +607,7 @@ class Center extends PureComponent {
     //考勤的相关数据
     const kaoqinData = this.formatKaoqinData(studentInfo.kaoqinData, termList);
     const kaoqinSummary = studentInfo.kaoqinSummary;
+    const totalKaoqinCount = studentInfo.totalKaoqinCount;
     // 一卡通对比数据1 0-23小时的平均消费
     const hourlyVsCostData = vsAverageData.length ? new DataSet.View().source(vsAverageData).transform({
       type: 'map',
@@ -673,6 +676,9 @@ class Center extends PureComponent {
                     {/*学生详细信息*/}
                     <Col md={12} lg={24} sm={12} xs={12} xl={24}>
                       <div className={styles.detail}>
+                        <p><i className={`fa ${studentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
+                          {SEX_MAP[studentInfo.sex]}
+                        </p>
                         <p><i className={`fa fa-group ${styles.iconStyle}`}/>
                           {studentInfo.nation}
                         </p>
@@ -684,9 +690,6 @@ class Center extends PureComponent {
                         </p>
                         <p><i className={`fa fa-home ${styles.iconStyle}`}/>
                           {studentInfo.native_place}
-                        </p>
-                        <p><i className={`fa ${studentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
-                          {SEX_MAP[studentInfo.sex]}
                         </p>
                         <p><i className={`fa fa-bed ${styles.iconStyle}`}/>
                           {studentInfo.is_stay_school ? `住校-${studentInfo.room_num}室` : '走读'}
@@ -880,6 +883,7 @@ class Center extends PureComponent {
                       kaoqinData={kaoqinData}
                       termList={termList}
                       kaoqinSummary={kaoqinSummary}
+                      totalKaoqinCount={totalKaoqinCount}
                     />
                   </Suspense> : initEmpty}
                 </TabPane>
@@ -944,6 +948,10 @@ class Center extends PureComponent {
                               hoverable={true}
                               className={styles.vsDetail}
                             >
+                              <p><i
+                                className={`fa ${vsStudentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
+                                {SEX_MAP[vsStudentInfo.sex]}
+                              </p>
                               <p><i className={`fa fa-group ${styles.iconStyle}`}/>
                                 {vsStudentInfo.nation}
                               </p>
@@ -955,10 +963,6 @@ class Center extends PureComponent {
                               </p>
                               <p><i className={`fa fa-home ${styles.iconStyle}`}/>
                                 {vsStudentInfo.native_place}
-                              </p>
-                              <p><i
-                                className={`fa ${vsStudentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
-                                {SEX_MAP[vsStudentInfo.sex]}
                               </p>
                               <p><i className={`fa fa-book ${styles.iconStyle}`}/>
                                 {`${vsStudentInfo.stu_class.start_year}年-${vsStudentInfo.stu_class.class_name}`}
@@ -972,8 +976,12 @@ class Center extends PureComponent {
                       </Card>
                       <Suspense fallback={<PageLoading/>}>
                         <StuComparedChart
+                          studentInfo={studentInfo}
+                          vsStudentInfo={vsStudentInfo}
                           comparedScoreData={gradeVsData}
                           hourlyVsCostData={hourlyVsCostData}
+                          dailyAvg={dailyAvg}
+                          vsDailyAvg={vsDailyAvg}
                           vsDailyCostData={{
                             data: vsDailyCostData,
                             titleMap: {

@@ -29,6 +29,7 @@ export default {
       teacherInfo: [],
       kaoqinData: [],
       kaoqinSummary: [],
+      totalKaoqinCount:0,
       totalTrend: [],
       scoreType: '',
       lineSummary: {},
@@ -51,6 +52,7 @@ export default {
     dailySumCost: [],
     dailyCostDetail: [],
     dailyAvg: 0,
+    vsDailyAvg:0,
     dailyAvgRank: 0,
     dailyPredictData: {
       date: '',
@@ -418,6 +420,7 @@ export default {
         return state;
       }
       const termList = {};
+      let count = 0;
       const { termMap } = action;
       const { summary, records } = action.payload;
       state.studentInfo.kaoqinSummary = summary.map((data) => {
@@ -428,11 +431,13 @@ export default {
       });
       state.studentInfo.kaoqinData = records.map((data) => {
         termList[termMap[data.term]] = 1;
+        count = count + data.count;
         return {
           'name': EVENT_TYPE_ALIAS[data.event__type_id],
           [termMap[data.term]]: data.count,
         };
       });
+      state.studentInfo.totalKaoqinCount = count;
       state.termList = Object.keys(termList);
       return state;
     },
@@ -490,7 +495,8 @@ export default {
       }
       return {
         ...state,
-        vsDailySumCost: payload.result
+        vsDailySumCost: payload.result,
+        vsDailyAvg: payload.avg ? Number(payload.avg.toFixed(2)) : 0,
       };
     },
     saveDailyCostDetail(state, { payload }) {

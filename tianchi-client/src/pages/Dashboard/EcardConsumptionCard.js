@@ -209,8 +209,8 @@ const EcardConsumptionCard = memo(({ data }) => {
                 </ul>
                 <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20, cursor: "auto" }}>
                   <Paragraph>1. 消费主要发生在<Text type='danger'>6、7</Text>时,<Text type='danger'>11、12</Text>时
-                    和<Text type='danger'>17</Text>时三个时间段;</Paragraph>
-                  <Paragraph>2. 由于总体人数的差异，男生的消费人次明显比女生多，
+                    和<Text type='danger'>17</Text>时三个时间段，与就餐时间相符;</Paragraph>
+                  <Paragraph>2. 由于总体人数的差异，男生的消费人次明显多于女生，
                     但<Text type='danger'>女生</Text>的平均消费水平更<Text type='danger'>高</Text>一些;</Paragraph>
                   <Paragraph>3. 平均消费金额的极值与消费人数的极值并不发生在同一时段，
                     可以看出<Text type='danger'>非就餐时间的消费</Text>(零食等)占据部分学生<Text type='danger'>更多</Text>开销。</Paragraph>
@@ -450,7 +450,9 @@ const EcardConsumptionCard = memo(({ data }) => {
                 </ul>
                 <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20, cursor: "auto" }}>
                   <Paragraph>1. <Text type='danger'>走读生</Text>消费水平明显<Text type='danger'>高</Text>于住校生,
-                    中午和晚上的就餐情况也占据这人次的优势.由于早饭可以在家吃,仅有极少走读生选择在校吃早饭;</Paragraph>
+                    中午和晚上的就餐情况也占据着人次上的优势。由于早饭可以在家吃,仅有<Text
+                      type='danger'>极少</Text>走读生选择<Text
+                      type='danger'>在校吃早饭</Text>;</Paragraph>
                   <Paragraph>2. 走读生<Text type='danger'>晚饭</Text>时段消费人次<Text
                     type='danger'>下降</Text>明显,不吃晚饭极易影响晚自修效率;</Paragraph>
                   <Paragraph>3. 需要注意的是<Text type='danger'>0时</Text>，还有<Text
@@ -485,18 +487,20 @@ const EcardConsumptionCard = memo(({ data }) => {
               ))}
             </ul>
             <Card size="small" title="文字分析" hoverable={true} style={{ marginTop: 20, cursor: "auto" }}>
-              <Paragraph>1. 呈<Text type='danger'>周期性</Text>变化符合逻辑,周一二三四水平相当，
+              <Paragraph>1. 单天消费总额呈<Text type='danger'>周期性</Text>变化符合逻辑，周一二三四水平相当，
                 <Text type='danger'>周五</Text>由于学生准备离校消费<Text type='danger'>减半</Text>，周六周日几乎没有消费;</Paragraph>
-              <Paragraph>2. <Text type='danger'>2018年11月中旬</Text>，由于期中考试和运动会的原因，
+              <Paragraph>2. <Text type='danger'>2018年7月7日</Text>到<Text
+                type='danger'>2018年8月31日</Text>处于暑假期间，几乎没有消费纪录;</Paragraph>
+              <Paragraph>3. <Text type='danger'>2018年11月中旬</Text>，由于期中考试和运动会，
                 周中的消费水平较平常呈现明显<Text type='danger'>下降</Text>趋势;</Paragraph>
-              <Paragraph>3. 每日消费总额基本稳定在<Text type='danger'>4.1万元</Text>左右.</Paragraph>
+              <Paragraph>4. 每日消费总额基本稳定在<Text type='danger'>4.1万元</Text>左右。</Paragraph>
             </Card>
           </div>
         </Col>}
         <Col xl={16} lg={24} md={24} sm={24} xm={24}>
           <OneTimelineChart
             showPredict={false}
-            height={400}
+            height={450}
             data={yearCostData.map((data) => {
               return {
                 x: Date.parse(data.x),

@@ -8,7 +8,7 @@ import { Typography } from 'antd';
 const { Paragraph, Text } = Typography;
 
 const AttendanceChart = memo(
-  ({ kaoqinData, kaoqinSummary, termList, loading }) => (
+  ({ kaoqinData, kaoqinSummary, termList, loading,totalKaoqinCount }) => (
     <Card loading={loading} title="考勤记录" bordered={false} style={{ width: '100%' }}>
       {termList.length ? <Row type="flex" align="middle">
         <Col span={20}>
@@ -44,7 +44,7 @@ const AttendanceChart = memo(
               return `${data.name} ${data.count} 次, `;
             })} </Text>
           其中，最多的是<Text strong style={{color:"#c6464a"}}>
-              {kaoqinSummary[0].name}</Text></Paragraph>
+              {kaoqinSummary[0].name}</Text>，共{kaoqinSummary[0].count}次，占<Text strong style={{color:"#c6464a"}}>{(kaoqinSummary[0].count/totalKaoqinCount*100).toFixed(2)}%</Text></Paragraph>
         </Col>
       </Row> : <Empty description='该同学暂无不良考勤数据'/>}
     </Card>
