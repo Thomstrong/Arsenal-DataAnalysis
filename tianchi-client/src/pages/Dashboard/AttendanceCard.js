@@ -145,7 +145,7 @@ const AttendanceCard = memo(({data}) => {
                 <Paragraph>1. <Text type='danger'>数据量有限</Text>不能代表所有学生的进离校情况;</Paragraph>
                 <Paragraph>2. 早上<Text type='danger'> 6 时</Text>是绝大多数学生的进校时间,7时会有部分学生姗姗来迟;</Paragraph>
                 <Paragraph>3. <Text type='danger'>周五</Text>下午<Text type='danger'> 3时 - 4 时</Text>是离校高峰，
-                  <Text type='danger'>周日 10 时 - 12 时</Text>住校生普遍返校</Paragraph>
+                  <Text type='danger'>周日 10 时 - 12 时</Text>住校生普遍返校。</Paragraph>
               </Card>
             </div>
           </Col>}
@@ -186,7 +186,7 @@ const AttendanceCard = memo(({data}) => {
           </Col>}
           <Col xl={16} lg={24} md={24} sm={24} xm={24}>
             <Chart
-              height={420}
+              height={430}
               data={kaoqinMixedData}
               padding={[20, 160, 80, 60]}
               forceFit

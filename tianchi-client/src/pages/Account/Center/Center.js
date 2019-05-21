@@ -631,6 +631,9 @@ class Center extends PureComponent {
                     {/*学生详细信息*/}
                     <Col md={12} lg={24} sm={12} xs={12} xl={24}>
                       <div className={styles.detail}>
+                        <p><i className={`fa ${studentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
+                          {SEX_MAP[studentInfo.sex]}
+                        </p>
                         <p><i className={`fa fa-group ${styles.iconStyle}`}/>
                           {studentInfo.nation}
                         </p>
@@ -642,9 +645,6 @@ class Center extends PureComponent {
                         </p>
                         <p><i className={`fa fa-home ${styles.iconStyle}`}/>
                           {studentInfo.native_place}
-                        </p>
-                        <p><i className={`fa ${studentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
-                          {SEX_MAP[studentInfo.sex]}
                         </p>
                         <p><i className={`fa fa-bed ${styles.iconStyle}`}/>
                           {studentInfo.is_stay_school ? `住校-${studentInfo.room_num}室` : '走读'}
@@ -887,6 +887,10 @@ class Center extends PureComponent {
                               hoverable={true}
                               className={styles.vsDetail}
                             >
+                              <p><i
+                                className={`fa ${vsStudentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
+                                {SEX_MAP[vsStudentInfo.sex]}
+                              </p>
                               <p><i className={`fa fa-group ${styles.iconStyle}`}/>
                                 {vsStudentInfo.nation}
                               </p>
@@ -898,10 +902,6 @@ class Center extends PureComponent {
                               </p>
                               <p><i className={`fa fa-home ${styles.iconStyle}`}/>
                                 {vsStudentInfo.native_place}
-                              </p>
-                              <p><i
-                                className={`fa ${vsStudentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
-                                {SEX_MAP[vsStudentInfo.sex]}
                               </p>
                               <p><i className={`fa fa-book ${styles.iconStyle}`}/>
                                 {`${vsStudentInfo.stu_class.start_year}年-${vsStudentInfo.stu_class.class_name}`}
