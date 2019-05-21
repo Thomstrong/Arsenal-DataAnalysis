@@ -13,7 +13,6 @@ const plugins = [
     antd: true,
     dva: {
       hmr: true,
-      immer: true,
     },
     locale: {
       enable: false, // default false
