@@ -33,9 +33,9 @@ const plugins = [
       } : {}),
   },],
   ['umi-plugin-auto-externals', {
-    packages: ['react', 'antd', 'moment', 'react-dom',],
+    packages: ['react', 'react-dom', 'antd', 'moment',],
     urlTemplate: 'https://unpkg.com/{{ library }}@{{ version }}/{{ path }}',
-    checkOnline: false,
+    checkOnline: true,
   }],
 ];
 
@@ -44,13 +44,6 @@ export default {
   plugins,
   define: {},
   treeShaking: true,
-  externals: {
-    lodash: {
-      commonjs: 'lodash',
-      amd: 'lodash',
-      root: '_'
-    }
-  },
   targets: {
     chrome: 49,
     firefox: 58,
@@ -58,6 +51,10 @@ export default {
     edge: 13,
     opera: 50,
     ie: 11,
+  },
+  exportStatic: {
+    htmlSuffix: true,
+    dynamicRoot: true
   },
   // 路由配置
   routes: pageRoutes,
