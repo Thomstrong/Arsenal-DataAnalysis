@@ -25,7 +25,6 @@ const plugins = [
       level: 3,
     },
     pwa: false,
-    hardSource: false,
     chunks: ['vendors', 'umi'],
     ...(!process.env.TEST && os.platform() === 'darwin' ?
       {
@@ -54,6 +53,13 @@ export default {
     edge: 13,
     opera: 50,
     ie: 11,
+  },
+  externals: {
+    lodash: {
+      commonjs: 'lodash',
+      amd: 'lodash',
+      root: '_'
+    }
   },
   // 路由配置
   routes: pageRoutes,

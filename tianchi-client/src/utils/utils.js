@@ -1,6 +1,5 @@
 import moment from 'moment';
 import React from 'react';
-import nzh from 'nzh/cn';
 import { parse, stringify } from 'qs';
 
 export function fixedZero(val) {
@@ -68,10 +67,6 @@ export function getPlainNode(nodeList, parentPath = '') {
     }
   });
   return arr;
-}
-
-export function digitUppercase(n) {
-  return nzh.toMoney(n);
 }
 
 function getRelation(str1, str2) {
