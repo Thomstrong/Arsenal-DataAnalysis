@@ -54,12 +54,12 @@ const StuComparedChart = memo(
     let kaoqin = 0;
     let vsKaoqin = 0;
     for (let data of kaoqinVsData){
-      if(data.type!=="离校"){
+      if(data.type!=="离校"&&data.type!=="进校"){
         if(data.student.indexOf(studentInfo.id)=== -1){
-          vsKaoqin=vsKaoqin+1
+          vsKaoqin=vsKaoqin+data.count
         }
         else {
-          kaoqin = kaoqin+1
+          kaoqin = kaoqin+data.count
         }
       }
     }
@@ -214,13 +214,18 @@ const StuComparedChart = memo(
                 <Text type="danger">{vsHighHour}</Text>消费，平均日消费为
                 <Text type="danger">{vsDailyAvg}元</Text>；</React.Fragment>:""}
               {equalHour.length?<React.Fragment>
-                <Text type="danger">{equalHour}</Text>时的消费相近；</React.Fragment>:""}</Paragraph>}
+                <Text type="danger">{equalHour}</Text>的消费相近；</React.Fragment>:""}
+              {dailyAvg && vsDailyAvg?<React.Fragment>
+                总体来说，<Text type="danger">{dailyAvg>vsDailyAvg?`${studentInfo.id}_${studentInfo.name}消费水平更高`
+                :dailyAvg===vsDailyAvg?"两人消费水平持平"
+                  :`${studentInfo.id}_${studentInfo.name}消费水平更高`}</Text></React.Fragment>:"" }
+            </Paragraph>}
         {/* 违纪情况汇总*/}
         {kaoqinVsData.length?<Paragraph>就考勤情况来说，{studentInfo.id}_{studentInfo.name}共违纪{kaoqin}次，
           {vsStudentInfo.id}_{vsStudentInfo.name}共违纪{vsKaoqin}次，在遵守纪律方面
           {kaoqin>vsKaoqin?<Text type="danger">{vsStudentInfo.id}_{vsStudentInfo.name}更优秀</Text>
             :kaoqin===vsKaoqin? <Text type='danger'>二者情况相当</Text>
-              :<Text type="danger">{studentInfo.id}_{studentInfo.name}更优秀</Text>}
+              :<Text type="danger">{studentInfo.id}_{studentInfo.name}更优秀</Text>}。
         </Paragraph>:""}
 
       </Card>
