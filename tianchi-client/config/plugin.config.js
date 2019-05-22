@@ -1,5 +1,6 @@
 // Change theme plugin
 import path from 'path';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 function getModulePackageName(module) {
   if (!module.context) return null;
@@ -23,9 +24,15 @@ function getModulePackageName(module) {
 
 export default config => {
   config.output
-    .filename('[name].[hash:8].js')
-    .chunkFilename('[name].[contenthash:8].async.js');
+    .filename('[name]-[hash:8].js')
+    .chunkFilename('[id]-[chunkhash:8].async.js');
   // optimize chunks
+  config.plugin('css-extractor').use(MiniCssExtractPlugin, [
+    {
+      filename: '[name].[chunkhash:8].css',
+      chunkFilename: '[id].[chunkhash:8].chunk.css',
+    },
+  ]);
   config.optimization
     .minimize(true)
     .runtimeChunk(false) // share the same chunks across different modules
