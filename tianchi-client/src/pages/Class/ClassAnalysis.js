@@ -67,7 +67,7 @@ class ClassAnalysis extends PureComponent {
       dateRange: 7,
       pickedDate: moment().format('YYYY-MM-DD'),
       searchText: '',
-      courseId: -1,
+      courseId: 60,
       examId: '',
       digMode: false,
       excludePingshi: false,
@@ -239,7 +239,7 @@ class ClassAnalysis extends PureComponent {
     });
     this.setState({
       examId,
-      courseId: -1
+      courseId: 60
     });
   };
 
@@ -358,8 +358,8 @@ class ClassAnalysis extends PureComponent {
     const { courseId, examId } = this.state;
     const showedScoreData = scoreData[Number(courseId)] ? scoreData[Number(courseId)].map(data => {
       return {
-        name: classMap[Number(data.classId)],
-        score: Number(data.score.toFixed(3))
+        name: classMap[Number(data.class_id)],
+        score: Number(data.average.toFixed(3))
       };
     }) : [];
     let showedDistributeData = scoreDistributionData[Number(courseId)] ?
@@ -677,7 +677,7 @@ class ClassAnalysis extends PureComponent {
                             /></Col>
                           <Col span={4} offset={8}>
                             <Statistic
-                              title="本次排名" value={courseRankData.classNum - courseRankData.totalRank}
+                              title="本次排名" value={courseRankData.totalRank}
                               suffix={`/${courseRankData.classNum}`}
                               valueStyle={{ color: '#cf1322', fontSize: "48px" }}
                             />
@@ -687,7 +687,7 @@ class ClassAnalysis extends PureComponent {
                         <Row type="flex" justify="start" gutter={24}>
                           {courseRankData.rankData.map((data) => (
                             <Col key={`examrank-${data.course}`}>
-                              <Statistic title={data.course} value={courseRankData.classNum - data.rank} suffix="名"/>
+                              <Statistic title={data.course} value={data.rank} suffix="名"/>
                             </Col>))}
                         </Row>
                         <Divider style={{ marginTop: 8 }} dashed/>
@@ -700,7 +700,7 @@ class ClassAnalysis extends PureComponent {
                         </Row>
                       </Card>}
                       {examRecords && !!examRecords.length &&
-                      <Card title="本次考试该班学生成绩与排名" style={{ marginTop: 12 }} bodyStyle={{ padding: 10 }}>
+                      <Card title="本次考试该班学生成绩与排名(仅包含高考科目)" style={{ marginTop: 12 }} bodyStyle={{ padding: 10 }}>
                         <Table
                           bordered
                           rowKey={record => record.name}
@@ -716,7 +716,7 @@ class ClassAnalysis extends PureComponent {
                             <Select
                               value={String(courseId)} style={{ width: "100%" }}
                               onChange={(courseId) => this.setState({ courseId: Number(courseId) })}>
-                              {Object.keys(scoreData).sort().map((id) => <Option
+                              {Object.keys(scoreData).sort((a, b) => b - a).map((id) => <Option
                                 key={`course-selection-${id}`}
                                 value={id}
                               >
@@ -756,7 +756,7 @@ class ClassAnalysis extends PureComponent {
                               };
                             }]}
                           />
-                          {courseId === -1 && <Guide>
+                          {courseId === 60 && <Guide>
                             <Line
                               top={true}
                               start={[-1, 588]}
@@ -873,10 +873,10 @@ class ClassAnalysis extends PureComponent {
                             />
                           </Guide>}
                         </Chart>
-                        {this.state.courseId !== -1 && <Chart
+                        {this.state.courseId !== 60 && <Chart
                           key={'class-score-distribution'}
                           height={400} data={showedDistributeData}
-                          style={{marginTop:-60}}
+                          style={{ marginTop: -60 }}
                           forceFit
                         >
                           <Legend/>

@@ -8,8 +8,8 @@ import {
   getDistribution,
   getExamRank,
   getExamRecords,
-  getScoreDistribution,
   getExamSummary,
+  getScoreDistribution,
 } from '@/services/api';
 import {
   COURSE_ALIAS,
@@ -47,7 +47,7 @@ export default {
     kaoqinData: [],
     kaoqinDetail: {},
     kaoqinSummary: [],
-    kaoqinCount:0,
+    kaoqinCount: 0,
     totalTrend: [],
     subTrends: [],
     maxRank: 0,
@@ -374,7 +374,7 @@ export default {
         termList,
         kaoqinDetail,
         studentList,
-        kaoqinCount:count
+        kaoqinCount: count
       };
     },
     saveExamRecords(state, { payload }) {
@@ -422,59 +422,32 @@ export default {
       const curClass = state.classInfo.id;
       const rankData = [];
       let totalScoreData = {};
-      let classList = {};
-      let subScore = {};
       let classMap = {};
+      let totalRank = 0;
       for (let courseId in payload) {
-        if (!subScore[courseId]) {
-          subScore[courseId] = [];
+        if (Number(courseId) === 60) {
+          totalScoreData = payload[courseId];
+          payload[courseId].map(data => {
+            classMap[data.class_id] = data.class_name;
+            if (Number(data.class_id) === curClass) {
+              totalRank = data.order;
+            }
+          });
+          continue;
         }
-
-        const records = payload[courseId];
-        for (let index in records) {
-          const classId = records[index].class_id;
-          classMap[classId] = records[index].class_name;
-          classList[classId] = 1;
-          if (classId === curClass) {
+        for (let data of payload[courseId]) {
+          if (curClass === data.class_id) {
             rankData.push({
               course: `${COURSE_FULLNAME_ALIAS[courseId]}排名`,
-              rank: Number(index)
+              rank: data.order
             });
+            break;
           }
-
-          subScore[courseId].push({
-            classId: classId,
-            score: records[index].average
-          });
-
-          if (!totalScoreData[classId]) {
-            totalScoreData[classId] = 0;
-          }
-          totalScoreData[classId] += records[index].average;
         }
       }
-      classList = Object.keys(classList);
-      totalScoreData = new DataSet.View().source([totalScoreData]).transform({
-        type: "fold",
-        fields: classList,
-        // 展开字段集
-        key: 'classId',
-        // key字段
-        value: 'score',
-      }).rows;
-      totalScoreData = totalScoreData.sort((a, b) => a.score - b.score);
+
       const classNum = Object.keys(classMap).length;
-      let totalRank = 0;
-      for (let index in totalScoreData) {
-        if (Number(totalScoreData[index].classId) === curClass) {
-          totalRank = Number(index);
-          break;
-        }
-      }
-      const scoreData = {
-        '-1': totalScoreData,
-        ...subScore,
-      };
+
       return {
         ...state,
         courseRankData: {
@@ -482,7 +455,7 @@ export default {
           classNum,
           rankData
         },
-        scoreData,
+        scoreData: payload,
         classMap,
       };
     },

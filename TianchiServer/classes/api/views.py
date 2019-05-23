@@ -312,7 +312,7 @@ class ClassViewSet(viewsets.ModelViewSet):
             sub_exam__exam_id=exam_id,
             attend_count__gt=0,
             stu_class_id__isnull=False
-        ).exclude(sub_exam__course_id=60).select_related(
+        ).select_related(
             'stu_class',
             'sub_exam'
         ).values(
@@ -322,6 +322,7 @@ class ClassViewSet(viewsets.ModelViewSet):
             'sub_exam__course_id',
             'total_score',
             'attend_count',
+            'order'
         ).order_by(
             'sub_exam__course_id',
             'stu_class_id'
@@ -334,7 +335,8 @@ class ClassViewSet(viewsets.ModelViewSet):
             formatted_data[course_id].append({
                 'class_id': record['stu_class_id'],
                 'class_name': record['stu_class__class_name'],
-                'average': record['total_score'] / record['attend_count'],
+                'average': record['total_score'] / record['attend_count'] if course_id != 60 else record['total_score'],
+                'order': record['order']
             })
 
         result = {}
@@ -342,8 +344,8 @@ class ClassViewSet(viewsets.ModelViewSet):
         for course_id in formatted_data:
             result[course_id] = sorted(
                 formatted_data[course_id],
-                key=lambda d: d['average'],
-                reverse=False
+                key=lambda d: d['order'],
+                reverse=True
             )
         return Response(result)
 
@@ -378,6 +380,7 @@ class ClassViewSet(viewsets.ModelViewSet):
         ).values_list('student_id', flat=True)
         records = StudentExamRecord.objects.filter(
             student_id__in=students,
+            sub_exam__course_id__in=gaokao_courses,
             sub_exam__exam_id=exam_id,
             score__gte=0
         ).values(
