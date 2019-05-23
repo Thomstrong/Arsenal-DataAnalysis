@@ -438,7 +438,7 @@ export default {
         for (let data of payload[courseId]) {
           if (curClass === data.class_id) {
             rankData.push({
-              course: `${COURSE_FULLNAME_ALIAS[courseId]}排名`,
+              course: courseId,
               rank: data.order
             });
             break;

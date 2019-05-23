@@ -658,46 +658,54 @@ class ClassAnalysis extends PureComponent {
                   {examId ?
                     <Fragment>
                       {!!courseRankData.rankData.length && <Card title="本次考试概况" style={{ marginTop: 12 }}>
-                        {!!examSummary.attendCount &&
-                        <Row gutter={16} type="flex" justify="start" align="bottom" style={{ marginBottom: 8 }}>
-                          <Col span={4}>
-                            <Statistic
-                              title="参与考试" value={examSummary.attendCount}
-                              suffix="人次"
-                            /></Col>
-                          <Col span={4}>
-                            <Statistic
-                              title="缺考" value={examSummary.absentCount}
-                              suffix="人次"
-                            /></Col>
-                          <Col span={4}>
-                            <Statistic
-                              title="免考" value={examSummary.freeCount}
-                              suffix="人次"
-                            /></Col>
-                          <Col span={4} offset={8}>
-                            <Statistic
-                              title="本次排名" value={courseRankData.totalRank}
-                              suffix={`/${courseRankData.classNum}`}
-                              valueStyle={{ color: '#cf1322', fontSize: "48px" }}
-                            />
-                          </Col>
-                        </Row>}
-                        <Divider style={{ marginTop: 8 }} dashed/>
-                        <Row type="flex" justify="start" gutter={24}>
+                        {!!examSummary.attendCount && <Fragment>
+                          <Row gutter={16} type="flex" justify="start" align="bottom" style={{ marginBottom: 8 }}>
+                            <Col span={4}>
+                              <Statistic
+                                title="参与考试" value={examSummary.attendCount}
+                                suffix="人次"
+                              /></Col>
+                            <Col span={4}>
+                              <Statistic
+                                title="缺考" value={examSummary.absentCount}
+                                suffix="人次"
+                              /></Col>
+                            <Col span={4}>
+                              <Statistic
+                                title="免考" value={examSummary.freeCount}
+                                suffix="人次"
+                              /></Col>
+                            <Col span={4} offset={8}>
+                              <Statistic
+                                title="本次排名" value={courseRankData.totalRank}
+                                suffix={`/${courseRankData.classNum}`}
+                                valueStyle={{ color: '#cf1322', fontSize: "48px" }}
+                              />
+                            </Col>
+                          </Row>
+                          <Divider style={{ marginTop: 8 }} dashed/>
+                        </Fragment>}
+                        < Row type="flex" justify="start" gutter={24}>
                           {courseRankData.rankData.map((data) => (
                             <Col key={`examrank-${data.course}`}>
-                              <Statistic title={data.course} value={data.rank} suffix="名"/>
+                              <Statistic
+                                title={`${COURSE_FULLNAME_ALIAS[data.course]}排名`}
+                                value={data.rank} suffix="名"
+                              />
                             </Col>))}
                         </Row>
-                        <Divider style={{ marginTop: 8 }} dashed/>
-                        <Row gutter={16} type="flex" justify="start" style={{ marginBottom: 8 }}>
-                          {overLineCounter.map((count, index) => (
-                            <Col key={LINE_INDEX_ALIAS[index]}>
-                              <Statistic title={`超${LINE_INDEX_ALIAS[index]}(${LINE_SCORE[index]})人数`} value={count}
-                                         suffix="人"/>
-                            </Col>))}
-                        </Row>
+                        {!!examSummary.attendCount && <Fragment>
+                          <Divider style={{ marginTop: 8 }} dashed/>
+                          <Row gutter={16} type="flex" justify="start" style={{ marginBottom: 8 }}>
+                            {overLineCounter.map((count, index) => (
+                              <Col key={LINE_INDEX_ALIAS[index]}>
+                                <Statistic
+                                  title={`超${LINE_INDEX_ALIAS[index]}(${LINE_SCORE[index]})人数`}
+                                  value={count} suffix="人"
+                                />
+                              </Col>))}
+                          </Row>
+                        </Fragment>}
                       </Card>}
                       {examRecords && !!examRecords.length &&
                       <Card title="本次考试该班学生成绩与排名(仅包含高考科目)" style={{ marginTop: 12 }} bodyStyle={{ padding: 10 }}>
@@ -756,7 +764,7 @@ class ClassAnalysis extends PureComponent {
                               };
                             }]}
                           />
-                          {courseId === 60 && <Guide>
+                          {courseId === 60 && !!examSummary.attendCount && <Guide>
                             <Line
                               top={true}
                               start={[-1, 588]}

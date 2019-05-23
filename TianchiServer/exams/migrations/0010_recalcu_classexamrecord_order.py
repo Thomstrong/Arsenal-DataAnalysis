@@ -10,7 +10,7 @@ def get_class_order(apps, schema_editor):
     ClassExamRecord = apps.get_model('exams', 'ClassExamRecord')
     SubExam = apps.get_model('exams', 'SubExam')
     bar = Bar('Processing', max=SubExam.objects.all().count())
-
+    ClassExamRecord.objects.filter(stu_class__isnull=True).delete()
     for sub_exam in SubExam.objects.all():
         bar.next()
         for grade in [Grade.One, Grade.Two, Grade.Three]:
@@ -21,16 +21,21 @@ def get_class_order(apps, schema_editor):
                     sub_exam=sub_exam,
                     stu_class__grade_name=grade,
                     stu_class__campus_name=campus
-                ).values_list('id', 'attend_count', 'total_score')
+                ).values_list('id', 'attend_count', 'total_score', 'sub_exam__course_id')
                 if not records:
                     continue
-                formated_records = []
+                formatted_records = []
                 for record in records:
-                    formated_records.append({
+                    avg = 0
+                    if record[3] == 60 and record[1]:
+                        avg = record[2]
+                    if record[3] != 60 and record[1]:
+                        avg = (record[2] / record[1])
+                    formatted_records.append({
                         'id': record[0],
-                        'avg': (record[2] / record[1]) if record[1] else 0
+                        'avg': avg
                     })
-                sorted_records = sorted(formated_records, key=lambda d: d['avg'], reverse=True)
+                sorted_records = sorted(formatted_records, key=lambda d: d['avg'], reverse=True)
                 bar.max += len(sorted_records)
                 for index, record in enumerate(sorted_records):
                     bar.next()
@@ -44,14 +49,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='classexamrecord',
-            name='order',
-        ),
-        migrations.AddField(
-            model_name='classexamrecord',
-            name='order',
-            field=models.IntegerField(default=0),
-        ),
         migrations.RunPython(get_class_order, reverse_code=migrations.RunPython.noop),
     ]
