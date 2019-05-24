@@ -100,8 +100,8 @@ class ClassAnalysis extends PureComponent {
         router.push(`${match.path}/Specific`);
         break;
       case 'ECard':
-      router.push(`${match.path}/ECard`);
-      break;
+        router.push(`${match.path}/ECard`);
+        break;
       case 'Attendance':
         router.push(`${match.path}/Attendance`);
         break;
@@ -368,7 +368,7 @@ class ClassAnalysis extends PureComponent {
   render() {
     const {
       stuClass, classListLoading, loading,
-      match, radarLoading, kaoqinLoading,costLoading,
+      match, radarLoading, kaoqinLoading, costLoading,
       termList
     } = this.props;
 
