@@ -1,5 +1,4 @@
 # Create your views here.
-import functools
 
 from django.db.models import Q, Max, Min, Avg, Count, Sum
 from rest_framework import viewsets
@@ -7,7 +6,7 @@ from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
 from classes.api.serializers import ClassBasicSerializer, ClassMiniSerializer
-from classes.constants import EXAM_RANGES
+from classes.constants import SCORE_DISTRIBUTION_RANGES
 from classes.models import Class
 from exams.models.exam_record import StudentExamRecord, ClassExamRecord
 from kaoqins.models.kaoqin_record import KaoqinRecord
@@ -410,23 +409,50 @@ class ClassViewSet(viewsets.ModelViewSet):
         ).values_list('stu_class_id', flat=True).order_by(
             'stu_class_id'
         )
+        student_map = {}
 
         records = {}
+
         for class_id in class_ids:
-            studnts = StudentRecord.objects.filter(
-                stu_class_id=class_id,
-                student_id__isnull=False,
-            ).values_list('student_id', flat=True)
-            records[class_id] = {}
-            for exam_range in EXAM_RANGES:
-                records[class_id][exam_range[1]] = StudentExamRecord.objects.filter(
-                    student_id__in=studnts,
-                    sub_exam__exam_id=exam_id,
-                    score__gte=exam_range[0],
-                    score__lte=exam_range[1],
-                ).exclude(
-                    sub_exam__course_id=60
-                ).values('sub_exam__course_id').annotate(
-                    count=Count('id')
-                )
+            if class_id not in student_map:
+                students = StudentRecord.objects.filter(
+                    stu_class_id=class_id,
+                    student_id__isnull=False,
+                ).values_list('student_id', flat=True)
+                student_map[class_id] = students
+            else:
+                students = student_map[class_id]
+
+            for score_type in SCORE_DISTRIBUTION_RANGES:
+                if score_type not in records:
+                    records[score_type] = {}
+                records[score_type][class_id] = {}
+                for exam_range in SCORE_DISTRIBUTION_RANGES[score_type]:
+                    score_filter = Q()
+                    if exam_range[0] is not None:
+                        if score_type == 'score':
+                            score_filter &= Q(score__gte=exam_range[0])
+                        if score_type == 't_score':
+                            score_filter &= Q(t_score__gte=exam_range[0])
+                        if score_type == 'z_score':
+                            score_filter &= Q(z_score__gte=exam_range[0])
+
+                    if exam_range[1] is not None:
+                        if score_type == 'score':
+                            score_filter &= Q(score__lt=exam_range[1])
+                        if score_type == 't_score':
+                            score_filter &= Q(t_score__lt=exam_range[1])
+                        if score_type == 'z_score':
+                            score_filter &= Q(z_score__lt=exam_range[1])
+
+                    range_name = exam_range[1] if exam_range[1] is not None else 'inf'
+                    records[score_type][class_id][range_name] = StudentExamRecord.objects.filter(
+                        score_filter,
+                        score__gte=0,
+                        student_id__in=students,
+                        sub_exam__exam_id=exam_id,
+                        sub_exam__course_id__in=gaokao_courses,
+                    ).values('sub_exam__course_id').annotate(
+                        count=Count('id')
+                    )
         return Response(records)

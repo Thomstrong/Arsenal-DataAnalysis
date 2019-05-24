@@ -463,22 +463,29 @@ export default {
       if (!payload) {
         return state;
       }
+
       let scoreDistributionData = {};
-      for (let classId in payload) {
-        for (let maxScore in payload[classId]) {
-          for (let record of payload[classId][maxScore]) {
-            const courseId = record.sub_exam__course_id;
-            if (!scoreDistributionData[courseId]) {
-              scoreDistributionData[courseId] = [];
+      for (let scoreType in payload) {
+        if (!scoreDistributionData[scoreType]) {
+          scoreDistributionData[scoreType] = {};
+        }
+        for (let classId in payload[scoreType]) {
+          for (let maxScore in payload[scoreType][classId]) {
+            for (let record of payload[scoreType][classId][maxScore]) {
+              const courseId = record.sub_exam__course_id;
+              if (!scoreDistributionData[scoreType][courseId]) {
+                scoreDistributionData[scoreType][courseId] = [];
+              }
+              scoreDistributionData[scoreType][courseId].push({
+                classId,
+                maxScore,
+                count: record.count
+              });
             }
-            scoreDistributionData[courseId].push({
-              classId,
-              maxScore,
-              count: record.count
-            });
           }
         }
       }
+
       return {
         ...state,
         scoreDistributionData,

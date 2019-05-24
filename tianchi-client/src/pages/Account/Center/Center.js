@@ -631,7 +631,7 @@ class Center extends PureComponent {
         <Row gutter={16}>
           <Col lg={7} md={24}>
             <Card bordered={false} style={{ marginBottom: 24 }} loading={loading}>
-              <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+              <Affix offsetTop={10} style={{ 'zIndex': 10 }}>
                 <Select
                   style={{ width: '100%', display: 'block' }}
                   showSearch
@@ -783,7 +783,7 @@ class Center extends PureComponent {
               <Tabs defaultActiveKey={defaultTab} onChange={this.onTabChange}>
                 <TabPane tab={<span><Icon type="line-chart"/>成绩</span>} key="Score">
                   {studentInfo && !!studentInfo.id && <Row type='flex' justify='start'>
-                    <Affix offsetTop={13} style={{ 'zIndex': 2 }}>
+                    <Affix offsetTop={13} style={{ 'zIndex': 10 }}>
                       <Select
                         value={studentInfo.scoreType || this.state.scoreType} style={{ width: 120 }}
                         onChange={this.onScoreTypeChange}
@@ -846,7 +846,7 @@ class Center extends PureComponent {
                         bordered={false}
                         style={{ width: '100%' }}
                       >
-                        <Affix offsetTop={13} style={{ 'zIndex': 1, marginTop: 10 }}>
+                        <Affix offsetTop={13} style={{ 'zIndex': 10, marginTop: 10 }}>
                           <span>选择查看的时间：</span>
                           <DatePicker
                             defaultValue={moment(moment(date || '2019-01-01'), 'YYYY-MM-DD')}
@@ -888,7 +888,7 @@ class Center extends PureComponent {
                   </Suspense> : initEmpty}
                 </TabPane>
                 <TabPane tab={<span><i className="fa fa-window-restore"/> 对比分析</span>} key="Compare">
-                  {!!studentInfo.id && <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+                  {!!studentInfo.id && <Affix offsetTop={10} style={{ 'zIndex': 10 }}>
                     <Select
                       style={{ width: '100%', display: 'block' }}
                       showSearch

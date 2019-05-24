@@ -6,7 +6,7 @@ import {
   GAOKAO_COURSES,
   LINE_INDEX_ALIAS,
   LINE_SCORE,
-  RANGE_ALIAS,
+  RANGE_ALIAS_MAP,
   SCORE_LEVEL_ALIAS,
   SCORE_TYPE_ALIAS
 } from "@/constants";
@@ -364,11 +364,11 @@ class ClassAnalysis extends PureComponent {
         score: Number(data[compareScoreType].toFixed(3))
       };
     }) : [];
-    let showedDistributeData = scoreDistributionData[Number(courseId)] ?
-      scoreDistributionData[Number(courseId)].map(data => {
+    let showedDistributeData = scoreDistributionData[compareScoreType] && scoreDistributionData[compareScoreType][Number(courseId)] ?
+      scoreDistributionData[compareScoreType][Number(courseId)].map(data => {
         return {
           name: classMap[Number(data.classId)],
-          range: RANGE_ALIAS[data.maxScore],
+          range: RANGE_ALIAS_MAP[compareScoreType][data.maxScore],
           count: Number(data.count)
         };
       }) : [];
@@ -378,7 +378,7 @@ class ClassAnalysis extends PureComponent {
       const template = showedDistributeData[0];
       let i = 0;
       const fakeData = [];
-      Object.values(RANGE_ALIAS).map(range => {
+      Object.values(RANGE_ALIAS_MAP[compareScoreType]).map(range => {
         if (i < showedDistributeData.length) {
           if (showedDistributeData[i].range !== range) {
             fakeData.push({
@@ -453,7 +453,7 @@ class ClassAnalysis extends PureComponent {
         <Row gutter={24}>
           <Col lg={7} md={24}>
             <Card bordered={false} style={{ marginBottom: 24 }} loading={loading}>
-              <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+              <Affix offsetTop={10} style={{ 'zIndex': 10 }}>
                 <Select
                   style={{ width: '100%', display: 'block' }}
                   showSearch
@@ -610,7 +610,7 @@ class ClassAnalysis extends PureComponent {
                       title={`${classInfo.class_name}考试${this.state.trendScoreType === 'score' ? '绝对分' : '排名'}趋势变化`}
                       bordered={false} bodyStyle={{ padding: '16px' }}
                     >
-                      <Affix offsetTop={13} style={{ 'zIndex': 1 }}>
+                      <Affix offsetTop={13} style={{ 'zIndex': 10 }}>
                         <Select
                           value={this.state.trendScoreType} style={{ width: 100 }}
                           onChange={this.ontrendScoreTypeChange}
@@ -642,7 +642,7 @@ class ClassAnalysis extends PureComponent {
                 {/*某次具体考试的具体情况*/}
                 <TabPane tab={<span><Icon type="copy"/>具体考试分析</span>} key="Specific">
                   {classInfo && !!classInfo.id && !!classExamList.length &&
-                  <Affix offsetTop={13} style={{ 'zIndex': 1 }}>
+                  <Affix offsetTop={13} style={{ 'zIndex': 10 }}>
                     <Select
                       showSearch
                       optionFilterProp="children"
@@ -782,7 +782,7 @@ class ClassAnalysis extends PureComponent {
                               };
                             }]}
                           />
-                          {courseId === 60 && !!examSummary.attendCount && <Guide>
+                          {courseId === 60 && compareScoreType === 'score' && !!examSummary.attendCount && <Guide>
                             <Line
                               top={true}
                               start={[-1, 588]}
@@ -899,7 +899,7 @@ class ClassAnalysis extends PureComponent {
                             />
                           </Guide>}
                         </Chart>
-                        {this.state.courseId !== 60 && <Chart
+                        {courseId !== 60 && <Chart
                           key={'class-score-distribution'}
                           height={400} data={showedDistributeData}
                           style={{ marginTop: -60 }}
