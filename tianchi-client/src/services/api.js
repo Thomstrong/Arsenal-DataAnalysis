@@ -46,6 +46,10 @@ export async function getExamSummary({ classId, examId }) {
   return request(`/api/classes/${classId}/exam_summary/?exam_id=${examId}`);
 }
 
+export async function getStudentCosts({ classId, examId }) {
+  return request(`/api/classes/${classId}/student_costs/`);
+}
+
 // student
 export async function getStudentBasic(studentId) {
   return request(`/api/students/${studentId}/`);

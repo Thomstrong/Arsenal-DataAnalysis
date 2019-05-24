@@ -10,6 +10,7 @@ import {
   getExamRecords,
   getExamSummary,
   getScoreDistribution,
+  getStudentCosts,
 } from '@/services/api';
 import {
   COURSE_ALIAS,
@@ -133,8 +134,7 @@ export default {
       });
     },
     * fetchCostData({ payload }, { call, put }) {
-      //todo
-      const response = yield call(getClassKaoqinData, {
+      const response = yield call(getStudentCosts, {
         ...payload
       });
       yield put({
@@ -390,36 +390,11 @@ export default {
         kaoqinCount: count
       };
     },
-    saveCostData(state, action) {
-      if (!action.payload) {
+    saveCostData(state, { payload }) {
+      if (!payload) {
         return state;
       }
-      const costData = [
-        {
-          stuId: "123",
-          stuName: "姓名1",
-          cost: 38,
-          rank: 0.18,
-        },
-        {
-          stuId: "345",
-          stuName: "姓名2",
-          cost: 52,
-          rank: 0.08,
-        },
-        {
-          stuId: "3405",
-          stuName: "姓名3",
-          cost: 61,
-          rank: 0.38,
-        },
-        {
-          stuId: "3245",
-          stuName: "姓名4",
-          cost: 145,
-          rank: 0.58,
-        },
-      ];
+      const costData = payload;
 
       const costSummary = {
         classAvgCost: 20.9,
