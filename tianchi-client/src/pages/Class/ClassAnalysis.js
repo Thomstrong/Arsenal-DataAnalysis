@@ -7,7 +7,8 @@ import {
   LINE_INDEX_ALIAS,
   LINE_SCORE,
   RANGE_ALIAS,
-  SCORE_LEVEL_ALIAS
+  SCORE_LEVEL_ALIAS,
+  SCORE_TYPE_ALIAS
 } from "@/constants";
 import PageLoading from '@/components/PageLoading';
 import router from 'umi/router';
@@ -63,7 +64,8 @@ class ClassAnalysis extends PureComponent {
     super(props);
     this.state = {
       classId: props.match.params.classId,
-      scoreType: props.stuClass.scoreType || 'score',
+      trendScoreType: props.stuClass.scoreType || 'score',
+      compareScoreType: 'score',
       dateRange: 7,
       pickedDate: moment().format('YYYY-MM-DD'),
       searchText: '',
@@ -136,7 +138,7 @@ class ClassAnalysis extends PureComponent {
       type: 'stuClass/fetchTrendData',
       payload: {
         classId,
-        scoreType: this.state.scoreType
+        scoreType: this.state.trendScoreType
       }
     });
     dispatch({
@@ -191,16 +193,16 @@ class ClassAnalysis extends PureComponent {
     return data.rows;
   };
 
-  onScoreTypeChange = (scoreType) => {
+  ontrendScoreTypeChange = (trendScoreType) => {
     const { dispatch, stuClass } = this.props;
     dispatch({
       type: 'stuClass/fetchTrendData',
       payload: {
         classId: stuClass.classInfo.id,
-        scoreType: scoreType
+        scoreType: trendScoreType
       }
     });
-    this.setState({ scoreType });
+    this.setState({ trendScoreType });
   };
 
   // 更改考试选项后的重新rander
@@ -355,11 +357,11 @@ class ClassAnalysis extends PureComponent {
     if (this.state.digTerm) {
       kaoqinDetailData = this.formatKaoqinData(kaoqinDetailData[this.state.digTerm], studentList);
     }
-    const { courseId, examId } = this.state;
+    const { courseId, examId, compareScoreType } = this.state;
     const showedScoreData = scoreData[Number(courseId)] ? scoreData[Number(courseId)].map(data => {
       return {
         name: classMap[Number(data.class_id)],
-        score: Number(data.average.toFixed(3))
+        score: Number(data[compareScoreType].toFixed(3))
       };
     }) : [];
     let showedDistributeData = scoreDistributionData[Number(courseId)] ?
@@ -444,7 +446,7 @@ class ClassAnalysis extends PureComponent {
         fixed: 'right'
       },
     ];
-    const courseOptions = ['60'].concat(courseRankData.rankData.map(d => d.course))
+    const courseOptions = ['60'].concat(courseRankData.rankData.map(d => d.course));
     return (
       <GridContent className={styles.userCenter}>
         <BackTop/>
@@ -605,13 +607,13 @@ class ClassAnalysis extends PureComponent {
                 <TabPane tab={<span><Icon type="line-chart"/>成绩趋势</span>} key="Trend">
                   {classInfo && classInfo.id ? (totalTrend && !!totalTrend.length ? <Fragment>
                     <Card
-                      title={`${classInfo.class_name}考试${this.state.scoreType === 'score' ? '绝对分' : '排名'}趋势变化`}
+                      title={`${classInfo.class_name}考试${this.state.trendScoreType === 'score' ? '绝对分' : '排名'}趋势变化`}
                       bordered={false} bodyStyle={{ padding: '16px' }}
                     >
                       <Affix offsetTop={13} style={{ 'zIndex': 1 }}>
                         <Select
-                          value={this.state.scoreType} style={{ width: 100 }}
-                          onChange={this.onScoreTypeChange}
+                          value={this.state.trendScoreType} style={{ width: 100 }}
+                          onChange={this.ontrendScoreTypeChange}
                         >
                           <Option key="score" value="score">绝对分</Option>
                           <Option key="rank" value="rank">排名</Option>
@@ -627,7 +629,7 @@ class ClassAnalysis extends PureComponent {
                       <Suspense fallback={<PageLoading/>}>
                         <ScoreTrendChart
                           maxRank={maxRank}
-                          scoreType={this.state.scoreType}
+                          scoreType={this.state.trendScoreType}
                           lineData={totalTrend}
                           radarViewData={radarData}
                           subData={subTrends}
@@ -722,7 +724,17 @@ class ClassAnalysis extends PureComponent {
                         <Row type='flex' justify="end">
                           <Affix offsetTop={13}>
                             <Select
-                              value={String(courseId)} style={{ width: "100%" }}
+                              value={compareScoreType} style={{ width: 130, marginRight: '20px' }}
+                              onChange={(compareScoreType) => this.setState({ compareScoreType })}>
+                              {['score', 't_score', 'z_score'].map((type) => <Option
+                                key={`compareScoreType-selection-${type}`}
+                                value={type}
+                              >
+                                {SCORE_TYPE_ALIAS[type]}
+                              </Option>)}
+                            </Select>
+                            <Select
+                              value={String(courseId)} style={{ width: 100 }}
                               onChange={(courseId) => this.setState({ courseId: Number(courseId) })}>
                               {courseOptions.map((id) => <Option
                                 key={`course-selection-${id}`}

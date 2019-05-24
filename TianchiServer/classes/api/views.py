@@ -1,4 +1,6 @@
 # Create your views here.
+import functools
+
 from django.db.models import Q, Max, Min, Avg, Count, Sum
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
@@ -311,6 +313,8 @@ class ClassViewSet(viewsets.ModelViewSet):
             'stu_class__class_name',
             'sub_exam__course_id',
             'total_score',
+            't_score',
+            'z_score',
             'attend_count',
             'order'
         ).order_by(
@@ -325,7 +329,9 @@ class ClassViewSet(viewsets.ModelViewSet):
             formatted_data[course_id].append({
                 'class_id': record['stu_class_id'],
                 'class_name': record['stu_class__class_name'],
-                'average': record['total_score'] / record['attend_count'] if course_id != 60 else record['total_score'],
+                'score': record['total_score'] / record['attend_count'] if course_id != 60 else record['total_score'],
+                't_score': record['t_score'],
+                'z_score': record['z_score'],
                 'order': record['order']
             })
 
