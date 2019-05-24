@@ -444,7 +444,7 @@ class ClassAnalysis extends PureComponent {
         fixed: 'right'
       },
     ];
-
+    const courseOptions = ['60'].concat(courseRankData.rankData.map(d => d.course))
     return (
       <GridContent className={styles.userCenter}>
         <BackTop/>
@@ -724,11 +724,11 @@ class ClassAnalysis extends PureComponent {
                             <Select
                               value={String(courseId)} style={{ width: "100%" }}
                               onChange={(courseId) => this.setState({ courseId: Number(courseId) })}>
-                              {Object.keys(scoreData).sort((a, b) => b - a).map((id) => <Option
+                              {courseOptions.map((id) => <Option
                                 key={`course-selection-${id}`}
                                 value={id}
                               >
-                                {COURSE_FULLNAME_ALIAS[id] ? COURSE_FULLNAME_ALIAS[id] : '总分'}
+                                {COURSE_FULLNAME_ALIAS[id]}
                               </Option>)}
                             </Select>
                           </Affix>
@@ -758,6 +758,12 @@ class ClassAnalysis extends PureComponent {
                                 return '#39a1ff';
                             }]}
                             tooltip={['score', (score) => {
+                              if (courseId === 60) {
+                                return {
+                                  name: '总平均分',
+                                  value: score
+                                };
+                              }
                               return {
                                 name: '平均分',
                                 value: score
