@@ -21,6 +21,7 @@ import {
   WEEKDAY_ALIAS
 } from "@/constants";
 import DataSet from "@antv/data-set";
+import React from "react";
 
 
 export default {
@@ -48,6 +49,8 @@ export default {
     kaoqinDetail: {},
     kaoqinSummary: [],
     kaoqinCount: 0,
+    costData: [],
+    costSummary: {},
     totalTrend: [],
     subTrends: [],
     maxRank: 0,
@@ -127,6 +130,16 @@ export default {
         type: 'saveKaoqinData',
         payload: response,
         termMap: payload.termMap
+      });
+    },
+    * fetchCostData({ payload }, { call, put }) {
+      //todo
+      const response = yield call(getClassKaoqinData, {
+        ...payload
+      });
+      yield put({
+        type: 'saveCostData',
+        payload: response,
       });
     },
     * fetchExamRank({ payload }, { call, put }) {
@@ -375,6 +388,48 @@ export default {
         kaoqinDetail,
         studentList,
         kaoqinCount: count
+      };
+    },
+    saveCostData(state, action) {
+      if (!action.payload) {
+        return state;
+      }
+      const costData = [
+        {
+          stuId: "123",
+          stuName: "姓名1",
+          cost: 38,
+          rank: 0.18,
+        },
+        {
+          stuId: "345",
+          stuName: "姓名2",
+          cost: 52,
+          rank: 0.08,
+        },
+        {
+          stuId: "3405",
+          stuName: "姓名3",
+          cost: 61,
+          rank: 0.38,
+        },
+        {
+          stuId: "3245",
+          stuName: "姓名4",
+          cost: 145,
+          rank: 0.58,
+        },
+      ];
+
+      const costSummary = {
+        classAvgCost: 20.9,
+        lowCostData: costData.filter(data => data.rank < 0.2),
+      };
+
+      return {
+        ...state,
+        costData,
+        costSummary
       };
     },
     saveExamRecords(state, { payload }) {

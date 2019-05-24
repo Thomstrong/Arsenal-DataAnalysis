@@ -43,6 +43,7 @@ import Highlighter from 'react-highlight-words';
 
 const ScoreTrendChart = React.lazy(() => import('./ScoreTrendChart'));
 const ClassAttendanceChart = React.lazy(() => import('./ClassAttendanceChart'));
+const ClassEcardChart = React.lazy(() => import('./ClassEcardChart'));
 
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
@@ -55,6 +56,7 @@ const Line = Guide.Line;
   classListLoading: loading.effects['stuClass/fetchClassList'],
   radarLoading: loading.effects['stuClass/fetchRadarData'],
   kaoqinLoading: loading.effects['stuClass/fetchKaoqinData'],
+  costLoading: loading.effects['stuClass/fetchCostData'],
   termMap: global.termMap,
   termList: stuClass.termList,
 }))
@@ -97,6 +99,9 @@ class ClassAnalysis extends PureComponent {
       case 'Specific':
         router.push(`${match.path}/Specific`);
         break;
+      case 'ECard':
+      router.push(`${match.path}/ECard`);
+      break;
       case 'Attendance':
         router.push(`${match.path}/Attendance`);
         break;
@@ -146,6 +151,12 @@ class ClassAnalysis extends PureComponent {
       payload: {
         classId,
         termMap
+      }
+    });
+    dispatch({
+      type: 'stuClass/fetchCostData',
+      payload: {
+        classId,
       }
     });
     dispatch({
@@ -357,7 +368,7 @@ class ClassAnalysis extends PureComponent {
   render() {
     const {
       stuClass, classListLoading, loading,
-      match, radarLoading, kaoqinLoading,
+      match, radarLoading, kaoqinLoading,costLoading,
       termList
     } = this.props;
 
@@ -365,6 +376,7 @@ class ClassAnalysis extends PureComponent {
       distributionData, classInfo, teachers,
       classList, radarData, totalTrend, maxRank,
       subTrends, kaoqinSummary, kaoqinData, kaoqinCount,
+      costData, costSummary,
       kaoqinDetail, studentList, classExamList,
       courseRankData, scoreData, classMap, examSummary,
       examRecords, overLineCounter, scoreDistributionData,
@@ -613,14 +625,12 @@ class ClassAnalysis extends PureComponent {
               ) : <Empty style={{ marginTop: '20px' }} description='请在👆搜索框中搜索班级信息！'/>}
             </Card>
           </Col>
-          {/*分为三个部分，分别是考试趋势显示和具体考试分析和考勤情况*/}
           <Col lg={17} md={24}>
             <Card
               className={styles.tabsCard}
               bordered={false}
             >
               <Tabs defaultActiveKey={defaultTab} onChange={this.onTabChange}>
-                {/*各科成绩趋势的变化*/}
                 <TabPane tab={<span><Icon type="line-chart"/>成绩趋势</span>} key="Trend">
                   {classInfo && classInfo.id ? (totalTrend && !!totalTrend.length ? <Fragment>
                     <Card
@@ -656,7 +666,6 @@ class ClassAnalysis extends PureComponent {
                     </Card>
                   </Fragment> : <Empty description='暂无考试数据'/>) : <Empty description='请在左侧搜索框中搜索班级信息'/>}
                 </TabPane>
-                {/*某次具体考试的具体情况*/}
                 <TabPane tab={<span><Icon type="copy"/>具体考试分析</span>} key="Specific">
                   {classInfo && !!classInfo.id && !!classExamList.length &&
                   <Affix offsetTop={13} style={{ 'zIndex': 10 }}>
@@ -957,8 +966,15 @@ class ClassAnalysis extends PureComponent {
                     />
                   }
                 </TabPane>
-                {/*考勤情况*/}
-                {/*todo 文字分析部分加上该班级违纪最多的同学，及具体信息*/}
+                <TabPane tab={<span><Icon type="credit-card"/>消费情况</span>} key="ECard">
+                  <Suspense fallback={<PageLoading/>}>
+                    <ClassEcardChart
+                      loading={costLoading}
+                      costData={costData}
+                      costSummary={costSummary}
+                    />
+                  </Suspense>
+                </TabPane>
                 <TabPane tab={<span><i className={`fa fa-calendar-check-o`}/> 考勤情况</span>} key="Attendance">
                   <Suspense fallback={<PageLoading/>}>
                     <ClassAttendanceChart
