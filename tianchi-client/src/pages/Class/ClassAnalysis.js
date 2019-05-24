@@ -6,8 +6,9 @@ import {
   GAOKAO_COURSES,
   LINE_INDEX_ALIAS,
   LINE_SCORE,
-  RANGE_ALIAS,
-  SCORE_LEVEL_ALIAS
+  RANGE_ALIAS_MAP,
+  SCORE_LEVEL_ALIAS,
+  SCORE_TYPE_ALIAS
 } from "@/constants";
 import PageLoading from '@/components/PageLoading';
 import router from 'umi/router';
@@ -63,11 +64,12 @@ class ClassAnalysis extends PureComponent {
     super(props);
     this.state = {
       classId: props.match.params.classId,
-      scoreType: props.stuClass.scoreType || 'score',
+      trendScoreType: props.stuClass.scoreType || 'score',
+      compareScoreType: 'score',
       dateRange: 7,
       pickedDate: moment().format('YYYY-MM-DD'),
       searchText: '',
-      courseId: -1,
+      courseId: 60,
       examId: '',
       digMode: false,
       excludePingshi: false,
@@ -136,7 +138,7 @@ class ClassAnalysis extends PureComponent {
       type: 'stuClass/fetchTrendData',
       payload: {
         classId,
-        scoreType: this.state.scoreType
+        scoreType: this.state.trendScoreType
       }
     });
     dispatch({
@@ -191,16 +193,16 @@ class ClassAnalysis extends PureComponent {
     return data.rows;
   };
 
-  onScoreTypeChange = (scoreType) => {
+  ontrendScoreTypeChange = (trendScoreType) => {
     const { dispatch, stuClass } = this.props;
     dispatch({
       type: 'stuClass/fetchTrendData',
       payload: {
         classId: stuClass.classInfo.id,
-        scoreType: scoreType
+        scoreType: trendScoreType
       }
     });
-    this.setState({ scoreType });
+    this.setState({ trendScoreType });
   };
 
   // 更改考试选项后的重新rander
@@ -239,7 +241,7 @@ class ClassAnalysis extends PureComponent {
     });
     this.setState({
       examId,
-      courseId: -1
+      courseId: 60
     });
   };
 
@@ -335,6 +337,23 @@ class ClassAnalysis extends PureComponent {
     });
   };
 
+  getRanges = (compareScoreType) => {
+    if (compareScoreType !== 'z_score') {
+      return Object.values(RANGE_ALIAS_MAP[compareScoreType]);
+    }
+    return Object.keys(RANGE_ALIAS_MAP[compareScoreType]).sort((a, b) => {
+      if (b === 'inf') {
+        return -1;
+      }
+
+      if (a === 'inf') {
+        return 1;
+      }
+
+      return Number(a) - Number(b);
+    }).map(r => RANGE_ALIAS_MAP[compareScoreType][r]);
+  };
+
   render() {
     const {
       stuClass, classListLoading, loading,
@@ -355,18 +374,18 @@ class ClassAnalysis extends PureComponent {
     if (this.state.digTerm) {
       kaoqinDetailData = this.formatKaoqinData(kaoqinDetailData[this.state.digTerm], studentList);
     }
-    const { courseId, examId } = this.state;
+    const { courseId, examId, compareScoreType } = this.state;
     const showedScoreData = scoreData[Number(courseId)] ? scoreData[Number(courseId)].map(data => {
       return {
-        name: classMap[Number(data.classId)],
-        score: Number(data.score.toFixed(3))
+        name: classMap[Number(data.class_id)],
+        score: Number(data[compareScoreType].toFixed(3))
       };
     }) : [];
-    let showedDistributeData = scoreDistributionData[Number(courseId)] ?
-      scoreDistributionData[Number(courseId)].map(data => {
+    let showedDistributeData = scoreDistributionData[compareScoreType] && scoreDistributionData[compareScoreType][Number(courseId)] ?
+      scoreDistributionData[compareScoreType][Number(courseId)].map(data => {
         return {
           name: classMap[Number(data.classId)],
-          range: RANGE_ALIAS[data.maxScore],
+          range: RANGE_ALIAS_MAP[compareScoreType][data.maxScore],
           count: Number(data.count)
         };
       }) : [];
@@ -376,7 +395,7 @@ class ClassAnalysis extends PureComponent {
       const template = showedDistributeData[0];
       let i = 0;
       const fakeData = [];
-      Object.values(RANGE_ALIAS).map(range => {
+      this.getRanges(compareScoreType).map(range => {
         if (i < showedDistributeData.length) {
           if (showedDistributeData[i].range !== range) {
             fakeData.push({
@@ -444,14 +463,14 @@ class ClassAnalysis extends PureComponent {
         fixed: 'right'
       },
     ];
-
+    const courseOptions = ['60'].concat(courseRankData.rankData.map(d => d.course));
     return (
       <GridContent className={styles.userCenter}>
         <BackTop/>
         <Row gutter={24}>
           <Col lg={7} md={24}>
             <Card bordered={false} style={{ marginBottom: 24 }} loading={loading}>
-              <Affix offsetTop={10} style={{ 'zIndex': 1 }}>
+              <Affix offsetTop={10} style={{ 'zIndex': 10 }}>
                 <Select
                   style={{ width: '100%', display: 'block' }}
                   showSearch
@@ -605,13 +624,13 @@ class ClassAnalysis extends PureComponent {
                 <TabPane tab={<span><Icon type="line-chart"/>成绩趋势</span>} key="Trend">
                   {classInfo && classInfo.id ? (totalTrend && !!totalTrend.length ? <Fragment>
                     <Card
-                      title={`${classInfo.class_name}考试${this.state.scoreType === 'score' ? '绝对分' : '排名'}趋势变化`}
+                      title={`${classInfo.class_name}考试${this.state.trendScoreType === 'score' ? '绝对分' : '排名'}趋势变化`}
                       bordered={false} bodyStyle={{ padding: '16px' }}
                     >
-                      <Affix offsetTop={13} style={{ 'zIndex': 1 }}>
+                      <Affix offsetTop={13} style={{ 'zIndex': 10 }}>
                         <Select
-                          value={this.state.scoreType} style={{ width: 100 }}
-                          onChange={this.onScoreTypeChange}
+                          value={this.state.trendScoreType} style={{ width: 100 }}
+                          onChange={this.ontrendScoreTypeChange}
                         >
                           <Option key="score" value="score">绝对分</Option>
                           <Option key="rank" value="rank">排名</Option>
@@ -627,7 +646,7 @@ class ClassAnalysis extends PureComponent {
                       <Suspense fallback={<PageLoading/>}>
                         <ScoreTrendChart
                           maxRank={maxRank}
-                          scoreType={this.state.scoreType}
+                          scoreType={this.state.trendScoreType}
                           lineData={totalTrend}
                           radarViewData={radarData}
                           subData={subTrends}
@@ -640,7 +659,7 @@ class ClassAnalysis extends PureComponent {
                 {/*某次具体考试的具体情况*/}
                 <TabPane tab={<span><Icon type="copy"/>具体考试分析</span>} key="Specific">
                   {classInfo && !!classInfo.id && !!classExamList.length &&
-                  <Affix offsetTop={13} style={{ 'zIndex': 1 }}>
+                  <Affix offsetTop={13} style={{ 'zIndex': 10 }}>
                     <Select
                       showSearch
                       optionFilterProp="children"
@@ -658,49 +677,57 @@ class ClassAnalysis extends PureComponent {
                   {examId ?
                     <Fragment>
                       {!!courseRankData.rankData.length && <Card title="本次考试概况" style={{ marginTop: 12 }}>
-                        {!!examSummary.attendCount &&
-                        <Row gutter={16} type="flex" justify="start" align="bottom" style={{ marginBottom: 8 }}>
-                          <Col span={4}>
-                            <Statistic
-                              title="参与考试" value={examSummary.attendCount}
-                              suffix="人次"
-                            /></Col>
-                          <Col span={4}>
-                            <Statistic
-                              title="缺考" value={examSummary.absentCount}
-                              suffix="人次"
-                            /></Col>
-                          <Col span={4}>
-                            <Statistic
-                              title="免考" value={examSummary.freeCount}
-                              suffix="人次"
-                            /></Col>
-                          <Col span={4} offset={8}>
-                            <Statistic
-                              title="本次排名" value={courseRankData.classNum - courseRankData.totalRank}
-                              suffix={`/${courseRankData.classNum}`}
-                              valueStyle={{ color: '#cf1322', fontSize: "48px" }}
-                            />
-                          </Col>
-                        </Row>}
-                        <Divider style={{ marginTop: 8 }} dashed/>
-                        <Row type="flex" justify="start" gutter={24}>
+                        {!!examSummary.attendCount && <Fragment>
+                          <Row gutter={16} type="flex" justify="start" align="bottom" style={{ marginBottom: 8 }}>
+                            <Col span={4}>
+                              <Statistic
+                                title="参与考试" value={examSummary.attendCount}
+                                suffix="人次"
+                              /></Col>
+                            <Col span={4}>
+                              <Statistic
+                                title="缺考" value={examSummary.absentCount}
+                                suffix="人次"
+                              /></Col>
+                            <Col span={4}>
+                              <Statistic
+                                title="免考" value={examSummary.freeCount}
+                                suffix="人次"
+                              /></Col>
+                            <Col span={4} offset={8}>
+                              <Statistic
+                                title="本次排名" value={courseRankData.totalRank}
+                                suffix={`/${courseRankData.classNum}`}
+                                valueStyle={{ color: '#cf1322', fontSize: "48px" }}
+                              />
+                            </Col>
+                          </Row>
+                          <Divider style={{ marginTop: 8 }} dashed/>
+                        </Fragment>}
+                        < Row type="flex" justify="start" gutter={24}>
                           {courseRankData.rankData.map((data) => (
                             <Col key={`examrank-${data.course}`}>
-                              <Statistic title={data.course} value={courseRankData.classNum - data.rank} suffix="名"/>
+                              <Statistic
+                                title={`${COURSE_FULLNAME_ALIAS[data.course]}排名`}
+                                value={data.rank} suffix="名"
+                              />
                             </Col>))}
                         </Row>
-                        <Divider style={{ marginTop: 8 }} dashed/>
-                        <Row gutter={16} type="flex" justify="start" style={{ marginBottom: 8 }}>
-                          {overLineCounter.map((count, index) => (
-                            <Col key={LINE_INDEX_ALIAS[index]}>
-                              <Statistic title={`超${LINE_INDEX_ALIAS[index]}(${LINE_SCORE[index]})人数`} value={count}
-                                         suffix="人"/>
-                            </Col>))}
-                        </Row>
+                        {!!examSummary.attendCount && <Fragment>
+                          <Divider style={{ marginTop: 8 }} dashed/>
+                          <Row gutter={16} type="flex" justify="start" style={{ marginBottom: 8 }}>
+                            {overLineCounter.map((count, index) => (
+                              <Col key={LINE_INDEX_ALIAS[index]}>
+                                <Statistic
+                                  title={`超${LINE_INDEX_ALIAS[index]}(${LINE_SCORE[index]})人数`}
+                                  value={count} suffix="人"
+                                />
+                              </Col>))}
+                          </Row>
+                        </Fragment>}
                       </Card>}
                       {examRecords && !!examRecords.length &&
-                      <Card title="本次考试该班学生成绩与排名" style={{ marginTop: 12 }} bodyStyle={{ padding: 10 }}>
+                      <Card title="本次考试该班学生成绩与排名(仅包含高考科目)" style={{ marginTop: 12 }} bodyStyle={{ padding: 10 }}>
                         <Table
                           bordered
                           rowKey={record => record.name}
@@ -714,13 +741,23 @@ class ClassAnalysis extends PureComponent {
                         <Row type='flex' justify="end">
                           <Affix offsetTop={13}>
                             <Select
-                              value={String(courseId)} style={{ width: "100%" }}
+                              value={compareScoreType} style={{ width: 130, marginRight: '20px' }}
+                              onChange={(compareScoreType) => this.setState({ compareScoreType })}>
+                              {['score', 't_score', 'z_score'].map((type) => <Option
+                                key={`compareScoreType-selection-${type}`}
+                                value={type}
+                              >
+                                {SCORE_TYPE_ALIAS[type]}
+                              </Option>)}
+                            </Select>
+                            <Select
+                              value={String(courseId)} style={{ width: 100 }}
                               onChange={(courseId) => this.setState({ courseId: Number(courseId) })}>
-                              {Object.keys(scoreData).sort().map((id) => <Option
+                              {courseOptions.map((id) => <Option
                                 key={`course-selection-${id}`}
                                 value={id}
                               >
-                                {COURSE_FULLNAME_ALIAS[id] ? COURSE_FULLNAME_ALIAS[id] : '总分'}
+                                {COURSE_FULLNAME_ALIAS[id]}
                               </Option>)}
                             </Select>
                           </Affix>
@@ -750,13 +787,19 @@ class ClassAnalysis extends PureComponent {
                                 return '#39a1ff';
                             }]}
                             tooltip={['score', (score) => {
+                              if (courseId === 60) {
+                                return {
+                                  name: '总平均分',
+                                  value: score
+                                };
+                              }
                               return {
                                 name: '平均分',
                                 value: score
                               };
                             }]}
                           />
-                          {courseId === -1 && <Guide>
+                          {courseId === 60 && compareScoreType === 'score' && !!examSummary.attendCount && <Guide>
                             <Line
                               top={true}
                               start={[-1, 588]}
@@ -873,10 +916,10 @@ class ClassAnalysis extends PureComponent {
                             />
                           </Guide>}
                         </Chart>
-                        {this.state.courseId !== -1 && <Chart
+                        {courseId !== 60 && <Chart
                           key={'class-score-distribution'}
                           height={400} data={showedDistributeData}
-                          style={{marginTop:-60}}
+                          style={{ marginTop: -60 }}
                           forceFit
                         >
                           <Legend/>

@@ -457,7 +457,7 @@ class Selection extends PureComponent {
         </Card>
         <Card title="七选三组合分布情况" bordered={true} style={{ width: '100%', marginTop: 24 }}>
           {/*柱状图显示35种选择人数分布情况,分组柱状图*/}
-          <Affix offsetTop={15} style={{ 'zIndex': 1 }}>
+          <Affix offsetTop={15} style={{ 'zIndex': 10 }}>
             <Select
               allowClear
               autoClearSearchValue={false}

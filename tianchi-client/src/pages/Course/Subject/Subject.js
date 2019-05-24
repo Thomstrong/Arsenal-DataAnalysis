@@ -78,7 +78,7 @@ class Subject extends PureComponent {
         bordered={true} style={{ width: '100%', cursor: 'default' }}>
         <BackTop/>
         <Row type="flex" justify="end" style={{ padding: 10 }}>
-          <Affix offsetTop={16} style={{ 'zIndex': 2 }}>
+          <Affix offsetTop={16} style={{ 'zIndex': 10 }}>
             <Col span={10} style={{ display: 'inline-flex' }}>
               <div style={{ backgroundColor: 'white', display: 'inline-flex' }}>
                 <Select

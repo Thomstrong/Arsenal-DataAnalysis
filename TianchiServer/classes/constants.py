@@ -22,11 +22,36 @@ CLASS_CAMPUS_CHOICE = (
     (Campus.Old, '白杨校区'),
 )
 
-EXAM_RANGES = [
-    (0, 59),
-    (60, 79),
-    (80, 89),
-    (90, 99),
-    (100, 129),
-    (130, 150)
+
+SCORE_RANGES = [
+    (None, 59),
+    (59, 79),
+    (79, 89),
+    (89, 99),
+    (99, 129),
+    (129, None)
 ]
+
+Z_SCORE_RANGES = [
+    (None, -2),
+    (-2, -1),
+    (-1, 0),
+    (0, 1),
+    (1, 2),
+    (2, None)
+]
+
+T_SCORE_RANGES = [
+    (None, 56),
+    (56, 72),
+    (72, 80),
+    (80, 88),
+    (88, 104),
+    (104, None)
+]
+
+SCORE_DISTRIBUTION_RANGES = {
+    'score': SCORE_RANGES,
+    't_score': T_SCORE_RANGES,
+    'z_score': Z_SCORE_RANGES
+}

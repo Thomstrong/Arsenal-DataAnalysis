@@ -44,6 +44,7 @@ export const COURSE_COLOR = {
 
 export const COURSE_FULLNAME_ALIAS = {
   61: '不限',
+  60: '总分',
   59: '技术',
   58: '英语2',
   57: '1B模块总分',
@@ -168,13 +169,37 @@ export const LINE_SCORE = [
   344,
 ];
 
-export const RANGE_ALIAS = {
+export const SCORE_RANGE_ALIAS = {
   "59": "<60",
-  "79": "60-79",
-  "89": "80-89",
-  "99": "90-99",
-  "129": "100-129",
-  "150": "130-150",
+  "79": "60~79",
+  "89": "80~89",
+  "99": "90~99",
+  "129": "100~129",
+  "inf": "130~150",
+};
+
+export const Z_SCORE_RANGE_ALIAS = {
+  "-2": "<-2",
+  "-1": "-2~-1",
+  "0": "-1~0",
+  "1": "0~1",
+  "2": "1~2",
+  "inf": ">=2",
+};
+
+export const T_SCORE_RANGE_ALIAS = {
+  "56": "<56",
+  "72": "56~72",
+  "80": "72~80",
+  "88": "80~88",
+  "104": "88~104",
+  "inf": ">=104",
+};
+
+export const RANGE_ALIAS_MAP = {
+  'score': SCORE_RANGE_ALIAS,
+  'z_score': Z_SCORE_RANGE_ALIAS,
+  't_score': T_SCORE_RANGE_ALIAS,
 };
 
 export const getDengDi = (dengdi) => {

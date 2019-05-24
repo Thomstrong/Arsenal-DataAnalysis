@@ -22,7 +22,7 @@ class StudentExamRecordAdmin(admin.ModelAdmin):
 @admin.register(SubExam)
 class SubExamRecordAdmin(admin.ModelAdmin):
     list_display = ('id', 'started_at', '__unicode__', 'total_score', 'attend_num',)
-    search_fields = ('exam__name', 'course__name')
+    search_fields = ('exam__name', 'course__name','id')
     list_filter = ('exam__type', 'exam__name', 'course__name')
 
 

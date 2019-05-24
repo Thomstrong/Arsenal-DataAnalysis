@@ -25,6 +25,8 @@ class ClassExamRecord(models.Model):
     highest_score = models.FloatField(default=0.0)
     lowest_score = models.FloatField(default=200.0)
     order = models.IntegerField(default=0)
+    z_score = models.FloatField(default=0.0)
+    t_score = models.FloatField(default=80.0)
 
     def update_score(self, score, is_add=True):
         if score < 0:

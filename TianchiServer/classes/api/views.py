@@ -1,11 +1,12 @@
 # Create your views here.
+
 from django.db.models import Q, Max, Min, Avg, Count, Sum
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
 from classes.api.serializers import ClassBasicSerializer, ClassMiniSerializer
-from classes.constants import EXAM_RANGES
+from classes.constants import SCORE_DISTRIBUTION_RANGES
 from classes.models import Class
 from exams.models.exam_record import StudentExamRecord, ClassExamRecord
 from kaoqins.models.kaoqin_record import KaoqinRecord
@@ -117,8 +118,6 @@ class ClassViewSet(viewsets.ModelViewSet):
                     stu_class_id=pk,
                     sub_exam__course_id__in=(gaokao_courses + [60]),
                 ).order_by('sub_exam__started_at').values(
-                    'sub_exam__exam__name'
-                ).values(
                     'sub_exam__course_id',
                     'sub_exam__exam__name',
                     'sub_exam__exam__type_id',
@@ -153,10 +152,8 @@ class ClassViewSet(viewsets.ModelViewSet):
             if score_type == 'score':
                 records = ClassExamRecord.objects.filter(
                     stu_class_id=pk,
-                    sub_exam__course_id__in=gaokao_courses,
+                    sub_exam__course_id__in=gaokao_courses + [60],
                 ).order_by('sub_exam__started_at').values(
-                    'sub_exam__exam__name'
-                ).values(
                     'sub_exam__course_id',
                     'sub_exam__exam__name',
                     'sub_exam__exam__type_id',
@@ -164,38 +161,29 @@ class ClassViewSet(viewsets.ModelViewSet):
                     'attend_count'
                 )
 
-                formated_records = {}
+                formatted_records = {}
                 type_map = {}
-                total = 0
-                exam_name = ''
+
                 for record in records:
-                    if not exam_name:
-                        exam_name = record['sub_exam__exam__name']
-                        formated_records[exam_name] = []
-                    if not exam_name == record['sub_exam__exam__name']:
-                        formated_records[exam_name].append({
-                            'course': 60,
-                            'score': total
-                        })
-                        exam_name = record['sub_exam__exam__name']
-                        formated_records[exam_name] = []
-                        total = 0
+                    exam_name = record['sub_exam__exam__name']
+                    if exam_name not in formatted_records:
+                        formatted_records[exam_name] = []
                     if exam_name not in type_map:
                         type_map[exam_name] = record['sub_exam__exam__type_id']
-                    avg_score = record['total_score'] / record['attend_count']
-                    formated_records[exam_name].append({
+
+                    formatted_records[exam_name].append({
                         'course': record['sub_exam__course_id'],
-                        'score': avg_score
-                    })
-                    total += avg_score
-                if exam_name:
-                    formated_records[exam_name].append({
-                        'course': 60,
-                        'score': total
+                        'score': record['total_score'] / record['attend_count']
+                        if record['sub_exam__course_id'] != 60 else record['total_score']
                     })
 
+                results = {}
+                for key in formatted_records:
+                    if len(formatted_records[key]) == 1:
+                        continue
+                    results[key] = formatted_records[key]
                 return Response({
-                    'results': formated_records,
+                    'results': results,
                     'type_map': type_map
                 })
 
@@ -259,7 +247,8 @@ class ClassViewSet(viewsets.ModelViewSet):
             return Response('exam_id 输入有误', status=400)
         attend_count = ClassExamRecord.objects.filter(
             stu_class_id=pk,
-            sub_exam__exam_id=exam_id
+            sub_exam__exam_id=exam_id,
+            sub_exam__course_id__in=gaokao_courses
         ).values(
             'sub_exam__exam_id'
         ).annotate(
@@ -273,6 +262,7 @@ class ClassViewSet(viewsets.ModelViewSet):
         absent_count = StudentExamRecord.objects.filter(
             student_id__in=students,
             sub_exam__exam_id=exam_id,
+            sub_exam__course_id__in=gaokao_courses,
             score=-2
         ).values(
             'sub_exam__exam_id'
@@ -283,6 +273,7 @@ class ClassViewSet(viewsets.ModelViewSet):
         free_count = StudentExamRecord.objects.filter(
             student_id__in=students,
             sub_exam__exam_id=exam_id,
+            sub_exam__course_id__in=gaokao_courses,
             score=-3
         ).values(
             'sub_exam__exam_id'
@@ -312,7 +303,7 @@ class ClassViewSet(viewsets.ModelViewSet):
             sub_exam__exam_id=exam_id,
             attend_count__gt=0,
             stu_class_id__isnull=False
-        ).exclude(sub_exam__course_id=60).select_related(
+        ).select_related(
             'stu_class',
             'sub_exam'
         ).values(
@@ -321,7 +312,10 @@ class ClassViewSet(viewsets.ModelViewSet):
             'stu_class__class_name',
             'sub_exam__course_id',
             'total_score',
+            't_score',
+            'z_score',
             'attend_count',
+            'order'
         ).order_by(
             'sub_exam__course_id',
             'stu_class_id'
@@ -334,7 +328,10 @@ class ClassViewSet(viewsets.ModelViewSet):
             formatted_data[course_id].append({
                 'class_id': record['stu_class_id'],
                 'class_name': record['stu_class__class_name'],
-                'average': record['total_score'] / record['attend_count'],
+                'score': record['total_score'] / record['attend_count'] if course_id != 60 else record['total_score'],
+                't_score': record['t_score'],
+                'z_score': record['z_score'],
+                'order': record['order']
             })
 
         result = {}
@@ -342,8 +339,8 @@ class ClassViewSet(viewsets.ModelViewSet):
         for course_id in formatted_data:
             result[course_id] = sorted(
                 formatted_data[course_id],
-                key=lambda d: d['average'],
-                reverse=False
+                key=lambda d: d['order'],
+                reverse=True
             )
         return Response(result)
 
@@ -367,17 +364,12 @@ class ClassViewSet(viewsets.ModelViewSet):
         exam_id = request.query_params.get('exam_id', '')
         if not exam_id:
             return Response('exam_id 输入有误', status=400)
-        if exam_id == 'latest':
-            exam_id = ClassExamRecord.objects.filter(
-                stu_class_id=pk
-            ).order_by(
-                '-sub_exam__started_at'
-            ).values('sub_exam__exam_id').first()['sub_exam__exam_id']
         students = StudentRecord.objects.filter(
             stu_class_id=pk
         ).values_list('student_id', flat=True)
         records = StudentExamRecord.objects.filter(
             student_id__in=students,
+            sub_exam__course_id__in=gaokao_courses,
             sub_exam__exam_id=exam_id,
             score__gte=0
         ).values(
@@ -417,21 +409,50 @@ class ClassViewSet(viewsets.ModelViewSet):
         ).values_list('stu_class_id', flat=True).order_by(
             'stu_class_id'
         )
+        student_map = {}
 
         records = {}
+
         for class_id in class_ids:
-            studnts = StudentRecord.objects.filter(
-                stu_class_id=class_id,
-                student_id__isnull=False,
-            ).values_list('student_id', flat=True)
-            records[class_id] = {}
-            for exam_range in EXAM_RANGES:
-                records[class_id][exam_range[1]] = StudentExamRecord.objects.filter(
-                    student_id__in=studnts,
-                    sub_exam__exam_id=exam_id,
-                    score__gte=exam_range[0],
-                    score__lte=exam_range[1],
-                ).values('sub_exam__course_id').annotate(
-                    count=Count('id')
-                )
+            if class_id not in student_map:
+                students = StudentRecord.objects.filter(
+                    stu_class_id=class_id,
+                    student_id__isnull=False,
+                ).values_list('student_id', flat=True)
+                student_map[class_id] = students
+            else:
+                students = student_map[class_id]
+
+            for score_type in SCORE_DISTRIBUTION_RANGES:
+                if score_type not in records:
+                    records[score_type] = {}
+                records[score_type][class_id] = {}
+                for exam_range in SCORE_DISTRIBUTION_RANGES[score_type]:
+                    score_filter = Q()
+                    if exam_range[0] is not None:
+                        if score_type == 'score':
+                            score_filter &= Q(score__gte=exam_range[0])
+                        if score_type == 't_score':
+                            score_filter &= Q(t_score__gte=exam_range[0])
+                        if score_type == 'z_score':
+                            score_filter &= Q(z_score__gte=exam_range[0])
+
+                    if exam_range[1] is not None:
+                        if score_type == 'score':
+                            score_filter &= Q(score__lt=exam_range[1])
+                        if score_type == 't_score':
+                            score_filter &= Q(t_score__lt=exam_range[1])
+                        if score_type == 'z_score':
+                            score_filter &= Q(z_score__lt=exam_range[1])
+
+                    range_name = exam_range[1] if exam_range[1] is not None else 'inf'
+                    records[score_type][class_id][range_name] = StudentExamRecord.objects.filter(
+                        score_filter,
+                        score__gte=0,
+                        student_id__in=students,
+                        sub_exam__exam_id=exam_id,
+                        sub_exam__course_id__in=gaokao_courses,
+                    ).values('sub_exam__course_id').annotate(
+                        count=Count('id')
+                    )
         return Response(records)
