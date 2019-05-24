@@ -337,6 +337,23 @@ class ClassAnalysis extends PureComponent {
     });
   };
 
+  getRanges = (compareScoreType) => {
+    if (compareScoreType !== 'z_score') {
+      return Object.values(RANGE_ALIAS_MAP[compareScoreType]);
+    }
+    return Object.keys(RANGE_ALIAS_MAP[compareScoreType]).sort((a, b) => {
+      if (b === 'inf') {
+        return -1;
+      }
+
+      if (a === 'inf') {
+        return 1;
+      }
+
+      return Number(a) - Number(b);
+    }).map(r => RANGE_ALIAS_MAP[compareScoreType][r]);
+  };
+
   render() {
     const {
       stuClass, classListLoading, loading,
@@ -378,7 +395,7 @@ class ClassAnalysis extends PureComponent {
       const template = showedDistributeData[0];
       let i = 0;
       const fakeData = [];
-      Object.values(RANGE_ALIAS_MAP[compareScoreType]).map(range => {
+      this.getRanges(compareScoreType).map(range => {
         if (i < showedDistributeData.length) {
           if (showedDistributeData[i].range !== range) {
             fakeData.push({
