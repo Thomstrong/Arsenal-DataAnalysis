@@ -7,7 +7,7 @@ const { Paragraph, Text } = Typography;
 
 const getUrl = (id) => `/student/center/?studentId=${id}`;
 
-const getStuText = (student) => `${student.id}_${student.name}(${(student.rank * 100).toFixed(1)}%)`;
+const getStuText = (student) => `${student.name}(${(student.rank * 100).toFixed(1)}%)`;
 
 const renderLowCosts = (students) => {
   return students.map((student) => {
@@ -30,21 +30,28 @@ const ClassEcardChart = memo(
           <Chart
             height={400} data={costData}
             scale={{
-              tickInterval: 20
+              'name': {
+                tickCount: 15
+              }
             }}
+            tooltip={[
+              "avg",
+              (avg) => {
+                return {
+                  name: "日均消费",
+                  value: avg
+                };
+              }
+            ]}
             forceFit
           >
             <Axis name="name"/>
             <Axis name="avg"/>
-            <Tooltip
-              crosshairs={{
-                type: "y"
-              }}
-            />
+            <Tooltip/>
             <Geom type="interval" position="name*avg"/>
           </Chart>
         </Col>
-        <Col span={4}>
+        <Col xl={24} xs={24} md={24} lg={24}>
           <Paragraph>
             在消费信息记录中,该班级共有<Text type='danger'>{costData.length}
           </Text>名同学产生消费记录，班级平均日消费为<Text type="danger">{costSummary.classAvgCost}元</Text>。

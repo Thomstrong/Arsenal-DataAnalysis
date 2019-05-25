@@ -484,6 +484,9 @@ class ClassViewSet(viewsets.ModelViewSet):
             'avg'
         ))
 
+        if not class_cost_records:
+            return Response([])
+
         total_cost_records = list(DailyConsumption.objects.values('student_id').annotate(
             avg=-Avg('total_cost')
         ).filter(

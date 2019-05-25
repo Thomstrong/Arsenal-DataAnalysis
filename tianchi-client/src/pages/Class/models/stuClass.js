@@ -394,11 +394,24 @@ export default {
       if (!payload) {
         return state;
       }
-      const costData = payload;
+      let totalCost = 0;
+      const lowCostData = [];
+      const costData = payload.map(data => {
+        totalCost += data.avg;
+        const formattedData = {
+          ...data,
+          'avg': Number(data.avg.toFixed(2)),
+          'name': `${data.id}-${data.name}`,
+        };
+        if (data.rank < 0.2) {
+          lowCostData.push(formattedData);
+        }
+        return formattedData;
+      });
 
       const costSummary = {
-        classAvgCost: 20.9,
-        lowCostData: costData.filter(data => data.rank < 0.2),
+        classAvgCost: Number((totalCost / costData.length).toFixed(2)),
+        lowCostData
       };
 
       return {
