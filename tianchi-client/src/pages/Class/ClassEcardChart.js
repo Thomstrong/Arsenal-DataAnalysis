@@ -44,7 +44,7 @@ const ClassEcardChart = memo(
               (avg) => {
                 return {
                   name: "日均消费",
-                  value: avg+"元"
+                  value: avg + "元"
                 };
               }
             ]}

@@ -22,7 +22,6 @@ import {
   WEEKDAY_ALIAS
 } from "@/constants";
 import DataSet from "@antv/data-set";
-import React from "react";
 
 
 export default {
