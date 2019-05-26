@@ -21,11 +21,35 @@ const AttendanceChart = memo(
     return <Card
       loading={loading}
       title={<Fragment>
-        <span className={styles.LabelHint}>{'考勤记录'}</span>
-        <Divider className={styles.TitleDivider} type="vertical"/>
-        <span className={styles.SwitchHint}>{'仅统计违纪记录'}</span>
+        <span
+          style={{
+            verticalAlign: 'middle',
+          }}
+        >
+          {'考勤记录'}
+        </span>
+        <Divider
+          style={{
+            verticalAlign: 'middle',
+            margin: '0 15px',
+            height: '20px'
+          }}
+          type="vertical"
+        />
+        <span
+          style={{
+            fontSize: '.9em',
+            verticalAlign: 'middle',
+            marginRight: '10px',
+            fontWeight: 'normal'
+          }}
+        >
+          {'仅统计违纪记录'}</span>
         <Switch
-          className={styles.TitleSwitch}
+          style={{
+            verticalAlign: 'middle',
+          }}
+          size={'small'}
           defaultChecked={breakOnly}
           onChange={onKaoqinSwitchChanged}
         />
