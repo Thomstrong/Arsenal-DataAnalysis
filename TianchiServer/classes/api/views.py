@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from classes.api.serializers import ClassBasicSerializer, ClassMiniSerializer
 from classes.constants import SCORE_DISTRIBUTION_RANGES
 from classes.models import Class
+from consumptions.models import DailyConsumption
 from exams.models.exam_record import StudentExamRecord, ClassExamRecord
 from kaoqins.models.kaoqin_record import KaoqinRecord
 from students.constants import SexType, PolicyType
@@ -94,7 +95,8 @@ class ClassViewSet(viewsets.ModelViewSet):
 
         if info_type == 'radar':
             students = StudentRecord.objects.filter(
-                stu_class_id=pk
+                stu_class_id=pk,
+                student_id__isnull=False,
             ).values_list('student_id', flat=True)
             exam_records = StudentExamRecord.objects.filter(
                 Q(score__gte=0),
@@ -192,7 +194,8 @@ class ClassViewSet(viewsets.ModelViewSet):
     )
     def kaoqin(self, request, pk):
         students = StudentRecord.objects.filter(
-            stu_class_id=pk
+            stu_class_id=pk,
+            student_id__isnull=False,
         ).values_list('student_id', flat=True)
 
         records = KaoqinRecord.objects.filter(
@@ -256,7 +259,8 @@ class ClassViewSet(viewsets.ModelViewSet):
         )
 
         students = StudentRecord.objects.filter(
-            stu_class_id=pk
+            stu_class_id=pk,
+            student_id__isnull=False,
         ).values_list('student_id', flat=True)
 
         absent_count = StudentExamRecord.objects.filter(
@@ -365,7 +369,8 @@ class ClassViewSet(viewsets.ModelViewSet):
         if not exam_id:
             return Response('exam_id 输入有误', status=400)
         students = StudentRecord.objects.filter(
-            stu_class_id=pk
+            stu_class_id=pk,
+            student_id__isnull=False,
         ).values_list('student_id', flat=True)
         records = StudentExamRecord.objects.filter(
             student_id__in=students,
@@ -456,3 +461,61 @@ class ClassViewSet(viewsets.ModelViewSet):
                         count=Count('id')
                     )
         return Response(records)
+
+    @detail_route(
+        methods=['GET'],
+    )
+    def student_costs(self, request, pk):
+        students = StudentRecord.objects.filter(
+            stu_class_id=pk,
+            student_id__isnull=False,
+        ).values_list('student_id', flat=True)
+
+        total = DailyConsumption.objects.values_list('student_id', flat=True).distinct().count()
+
+        class_cost_records = list(DailyConsumption.objects.filter(
+            student_id__in=students,
+        ).values('student_id').annotate(
+            avg=-Avg('total_cost')
+        ).order_by('avg').values_list(
+            'student_id',
+            'student__name',
+            'avg'
+        ))
+
+        if not class_cost_records:
+            return Response([])
+
+        total_cost_records = list(DailyConsumption.objects.values('student_id').annotate(
+            avg=-Avg('total_cost')
+        ).filter(
+            avg__gte=class_cost_records[0][2],
+            avg__lte=class_cost_records[-1][2]
+        ).order_by('avg').values_list(
+            'student_id',
+            'student__name',
+            'avg'
+        ))
+
+        base_count = DailyConsumption.objects.values('student_id').annotate(
+            avg=-Avg('total_cost')
+        ).filter(
+            avg__lt=class_cost_records[0][2],
+        ).count()
+
+        formatted_records = []
+        i = 0
+        # [student_id, student__name, avg]
+        for index, record in enumerate(total_cost_records):
+            if i == len(class_cost_records):
+                break
+            if record[0] == class_cost_records[i][0]:
+                formatted_records.append({
+                    'id': record[0],
+                    'name': record[1],
+                    'avg': record[2],
+                    'rank': (index + base_count) / total
+                })
+                i += 1
+
+        return Response(formatted_records)

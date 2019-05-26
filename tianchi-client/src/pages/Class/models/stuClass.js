@@ -10,6 +10,7 @@ import {
   getExamRecords,
   getExamSummary,
   getScoreDistribution,
+  getStudentCosts,
 } from '@/services/api';
 import {
   COURSE_ALIAS,
@@ -48,6 +49,8 @@ export default {
     kaoqinDetail: {},
     kaoqinSummary: [],
     kaoqinCount: 0,
+    costData: [],
+    costSummary: {},
     totalTrend: [],
     subTrends: [],
     maxRank: 0,
@@ -127,6 +130,15 @@ export default {
         type: 'saveKaoqinData',
         payload: response,
         termMap: payload.termMap
+      });
+    },
+    * fetchCostData({ payload }, { call, put }) {
+      const response = yield call(getStudentCosts, {
+        ...payload
+      });
+      yield put({
+        type: 'saveCostData',
+        payload: response,
       });
     },
     * fetchExamRank({ payload }, { call, put }) {
@@ -375,6 +387,36 @@ export default {
         kaoqinDetail,
         studentList,
         kaoqinCount: count
+      };
+    },
+    saveCostData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      let totalCost = 0;
+      const lowCostData = [];
+      const costData = payload.map(data => {
+        totalCost += data.avg;
+        const formattedData = {
+          ...data,
+          'avg': Number(data.avg.toFixed(2)),
+          'name': `${data.id}-${data.name}`,
+        };
+        if (data.rank < 0.2) {
+          lowCostData.push(formattedData);
+        }
+        return formattedData;
+      });
+
+      const costSummary = {
+        classAvgCost: Number((totalCost / costData.length).toFixed(2)),
+        lowCostData
+      };
+
+      return {
+        ...state,
+        costData,
+        costSummary
       };
     },
     saveExamRecords(state, { payload }) {
