@@ -1,10 +1,10 @@
 /**
  * Created by 胡晓慧 on 2019/4/13.
  */
-import React, { memo } from "react";
+import React, { Fragment, memo } from "react";
 import { Card, Col, Empty, List, Row, Typography } from 'antd';
 import { Axis, Chart, Coord, Geom, Guide, Legend, Tooltip } from "bizcharts";
-import { COURSE_FULLNAME_ALIAS, getDengDi, SCORE_TYPE_ALIAS, PING_SHI_EXAM_TYPES } from "@/constants";
+import { COURSE_FULLNAME_ALIAS, getDengDi, PING_SHI_EXAM_TYPES, SCORE_TYPE_ALIAS } from "@/constants";
 import Divider from "antd/es/divider";
 
 const { Paragraph, Text } = Typography;
@@ -32,9 +32,21 @@ const ScoreLineChart = memo(
     const getFilteredData = data => data.filter(d => !excludePingshi || !PING_SHI_EXAM_TYPES.includes(d.type));
     const filteredData = getFilteredData(lineData);
     let highScoreTime = 0;
+    let hightText = '';
+
     if (scoreType === 'score') {
+      hightText = '总分在600分及以上';
       for (let data of filteredData) {
         if ((!excludePingshi || !PING_SHI_EXAM_TYPES.includes(data.type)) && data.score >= 600) {
+          highScoreTime++;
+        }
+      }
+    }
+    const isRank = scoreType === 'class_rank';
+    if (isRank) {
+      hightText = '总分排名在班级前十';
+      for (let data of filteredData) {
+        if ((!excludePingshi || !PING_SHI_EXAM_TYPES.includes(data.type)) && data.score <= 10) {
           highScoreTime++;
         }
       }
@@ -49,7 +61,7 @@ const ScoreLineChart = memo(
         minScore = data.score;
       }
     }
-    const isRank = scoreType === 'class_rank';
+
     const showDengDi = scoreType === 'deng_di';
     const scale = showDengDi ? dengDiScale : isRank ? {
       score: {
@@ -57,6 +69,152 @@ const ScoreLineChart = memo(
         ticks: [-1, -10, -20, -30, -40, -50]
       }
     } : normalScale;
+
+    const renderItem = (item) => {
+      const data = getFilteredData(item.lineData);
+
+      if (!data.length) {
+        return <Fragment/>;
+      }
+      return <List.Item>
+        <Chart
+          key={`subject-${item.title}-trend`}
+          height={300}
+          data={showDengDi ? data.map(data => {
+            return {
+              ...data,
+              score: getDengDi(data.score)
+            };
+          }) : isRank ? data.map(data => {
+            return {
+              ...data,
+              score: -data.score
+            };
+          }) : data.map(data => {
+            return {
+              ...data,
+              score: Number(data.score.toFixed(2))
+            };
+          })
+          }
+          scale={{
+            ...scale,
+            exam: {
+              tickCount: 3
+            }
+          }}
+          forceFit
+        >
+          <p style={{ textAlign: 'center' }}>
+            {`${COURSE_FULLNAME_ALIAS[item.title]}考试${SCORE_TYPE_ALIAS[scoreType]}趋势分析`}
+          </p>
+          <Axis
+            name="exam"
+            label={{
+              offset: 30,
+              formatter(text, item, index) {
+                const pos = text.length / 3;
+                return `${text.slice(0, pos)}\n${text.slice(pos, 2 * pos)}\n${text.slice(2 * pos)}`;
+              },
+            }}
+          />
+          <Axis
+            name="score"
+            label={{
+              formatter(text, item, index) {
+                return isRank ? -Number(text) : text;
+              },
+            }}
+          />
+          <Tooltip
+            crosshairs={{
+              type: "y"
+            }}
+          />
+          <Geom type="line" position="exam*score" size={2} tooltip={[
+            "score",
+            (score) => {
+              if (showDengDi) {
+                return {
+                  name: "等第",
+                  value: dengDiList[score]
+                };
+              }
+
+              if (isRank) {
+                return {
+                  name: "排名",
+                  value: -score
+                };
+              }
+              return {
+                name: "分数",
+                value: score
+              };
+            }
+          ]}/>
+          <Geom
+            type="point"
+            position="exam*score"
+            size={4}
+            shape={"circle"}
+            style={{
+              stroke: "#fff",
+              lineWidth: 1
+            }}
+            tooltip={[
+              "score",
+              (score) => {
+                if (showDengDi) {
+                  return {
+                    name: "等第",
+                    value: dengDiList[score]
+                  };
+                }
+
+                if (isRank) {
+                  return {
+                    name: "排名",
+                    value: -score
+                  };
+                }
+                return {
+                  name: "分数",
+                  value: score
+                };
+              }
+            ]}
+          />
+
+          {scoreType === 'z_score' && <Guide key='sub-trend-guide'>
+            <Line
+              key={`${item.title}-z-score-line`}
+              top={true}
+              start={(xScale, yScale) => {
+                if (yScale.score.min > 0) {
+                  return [-0.5, -100];
+                }
+                return [-0.5, 0];
+
+              }}
+              end={(xScale, yScale) => {
+                if (yScale.score.min > 0) {
+                  return ['max', -100];
+                }
+                return ['max', 0];
+
+              }}
+              lineStyle={{
+                stroke: '#67686e',
+                lineDash: [0, 2, 2],
+                lineWidth: 2,
+                opacity: 0.4,
+              }}
+            />
+          </Guide>}
+        </Chart>
+      </List.Item>;
+    };
     return (lineData && !!lineData.length) ? <React.Fragment>
       <Row>
         <Col span={8}>
@@ -361,140 +519,14 @@ const ScoreLineChart = memo(
           薄弱学科为<Text type="danger">
           {lineSummary.disadvantage}</Text>，
           不稳定学科为<Text type="danger">{lineSummary.unstable}</Text></Paragraph>
-        {scoreType === 'score' && <Paragraph>共统计<Text type="danger">{filteredData.length}</Text>次考试，
-          总分在600及以上的有<Text type="danger">{highScoreTime}</Text>次</Paragraph>}
+        {!!hightText && <Paragraph>共统计<Text type="danger">{filteredData.length}</Text>次考试，
+          {`${hightText}`}有<Text type="danger">{highScoreTime}</Text>次</Paragraph>}
       </Card>}
       <Divider style={{ marginBottom: 24, marginTop: 5 }} dashed>各科目成绩趋势</Divider>
       <List
         grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 1, xl: 2, xxl: 2 }}
         dataSource={subData}
-        renderItem={item => (
-          <List.Item>
-            <Chart
-              key={`subject-${item.title}-trend`}
-              height={300}
-              data={showDengDi ? getFilteredData(item.lineData).map(data => {
-                return {
-                  ...data,
-                  score: getDengDi(data.score)
-                };
-              }) : isRank ? getFilteredData(item.lineData).map(data => {
-                return {
-                  ...data,
-                  score: -data.score
-                };
-              }) : getFilteredData(item.lineData).map(data => {
-                return {
-                  ...data,
-                  score: Number(data.score.toFixed(2))
-                };
-              })
-              }
-              scale={{
-                ...scale,
-                exam: {
-                  tickCount: 3
-                }
-              }}
-              forceFit
-            >
-              <p style={{ textAlign: 'center' }}>
-                {`${COURSE_FULLNAME_ALIAS[item.title]}考试${SCORE_TYPE_ALIAS[scoreType]}趋势分析`}
-              </p>
-              <Axis
-                name="exam"
-                label={{
-                  offset: 30,
-                  formatter(text, item, index) {
-                    const pos = text.length / 3;
-                    return `${text.slice(0, pos)}\n${text.slice(pos, 2 * pos)}\n${text.slice(2 * pos)}`;
-                  },
-                }}
-              />
-              <Axis
-                name="score"
-                label={{
-                  formatter(text, item, index) {
-                    return isRank ? -Number(text) : text;
-                  },
-                }}
-              />
-              <Tooltip
-                crosshairs={{
-                  type: "y"
-                }}
-              />
-              <Geom type="line" position="exam*score" size={2} tooltip={[
-                "score",
-                (score) => {
-                  if (showDengDi) {
-                    return {
-                      name: "等第",
-                      value: dengDiList[score]
-                    };
-                  }
-
-                  if (isRank) {
-                    return {
-                      name: "排名",
-                      value: -score
-                    };
-                  }
-                  return {
-                    name: "分数",
-                    value: score
-                  };
-                }
-              ]}/>
-              <Geom
-                type="point"
-                position="exam*score"
-                size={4}
-                shape={"circle"}
-                style={{
-                  stroke: "#fff",
-                  lineWidth: 1
-                }}
-                tooltip={[
-                  "score",
-                  (score) => {
-                    return {
-                      name: "分数",
-                      value: score
-                    };
-                  }
-                ]}
-              />
-
-              {scoreType === 'z_score' && <Guide key='sub-trend-guide'>
-                <Line
-                  key={`${item.title}-z-score-line`}
-                  top={true}
-                  start={(xScale, yScale) => {
-                    if (yScale.score.min > 0) {
-                      return [-0.5, -100];
-                    }
-                    return [-0.5, 0];
-
-                  }}
-                  end={(xScale, yScale) => {
-                    if (yScale.score.min > 0) {
-                      return ['max', -100];
-                    }
-                    return ['max', 0];
-
-                  }}
-                  lineStyle={{
-                    stroke: '#67686e',
-                    lineDash: [0, 2, 2],
-                    lineWidth: 2,
-                    opacity: 0.4,
-                  }}
-                />
-              </Guide>}
-            </Chart>
-          </List.Item>
-        )}
+        renderItem={item => (renderItem(item))}
       />
     </React.Fragment> : <Empty description='暂无考试数据'/>;
   }

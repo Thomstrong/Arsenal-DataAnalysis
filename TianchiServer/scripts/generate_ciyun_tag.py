@@ -264,7 +264,7 @@ def run():
 
         # 模范学生
         tag_in_db, _ = WordCloudTag.objects.get_or_create(
-            title='模范学生'
+            title='遵守校规'
         )
 
         students = Student.objects.all().exclude(

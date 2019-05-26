@@ -121,7 +121,7 @@ class CollageExam extends PureComponent {
                   <Text type="danger"> 26650 </Text>个专业的报考要求，
                   发现有大部分专业<Text type='danger'>不限制</Text>考生选课情况。</Paragraph>
                 <Paragraph>对于有指定科目的专业来说，有无<Text type='danger'>物理</Text>基础是他们关注的重点。
-                  对化学、技术、生物有要求的专业数量紧随其后。这也从侧面解释了传统理科选课人数居高不下的原因了</Paragraph>
+                  对化学、技术、生物有要求的专业数量紧随其后。这也从侧面解释了传统理科选课人数居高不下的原因了。</Paragraph>
               </Card>
             </Col>
           </Row> : <Empty description="暂无数据"/>}

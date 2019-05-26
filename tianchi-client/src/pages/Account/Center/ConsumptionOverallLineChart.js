@@ -52,6 +52,19 @@ const ConsumptionOverallLineChart = memo(
       }
     }
 
+    let showPredict = true;
+    const dailySumData = [];
+    dailySumCost.map((data) => {
+      if (data.total < 0) {
+        showPredict = false;
+        return;
+      }
+      dailySumData.push({
+        x: Date.parse(data.date),
+        y: data.total
+      });
+    });
+
     return (
       <Card title="总体消费情况一览" bordered={false} style={{ width: '100%' }}>
         <Card title="总体消费趋势" bordered={false} style={{ width: '100%', cursor: "auto" }} hoverable={true}>
@@ -94,25 +107,23 @@ const ConsumptionOverallLineChart = memo(
                 enableDig={true}
                 onPointClick={onPointClick}
                 onBlur={onPopClose}
-                showPredict={true}
+                showPredict={showPredict}
                 height={300}
-                data={dailySumCost.map((data) => {
-                  return {
-                    x: Date.parse(data.date),
-                    y: data.total
-                  };
-                })}
+                data={dailySumData}
                 startTime={startTime}
                 endTime={endTime}
               />
             </Col>
             <Col xl={4} xs={24}>
-              <Paragraph>该学生平均日消费为<Text strong style={{ color: "#cc4756" }}>¥{dailyAvg}</Text>元</Paragraph>
-              <Paragraph>超过<Text
-                strong style={{ color: "#cc4756" }}
-              >
-                {`${(dailyAvgRank * 100).toFixed(2)}%`}
-              </Text>的学生</Paragraph>
+              <Paragraph>该学生平均日消费为<Text strong style={{ color: "#cc4756" }}>¥{dailyAvg}</Text>元， 超过
+                <Text
+                  strong style={{ color: "#cc4756" }}
+                >
+                  {`${(dailyAvgRank * 100).toFixed(2)}%`}
+                </Text>的学生</Paragraph>
+              {showPredict ? <Paragraph>点击<Text strong style={{ color: "#cc4756" }}>数据点</Text>，获取该天消费明细</Paragraph> : (
+                <Paragraph>数据量过少，无法预测</Paragraph>
+              )}
             </Col>
           </Row> : <Empty/>}
         </Card>
@@ -120,7 +131,7 @@ const ConsumptionOverallLineChart = memo(
           {dailySumCost.length ? <Row type="flex" align="middle">
             <Col xl={4} xs={24}>
               <Paragraph>共有<Text strong style={{ color: "#cc4756" }}>{timeCount}</Text>个时间段产生过消费;</Paragraph>
-              <Paragraph>其中，平均消费最高出现在<Text strong style={{ color: "#cc4756" }}>{maxTime}时</Text>,平均消费金额为
+              <Paragraph>其中，平均消费最高出现在<Text strong style={{ color: "#cc4756" }}>{maxTime}时</Text>，为
                 <Text strong style={{ color: "#cc4756" }}>¥{maxMoney}</Text></Paragraph>
             </Col>
             <Col xl={20} xs={24}>

@@ -20,7 +20,7 @@ const sexRankingData = [
   },
   {
     title: "女生14时平均消费",
-    total: 17.80
+    total: "17.80"
   },
   {
     title: "女生13时平均消费",
@@ -48,7 +48,7 @@ const leaveRankingData = [
   },
   {
     title: "走读生14时平均消费",
-    total: 15.10
+    total: "15.10"
   },
   {
     title: "走读生15时平均消费",

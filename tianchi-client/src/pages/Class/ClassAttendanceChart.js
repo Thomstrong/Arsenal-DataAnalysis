@@ -13,7 +13,7 @@ const AttendanceChart = memo(
   ({ kaoqinData, kaoqinDetail, kaoqinSummary, kaoqinCount, term, termList, loading, toggleDig, digMode }) => (
     <Card
       loading={loading} bordered={false} style={{ width: '100%' }}
-      title={`${digMode ? term : ''} 考勤记录${digMode ? '' : '概览'}`}
+      title={`${digMode ? term : ''} 违纪记录${digMode ? '' : '概览'}`}
     >
       {termList.length ? <Row>
         <Col span={20}>

@@ -487,7 +487,7 @@ class ClassAnalysis extends PureComponent {
                   style={{ width: '100%', display: 'block' }}
                   showSearch
                   notFoundContent={classListLoading ? <Spin size="small"/> :
-                    <Empty description={this.state.classId ? '未找到包含该信息数据' : '请输入班级名或序号查询'}/>
+                    <Empty description={this.state.classId ? '未找到包含该信息数据' : '请输入班级名、年份或序号查询'}/>
                   }
                   size="large"
                   value={classInfo.id ? `${classInfo.id}-${classInfo.start_year}-${classInfo.class_name}` : this.state.classId}

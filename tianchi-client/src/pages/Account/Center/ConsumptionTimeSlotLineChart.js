@@ -29,10 +29,9 @@ const ConsumptionTimeSlotLineChart = memo(
       }
     }
     //当本周期消费与上一周期消费相差20元时，告警
-    const attention = Math.abs(nowAllCost - lastAllCost) > 20;
+    const attention = Math.abs(nowAllCost - lastAllCost) > 30;
 
     //关于某周期时间点消费的文字分析
-    let equal = 1;
     let high = 0;
     let costTimeList = [];
     let maxHourlyTime = 0;
@@ -63,15 +62,11 @@ const ConsumptionTimeSlotLineChart = memo(
     }
 
     for (let i = 0; i < list.length; i++) {
-      if (list[i] !== undefined) {
-        if (list[i].student !== 0) {
-          if ((list[i].student - list[i].school) > 2) {
-            equal = equal +1;
-            high = high + 1;
-          } else if ((list[i].school - list[i].student) > 2) {
-            equal = equal -1;
-            high = high - 1;
-          }
+      if (list[i] && list[i].student) {
+        if ((list[i].student - list[i].school) > 2) {
+          high = high + 1;
+        } else if ((list[i].school - list[i].student) > 2) {
+          high = high - 1;
         }
       }
     }
@@ -84,24 +79,23 @@ const ConsumptionTimeSlotLineChart = memo(
           {hourlyCost.length ? <Row type="flex" align="middle">
             <Col xl={4} xs={24}>
               {attention ? <Title style={{ color: "#c04b4f" }} code level={4}>告警</Title> :
-                <Paragraph>
-                  <Text strong code>消费稳定</Text>
-                </Paragraph>
+                <Title style={{ color: "#747474" }} code level={4}>消费稳定</Title>
               }
               <Paragraph>
                 {`上${DATE_REANGE_ALIAS[dateRange]}消费总额为`}
-                <Text strong style={{ color: "#cc4756" }}>¥{lastAllCost.toFixed(2)}元</Text>
+                <Text strong style={{ color: "#cc4756" }}>¥{lastAllCost.toFixed(2)}</Text>
               </Paragraph>
               <Paragraph>
                 {`这${DATE_REANGE_ALIAS[dateRange]}消费总额为`}
-                <Text strong style={{ color: "#cc4756" }}>¥{nowAllCost.toFixed(2)}元</Text>
+                <Text strong style={{ color: "#cc4756" }}>¥{nowAllCost.toFixed(2)}</Text>
               </Paragraph>
               <Paragraph>
                 {`预测下${DATE_REANGE_ALIAS[dateRange]}消费总额为`}
-                <Text strong style={{ color: "#cc4756" }}>¥{futureAllCost.toFixed(2)}元</Text>
+                <Text strong style={{ color: "#cc4756" }}>¥{futureAllCost.toFixed(2)}</Text>
               </Paragraph>
               <Paragraph>
-                本周期消费金额最高出现在<Text strong style={{ color: "#cc4756" }}>第{maxNowTime}天</Text>,
+                本周期消费金额最高出现在
+                <Text strong style={{ color: "#cc4756" }}>{maxNowTime ? `第${maxNowTime}天` : '当天'}</Text>,
                 消费金额为<Text strong style={{ color: "#cc4756" }}>¥{maxNowCost.toFixed(2)}</Text>
               </Paragraph>
             </Col>
@@ -128,7 +122,7 @@ const ConsumptionTimeSlotLineChart = memo(
                     alias: `距离${date}天数`,
                     min: 0, max: dateRange,
                     tickInterval: INTERVAL_MAP[dateRange],
-                    range: [ 1/30, 29/30 ]
+                    range: [1 / 30, 29 / 30]
                   }
                 }}
                 forceFit
@@ -317,16 +311,16 @@ const ConsumptionTimeSlotLineChart = memo(
             <Col xl={4} xs={24}>
               <Paragraph>
                 该同学本周期的消费分布在
-                <Text strong style={{ color: "#cc4756" }}>{costTimeList}</Text>
+                <Text strong style={{ color: "#cc4756" }}>{costTimeList.join(' ')}</Text>
               </Paragraph>
               <Paragraph>
                 平均消费最高是在
-                <Text strong style={{ color: "#cc4756" }}>{maxHourlyTime}时</Text>
-                平均消费
-                <Text strong style={{ color: "#cc4756" }}>¥{maxHourlyCost.toFixed(2)}元</Text>
+                <Text strong style={{ color: "#cc4756" }}>{maxHourlyTime}时</Text>，
+                为
+                <Text strong style={{ color: "#cc4756" }}>¥{maxHourlyCost.toFixed(2)}</Text>
               </Paragraph>
-              <Paragraph>该同学在对应时刻消费水平较校平均消费水平{equal===1 ? <Text strong style={{ color: "#cc4756" }}>持平</Text> :
-                (high>0 ? <Text strong style={{ color: "#cc4756" }}>高</Text> :
+              <Paragraph>该同学在本周期消费水平较校平均消费水平{high === 0 ? <Text strong style={{ color: "#cc4756" }}>相当</Text> :
+                (high > 0 ? <Text strong style={{ color: "#cc4756" }}>高</Text> :
                   <Text strong style={{ color: "#cc4756" }}>低</Text>)}</Paragraph>
             </Col>
           </Row> : <Empty/>}

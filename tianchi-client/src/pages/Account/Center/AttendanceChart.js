@@ -1,15 +1,39 @@
-/**
- * Created by 胡晓慧 on 2019/4/13.
- */
-import React, { memo } from "react";
-import { Card, Col, Empty, Row } from 'antd';
+import React, { Fragment, memo } from "react";
+import { Card, Col, Divider, Empty, Row, Switch, Typography } from 'antd';
 import { Axis, Chart, Geom, Legend, Tooltip } from "bizcharts";
-import { Typography } from 'antd';
+import { EVENT_TYPE_ALIAS } from "@/constants";
+import styles from './AttendanceChart.less';
+
 const { Paragraph, Text } = Typography;
 
 const AttendanceChart = memo(
-  ({ kaoqinData, kaoqinSummary, termList, loading,totalKaoqinCount }) => (
-    <Card loading={loading} title="考勤记录" bordered={false} style={{ width: '100%' }}>
+  ({ kaoqinData, kaoqinSummary, termList, loading, breakOnly, onKaoqinSwitchChanged }) => {
+    const recordFilter = (r) => !breakOnly || (r.name !== EVENT_TYPE_ALIAS[99004] && r.name !== EVENT_TYPE_ALIAS[99005]);
+    const summaryData = [];
+    let totalKaoqinCount = 0;
+    kaoqinSummary.map(data => {
+      if (recordFilter(data)) {
+        totalKaoqinCount += data.count;
+        summaryData.push(data);
+      }
+    });
+
+    return <Card
+      loading={loading}
+      title={<Fragment>
+        <span className={styles.LabelHint}>{'考勤记录'}</span>
+        <Divider className={styles.TitleDivider} type="vertical"/>
+        <span className={styles.SwitchHint}>{'仅统计违纪记录'}</span>
+        <Switch
+          className={styles.TitleSwitch}
+          defaultChecked={breakOnly}
+          onChange={onKaoqinSwitchChanged}
+        />
+      </Fragment>
+      }
+      bordered={false}
+      className={styles.AttendanceTitle}
+    >
       {termList.length ? <Row type="flex" align="middle">
         <Col span={20}>
           <Chart
@@ -21,7 +45,7 @@ const AttendanceChart = memo(
               },
             }}
             height={400}
-            data={kaoqinData}
+            data={kaoqinData.filter(recordFilter)}
             forceFit
           >
             <Legend/>
@@ -36,19 +60,23 @@ const AttendanceChart = memo(
           </Chart>
         </Col>
         <Col span={4}>
-          <Paragraph>在考勤记录信息中,该学生共<Text strong style={{color:"#c6464a"}}>
-            {kaoqinSummary.map(data => {
-              if (data.name === '进校') {
-                return;
-              }
-              return `${data.name} ${data.count} 次, `;
-            })} </Text>
-          其中，最多的是<Text strong style={{color:"#c6464a"}}>
-              {kaoqinSummary[0].name}</Text>，共{kaoqinSummary[0].count}次，占<Text strong style={{color:"#c6464a"}}>{(kaoqinSummary[0].count/totalKaoqinCount*100).toFixed(2)}%</Text></Paragraph>
+          <Paragraph>在{breakOnly ? '违纪' : '考勤'}记录中,该学生共<Text strong style={{ color: "#c6464a" }}>
+            {summaryData.map(data => {
+              return `${data.name} ${data.count} 次`;
+            }).join(', ')} </Text>
+            其中，最多的是<Text strong style={{ color: "#c6464a" }}>
+              {summaryData[0].name}</Text>，共{summaryData[0].count}次，占
+            <Text
+              strong
+              style={{ color: "#c6464a" }}
+            >
+              {(summaryData[0].count / totalKaoqinCount * 100).toFixed(2)}%
+            </Text>
+          </Paragraph>
         </Col>
       </Row> : <Empty description='该同学暂无不良考勤数据'/>}
-    </Card>
-  )
+    </Card>;
+  }
 );
 
 export default AttendanceChart;

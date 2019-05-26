@@ -9,10 +9,10 @@ import {
   getGrade,
   getKaoqinData,
   getStudentBasic,
+  getStudentCostDetail,
   getStudentList,
   getStudentTeachers,
   getWordCloudData,
-  getStudentCostDetail,
 } from '@/services/api';
 
 import { COURSE_ALIAS, COURSE_COLOR, COURSE_FULLNAME_ALIAS, EVENT_TYPE_ALIAS, SCORE_LEVEL_ALIAS, } from "@/constants";
@@ -29,7 +29,6 @@ export default {
       teacherInfo: [],
       kaoqinData: [],
       kaoqinSummary: [],
-      totalKaoqinCount:0,
       totalTrend: [],
       scoreType: '',
       lineSummary: {},
@@ -52,7 +51,7 @@ export default {
     dailySumCost: [],
     dailyCostDetail: [],
     dailyAvg: 0,
-    vsDailyAvg:0,
+    vsDailyAvg: 0,
     dailyAvgRank: 0,
     dailyPredictData: {
       date: '',
@@ -370,13 +369,13 @@ export default {
           [SCORE_LEVEL_ALIAS.average]: data.average > 0 ? Number(data.average.toFixed(0)) : 0,
         });
       });
-      unstableSubject.sort(function (a, b) {
+      unstableSubject.sort((a, b) => {
         return b.score - a.score;
       });
-      adSubject.sort(function (a, b) {
+      adSubject.sort((a, b) => {
         return b.score - a.score;
       });
-      disadSubject.sort(function (a, b) {
+      disadSubject.sort((a, b) => {
         return a.score - b.score;
       });
 
@@ -420,7 +419,6 @@ export default {
         return state;
       }
       const termList = {};
-      let count = 0;
       const { termMap } = action;
       const { summary, records } = action.payload;
       state.studentInfo.kaoqinSummary = summary.map((data) => {
@@ -431,13 +429,11 @@ export default {
       });
       state.studentInfo.kaoqinData = records.map((data) => {
         termList[termMap[data.term]] = 1;
-        count = count + data.count;
         return {
           'name': EVENT_TYPE_ALIAS[data.event__type_id],
           [termMap[data.term]]: data.count,
         };
       });
-      state.studentInfo.totalKaoqinCount = count;
       state.termList = Object.keys(termList);
       return state;
     },

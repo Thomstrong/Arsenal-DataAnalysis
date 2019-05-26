@@ -53,12 +53,19 @@ const ClassEcardChart = memo(
         </Col>
         <Col span={21} offset={2}>
           <Paragraph>
-            在消费信息记录中,该班级共有<Text type='danger'>{costData.length}名
-          </Text>同学产生消费记录，班级平均日消费为<Text type="danger">{costSummary.classAvgCost}元</Text>。
+            <ul>
+              <li>
+                在消费信息记录中，该班级共有<Text type='danger'>{costData.length}名
+              </Text>同学产生消费记录，班级平均日消费为<Text type="danger">{costSummary.classAvgCost}元</Text>。
+              </li>
+              <li>
+                {!costSummary.lowCostData.length ? `暂无学生消费水平低于全校消费水平的20%。` :
+                  <Fragment>
+                    其中，{renderLowCosts(costSummary.lowCostData)}的消费较平均水平低，排名不到全校消费水平的20%。
+                  </Fragment>}
+              </li>
+            </ul>
           </Paragraph>
-          {costSummary.lowCostData.length ?
-            <Paragraph>其中，{renderLowCosts(costSummary.lowCostData)}的消费较平均水平低，不到全校消费水平的20%。</Paragraph>
-            : <Paragraph>暂无学生消费水平低于全校消费水平的20%。</Paragraph>}
         </Col>
       </Row> : <Empty description='该班级暂无消费数据'/>}
     </Card>;

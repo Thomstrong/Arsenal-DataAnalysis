@@ -32,8 +32,11 @@ class ClassViewSet(viewsets.ModelViewSet):
         query = request.query_params.get('query', '')
         if not query:
             return Response(status=400, data={'reason': 'need query'})
+        class_filter = Q(id__startswith=query) | Q(class_name__contains=query)
+        if str(query).isdigit():
+            class_filter |= Q(start_year=query)
         classes = self.queryset.filter(
-            Q(id__startswith=query) | Q(class_name__contains=query) | Q(start_year=query),
+            class_filter
         ).order_by('-id')[:50]
         return Response(self.get_serializer_class()(classes, many=True).data)
 
