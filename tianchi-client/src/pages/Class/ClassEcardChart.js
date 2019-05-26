@@ -26,35 +26,35 @@ const ClassEcardChart = memo(
       title="各学生消费情况"
     >
       {costData.length ? <Row>
-        <Col span={20}>
+        <Col span={22}>
           <Chart
             height={400} data={costData}
             scale={{
               'name': {
-                tickCount: 15
+                tickCount: 14
               }
             }}
-            tooltip={[
-              "avg",
-              (avg) => {
-                return {
-                  name: "日均消费",
-                  value: avg
-                };
-              }
-            ]}
             forceFit
           >
             <Axis name="name"/>
             <Axis name="avg"/>
             <Tooltip/>
-            <Geom type="interval" position="name*avg"/>
+            <Geom type="interval" position="name*avg" tooltip={[
+              "avg",
+              (avg) => {
+                return {
+                  name: "日均消费",
+                  value: avg+"元"
+                };
+              }
+            ]}
+            />
           </Chart>
         </Col>
-        <Col xl={24} xs={24} md={24} lg={24}>
+        <Col span={21} offset={2}>
           <Paragraph>
-            在消费信息记录中,该班级共有<Text type='danger'>{costData.length}
-          </Text>名同学产生消费记录，班级平均日消费为<Text type="danger">{costSummary.classAvgCost}元</Text>。
+            在消费信息记录中,该班级共有<Text type='danger'>{costData.length}名
+          </Text>同学产生消费记录，班级平均日消费为<Text type="danger">{costSummary.classAvgCost}元</Text>。
           </Paragraph>
           {costSummary.lowCostData.length ?
             <Paragraph>其中，{renderLowCosts(costSummary.lowCostData)}的消费较平均水平低，不到全校消费水平的20%。</Paragraph>
