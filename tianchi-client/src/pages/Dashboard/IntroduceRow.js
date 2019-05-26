@@ -23,7 +23,7 @@ const IntroduceRow = memo(({ loading, data, year }) => {
       <Col {...topColResponsiveProps}>
         <ChartCard
           bordered={false}
-          title="当前学生总数"
+          title="在校生总数"
           loading={loading}
           total={`${numeral(totalStudentCount).format('0,0')}`}
           footer={
@@ -44,7 +44,7 @@ const IntroduceRow = memo(({ loading, data, year }) => {
         <ChartCard
           loading={loading}
           bordered={false}
-          title="住校生人数占比"
+          title="住校生占比"
           total={`${(totalStayCount / totalStudentCount * 100).toFixed(2)}%`}
           footer={
             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
@@ -73,11 +73,11 @@ const IntroduceRow = memo(({ loading, data, year }) => {
         <ChartCard
           bordered={false}
           loading={loading}
-          title={`2018-2019学年消费总量`}
+          title={`2018-2019学年消费总额`}
           total={() => <Yuan>{totalYearCost}</Yuan>}
           footer={
             <Field
-              label='平均日消费'
+              label='日平均消费额'
               value={`￥${numeral(dailyAvgCost).format('0,0.00')}`}
             />
           }

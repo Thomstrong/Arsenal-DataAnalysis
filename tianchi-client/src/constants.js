@@ -251,10 +251,10 @@ export const HOUR_LIST = [
 
 export const SCORE_TYPE_ALIAS = {
   score: "绝对分",
+  class_rank: "班内排名",
   z_score: "离均值(Z分)",
   t_score: "标准分(T分)",
   deng_di: "等第",
-  class_rank: "班内排名",
 };
 
 

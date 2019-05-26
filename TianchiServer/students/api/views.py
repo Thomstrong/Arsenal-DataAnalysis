@@ -166,7 +166,8 @@ class StudentViewSet(viewsets.ModelViewSet):
             ).order_by('sub_exam__started_at').values(
                 'sub_exam__exam__name'
             ).annotate(
-                total_score=Sum(score_type) if not (score_type == 'deng_di' or score_type == 'z_score') else Avg(score_type)
+                total_score=Sum(score_type) if not (score_type == 'deng_di' or score_type == 'z_score') else Avg(
+                    score_type)
             ).values(
                 'sub_exam__exam__name',
                 'sub_exam__exam__type_id',
@@ -207,8 +208,8 @@ class StudentViewSet(viewsets.ModelViewSet):
     def teachers(self, request, pk):
         last_study_record = StudentRecord.objects.filter(
             student_id=pk,
-            term_id=9,
-        ).select_related('stu_class').last()
+            term__end_year=2019,
+        ).select_related('term', 'stu_class').last()
         if not last_study_record:
             return Response([])
 
@@ -224,14 +225,14 @@ class StudentViewSet(viewsets.ModelViewSet):
         records = KaoqinRecord.objects.filter(
             student_id=pk,
             event_id__gte=9900100
-        ).exclude(event_id=9900500).values('event__type_id', 'term').annotate(
+        ).values('event__type_id', 'term').annotate(
             count=Count('id'),
         ).order_by('term__start_year').order_by('term__order')
 
         sumary = KaoqinRecord.objects.filter(
             student_id=pk,
             event_id__gte=9900100
-        ).exclude(event_id=9900500).values('event__type_id').annotate(
+        ).values('event__type_id').annotate(
             count=Count('id'),
         ).order_by('-count')
 
@@ -285,10 +286,11 @@ class StudentViewSet(viewsets.ModelViewSet):
             if not records:
                 return Response([])
 
+            record_count = len(records)
             i = 1
             info_pairs = []
             costs = []
-            while i < len(records):
+            while i < record_count:
                 last_day_record = records[i - 1]
                 info_pairs.append([
                     last_day_record['total'],
@@ -296,9 +298,12 @@ class StudentViewSet(viewsets.ModelViewSet):
                 ])
                 costs.append(records[i]['total'])
                 i += 1
+
+            predict_cost = -1
             tomorrow_date = records[i - 1]['date'] + timedelta(days=1)
-            predict_data = [records[i - 1]['total'], tomorrow_date.weekday()]
-            predict_cost = Predictor.bayes_predict(info_pairs, costs, predict_data)
+            if costs:
+                predict_data = [records[i - 1]['total'], tomorrow_date.weekday()]
+                predict_cost = Predictor.bayes_predict(info_pairs, costs, predict_data)
 
             result = list(records) + [{
                 'date': tomorrow_date,
@@ -423,6 +428,7 @@ class StudentViewSet(viewsets.ModelViewSet):
             ).values('student_id', 'event__type_id').annotate(
                 count=Count('id'),
             ).values('student_id', 'student__name', 'event__type_id', 'count')
+
             chat_records = StudentExamRecord.objects.filter(
                 student_id__in=[pk, another_id],
                 score=-1

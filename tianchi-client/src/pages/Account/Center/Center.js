@@ -65,7 +65,7 @@ const initEmpty = <Empty description='请在左侧搜索框中搜索学生信息
   dailySumCost: student.dailySumCost,
   dailyCostDetail: student.dailyCostDetail,
   dailyAvg: student.dailyAvg,
-  vsDailyAvg:student.vsDailyAvg,
+  vsDailyAvg: student.vsDailyAvg,
   dailyAvgRank: student.dailyAvgRank,
   studentListLoading: loading.effects['student/fetchStudentList'],
   vsStudentListLoading: loading.effects['student/fetchVsStudentList'],
@@ -88,6 +88,7 @@ class Center extends PureComponent {
       startTime: null,
       endTime: null,
       excludePingshi: false,
+      breakOnly: false,
     };
     this.getStudentList = _.debounce(this.getStudentList, 800);
   }
@@ -103,6 +104,9 @@ class Center extends PureComponent {
 
   onTabChange = key => {
     const { match } = this.props;
+    this.setState({
+      popVisible: false,
+    });
     switch (key) {
       case 'Score':
         router.push(`${match.path}/Score`);
@@ -283,6 +287,11 @@ class Center extends PureComponent {
       }
       this.getCompareInfo(vsStudentInfo.id, studentId);
     }
+    this.setState({
+      popVisible: false,
+      startTime: null,
+      endTime: null,
+    });
   };
 
   getStudentList = (input, type = '') => {
@@ -326,7 +335,7 @@ class Center extends PureComponent {
     data.rows.sort((a, b) => {
       return (b.term > a.term) ? -1 : 1;
     });
-    return data;
+    return data.rows;
   };
 
   onScoreTypeChange = (scoreType) => {
@@ -558,6 +567,12 @@ class Center extends PureComponent {
     });
   };
 
+  onKaoqinSwitchChanged = (checked) => {
+    this.setState({
+      breakOnly: checked,
+    })
+  }
+
   render() {
     const {
       studentInfo,
@@ -607,7 +622,6 @@ class Center extends PureComponent {
     //考勤的相关数据
     const kaoqinData = this.formatKaoqinData(studentInfo.kaoqinData, termList);
     const kaoqinSummary = studentInfo.kaoqinSummary;
-    const totalKaoqinCount = studentInfo.totalKaoqinCount;
     // 一卡通对比数据1 0-23小时的平均消费
     const hourlyVsCostData = vsAverageData.length ? new DataSet.View().source(vsAverageData).transform({
       type: 'map',
@@ -879,11 +893,12 @@ class Center extends PureComponent {
                 <TabPane tab={<span><i className={`fa fa-calendar-check-o`}/> 考勤分析</span>} key="Attendance">
                   {!!studentInfo.id ? <Suspense fallback={<PageLoading/>}>
                     <AttendanceChart
+                      breakOnly={this.state.breakOnly}
+                      onKaoqinSwitchChanged={this.onKaoqinSwitchChanged}
                       loading={kaoqinLoading}
                       kaoqinData={kaoqinData}
                       termList={termList}
                       kaoqinSummary={kaoqinSummary}
-                      totalKaoqinCount={totalKaoqinCount}
                     />
                   </Suspense> : initEmpty}
                 </TabPane>
