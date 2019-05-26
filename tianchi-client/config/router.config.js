@@ -59,6 +59,7 @@ export default [
             routes: [
               { path: '/class/analysis/Trend' },
               { path: '/class/analysis/Specific' },
+              { path: '/class/analysis/ECard' },
               { path: '/class/analysis/Attendance' },
             ]
           },

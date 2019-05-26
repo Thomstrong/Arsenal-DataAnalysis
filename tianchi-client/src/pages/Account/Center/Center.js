@@ -781,7 +781,7 @@ class Center extends PureComponent {
               bordered={false}
             >
               <Tabs defaultActiveKey={defaultTab} onChange={this.onTabChange}>
-                <TabPane tab={<span><Icon type="line-chart"/>成绩</span>} key="Score">
+                <TabPane tab={<span><Icon type="line-chart"/>成绩分析</span>} key="Score">
                   {studentInfo && !!studentInfo.id && <Row type='flex' justify='start'>
                     <Affix offsetTop={13} style={{ 'zIndex': 10 }}>
                       <Select
@@ -816,7 +816,7 @@ class Center extends PureComponent {
                     </Fragment> : initEmpty
                   }
                 </TabPane>
-                <TabPane tab={<span><Icon type="credit-card"/>一卡通</span>} key="ECard">
+                <TabPane tab={<span><Icon type="credit-card"/>消费分析</span>} key="ECard">
                   {!!studentInfo.id ? (dailySumCost && !!dailySumCost.length ? eCardLoading ?
                     <Card loading={true} bordered={false}/> :
                     <Fragment>
@@ -876,7 +876,7 @@ class Center extends PureComponent {
                       </Card>
                     </Fragment> : <Empty description='暂无一卡通消费数据'/>) : initEmpty}
                 </TabPane>
-                <TabPane tab={<span><i className={`fa fa-calendar-check-o`}/> 考勤</span>} key="Attendance">
+                <TabPane tab={<span><i className={`fa fa-calendar-check-o`}/> 考勤分析</span>} key="Attendance">
                   {!!studentInfo.id ? <Suspense fallback={<PageLoading/>}>
                     <AttendanceChart
                       loading={kaoqinLoading}
