@@ -58,7 +58,7 @@ const AttendanceChart = memo(
       bordered={false}
       className={styles.AttendanceTitle}
     >
-      {termList.length ? <Row type="flex" align="middle">
+      {totalKaoqinCount ? <Row type="flex" align="middle">
         <Col span={20}>
           <Chart
             scale={{
@@ -98,7 +98,7 @@ const AttendanceChart = memo(
             </Text>
           </Paragraph>
         </Col>
-      </Row> : <Empty description='该同学暂无不良考勤数据'/>}
+      </Row> : <Empty description={`暂无${breakOnly ? '违纪' : '考勤'}数据`}/>}
     </Card>;
   }
 );
