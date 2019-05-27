@@ -473,7 +473,6 @@ class ClassViewSet(viewsets.ModelViewSet):
             stu_class_id=pk,
             student_id__isnull=False,
         ).values_list('student_id', flat=True)
-
         total = DailyConsumption.objects.values_list('student_id', flat=True).distinct().count()
 
         class_cost_records = list(DailyConsumption.objects.filter(
@@ -485,15 +484,14 @@ class ClassViewSet(viewsets.ModelViewSet):
             'student__name',
             'avg'
         ))
-
         if not class_cost_records:
             return Response([])
 
         total_cost_records = list(DailyConsumption.objects.values('student_id').annotate(
             avg=-Avg('total_cost')
         ).filter(
-            avg__gte=class_cost_records[0][2],
-            avg__lte=class_cost_records[-1][2]
+            avg__gte=class_cost_records[0][2] - 0.1,
+            avg__lte=class_cost_records[-1][2] + 0.1
         ).order_by('avg').values_list(
             'student_id',
             'student__name',
