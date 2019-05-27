@@ -104,4 +104,4 @@ major.append(zhengzhiMajor)
 major.append(jishuMajor)
 major.append(buxianMajor)
 
-pd.DataFrame(major).to_csv('subject2major.csv', encoding='gbk')
+pd.DataFrame(major).to_csv('subject.csv', encoding='gbk')
