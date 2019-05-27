@@ -501,7 +501,7 @@ class ClassViewSet(viewsets.ModelViewSet):
         base_count = DailyConsumption.objects.values('student_id').annotate(
             avg=-Avg('total_cost')
         ).filter(
-            avg__lt=class_cost_records[0][2],
+            avg__lt=class_cost_records[0][2] - 0.1,
         ).count()
 
         formatted_records = []
