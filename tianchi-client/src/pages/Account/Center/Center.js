@@ -811,6 +811,7 @@ class Center extends PureComponent {
                         style={{ verticalAlign: 'middle' }}
                         defaultChecked={this.state.excludePingshi}
                         onChange={this.onTypeSwitchChanged}
+                        size='small'
                       />
                     </Affix>
                   </Row>}
@@ -965,19 +966,19 @@ class Center extends PureComponent {
                             >
                               <p><i
                                 className={`fa ${vsStudentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
-                                {SEX_MAP[vsStudentInfo.sex]}
+                                {` ${SEX_MAP[vsStudentInfo.sex]}`}
                               </p>
                               <p><i className={`fa fa-group ${styles.iconStyle}`}/>
-                                {vsStudentInfo.nation}
+                                {vsStudentInfo.nation ? vsStudentInfo.nation : "未知"}
                               </p>
                               <p><i className={`fa fa fa-archive ${styles.iconStyle}`}/>
-                                {POLICY_TYPE_ALIAS[vsStudentInfo.policy]}
+                                {POLICY_TYPE_ALIAS[vsStudentInfo.policy] ? POLICY_TYPE_ALIAS[vsStudentInfo.policy] : "未知"}
                               </p>
                               <p><i className={`fa fa-birthday-cake ${styles.iconStyle}`}/>
-                                {vsStudentInfo.born_year > 0 ? vsStudentInfo.born_year : '未知'} 年
+                                {vsStudentInfo.born_year > 0 ? `${vsStudentInfo.born_year}年` : '未知'}
                               </p>
                               <p><i className={`fa fa-home ${styles.iconStyle}`}/>
-                                {vsStudentInfo.native_place}
+                                {vsStudentInfo.native_place ? vsStudentInfo.native_place : "未知"}
                               </p>
                               <p><i className={`fa fa-book ${styles.iconStyle}`}/>
                                 {`${vsStudentInfo.stu_class.start_year}年-${vsStudentInfo.stu_class.class_name}`}

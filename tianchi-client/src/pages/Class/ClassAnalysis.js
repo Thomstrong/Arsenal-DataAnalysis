@@ -651,6 +651,7 @@ class ClassAnalysis extends PureComponent {
                           style={{ verticalAlign: 'middle' }}
                           defaultChecked={this.state.excludePingshi}
                           onChange={this.onTypeSwitchChanged}
+                          size='small'
                         />
                       </Affix>
                       <Suspense fallback={<PageLoading/>}>

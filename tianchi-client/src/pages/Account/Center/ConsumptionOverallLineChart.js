@@ -121,7 +121,7 @@ const ConsumptionOverallLineChart = memo(
                 >
                   {`${(dailyAvgRank * 100).toFixed(2)}%`}
                 </Text>的学生</Paragraph>
-              {showPredict ? <Paragraph>点击<Text strong style={{ color: "#cc4756" }}>数据点</Text>，获取该天消费明细</Paragraph> : (
+              {showPredict ? <Paragraph>点击<Text strong style={{ color: "#cc4756" }}>蓝色数据点</Text>，获取该天消费明细</Paragraph> : (
                 <Paragraph>数据量过少，无法预测</Paragraph>
               )}
             </Col>
