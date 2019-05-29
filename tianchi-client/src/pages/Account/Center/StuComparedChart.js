@@ -17,20 +17,41 @@ const StuComparedChart = memo(
         return colorMap[student];
       }
     ];
+    let oneStuSubject = [];
     let advSubject = [];
     let vsAdvSubject = [];
     let equalSubject = [];
-    if (comparedScoreData.length === 20) {
-      for (let i = 0; i < 20; i = i + 2) {
-        if (comparedScoreData[i].average > comparedScoreData[i + 1].average + 1) {
-          advSubject.push(`${comparedScoreData[i].course} `);
+    let oldData = {};
+    if (comparedScoreData.length > 10) {
+      let i = 1;
+      oldData = comparedScoreData[0];
+      while (i < comparedScoreData.length) {
+        if (comparedScoreData[i].course === oldData.course && comparedScoreData[i].student !== oldData.student) {
+          if (comparedScoreData[i].average > oldData.average + 1) {
+            if (comparedScoreData[i].student === `${studentInfo.id}-${studentInfo.name}`) {
+              advSubject.push(`${comparedScoreData[i].course} `);
+            } else {
+              vsAdvSubject.push(`${comparedScoreData[i].course} `);
+            }
+          } else if (comparedScoreData[i].average + 1 < oldData.average) {
+            if (oldData.student === `${studentInfo.id}-${studentInfo.name}`) {
+              advSubject.push(`${oldData.course} `);
+            } else {
+              vsAdvSubject.push(`${oldData.course} `);
+            }
+          } else {
+            equalSubject.push(`${comparedScoreData[i].course} `);
+          }
+          oldData = comparedScoreData[i + 1];
+          i = i + 2;
+        } else {
+          oneStuSubject.push(`${comparedScoreData[i].course} `);
+          oldData = comparedScoreData[i + 1];
+          i = i + 1
         }
-        else if (comparedScoreData[i].average + 1 < comparedScoreData[i + 1].average) {
-          vsAdvSubject.push(`${comparedScoreData[i].course} `);
-        }
-        else {
-          equalSubject.push(`${comparedScoreData[i].course} `);
-        }
+      }
+      if (oldData === comparedScoreData[comparedScoreData.length-1]){
+        oneStuSubject.push(`${oldData.course} `);
       }
     }
     let highHour = [];
@@ -41,11 +62,9 @@ const StuComparedChart = memo(
         if (hourlyVsCostData[i].cost !== 0 || hourlyVsCostData[i + 1].cost !== 0) {
           if (hourlyVsCostData[i].cost > hourlyVsCostData[i + 1].cost + 1) {
             highHour.push(`${hourlyVsCostData[i].hour}时 `);
-          }
-          else if (hourlyVsCostData[i].cost + 1 < hourlyVsCostData[i + 1].cost) {
+          } else if (hourlyVsCostData[i].cost + 1 < hourlyVsCostData[i + 1].cost) {
             vsHighHour.push(`${hourlyVsCostData[i].hour}时 `);
-          }
-          else {
+          } else {
             equalHour.push(`${hourlyVsCostData[i].hour}时 `);
           }
         }
@@ -58,8 +77,7 @@ const StuComparedChart = memo(
       if (data.type !== "离校" && data.type !== "进校") {
         if (data.student.indexOf(studentInfo.id) === -1) {
           vsKaoqin = vsKaoqin + data.count;
-        }
-        else {
+        } else {
           kaoqin = kaoqin + data.count;
         }
       }
@@ -200,9 +218,9 @@ const StuComparedChart = memo(
                     type="danger">{vsStudentInfo.is_stay_school ? "住校生" : "走读生"}</Text>。
                 </Fragment>}</li>
             {/*成绩对比*/}
-            {comparedScoreData.length === 10 ?
-              <li style={{ marginBottom: 10 }}>仅有{comparedScoreData[0].student}的成绩数据</li>
-              : !comparedScoreData.length ? <li style={{ marginBottom: 10 }}>两位同学暂无成绩信息</li>
+            {!comparedScoreData.length ? <li style={{ marginBottom: 10 }}>两位同学暂无成绩信息</li>
+              : comparedScoreData.length <= 10 ?
+                <li style={{ marginBottom: 10 }}>仅有{comparedScoreData[0].student}的成绩数据</li>
                 : <li style={{ marginBottom: 10 }}>{advSubject.length ? <Fragment>
                   <Text type="danger">{studentInfo.id}_{studentInfo.name}</Text>的
                   <Text type='danger'>{advSubject}</Text>平均成绩更好；</Fragment> : ""}
@@ -210,7 +228,9 @@ const StuComparedChart = memo(
                     <Text type="danger">{vsStudentInfo.id}_{vsStudentInfo.name}</Text>在
                     <Text type="danger">{vsAdvSubject}</Text>中更占优势；</Fragment> : ""}
                   {equalSubject.length ? <Fragment>旗鼓相当的科目有
-                    <Text type="danger">{equalSubject}</Text>；</Fragment> : ""}</li>}
+                    <Text type="danger">{equalSubject}</Text>；</Fragment> : ""}
+                  {oneStuSubject.length ? <Fragment><Text type='danger'>{oneStuSubject}</Text>仅有一位同学有成绩数据无法比较；</Fragment> : ""}</li>
+            }
             {/*消费情况汇总*/}
             {hourlyVsCostData.length === 24 ? <li style={{ marginBottom: 10 }}>仅有{hourlyVsCostData[0].student}的消费数据</li>
               : !hourlyVsCostData.length ? <li style={{ marginBottom: 10 }}>两位同学暂无消费</li>
