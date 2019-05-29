@@ -114,7 +114,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                   forceFit
                   scale={scale}
                 >
-                  <h4 className={styles.rankingTitle}>不同性别不同时刻平均消费情况对比</h4>
+                  <h4 className={styles.rankingTitle}>不同性别不同时段平均消费情况对比</h4>
                   <Legend/>
                   <Tooltip/>
                   <View data={sexHourlyData} scale={scale}>
@@ -228,7 +228,6 @@ const EcardConsumptionCard = memo(({ data }) => {
                   height={400}
                   data={gradeHourlyData}
                   padding={["auto", "auto", 80, "auto"]}
-                  title="不同年级不同时刻平均消费情况对比"
                   forceFit
                   scale={scale}
                 >
@@ -349,10 +348,9 @@ const EcardConsumptionCard = memo(({ data }) => {
                   height={400} scale={scale}
                   data={stayHourlyData}
                   padding={["auto", "auto", 80, "auto"]}
-                  title="走读生/住校生不同时刻平均消费情况对比"
                   forceFit
                 >
-                  <h4 className={styles.rankingTitle}>走读生/住校生不同时刻平均消费情况对比</h4>
+                  <h4 className={styles.rankingTitle}>走读生/住校生不同时段平均消费情况对比</h4>
                   <Legend/>
                   <Axis name="hour"/>
                   <Axis

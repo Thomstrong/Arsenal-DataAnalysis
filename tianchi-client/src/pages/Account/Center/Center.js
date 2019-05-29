@@ -693,7 +693,7 @@ class Center extends PureComponent {
                     {/*学生详细信息*/}
                     <Col md={12} lg={24} sm={12} xs={12} xl={24}>
                       <div className={styles.detail}>
-                        <p><i className={`fa ${studentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
+                        <p><i className={`fa ${studentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle} ${styles.sexIcon}`}/>
                           {SEX_MAP[studentInfo.sex]}
                         </p>
                         <p><i className={`fa fa-group ${styles.iconStyle}`}/>
@@ -968,8 +968,8 @@ class Center extends PureComponent {
                               className={styles.vsDetail}
                             >
                               <p><i
-                                className={`fa ${vsStudentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle}`}/>
-                                {` ${SEX_MAP[vsStudentInfo.sex]}`}
+                                className={`fa ${vsStudentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle} ${styles.sexIcon}`}/>
+                                {SEX_MAP[vsStudentInfo.sex]}
                               </p>
                               <p><i className={`fa fa-group ${styles.iconStyle}`}/>
                                 {vsStudentInfo.nation ? vsStudentInfo.nation : "未知"}

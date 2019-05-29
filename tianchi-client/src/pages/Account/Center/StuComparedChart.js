@@ -225,9 +225,9 @@ const StuComparedChart = memo(
                   <Text type="danger">{studentInfo.id}_{studentInfo.name}</Text>的
                   <Text type='danger'>{advSubject}</Text>平均成绩更好；</Fragment> : ""}
                   {vsAdvSubject.length ? <Fragment>
-                    <Text type="danger">{vsStudentInfo.id}_{vsStudentInfo.name}</Text>在
-                    <Text type="danger">{vsAdvSubject}</Text>中更占优势；</Fragment> : ""}
-                  {equalSubject.length ? <Fragment>旗鼓相当的科目有
+                    <Text type="danger">{vsStudentInfo.id}_{vsStudentInfo.name}</Text>的
+                    <Text type="danger">{vsAdvSubject}</Text>平均成绩较为优异；</Fragment> : ""}
+                  {equalSubject.length ? <Fragment>二人旗鼓相当的科目有
                     <Text type="danger">{equalSubject}</Text>；</Fragment> : ""}
                   {oneStuSubject.length ? <Fragment><Text type='danger'>{oneStuSubject}</Text>仅有一位同学有成绩数据无法比较；</Fragment> : ""}</li>
             }

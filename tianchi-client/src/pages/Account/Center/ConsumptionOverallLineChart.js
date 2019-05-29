@@ -127,7 +127,7 @@ const ConsumptionOverallLineChart = memo(
             </Col>
           </Row> : <Empty/>}
         </Card>
-        <Card title="不同时间点平均消费对比" bordered={false} style={{ width: '100%', cursor: "auto" }} hoverable={true}>
+        <Card title="不同时段平均消费对比" bordered={false} style={{ width: '100%', cursor: "auto" }} hoverable={true}>
           {dailySumCost.length ? <Row type="flex" align="middle">
             <Col xl={4} xs={24}>
               <Paragraph>共有<Text strong style={{ color: "#cc4756" }}>{timeCount}</Text>个时间段产生过消费;</Paragraph>
