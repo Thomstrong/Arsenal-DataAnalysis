@@ -492,12 +492,9 @@ class Center extends PureComponent {
 
     for (let data of vsDailyCost) {
       while (i < dailyCost.length && dailyCost[i].date < data.date) {
-        if (dailyCost[i].total < 0) {
-          dailyCost[i].total = 0;
-        }
         mergedData.push({
           x: Date.parse(dailyCost[i].date),
-          y1: dailyCost[i].total,
+          y1: dailyCost[i].total < 0 ? 0 : dailyCost[i].total,
           y2: 0,
         });
 
@@ -505,41 +502,27 @@ class Center extends PureComponent {
       }
 
       if (i < dailyCost.length && data.date === dailyCost[i].date) {
-        if (dailyCost[i].total < 0) {
-          dailyCost[i].total = 0;
-        }
-        if (data.total < 0) {
-          data.total = 0;
-        }
         mergedData.push({
           x: Date.parse(data.date),
-          y1: dailyCost[i].total,
-          y2: data.total,
+          y1: dailyCost[i].total < 0 ? 0 : dailyCost[i].total,
+          y2: data.total < 0 ? 0 : data.total,
         });
 
         i++;
         continue;
       }
 
-      if (data.total < 0) {
-        continue;
-      }
-
       mergedData.push({
         x: Date.parse(data.date),
         y1: 0,
-        y2: data.total,
+        y2: data.total < 0 ? 0 : data.total,
       });
     }
 
     while (i < dailyCost.length) {
-      if (dailyCost[i].total < 0) {
-        i++;
-        continue;
-      }
       mergedData.push({
         x: Date.parse(dailyCost[i].date),
-        y1: dailyCost[i].total,
+        y1: dailyCost[i].total < 0 ? 0 : dailyCost[i].total,
         y2: 0,
       });
       i++;
