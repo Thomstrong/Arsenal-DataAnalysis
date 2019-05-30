@@ -91,7 +91,7 @@ const IntroduceRow = memo(({ loading, data, year }) => {
         <ChartCard
           bordered={false}
           loading={loading}
-          title={`${year}年违纪记录`}
+          title={`${year - 1}-${year}学年违纪记录`}
           total={`${numeral(totalKaoqinCount).format('0,0')}次`}
           footer={
             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
@@ -100,7 +100,7 @@ const IntroduceRow = memo(({ loading, data, year }) => {
                   迟到{kaoqinSummaryData[0] ? kaoqinSummaryData[0].y : 0}次
                 </Col>
                 <Col span={6} style={{ fontSize: '.8em', margin: '2px 0' }}>
-                   早退0次
+                  早退0次
                 </Col>
                 <Col span={8} style={{ fontSize: '.8em', margin: '2px 0' }}>
                   校服违纪{kaoqinSummaryData[1] ? kaoqinSummaryData[1].y : 0}次
