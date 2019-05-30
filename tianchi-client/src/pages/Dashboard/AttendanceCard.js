@@ -142,8 +142,8 @@ const AttendanceCard = memo(({data}) => {
                 ))}
               </ul>
               <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20,cursor:"auto"}}>
-                <Paragraph>1. <Text type='danger'>数据量有限</Text>不能代表所有学生的进离校情况;</Paragraph>
-                <Paragraph>2. 早上<Text type='danger'> 6 时</Text>是绝大多数学生的进校时间,7时会有部分学生姗姗来迟;</Paragraph>
+                <Paragraph>1. <Text type='danger'>数据量有限</Text>不能代表所有学生的进离校情况。</Paragraph>
+                <Paragraph>2. 早上<Text type='danger'> 6 时</Text>是绝大多数学生的进校时间,7时会有部分学生姗姗来迟。</Paragraph>
                 <Paragraph>3. <Text type='danger'>周五</Text>下午<Text type='danger'> 3时 - 4 时</Text>是离校高峰，
                   <Text type='danger'>周日 10 时 - 12 时</Text>住校生普遍返校。</Paragraph>
               </Card>
@@ -176,9 +176,9 @@ const AttendanceCard = memo(({data}) => {
               </ul>
               <Card size="small" title="文字分析" hoverable={true} style={{marginTop: 20,cursor:"auto"}}>
                 <Paragraph>1. 违纪情况呈<Text type="danger">递增</Text>趋势，
-                  <Text type="danger"> 17 - 18 学年</Text>考勤不合格人数最多( 18 - 19 学年仅有一学期数据);</Paragraph>
+                  <Text type="danger"> 17 - 18 学年</Text>违纪人数最多( 18 - 19 学年仅有一学期数据)。</Paragraph>
                 <Paragraph>2. <Text type="danger">高一</Text>违纪情况在任一学年任一类型都是最<Text type="danger">少</Text>的，
-                  同时，<Text type="danger">高三</Text>几乎肩负起了<Text type="danger">一半</Text>的违纪指标;</Paragraph>
+                  同时，<Text type="danger">高三</Text>几乎肩负起了<Text type="danger">一半</Text>的违纪指标。</Paragraph>
                 <Paragraph>3. 每一学年的高三学生都会有迟到和校服违纪的现象，但
                   <Text type="danger">早退</Text>集中在 16-17 学年和 17-18 学年。</Paragraph>
               </Card>

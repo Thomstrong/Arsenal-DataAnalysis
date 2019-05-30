@@ -96,10 +96,13 @@ const IntroduceRow = memo(({ loading, data, year }) => {
           footer={
             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
               <Row>
-                <Col span={12} style={{ fontSize: '.9em', margin: '2px 0' }}>
-                  迟到早退{kaoqinSummaryData[0] ? kaoqinSummaryData[0].y : 0}次
+                <Col span={8} style={{ fontSize: '.8em', margin: '2px 0' }}>
+                  迟到{kaoqinSummaryData[0] ? kaoqinSummaryData[0].y : 0}次
                 </Col>
-                <Col span={12} style={{ fontSize: '.9em', margin: '2px 0' }}>
+                <Col span={6} style={{ fontSize: '.8em', margin: '2px 0' }}>
+                   早退0次
+                </Col>
+                <Col span={8} style={{ fontSize: '.8em', margin: '2px 0' }}>
                   校服违纪{kaoqinSummaryData[1] ? kaoqinSummaryData[1].y : 0}次
                 </Col>
               </Row>

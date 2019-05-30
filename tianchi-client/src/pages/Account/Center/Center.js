@@ -693,20 +693,26 @@ class Center extends PureComponent {
                     {/*学生详细信息*/}
                     <Col md={12} lg={24} sm={12} xs={12} xl={24}>
                       <div className={styles.detail}>
-                        <p><i className={`fa ${studentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle} ${styles.sexIcon}`}/>
+                        <p><i
+                          className={`fa ${studentInfo.sex === 1 ? 'fa-male' : 'fa-female'} ${styles.iconStyle} ${styles.sexIcon}`}/>
                           {SEX_MAP[studentInfo.sex]}
                         </p>
                         <p><i className={`fa fa-group ${styles.iconStyle}`}/>
-                          {studentInfo.nation}
+                          {studentInfo.nation ? studentInfo.nation : "未知"}
                         </p>
                         <p><i className={`fa fa fa-archive ${styles.iconStyle}`}/>
-                          {POLICY_TYPE_ALIAS[studentInfo.policy]}
+                          {POLICY_TYPE_ALIAS[studentInfo.policy] ? POLICY_TYPE_ALIAS[studentInfo.policy] : "未知"}
                         </p>
                         <p><i className={`fa fa-birthday-cake ${styles.iconStyle}`}/>
-                          {studentInfo.born_year > 0 ? studentInfo.born_year : '未知'} 年
+                          {studentInfo.born_year > 0 ? `${studentInfo.born_year}年` : '未知'}
                         </p>
                         <p><i className={`fa fa-home ${styles.iconStyle}`}/>
-                          {studentInfo.native_place}
+                          {studentInfo.native_place ? studentInfo.native_place : "未知"}
+                        </p>
+                        <p><i className={`fa fa-book ${styles.iconStyle}`}/>
+                          <Link className={styles.stuClassInfo} to={`/class/analysis/?classId=${studentInfo.stu_class.id}`}>
+                            {`${studentInfo.stu_class.start_year}年-${studentInfo.stu_class.class_name}`}
+                          </Link>
                         </p>
                         <p><i className={`fa fa-bed ${styles.iconStyle}`}/>
                           {studentInfo.is_stay_school ? `住校-${studentInfo.room_num}室` : '走读'}
@@ -770,10 +776,7 @@ class Center extends PureComponent {
                   <Divider style={{ marginTop: 16 }} dashed/>
                   {/*老师信息*/}
                   <div className={styles.stuClass}>
-                    <div className={styles.stuClassTitle}>班级信息</div>
-                    <Link className={styles.stuClassInfo} to={`/class/analysis/?classId=${studentInfo.stu_class.id}`}>
-                      {`${studentInfo.stu_class.start_year}年-${studentInfo.stu_class.class_name}`}
-                    </Link>
+                    <div className={styles.stuClassTitle}>任课教师信息</div>
                     <Row gutter={8}>
                       {teacherInfo.map(item => (
                         <Col className={styles.stuClassTeacher} key={item.id} md={6} lg={20} sm={6} xs={6} xl={10}>
@@ -984,7 +987,9 @@ class Center extends PureComponent {
                                 {vsStudentInfo.native_place ? vsStudentInfo.native_place : "未知"}
                               </p>
                               <p><i className={`fa fa-book ${styles.iconStyle}`}/>
-                                {`${vsStudentInfo.stu_class.start_year}年-${vsStudentInfo.stu_class.class_name}`}
+                                <Link className={styles.stuClassInfo} to={`/class/analysis/?classId=${vsStudentInfo.stu_class.id}`}>
+                                  {`${vsStudentInfo.stu_class.start_year}年-${vsStudentInfo.stu_class.class_name}`}
+                                </Link>
                               </p>
                               <p><i className={`fa fa-bed ${styles.iconStyle}`}/>
                                 {vsStudentInfo.is_stay_school ? `住校-${vsStudentInfo.room_num}室` : '走读'}

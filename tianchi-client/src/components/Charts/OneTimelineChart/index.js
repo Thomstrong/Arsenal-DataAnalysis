@@ -9,7 +9,7 @@ import styles from './index.less';
 class OneTimelineChart extends React.Component {
   checkClickPoint = (ev) => {
     let index = -1;
-    if (!ev.data) {
+    if (!ev.data || !Array.isArray(ev.data)) {
       return index;
     }
     for (let i in ev.data) {

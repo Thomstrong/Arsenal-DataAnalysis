@@ -294,7 +294,7 @@ const ScoreTrendChart = memo(
             </Chart>
           </Col>
         </Row>
-        <Divider style={{ marginBottom: 24, marginTop: 5 }} dashed>各科目成绩趋势</Divider>
+        <Divider style={{ marginBottom: 24, marginTop: 5 }} dashed>{`各科目${isRank?'排名':'分数'}趋势`}</Divider>
         <List
           grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 1, xl: 2, xxl: 2 }}
           dataSource={subData}
@@ -317,7 +317,7 @@ const ScoreTrendChart = memo(
                 forceFit
               >
                 <p style={{ textAlign: 'center' }}>
-                  {`${COURSE_FULLNAME_ALIAS[item.title]} 考试${isRank ? '排名' : '分数'}趋势分析`}
+                  {`${COURSE_FULLNAME_ALIAS[item.title]}考试${isRank ? '排名' : '分数'}趋势`}
                 </p>
                 <Axis
                   name="exam"

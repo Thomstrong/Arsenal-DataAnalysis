@@ -106,7 +106,7 @@ const ScoreLineChart = memo(
           forceFit
         >
           <p style={{ textAlign: 'center' }}>
-            {`${COURSE_FULLNAME_ALIAS[item.title]}考试${SCORE_TYPE_ALIAS[scoreType]}趋势分析`}
+            {`${COURSE_FULLNAME_ALIAS[item.title]}考试${SCORE_TYPE_ALIAS[scoreType]}趋势`}
           </p>
           <Axis
             name="exam"
@@ -522,7 +522,7 @@ const ScoreLineChart = memo(
         {!!hightText && <Paragraph>共统计<Text type="danger">{filteredData.length}</Text>次考试，
           {`${hightText}`}有<Text type="danger">{highScoreTime}</Text>次</Paragraph>}
       </Card>}
-      <Divider style={{ marginBottom: 24, marginTop: 5 }} dashed>各科目成绩趋势</Divider>
+      <Divider style={{ marginBottom: 24, marginTop: 5 }} dashed>{`各科目${SCORE_TYPE_ALIAS[scoreType]}趋势`}</Divider>
       <List
         grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 1, xl: 2, xxl: 2 }}
         dataSource={subData}

@@ -228,7 +228,7 @@ const StuComparedChart = memo(
                     <Text type="danger">{vsStudentInfo.id}_{vsStudentInfo.name}</Text>的
                     <Text type="danger">{vsAdvSubject}</Text>平均成绩较为优异；</Fragment> : ""}
                   {equalSubject.length ? <Fragment>二人旗鼓相当的科目有
-                    <Text type="danger">{equalSubject}</Text>；</Fragment> : ""}
+                    <Text type="danger">{equalSubject}</Text>。</Fragment> : ""}
                   {oneStuSubject.length ? <Fragment><Text type='danger'>{oneStuSubject}</Text>仅有一位同学有成绩数据无法比较；</Fragment> : ""}</li>
             }
             {/*消费情况汇总*/}
@@ -247,7 +247,7 @@ const StuComparedChart = memo(
                   {dailyAvg && vsDailyAvg ? <Fragment>
                     总体来说，<Text type="danger">{dailyAvg > vsDailyAvg ? `${studentInfo.id}_${studentInfo.name}消费水平更高`
                     : dailyAvg === vsDailyAvg ? "两人消费水平持平"
-                      : `${vsStudentInfo.id}_${vsStudentInfo.name}消费水平更高`}</Text></Fragment> : ""}
+                      : `${vsStudentInfo.id}_${vsStudentInfo.name}消费水平更高`}</Text>。</Fragment> : ""}
                 </li>}
             {/* 违纪情况汇总*/}
             {kaoqinVsData.length ?

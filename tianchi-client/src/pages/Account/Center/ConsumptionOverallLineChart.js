@@ -130,7 +130,7 @@ const ConsumptionOverallLineChart = memo(
         <Card title="不同时段平均消费对比" bordered={false} style={{ width: '100%', cursor: "auto" }} hoverable={true}>
           {dailySumCost.length ? <Row type="flex" align="middle">
             <Col xl={4} xs={24}>
-              <Paragraph>共有<Text strong style={{ color: "#cc4756" }}>{timeCount}</Text>个时间段产生过消费;</Paragraph>
+              <Paragraph>共有<Text strong style={{ color: "#cc4756" }}>{timeCount}</Text>个时间段产生过消费。</Paragraph>
               <Paragraph>其中，平均消费最高出现在<Text strong style={{ color: "#cc4756" }}>{maxTime}时</Text>，为
                 <Text strong style={{ color: "#cc4756" }}>¥{maxMoney}</Text></Paragraph>
             </Col>
