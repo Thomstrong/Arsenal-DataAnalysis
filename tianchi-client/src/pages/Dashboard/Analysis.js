@@ -54,6 +54,9 @@ class Analysis extends Component {
       type: 'dashboard/fetchStaySummary',
     });
     dispatch({
+      type: 'dashboard/fetchTeacherSummary',
+    });
+    dispatch({
       type: 'dashboard/fetchYearCostSummary',
       payload: {
         year: this.state.year
@@ -117,10 +120,11 @@ class Analysis extends Component {
       yearCostData, totalYearCost, dailyAvgCost,
       kaoqinSummaryData, totalKaoqinCount,
       sexHourlyCostData, sexHourlyCountData,
-      gradeCostData, gradeCostCountData,
+      gradeCostData, gradeCostCountData, teacherData, totalTeacherCount,
       stayCostData, stayCountData, enterSchoolData, kaoqinMixedData,
     } = dashboard;
 
+    console.log(teacherData, totalTeacherCount)
     const sexHourlyData = totalHourlyAvgCost ? sexHourlyCostData.concat(totalHourlyAvgCost.map(data => {
       return {
         hour: data.hour,

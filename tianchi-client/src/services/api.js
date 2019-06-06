@@ -100,6 +100,10 @@ export async function getKaoqinSummary({ base, year }) {
   return request(`/api/kaoqin_record/summary/?base=${base}&year=${year || ''}`);
 }
 
+export async function getTeacherSummary() {
+  return request(`/api/teacher/summary/`);
+}
+
 
 // global
 export async function getTotalHourlyAvgCost() {
