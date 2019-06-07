@@ -1,6 +1,6 @@
 import React, { Fragment, PureComponent, Suspense } from 'react';
 import { connect } from 'dva';
-import { POLICY_TYPE_ALIAS, SCORE_LEVEL_ALIAS, SCORE_TYPE_ALIAS, SEX_MAP } from "@/constants";
+import { POLICY_TYPE_ALIAS, SCORE_LEVEL_ALIAS, SCORE_TYPE_ALIAS, SEX_MAP, DATE_REANGE_ALIAS } from "@/constants";
 import router from 'umi/router';
 import _ from 'lodash';
 import PageLoading from '@/components/PageLoading';
@@ -80,7 +80,7 @@ class Center extends PureComponent {
       studentId: props.match.params.studentId || props.studentInfo.id || '',
       vsStudentId: '',
       scoreType: props.studentInfo.scoreType || 'score',
-      dateRange: 7,
+      dateRange: 6,
       pickedDate: '2019-01-01',
       popStyle: null,
       popVisible: false,
@@ -710,7 +710,8 @@ class Center extends PureComponent {
                           {studentInfo.native_place ? studentInfo.native_place : "未知"}
                         </p>
                         <p><i className={`fa fa-book ${styles.iconStyle}`}/>
-                          <Link className={styles.stuClassInfo} to={`/class/analysis/?classId=${studentInfo.stu_class.id}`}>
+                          <Link className={styles.stuClassInfo}
+                                to={`/class/analysis/?classId=${studentInfo.stu_class.id}`}>
                             {`${studentInfo.stu_class.start_year}年-${studentInfo.stu_class.class_name}`}
                           </Link>
                         </p>
@@ -878,11 +879,11 @@ class Center extends PureComponent {
                             value={dateRange || this.state.dateRange} style={{ width: 120 }}
                             onChange={this.handleChangeRange}
                           >
-                            <Option key='one-week' value={7}>1周</Option>
-                            <Option key='one-month' value={30}>1个月</Option>
-                            <Option key='three-month' value={90}>3个月</Option>
-                            <Option key='six-month' value={180}>6个月</Option>
-                            <Option key='one-year' value={365}>1年</Option>
+                            <Option key='one-week' value={6}>一周</Option>
+                            <Option key='one-month' value={30}>一个月</Option>
+                            <Option key='three-month' value={90}>一季度</Option>
+                            <Option key='six-month' value={180}>半年</Option>
+                            <Option key='one-year' value={365}>一年</Option>
                           </Select>
                         </Affix>
                         <Suspense fallback={<PageLoading/>}>
@@ -987,7 +988,8 @@ class Center extends PureComponent {
                                 {vsStudentInfo.native_place ? vsStudentInfo.native_place : "未知"}
                               </p>
                               <p><i className={`fa fa-book ${styles.iconStyle}`}/>
-                                <Link className={styles.stuClassInfo} to={`/class/analysis/?classId=${vsStudentInfo.stu_class.id}`}>
+                                <Link className={styles.stuClassInfo}
+                                      to={`/class/analysis/?classId=${vsStudentInfo.stu_class.id}`}>
                                   {`${vsStudentInfo.stu_class.start_year}年-${vsStudentInfo.stu_class.class_name}`}
                                 </Link>
                               </p>

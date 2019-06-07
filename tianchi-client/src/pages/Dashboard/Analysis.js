@@ -54,6 +54,9 @@ class Analysis extends Component {
       type: 'dashboard/fetchStaySummary',
     });
     dispatch({
+      type: 'dashboard/fetchTeacherSummary',
+    });
+    dispatch({
       type: 'dashboard/fetchYearCostSummary',
       payload: {
         year: this.state.year
@@ -117,7 +120,7 @@ class Analysis extends Component {
       yearCostData, totalYearCost, dailyAvgCost,
       kaoqinSummaryData, totalKaoqinCount,
       sexHourlyCostData, sexHourlyCountData,
-      gradeCostData, gradeCostCountData,
+      gradeCostData, gradeCostCountData, teacherData, totalTeacherCount,
       stayCostData, stayCountData, enterSchoolData, kaoqinMixedData,
     } = dashboard;
 
@@ -195,7 +198,8 @@ class Analysis extends Component {
             }}
             handleChangeSexType={this.handleChangeSexType}
             handleChangeStudentType={this.handleChangeStudentType}
-
+            teacherData={teacherData}
+            totalTeacherCount={totalTeacherCount}
           />
         </Suspense>
         <Suspense fallback={null}>

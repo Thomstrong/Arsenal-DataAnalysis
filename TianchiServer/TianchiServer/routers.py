@@ -6,6 +6,7 @@ from courses.api.views import CourseRecordViewSet, CourseViewSet
 from exams.api.views import ClassExamViewSet
 from kaoqins.api.views import KaoqinRecordViewSet
 from students.api.views import StudentViewSet
+from teachers.api.views import TeacherViewSet
 from terms.api.views import TermViewSet
 from wordcloud.api.views import WordCloudTagViewSet
 
@@ -17,6 +18,7 @@ router.register(r'course_record', CourseRecordViewSet)
 router.register(r'courses', CourseViewSet)
 router.register(r'kaoqin_record', KaoqinRecordViewSet)
 router.register(r'terms', TermViewSet)
+router.register(r'teacher', TeacherViewSet)
 router.register(r'class_exam', ClassExamViewSet)
 router.register(r'classes', ClassViewSet)
 router.register(r'word_cloud_tag', WordCloudTagViewSet)

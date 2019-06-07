@@ -1,6 +1,7 @@
-import { getCostSummary, getKaoqinSummary, getStudentSummary } from '@/services/api';
+import { getCostSummary, getKaoqinSummary, getStudentSummary, getTeacherSummary } from '@/services/api';
 import {
   CLASS_CAMPUS_CHOICE,
+  COURSE_FULLNAME_ALIAS,
   EVENT_TYPE_ALIAS,
   GRADE_ALIAS,
   POLICY_TYPE_ALIAS,
@@ -90,6 +91,7 @@ export default {
     totalStayCount: 0,
     totalStudentInDb: 0,
     gradeData: [],
+    teacherData: [],
     nationData: [],
     nativePlaceData: [],
     policyData: [],
@@ -126,6 +128,13 @@ export default {
       });
       yield put({
         type: 'saveKaoqinSummaryData',
+        payload: response,
+      });
+    },
+    * fetchTeacherSummary({ payload }, { call, put }) {
+      const response = yield call(getTeacherSummary);
+      yield put({
+        type: 'saveTeacherData',
         payload: response,
       });
     },
@@ -338,6 +347,22 @@ export default {
           };
         }),
         totalKaoqinCount: totalKaoqinCount,
+      };
+    },
+    saveTeacherData(state, { payload }) {
+      if (!payload) {
+        return state;
+      }
+      return {
+        ...state,
+        teacherData: payload.records.map(data => {
+          return {
+            count: data.count,
+            grade: GRADE_ALIAS[data.grade],
+            course: COURSE_FULLNAME_ALIAS[data.course]
+          };
+        }),
+        totalTeacherCount: payload.total
       };
     },
     saveKaoqinMixedData(state, { payload }) {
