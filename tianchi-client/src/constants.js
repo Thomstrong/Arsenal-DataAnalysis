@@ -119,7 +119,7 @@ export const SCORE_LEVEL_ALIAS = {
 };
 
 export const DATE_REANGE_ALIAS = {
-  7: '一周',
+  6: '一周',
   30: '一个月',
   90: '一个季度',
   180: '半年',

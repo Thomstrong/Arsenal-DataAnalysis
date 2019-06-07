@@ -124,7 +124,6 @@ class Analysis extends Component {
       stayCostData, stayCountData, enterSchoolData, kaoqinMixedData,
     } = dashboard;
 
-    console.log(teacherData, totalTeacherCount)
     const sexHourlyData = totalHourlyAvgCost ? sexHourlyCostData.concat(totalHourlyAvgCost.map(data => {
       return {
         hour: data.hour,
@@ -199,7 +198,8 @@ class Analysis extends Component {
             }}
             handleChangeSexType={this.handleChangeSexType}
             handleChangeStudentType={this.handleChangeStudentType}
-
+            teacherData={teacherData}
+            totalTeacherCount={totalTeacherCount}
           />
         </Suspense>
         <Suspense fallback={null}>

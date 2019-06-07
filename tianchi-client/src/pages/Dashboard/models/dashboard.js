@@ -1,6 +1,7 @@
 import { getCostSummary, getKaoqinSummary, getStudentSummary, getTeacherSummary } from '@/services/api';
 import {
   CLASS_CAMPUS_CHOICE,
+  COURSE_FULLNAME_ALIAS,
   EVENT_TYPE_ALIAS,
   GRADE_ALIAS,
   POLICY_TYPE_ALIAS,
@@ -8,7 +9,6 @@ import {
   STAY_ALIAS,
 } from "@/constants";
 import DataSet from "@antv/data-set";
-import { COURSE_FULLNAME_ALIAS } from "../../../constants";
 
 // shit code...
 const addZeroForTwoFieldData = (costData, fieldName, biFilds) => {
@@ -357,7 +357,8 @@ export default {
         ...state,
         teacherData: payload.records.map(data => {
           return {
-            ...data,
+            count: data.count,
+            grade: GRADE_ALIAS[data.grade],
             course: COURSE_FULLNAME_ALIAS[data.course]
           };
         }),
