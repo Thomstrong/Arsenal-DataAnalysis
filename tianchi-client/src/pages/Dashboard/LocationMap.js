@@ -180,8 +180,9 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
       <Row gutter={24} type="flex" justify="space-between">
         <Col xl={16} lg={24} md={24} sm={24} xs={24}>
           <Card
-            title='教师资源分布概况'
+            title='在职教师分布概况'
             className={styles.teacherDistributionCard}
+            hoverable={true}
           >
             <Chart
               key='teacher-distribute-chart'
@@ -217,7 +218,11 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
           </Card>
         </Col>
         <Col xl={8} lg={24} md={24} sm={24} xs={24}>
-          <Card title="人员分析" hoverable={true} style={{ cursor: "auto", marginTop: 24, height:'500px'}} >
+          <Card
+            title="人员分析"
+            hoverable={true}
+            className={styles.memberAnalysis}
+          >
             <Paragraph>1. 高一高二高三人数递减，<Text type="danger">高一男生</Text>占全校学生数的<Text type="danger"> 1/4 </Text>;
               各年级女生人数比较稳定都在<Text type="danger"> 16% </Text>左右，男生人数呈明显递<Text type="danger">减</Text>趋势，
               高三年级女生人数反超男生。</Paragraph>
@@ -227,12 +232,12 @@ const LocationMap = memo(({ sexType, studentType, data, handleChangeSexType, han
             <Paragraph>3. 学校生源主要来自于<Text type="danger">浙江省宁波市</Text>(本地)，外地生源中以<Text type="danger">江西省</Text>的生源最多。
               其他省市生源比较分散。</Paragraph>
             <Paragraph>4. 汉族是学生的主要民族，但仍有<Text type="danger">近 1% </Text>的学生来自其他各个民族。</Paragraph>
-            <Paragraph>5. 该校学生的主要政治面貌是<Text type="danger">共青团员</Text>，还有一位共产党员，一位民主党派人士。</Paragraph>
-            <Paragraph>6. 该校以<Text type="danger">语数英</Text>老师为主，高三的老师信息比较有限，历史地理甚至没有高二老师的信息。</Paragraph>
+            <Paragraph>5. 该校在读学生的主要政治面貌是<Text type="danger">共青团员</Text>，还有一位共产党员，一位民主党派人士。</Paragraph>
+            <Paragraph>6. 该校目前在职教师<Text type="danger">{`${totalTeacherCount}`}名</Text>，以
+              <Text type="danger">语数英</Text>老师为主，高三的老师信息比较有限，历史地理甚至没有高二老师的信息。</Paragraph>
           </Card>
         </Col>
       </Row>}
-
     </Fragment>);
 
 });
