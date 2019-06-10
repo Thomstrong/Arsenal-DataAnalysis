@@ -316,15 +316,20 @@ class StudentViewSet(viewsets.ModelViewSet):
                 avg=-Avg('total_cost')
             ).values('avg')[0]['avg']
 
-            total = DailyConsumption.objects.values_list('student_id', flat=True).distinct().count()
-            rank = DailyConsumption.objects.values('student_id').annotate(
+            is_stay = self.get_object().is_stay_school
+            total = DailyConsumption.objects.filter(
+                student__is_stay_school=is_stay
+            ).values_list('student_id', flat=True).distinct().count()
+            rank = DailyConsumption.objects.filter(
+                student__is_stay_school=is_stay
+            ).values('student_id').annotate(
                 avg=-Avg('total_cost')
             ).filter(avg__gt=average).count()
 
             return Response({
                 'result': result,
                 'avg': average,
-                'rank': 1 - rank / total
+                'rank': 1 - rank / total,
             })
         date_range = request.query_params.get('date_range', None)
         if not date_range or not date_range.isdigit():

@@ -339,7 +339,7 @@ const EcardConsumptionCard = memo(({ data }) => {
             </Col>}
           </Row>
         </TabPane>
-        <TabPane tab={<span><Icon type="line-chart"/>走读住宿对比</span>} key="Leave">
+        <TabPane tab={<span><Icon type="line-chart"/>走读住校对比</span>} key="Leave">
           <Row>
             <Col xl={16} lg={24} md={24} sm={24} xm={24}>
               <div className={styles.salesBar}>
@@ -350,7 +350,7 @@ const EcardConsumptionCard = memo(({ data }) => {
                   padding={["auto", "auto", 80, "auto"]}
                   forceFit
                 >
-                  <h4 className={styles.rankingTitle}>走读生/住校生不同时段平均消费情况对比</h4>
+                  <h4>走读生/住校生不同时段平均消费情况对比</h4>
                   <Legend/>
                   <Axis name="hour"/>
                   <Axis

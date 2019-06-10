@@ -30,7 +30,7 @@ const columns = [
 
 const ConsumptionOverallLineChart = memo(
   ({
-     hourlyAvgCost, dailySumCost, maxHourlyAvg, dailyAvgRank, dailyAvg, costDetailLoading,
+     hourlyAvgCost, dailySumCost, maxHourlyAvg, dailyAvgRank, dailyAvg, costDetailLoading, isStay,
      popVisible, popStyle, onPointClick, popTitle, startTime, endTime, onPopClose, dailyCostDetail
    }) => {
     if (chartIns) {
@@ -120,10 +120,11 @@ const ConsumptionOverallLineChart = memo(
                   strong style={{ color: "#cc4756" }}
                 >
                   {`${(dailyAvgRank * 100).toFixed(2)}%`}
-                </Text>的学生</Paragraph>
-              {showPredict ? <Paragraph>点击<Text strong style={{ color: "#cc4756" }}>蓝色数据点</Text>，获取该天消费明细</Paragraph> : (
-                <Paragraph>数据量过少，无法预测</Paragraph>
-              )}
+                </Text>的{isStay ? '住校' : '走读'}生</Paragraph>
+              {showPredict ?
+                <Paragraph>点击<Text strong style={{ color: "#cc4756" }}>蓝色数据点</Text>，获取该天消费明细</Paragraph> : (
+                  <Paragraph>数据量过少，无法预测</Paragraph>
+                )}
             </Col>
           </Row> : <Empty/>}
         </Card>
@@ -138,7 +139,7 @@ const ConsumptionOverallLineChart = memo(
               <Chart
                 height={300}
                 data={hourlyAvgCost}
-                padding={[10, "auto", 40, "auto"]}
+                padding={[10, "auto", 65, "auto"]}
                 scale={{
                   hour: {
                     type: "cat",

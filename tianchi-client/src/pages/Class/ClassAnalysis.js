@@ -427,10 +427,9 @@ class ClassAnalysis extends PureComponent {
     const isAtSchool = classInfo.start_year === 2018;
     const defaultTab = _.difference(location.pathname.split('/'), match.path.split('/'))[0] || 'Trend';
 
-    //table的格式
     const tableColumns = [
       {
-        title: '最新排名',
+        title: '总分排名',
         dataIndex: 'rank',
         key: 'rank',
         sorter: (a, b) => a.rank - b.rank,

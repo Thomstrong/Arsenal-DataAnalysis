@@ -473,7 +473,13 @@ class ClassViewSet(viewsets.ModelViewSet):
             stu_class_id=pk,
             student_id__isnull=False,
         ).values_list('student_id', flat=True)
-        total = DailyConsumption.objects.values_list('student_id', flat=True).distinct().count()
+        stay_total = DailyConsumption.objects.filter(
+            student__is_stay_school=True
+        ).values_list('student_id', flat=True).distinct().count()
+
+        no_stay_total = DailyConsumption.objects.filter(
+            student__is_stay_school=False
+        ).values_list('student_id', flat=True).distinct().count()
 
         class_cost_records = list(DailyConsumption.objects.filter(
             student_id__in=students,
@@ -482,8 +488,10 @@ class ClassViewSet(viewsets.ModelViewSet):
         ).order_by('avg').values_list(
             'student_id',
             'student__name',
-            'avg'
+            'avg',
+            'student__is_stay_school'
         ))
+
         if not class_cost_records:
             return Response([])
 
@@ -495,28 +503,57 @@ class ClassViewSet(viewsets.ModelViewSet):
         ).order_by('avg').values_list(
             'student_id',
             'student__name',
-            'avg'
+            'avg',
+            'student__is_stay_school'
         ))
 
-        base_count = DailyConsumption.objects.values('student_id').annotate(
+        no_stay_base_count = DailyConsumption.objects.filter(
+            student__is_stay_school=False
+        ).values('student_id').annotate(
             avg=-Avg('total_cost')
         ).filter(
             avg__lt=class_cost_records[0][2] - 0.1,
         ).count()
 
+        stay_base_count = DailyConsumption.objects.filter(
+            student__is_stay_school=True
+        ).values('student_id').annotate(
+            avg=-Avg('total_cost')
+        ).filter(
+            avg__lt=class_cost_records[0][2] - 0.1,
+        ).count()
+
+
+        stay_index = 0
+        no_stay_index = 0
+
         formatted_records = []
         i = 0
-        # [student_id, student__name, avg]
+        # [student_id, student__name, avg, is_stay]
         for index, record in enumerate(total_cost_records):
             if i == len(class_cost_records):
                 break
+
+            if record[3]:
+                rank = stay_index
+                base_count =  stay_base_count
+                total = stay_total
+                stay_index += 1
+            else:
+                rank = no_stay_index
+                base_count = no_stay_base_count
+                total = no_stay_total
+                no_stay_index += 1
+
             if record[0] == class_cost_records[i][0]:
+                i += 1
                 formatted_records.append({
                     'id': record[0],
                     'name': record[1],
                     'avg': record[2],
-                    'rank': (index + base_count) / total
+                    'rank': (rank + base_count) / total,
+                    'is_stay': record[3]
                 })
-                i += 1
+
 
         return Response(formatted_records)

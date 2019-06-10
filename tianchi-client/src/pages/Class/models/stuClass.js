@@ -394,7 +394,7 @@ export default {
         return state;
       }
       let totalCost = 0;
-      const lowCostData = [];
+      const lowCostData = [[], []];
       const costData = payload.map(data => {
         totalCost += data.avg;
         const formattedData = {
@@ -402,8 +402,15 @@ export default {
           'avg': Number(data.avg.toFixed(2)),
           'name': `${data.id}-${data.name}`,
         };
-        if (data.rank < 0.2) {
-          lowCostData.push(formattedData);
+        if (data.rank <= 0.20) {
+          if (data.rank <= 0.10) {
+            lowCostData[Number(data.is_stay)].push(formattedData);
+            return formattedData;
+          }
+
+          if(!data.is_stay) {
+            lowCostData[Number(data.is_stay)].push(formattedData);
+          }
         }
         return formattedData;
       });

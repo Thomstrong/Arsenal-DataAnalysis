@@ -5,18 +5,37 @@ import Link from 'umi/link';
 
 const { Paragraph, Text } = Typography;
 
-const getUrl = (id) => `/student/center/?studentId=${id}`;
+const getUrl = (id) => `/student/center/ECard/?studentId=${id}`;
 
-const getStuText = (student) => `${student.name}(${(student.rank * 100).toFixed(1)}%)`;
+const getStuText = (student) => `${student.name}(${(student.rank * 100).toFixed(2)}%)`;
 
-const renderLowCosts = (students) => {
-  return students.map((student) => {
+const renderLowCosts = (lowCost) => {
+  const noStayStudents = lowCost[0];
+  const noStayRecords = noStayStudents.map((student) => {
     let stuText = <Link to={getUrl(student.id)}>{getStuText(student)}</Link>;
-    if (student.id !== students[students.length - 1].id) {
+    if (student.id !== noStayStudents[noStayStudents.length - 1].id) {
       stuText = <Fragment>{stuText}、</Fragment>;
     }
     return stuText;
   });
+
+  const stayStudents = lowCost[1];
+  const stayRecords = stayStudents.map((student) => {
+    let stuText = <Link to={getUrl(student.id)}>{getStuText(student)}</Link>;
+    if (student.id !== stayStudents[stayStudents.length - 1].id) {
+      stuText = <Fragment>{stuText}、</Fragment>;
+    }
+    return stuText;
+  });
+
+  return <Fragment>
+    {!!stayRecords.length && <span>
+      住校生: {stayRecords}，消费水平低于在校住校生总体水平的15%；
+    </span>}
+    {!!noStayRecords.length && <span>
+      走读生: {noStayRecords}，消费水平低于在校走读生总体水平的20%。
+    </span>}
+  </Fragment>;
 };
 
 const ClassEcardChart = memo(
@@ -61,7 +80,7 @@ const ClassEcardChart = memo(
               <li>
                 {!costSummary.lowCostData.length ? `暂无学生消费水平低于全校消费水平的20%。` :
                   <Fragment>
-                    其中，{renderLowCosts(costSummary.lowCostData)}的消费较平均水平低，排名不到全校消费水平的20%。
+                    其中，{renderLowCosts(costSummary.lowCostData)}
                   </Fragment>}
               </li>
             </ul>

@@ -858,6 +858,7 @@ class Center extends PureComponent {
                           onPopClose={this.onPopClose}
                           dailyCostDetail={dailyCostDetail}
                           costDetailLoading={costDetailLoading}
+                          isStay={studentInfo.is_stay_school}
                         />
                       </Suspense>
                       <Card
