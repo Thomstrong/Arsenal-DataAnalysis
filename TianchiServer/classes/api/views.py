@@ -34,10 +34,10 @@ class ClassViewSet(viewsets.ModelViewSet):
             return Response(status=400, data={'reason': 'need query'})
         class_filter = Q(id__startswith=query) | Q(class_name__contains=query)
         if str(query).isdigit():
-            class_filter |= Q(start_year=query)
+            class_filter |= Q(start_year__startswith=query)
         classes = self.queryset.filter(
             class_filter
-        ).order_by('-id')[:50]
+        ).order_by('-start_year', 'class_name')[:50]
         return Response(self.get_serializer_class()(classes, many=True).data)
 
     @detail_route(

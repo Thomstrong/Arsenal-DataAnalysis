@@ -139,7 +139,7 @@ const ConsumptionOverallLineChart = memo(
               <Chart
                 height={300}
                 data={hourlyAvgCost}
-                padding={[10, "auto", 65, "auto"]}
+                padding={[10, "auto", 80, "auto"]}
                 scale={{
                   hour: {
                     type: "cat",

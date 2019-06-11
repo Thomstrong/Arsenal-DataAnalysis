@@ -113,6 +113,12 @@ const StuComparedChart = memo(
       <Card title="消费对比" bordered={false} style={{ width: '100%' }}>
         {/*平均消费时间的对比,图表*/}
         {vsDailyCostData.data.length ? <Fragment>
+          <div style={{ padding: '0 24px' }}>
+            <TimelineChart
+              titleMap={vsDailyCostData.titleMap}
+              height={300}
+              data={vsDailyCostData.data}
+            /></div>
           <Chart
             height={400}
             data={hourlyVsCostData}
@@ -158,12 +164,6 @@ const StuComparedChart = memo(
             />
           </Chart>
           {/*各个时期总消费金额对比*/}
-          <div style={{ padding: '0 24px' }}>
-            <TimelineChart
-              titleMap={vsDailyCostData.titleMap}
-              height={300}
-              data={vsDailyCostData.data}
-            /></div>
         </Fragment> : <Empty/>}
       </Card>
       {/*考勤*/}
