@@ -1,6 +1,6 @@
 aniso8601==3.0.2
 cpca==0.4.1
-Django==2.1.11
+Django==2.2.24
 django-cors-headers==2.5.2
 django-extensions==2.1.6
 django-filter==2.1.0
