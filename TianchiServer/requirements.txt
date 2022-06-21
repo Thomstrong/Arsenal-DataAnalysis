@@ -13,7 +13,7 @@ graphql-relay==0.4.5
 jieba==0.39
 jsonfield==2.0.2
 Markdown==3.0.1
-numpy==1.16.3
+numpy==1.22.0
 pandas==0.24.2
 progress==1.5
 promise==2.2.1
